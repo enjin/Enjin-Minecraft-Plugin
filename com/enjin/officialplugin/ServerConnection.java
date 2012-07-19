@@ -20,8 +20,9 @@ public class ServerConnection {
 			try {
 				int read;
 				System.out.println("Enjin server connected: " + ip + ".");
-				if(!PacketLoader.handleLogin(in)) {
-					throw new Exception("Failed to authenticate server: " + ip);
+				if(!PacketLoader.handleLogin(ServerConnection.this)) {
+					stop();
+					return;
 				}
 				while(((read = in.read()) > -1) && !ServerConnectionManager.stopping) {
 					System.out.println("recieved packet: " + read);

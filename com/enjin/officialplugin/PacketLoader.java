@@ -1,7 +1,5 @@
 package com.enjin.officialplugin;
 
-import java.io.*;
-
 import org.bukkit.Bukkit;
 
 public class PacketLoader {
@@ -33,27 +31,30 @@ public class PacketLoader {
 		}
 	}
 
-	public static boolean handleLogin(InputStream in) throws Throwable {
+	public static boolean handleLogin(ServerConnection con) throws Throwable {
 		if(EnjinMinecraftPlugin.hash.equals("")) {
+			con.out.write(3);
 			System.out.println("Hash is empty. =(");
 			return false;
 		}
-		int length = in.read();
+		int length = con.in.read();
 		if(length != EnjinMinecraftPlugin.hash.length()) {
+			con.out.write(1);
 			System.out.println("length is " + length + ", expected " + EnjinMinecraftPlugin.hash.length());
 			return false;
 		}
 		System.out.println("auth length: " + length);
 		StringBuilder hash = new StringBuilder();
 		for(int i = 0; i<length; i++) {
-			hash.append((char)in.read());
+			hash.append((char)con.in.read());
 		}
 		if(EnjinMinecraftPlugin.hash.equals(hash.toString())) {
 			Bukkit.getLogger().info("An enjin server authenticated with the correct key.");
+			con.out.write(0);
 			return true;
 		}
+		con.out.write(2);
 		Bukkit.getLogger().warning("A SUPPOSED ENJIN SERVER FAILED TO AUTHENTICATE! SENT KEY: " + hash + ".");
-		System.out.println("Expected: " + EnjinMinecraftPlugin.hash);
 		return false;
 	}
 
