@@ -2,7 +2,9 @@ package com.enjin.officialplugin;
 
 import java.io.*;
 import java.net.*;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 
@@ -10,7 +12,7 @@ public class ServerConnectionManager implements Runnable{
 	final static int port = 6115;
 	static boolean stopping = false;
 	private ServerSocket servSocket;
-	private final LinkedList<ServerConnection> connections = new LinkedList<ServerConnection>();
+	private final List<ServerConnection> connections = Collections.synchronizedList(new LinkedList<ServerConnection>());
 	
 	@Override
 	public void run() {
