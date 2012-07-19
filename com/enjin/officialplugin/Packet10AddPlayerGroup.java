@@ -13,7 +13,7 @@ public class Packet10AddPlayerGroup implements Packet {
 			}
 			System.out.println("Add player groups string: " + builder.toString());
 			String[] msg = builder.toString().split(",");
-			if(msg.length == 2) {
+			if((msg.length == 2) || (msg.length == 3)) {
 				String playername = msg[0];
 				String groupname = msg[1];
 				String world = (msg.length == 3) ? msg[2] : null;
