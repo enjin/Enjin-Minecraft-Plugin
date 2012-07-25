@@ -33,13 +33,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	Thread listenThread;
 	static ServerConnectionManager conManager;
 	
+	final EMPListener listener = new EMPListener();
+	
 	static InetAddress localip;
+	static String minecraftport;
 	@Override
 	public void onEnable() {
 		try {
 			initVariables();
 			initFiles();
 			initPlugins();
+			Bukkit.getPluginManager().registerEvents(listener, this);
 			listenThread.start();
 		}
 		catch(Throwable t) {
@@ -66,6 +70,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			serverProperties.load(in);
 			in.close();
 			String ip = serverProperties.getProperty("server-ip");
+			minecraftport = serverProperties.getProperty("server-port");
 			if(ip == null || ip.equals("")) {
 				localip = null;
 			} else {
@@ -152,9 +157,69 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sendKeyUpdate(hash);
 			sender.sendMessage(ChatColor.GREEN + "Set the enjin key to " + hash);
 			return true;
 		}
 		return false;
+	}
+	
+	public static void sendAddRank(String world, String group, String player) {
+		try {
+			//sendAPIQuery("https://api.enjin.com/api/minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group); //launch vers
+			if(!sendAPIQuery("http://gamers.enjin.com/api/minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
+				throw new Exception("Received 'false' from the enjin data server!");
+			}
+		} catch (Throwable t) {
+			Bukkit.getLogger().warning("There was an error synchronizing group " + group + ", for user " + player + ".");
+			t.printStackTrace();
+		}
+	}
+	
+	public static void sendRemoveRank(String world, String group, String player) {
+		try {
+			//sendAPIQuery("https://api.enjin.com/api/minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group); //launch vers
+			if(!sendAPIQuery("http://gamers.enjin.com/api/minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
+				throw new Exception("Received 'false' from the enjin data server!");
+			}
+		} catch (Throwable t) {
+			Bukkit.getLogger().warning("There was an error synchronizing group " + group + ", for user " + player + ".");
+			t.printStackTrace();
+		}
+	}
+	
+	public static void sendKeyUpdate(String key) {
+		try {
+			//sendAPIQuery("https://api.enjin.com/api/minecraft-auth", "key=" + key, "host=" + localip.getHostAddress(), "port=" + minecraftport); //launch vers
+			if(!sendAPIQuery("http://gamers.enjin.com/api/minecraft-auth", "key=" + key, "host=" + localip.getHostAddress(), "port=" + minecraftport)) {
+				throw new Exception("Received 'false' from the enjin data server!");
+			}
+		} catch (Throwable t) {
+			Bukkit.getLogger().warning("There was an error synchronizing game data to the enjin server.");
+			t.printStackTrace();
+		}
+	}
+	
+	public static boolean sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
+		URL url = new URL(urls);
+		try {
+			URLConnection con = url.openConnection();
+			con.setDoInput(true);
+			con.setDoOutput(true);
+			StringBuilder query = new StringBuilder();
+			for(String val : queryValues) {
+				query.append('&');
+				query.append(val);
+			}
+			if(queryValues.length > 0) {
+				query.deleteCharAt(0); //remove first &
+			}
+			con.setRequestProperty("Content-length", String.valueOf(query.length()));
+			con.getOutputStream().write(query.toString().getBytes());
+			return (con.getInputStream().read() == '1');
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

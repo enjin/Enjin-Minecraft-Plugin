@@ -12,7 +12,7 @@ public class Packet11RemovePlayerGroup implements Packet {
 			for(short s = 0; s<length; s++) {
 				builder.append((char)con.in.read());
 			}
-			System.out.println("Add player groups string: " + builder.toString());
+			System.out.println("Remove player groups string: " + builder.toString());
 			String[] msg = builder.toString().split(",");
 			if((msg.length == 2) || (msg.length == 3)) {
 				String playername = msg[0];
