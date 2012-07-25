@@ -1,6 +1,5 @@
 package com.enjin.officialplugin;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -57,8 +56,6 @@ public class EMPListener implements Listener {
 				
 			}
 		}
-		if(!Arrays.equals(initialRankMap.get(p), EnjinMinecraftPlugin.permission.getPlayerGroups(p))) {
-			p.sendMessage("Your groups have changed!");
-		}
+		initialRankMap.remove(p);
 	}
 }

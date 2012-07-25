@@ -54,6 +54,5 @@ public class ServerConnection {
 		} catch (Throwable t) {
 			//socket probably closed;
 		}
-		EnjinMinecraftPlugin.conManager.removeConnection(this);
 	}
 }

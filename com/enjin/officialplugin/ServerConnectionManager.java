@@ -2,7 +2,6 @@ package com.enjin.officialplugin;
 
 import java.io.*;
 import java.net.*;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class ServerConnectionManager implements Runnable{
 	final static int port = 6115;
 	static boolean stopping = false;
 	private ServerSocket servSocket;
-	private final List<ServerConnection> connections = Collections.synchronizedList(new LinkedList<ServerConnection>());
+	private final List<ServerConnection> connections = new LinkedList<ServerConnection>();
 	
 	@Override
 	public void run() {
@@ -42,19 +41,14 @@ public class ServerConnectionManager implements Runnable{
 	
 	public void stop() {
 		stopping = true;
-		synchronized(connections) {
-			for(ServerConnection con : connections) {
-				con.stop();
-			}
+		for(ServerConnection con : connections) {
+			con.stop();
+			connections.remove(con);
 		}
 		try {
 			if(servSocket != null)
 				servSocket.close();
 		} catch (IOException e) {}
 		Bukkit.getLogger().info("Stopping enjin listen server.");
-	}
-
-	public void removeConnection(ServerConnection con) {
-		connections.remove(con);
 	}
 }
