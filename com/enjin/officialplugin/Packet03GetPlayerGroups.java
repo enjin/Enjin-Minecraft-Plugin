@@ -10,22 +10,18 @@ public class Packet03GetPlayerGroups implements Packet {
 		try {
 			int slength = con.in.read();
 			StringBuilder builder = new StringBuilder();
-			System.out.println("Name length: " + slength);
 			for(short s = 0; s<slength; s++) {
 				builder.append((char)con.in.read());
 			}
 			name = builder.toString();
 			slength = con.in.read();
 			builder = new StringBuilder();
-			System.out.println("World length: " + slength);
 			for(short s = 0; s<slength; s++) {
 				builder.append((char)con.in.read());
 			}
 			world = builder.toString();
 			try {
 				StringBuilder groups = new StringBuilder();
-				System.out.println("Player: " + name);
-				System.out.println("World: " + world);
 				try {
 					for(String group : EnjinMinecraftPlugin.permission.getPlayerGroups(world, name)) {
 						groups.append(',');

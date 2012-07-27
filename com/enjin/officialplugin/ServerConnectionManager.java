@@ -25,7 +25,7 @@ public class ServerConnectionManager implements Runnable{
 					break;
 				}
 				ServerConnection con = new ServerConnection(socket);
-				System.out.println("An Enjin server connected: " + socket.getInetAddress().getHostAddress());
+				Bukkit.getLogger().info("An Enjin server connected: " + socket.getInetAddress().getHostAddress());
 				connections.add(con);
 			}
 		} catch (BindException e){

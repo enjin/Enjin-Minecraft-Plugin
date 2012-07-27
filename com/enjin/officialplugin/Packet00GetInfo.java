@@ -64,8 +64,6 @@ public class Packet00GetInfo implements Packet {
 				break;
 			}
 			if(message != null) {
-				System.out.println("Writing! ID: " + id);
-				System.out.println("Sending: " + message + ", (length: " + message.length() + ")");
 				try {
 					con.out.write(0);
 					con.out.write(message.length());

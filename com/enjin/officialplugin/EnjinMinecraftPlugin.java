@@ -37,6 +37,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	static InetAddress localip;
 	static String minecraftport;
+	static String minecraftip;
+	
 	@Override
 	public void onEnable() {
 		try {
@@ -69,12 +71,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			FileInputStream in = new FileInputStream(new File("server.properties"));
 			serverProperties.load(in);
 			in.close();
-			String ip = serverProperties.getProperty("server-ip");
+			minecraftip = serverProperties.getProperty("server-ip");
 			minecraftport = serverProperties.getProperty("server-port");
-			if(ip == null || ip.equals("")) {
+			if(minecraftip == null || minecraftip.equals("")) {
+				minecraftip = InetAddress.getLocalHost().getHostAddress();
 				localip = null;
 			} else {
-				localip = InetAddress.getByName(ip);
+				localip = InetAddress.getByName(minecraftip);
 			}
 		} catch (Throwable t) {
 			localip = null;
@@ -191,7 +194,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public static void sendKeyUpdate(String key) {
 		try {
 			//sendAPIQuery("https://api.enjin.com/api/minecraft-auth", "key=" + key, "host=" + localip.getHostAddress(), "port=" + minecraftport); //launch vers
-			if(!sendAPIQuery("http://gamers.enjin.com/api/minecraft-auth", "key=" + key, "host=" + localip.getHostAddress(), "port=" + minecraftport)) {
+			if(!sendAPIQuery("http://gamers.enjin.com/api/minecraft-auth", "key=" + key, "host=" + minecraftip, "port=" + minecraftport)) {
 				throw new Exception("Received 'false' from the enjin data server!");
 			}
 		} catch (Throwable t) {

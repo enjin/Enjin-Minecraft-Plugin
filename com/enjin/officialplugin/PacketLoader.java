@@ -26,6 +26,7 @@ public class PacketLoader {
 			break;
 		case 0x11:
 			(new Packet11RemovePlayerGroup()).handle(con);
+			break;
 		default:
 			throw new UnknownPacketException(read); 
 		}
@@ -34,16 +35,13 @@ public class PacketLoader {
 	public static boolean handleLogin(ServerConnection con) throws Throwable {
 		if(EnjinMinecraftPlugin.hash.equals("")) {
 			con.out.write(3);
-			System.out.println("Hash is empty. =(");
 			return false;
 		}
 		int length = con.in.read();
 		if(length != EnjinMinecraftPlugin.hash.length()) {
 			con.out.write(1);
-			System.out.println("length is " + length + ", expected " + EnjinMinecraftPlugin.hash.length());
 			return false;
 		}
-		System.out.println("auth length: " + length);
 		StringBuilder hash = new StringBuilder();
 		for(int i = 0; i<length; i++) {
 			hash.append((char)con.in.read());

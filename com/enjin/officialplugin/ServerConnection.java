@@ -19,17 +19,14 @@ public class ServerConnection {
 		public void run() {
 			try {
 				int read;
-				System.out.println("Enjin server connected: " + ip + ".");
 				if(!PacketLoader.handleLogin(ServerConnection.this)) {
 					stop();
 					return;
 				}
 				while(((read = in.read()) > -1) && !ServerConnectionManager.stopping) {
-					System.out.println("recieved packet: " + read);
 					PacketLoader.readPacket(read, ServerConnection.this);
 				}
 				stop();
-				System.out.println("stopping: " + ServerConnectionManager.stopping);
 			} catch (Throwable t) {
 				Bukkit.getLogger().warning("There was an error with the enjin server " + ip + ". " + t.getMessage());
 				t.printStackTrace();
