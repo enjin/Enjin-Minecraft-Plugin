@@ -169,8 +169,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public static void sendAddRank(String world, String group, String player) {
 		try {
-			//sendAPIQuery("https://api.enjin.com/api/minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group); //launch vers
-			if(!sendAPIQuery("http://gamers.enjin.com/api/minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
+			if(!sendAPIQuery("https://api.enjin.com/api/minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
 				throw new Exception("Received 'false' from the enjin data server!");
 			}
 		} catch (Throwable t) {
@@ -181,8 +180,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public static void sendRemoveRank(String world, String group, String player) {
 		try {
-			//sendAPIQuery("https://api.enjin.com/api/minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group); //launch vers
-			if(!sendAPIQuery("http://gamers.enjin.com/api/minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
+			if(!sendAPIQuery("https://api.enjin.com/api/minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
 				throw new Exception("Received 'false' from the enjin data server!");
 			}
 		} catch (Throwable t) {
@@ -193,8 +191,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public static void sendKeyUpdate(String key) {
 		try {
-			//sendAPIQuery("https://api.enjin.com/api/minecraft-auth", "key=" + key, "host=" + localip.getHostAddress(), "port=" + minecraftport); //launch vers
-			if(!sendAPIQuery("http://gamers.enjin.com/api/minecraft-auth", "key=" + key, "host=" + minecraftip, "port=" + minecraftport)) {
+			if(!sendAPIQuery("https://api.enjin.com/api/minecraft-auth", "key=" + key, "host=" + minecraftip, "port=" + minecraftport)) {
 				throw new Exception("Received 'false' from the enjin data server!");
 			}
 		} catch (Throwable t) {

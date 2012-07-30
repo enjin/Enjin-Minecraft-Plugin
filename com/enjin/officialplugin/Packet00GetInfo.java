@@ -65,11 +65,7 @@ public class Packet00GetInfo implements Packet {
 			}
 			if(message != null) {
 				try {
-					con.out.write(0);
-					con.out.write(message.length());
-					for(byte b : message.getBytes()) {
-						con.out.write((short)(b&0xFF));
-					}
+					PacketLoader.writeString(con, message);
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}

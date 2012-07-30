@@ -15,12 +15,8 @@ public class Packet01GetPlayers implements Packet {
 			builder.deleteCharAt(0);
 		}
 		String message = builder.toString();
-		builder = null;
 		try {
-			con.out.write(message.length());
-			for(byte b : message.getBytes()) {
-				con.out.write((short)(b&0xFF));
-			}
+			PacketLoader.writeString(con, message);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

@@ -31,11 +31,7 @@ public class Packet03GetPlayerGroups implements Packet {
 				if(groups.length() > 0) {
 					groups.deleteCharAt(0);
 				}
-				short length = (short) groups.length();
-				con.out.write(length);
-				for(short s = 0; s<length; s++) {
-					con.out.write(groups.charAt(s));
-				}
+				PacketLoader.writeString(con, groups.toString());
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}

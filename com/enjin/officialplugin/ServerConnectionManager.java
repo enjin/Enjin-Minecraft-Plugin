@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 
-public class ServerConnectionManager implements Runnable{
+public class ServerConnectionManager implements Runnable {
 	final static int port = 6115;
 	static boolean stopping = false;
 	private ServerSocket servSocket;
-	private final List<ServerConnection> connections = new LinkedList<ServerConnection>();
+	private static final List<ServerConnection> connections = new LinkedList<ServerConnection>();
 	
 	@Override
 	public void run() {

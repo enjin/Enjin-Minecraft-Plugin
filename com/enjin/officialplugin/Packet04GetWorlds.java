@@ -9,15 +9,11 @@ public class Packet04GetWorlds implements Packet {
 		try {
 			StringBuffer worlds = new StringBuffer();
 			for(World world : Bukkit.getWorlds()) {
-				worlds.append(world.getName());
 				worlds.append(',');
+				worlds.append(world.getName());
 			}
-			worlds.deleteCharAt(worlds.length()-1);
-			short length = (short) worlds.length();
-			con.out.write(length);
-			for(short s = 0; s<length; s++) {
-				con.out.write(worlds.charAt(s));
-			}
+			worlds.deleteCharAt(0);
+			PacketLoader.writeString(con, worlds.toString());
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
