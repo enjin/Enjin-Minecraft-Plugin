@@ -6,38 +6,34 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
+import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * 
- * @author ikillforeyou (Enjin LTE PTD).
+ * @author OverCaste (Enjin LTE PTD).
  * This software is released under an Open Source license.
  * @copyright Enjin 2012.
  * 
  */
 
 public class EnjinMinecraftPlugin extends JavaPlugin {
+	public static boolean usingGroupManager = false;
 	File hashFile;
 	static String hash = "";
 	Server s;
 	Logger logger;
 	static Permission permission = null;
 	
-	Thread listenThread;
-	static ServerConnectionManager conManager;
-	
 	final EMPListener listener = new EMPListener();
-	
-	static InetAddress localip;
+	final PeriodicEnjinTask task = new PeriodicEnjinTask();
 	static String minecraftport;
-	static String minecraftip;
 	
 	@Override
 	public void onEnable() {
@@ -45,8 +41,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			initVariables();
 			initFiles();
 			initPlugins();
-			Bukkit.getPluginManager().registerEvents(listener, this);
-			listenThread.start();
+			usingGroupManager = (permission instanceof Permission_GroupManager);
+			if(keyValid(hash)) {
+				startTask();
+				registerEvents();
+			} else {
+				Bukkit.getLogger().warning("The specified key is invalid, please enter the right one with /enjinkey");
+			}
 		}
 		catch(Throwable t) {
 			Bukkit.getLogger().warning("Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
@@ -57,30 +58,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		conManager.stop();
+		stopTask();
+		unregisterEvents();
 	}
 	
 	private void initVariables() throws Throwable {
 		hashFile = new File(this.getDataFolder(), "HASH.txt");
 		s = Bukkit.getServer();
 		logger = Bukkit.getLogger();
-		conManager = new ServerConnectionManager();
-		listenThread = new Thread(conManager);
 		try {
 			Properties serverProperties = new Properties();
 			FileInputStream in = new FileInputStream(new File("server.properties"));
 			serverProperties.load(in);
 			in.close();
-			minecraftip = serverProperties.getProperty("server-ip");
 			minecraftport = serverProperties.getProperty("server-port");
-			if(minecraftip == null || minecraftip.equals("")) {
-				minecraftip = InetAddress.getLocalHost().getHostAddress();
-				localip = null;
-			} else {
-				localip = InetAddress.getByName(minecraftip);
-			}
 		} catch (Throwable t) {
-			localip = null;
 			t.printStackTrace();
 			throw new Exception("Couldn't find a localhost ip! Please report this problem!");
 		}
@@ -100,6 +92,22 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
+	private void startTask() {
+		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 600L, 600L);
+	}
+	
+	private void registerEvents() {
+		Bukkit.getPluginManager().registerEvents(listener, this);
+	}
+	
+	private void stopTask() {
+		Bukkit.getScheduler().cancelTasks(this);
+	}
+	
+	private void unregisterEvents() {
+		HandlerList.unregisterAll(listener);
+	}
+	
 	private void initPlugins() throws Throwable {
 		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			throw new Exception("Couldn't find the vault plugin! Please get it from dev.bukkit.org!");
@@ -116,32 +124,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		permission = provider.getProvider();
 	}
 	
-	/*private String generateHash() throws Throwable {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		if(localip != null) {
-			try {
-				NetworkInterface ni = NetworkInterface.getByInetAddress(localip);
-				out.write(ni.getHardwareAddress());
-			} catch (Throwable t) {
-				//vpn
-			}
-		}
-		out.write(ByteBuffer.allocate(8).putLong(System.currentTimeMillis()).array());
-		out.write(ByteBuffer.allocate(8).putLong(new Random(System.currentTimeMillis()-1125).nextLong()).array());
-		MessageDigest hasher = MessageDigest.getInstance("SHA-256");
-		byte[] hashBytes = hasher.digest(out.toByteArray());
-		out.close();
-		StringBuffer ret = new StringBuffer();
-	    for (int i=0;i<hashBytes.length;i++) {
-	    	String hex=Integer.toHexString(0xff & hashBytes[i]);
-	   	    if(hex.length()==1) {
-	   	    	ret.append('0');
-	   	    }
-	   	    ret.append(hex);
-	    }
-	    return ret.toString();
-	}*/
-	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(command.getName().equals("enjinkey")) {
@@ -152,6 +134,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(args.length != 1) {
 				return false;
 			}
+			if(!keyValid(args[0])) {
+				sender.sendMessage(ChatColor.RED + "That key is invalid! Make sure you've entered it properly!");
+				stopTask();
+				unregisterEvents();
+				return true;
+			}
+			if(args[0].equals(hash)) {
+				sender.sendMessage(ChatColor.YELLOW + "The speficied key and the existing one are the same!");
+				return true;
+			}
 			hash = args[0];
 			try {
 				BufferedWriter writer = new BufferedWriter(new FileWriter(hashFile));
@@ -160,8 +152,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			sendKeyUpdate(hash);
 			sender.sendMessage(ChatColor.GREEN + "Set the enjin key to " + hash);
+			stopTask();
+			unregisterEvents();
+			startTask();
+			registerEvents();
 			return true;
 		}
 		return false;
@@ -169,7 +164,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public static void sendAddRank(String world, String group, String player) {
 		try {
-			if(!sendAPIQuery("https://api.enjin.com/api/minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
+			if(!sendAPIQuery("minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
 				throw new Exception("Received 'false' from the enjin data server!");
 			}
 		} catch (Throwable t) {
@@ -180,7 +175,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public static void sendRemoveRank(String world, String group, String player) {
 		try {
-			if(!sendAPIQuery("https://api.enjin.com/api/minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
+			if(!sendAPIQuery("minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
 				throw new Exception("Received 'false' from the enjin data server!");
 			}
 		} catch (Throwable t) {
@@ -189,24 +184,30 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
-	public static void sendKeyUpdate(String key) {
+	public static boolean keyValid(String key) {
 		try {
-			if(!sendAPIQuery("https://api.enjin.com/api/minecraft-auth", "key=" + key, "host=" + minecraftip, "port=" + minecraftport)) {
-				throw new Exception("Received 'false' from the enjin data server!");
+			if(key == null) {
+				return false;
 			}
+			if(key.length() < 2) {
+				return false;
+			}
+			return sendAPIQuery("minecraft-auth", "key=" + key, "port=" + minecraftport);
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("There was an error synchronizing game data to the enjin server.");
 			t.printStackTrace();
+			return false;
 		}
 	}
 	
 	public static boolean sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
-		URL url = new URL(urls);
+		URL url = new URL("http://mxm.enjin.ca/api/" + urls);
+		//URL url = new URL("https://api.enjin.com/api/" + urls);
+		StringBuilder query = new StringBuilder();
 		try {
 			URLConnection con = url.openConnection();
-			con.setDoInput(true);
 			con.setDoOutput(true);
-			StringBuilder query = new StringBuilder();
+			con.setDoInput(true);
 			for(String val : queryValues) {
 				query.append('&');
 				query.append(val);
@@ -216,9 +217,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			}
 			con.setRequestProperty("Content-length", String.valueOf(query.length()));
 			con.getOutputStream().write(query.toString().getBytes());
-			return (con.getInputStream().read() == '1');
-		} catch (IOException e) {
-			e.printStackTrace();
+			if(con.getInputStream().read() == '1') {
+				return true;
+			}
+			return false;
+		} catch (Throwable t) {
+			t.printStackTrace();
+			Bukkit.getLogger().warning("Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
 			return false;
 		}
 	}

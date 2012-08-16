@@ -1,17 +1,21 @@
 package com.enjin.officialplugin;
 
 import java.io.IOException;
+import java.io.InputStream;
 
-public class Packet10AddPlayerGroup implements Packet {
-	@Override
-	public void handle(ServerConnection con) {
+/**
+ * 
+ * @author OverCaste (Enjin LTE PTD).
+ * This software is released under an Open Source license.
+ * @copyright Enjin 2012.
+ * 
+ */
+
+public class Packet10AddPlayerGroup {
+	
+	public static void handle(InputStream in) {
 		try {
-			StringBuilder builder = new StringBuilder();
-			short length = (short) con.in.read();
-			for(short s = 0; s<length; s++) {
-				builder.append((char)con.in.read());
-			}
-			String[] msg = builder.toString().split(",");
+			String[] msg = PacketUtilities.readString(in).split(",");
 			if((msg.length == 2) || (msg.length == 3)) {
 				String playername = msg[0];
 				String groupname = msg[1];
