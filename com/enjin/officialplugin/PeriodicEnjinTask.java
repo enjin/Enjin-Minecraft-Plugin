@@ -23,8 +23,7 @@ public class PeriodicEnjinTask implements Runnable {
 	
 	private URL getUrl() {
 		try {
-			//return new URL("https://api.enjin.com/api/minecraft-sync");
-			return new URL("http://mxm.enjin.ca/api/minecraft-sync");
+			return new URL("https://api.enjin.com/api/minecraft-sync");
 		} catch (Throwable t) {
 			t.printStackTrace();
 			return null;

@@ -42,7 +42,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			initFiles();
 			initPlugins();
 			usingGroupManager = (permission instanceof Permission_GroupManager);
-			if(keyValid(hash)) {
+			if(keyValid(false, hash)) {
 				startTask();
 				registerEvents();
 			} else {
@@ -134,7 +134,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(args.length != 1) {
 				return false;
 			}
-			if(!keyValid(args[0])) {
+			if(!keyValid(true, args[0])) {
 				sender.sendMessage(ChatColor.RED + "That key is invalid! Make sure you've entered it properly!");
 				stopTask();
 				unregisterEvents();
@@ -184,7 +184,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
-	public static boolean keyValid(String key) {
+	public static boolean keyValid(boolean save, String key) {
 		try {
 			if(key == null) {
 				return false;
@@ -192,7 +192,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(key.length() < 2) {
 				return false;
 			}
-			return sendAPIQuery("minecraft-auth", "key=" + key, "port=" + minecraftport);
+			if(save) {
+				return sendAPIQuery("minecraft-auth", "key=" + key, "port=" + minecraftport, "save=1"); //save
+			} else {
+				return sendAPIQuery("minecraft-auth", "key=" + key, "port=" + minecraftport); //just check info
+			}
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("There was an error synchronizing game data to the enjin server.");
 			t.printStackTrace();
@@ -201,8 +205,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	}
 	
 	public static boolean sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
-		URL url = new URL("http://mxm.enjin.ca/api/" + urls);
-		//URL url = new URL("https://api.enjin.com/api/" + urls);
+		URL url = new URL("https://api.enjin.com/api/" + urls);
 		StringBuilder query = new StringBuilder();
 		try {
 			URLConnection con = url.openConnection();
