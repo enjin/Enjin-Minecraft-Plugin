@@ -3,7 +3,11 @@ package com.enjin.officialplugin;
 import java.io.*;
 import java.net.*;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
@@ -33,6 +37,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	final EMPListener listener = new EMPListener();
 	final PeriodicEnjinTask task = new PeriodicEnjinTask();
+	static final ExecutorService exec = Executors.newCachedThreadPool();
 	static String minecraftport;
 	
 	@Override
@@ -162,26 +167,40 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		return false;
 	}
 	
-	public static void sendAddRank(String world, String group, String player) {
-		try {
-			if(!sendAPIQuery("minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
-				throw new Exception("Received 'false' from the enjin data server!");
+	public static void sendAddRank(final String world, final String group, final String player) {
+		exec.submit(
+			new Runnable() {
+				@Override
+				public void run() {
+					try {
+						if(!sendAPIQuery("minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
+							throw new Exception("Received 'false' from the enjin data server!");
+						}
+					} catch (Throwable t) {
+						Bukkit.getLogger().warning("There was an error synchronizing group " + group + ", for user " + player + ".");
+						t.printStackTrace();
+					}
+				}
 			}
-		} catch (Throwable t) {
-			Bukkit.getLogger().warning("There was an error synchronizing group " + group + ", for user " + player + ".");
-			t.printStackTrace();
-		}
+		);
 	}
 	
-	public static void sendRemoveRank(String world, String group, String player) {
-		try {
-			if(!sendAPIQuery("minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
-				throw new Exception("Received 'false' from the enjin data server!");
+	public static void sendRemoveRank(final String world, final String group, final String player) {
+		exec.submit(
+			new Runnable() {
+				@Override
+				public void run() {
+					try {
+						if(!sendAPIQuery("minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
+							throw new Exception("Received 'false' from the enjin data server!");
+						}
+					} catch (Throwable t) {
+						Bukkit.getLogger().warning("There was an error synchronizing group " + group + ", for user " + player + ".");
+						t.printStackTrace();
+					}
+				}
 			}
-		} catch (Throwable t) {
-			Bukkit.getLogger().warning("There was an error synchronizing group " + group + ", for user " + player + ".");
-			t.printStackTrace();
-		}
+		);
 	}
 	
 	public static boolean keyValid(boolean save, String key) {
@@ -208,7 +227,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		URL url = new URL("https://api.enjin.com/api/" + urls);
 		StringBuilder query = new StringBuilder();
 		try {
-			URLConnection con = url.openConnection();
+			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+			con.setRequestMethod("GET");
 			con.setDoOutput(true);
 			con.setDoInput(true);
 			for(String val : queryValues) {
