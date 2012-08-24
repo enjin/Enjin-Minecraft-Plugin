@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
 
 import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
@@ -39,23 +39,34 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	final PeriodicEnjinTask task = new PeriodicEnjinTask();
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	static String minecraftport;
+	static boolean usingSSL = true;
+	
+	private void debug(String s) {
+		//System.out.println("Enjin Debug: " + s);
+	}
 	
 	@Override
 	public void onEnable() {
 		try {
+			debug("Begin init");
 			initVariables();
+			debug("Init vars done.");
 			initFiles();
+			debug("Init files done.");
 			initPlugins();
+			debug("Init plugins done.");
 			usingGroupManager = (permission instanceof Permission_GroupManager);
+			debug("Checking key valid.");
 			if(keyValid(false, hash)) {
+				debug("Key valid.");
 				startTask();
 				registerEvents();
 			} else {
-				Bukkit.getLogger().warning("The specified key is invalid, please enter the right one with /enjinkey");
+				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Failed to authenticate with enjin! This may mean your key is invalid, or there was an error connecting.");
 			}
 		}
 		catch(Throwable t) {
-			Bukkit.getLogger().warning("Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
 			t.printStackTrace();
 			this.setEnabled(false);
 		}
@@ -79,7 +90,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			minecraftport = serverProperties.getProperty("server-port");
 		} catch (Throwable t) {
 			t.printStackTrace();
-			throw new Exception("Couldn't find a localhost ip! Please report this problem!");
+			throw new Exception("[Enjin Minecraft Plugin] Couldn't find a localhost ip! Please report this problem!");
 		}
 	}
 	
@@ -98,35 +109,44 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	}
 	
 	private void startTask() {
-		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 600L, 600L);
+		debug("Starting task.");
+		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
 	}
 	
 	private void registerEvents() {
+		debug("Registering events.");
 		Bukkit.getPluginManager().registerEvents(listener, this);
 	}
 	
 	private void stopTask() {
+		debug("Stopping task.");
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 	
 	private void unregisterEvents() {
+		debug("Unregistering events.");
 		HandlerList.unregisterAll(listener);
 	}
 	
 	private void initPlugins() throws Throwable {
 		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			throw new Exception("Couldn't find the vault plugin! Please get it from dev.bukkit.org!");
+			throw new Exception("[Enjin Minecraft Plugin] Couldn't find the vault plugin! Please get it from dev.bukkit.org!");
 		}
+		debug("Initializing permissions.");
 		initPermissions();
 	}
 	
 	private void initPermissions() throws Throwable {
 		RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
 		if(provider == null) {
-			Bukkit.getLogger().warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
 			return;
 		}
 		permission = provider.getProvider();
+		if(permission == null) {
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
+			return;
+		}
 	}
 	
 	@Override
@@ -139,6 +159,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(args.length != 1) {
 				return false;
 			}
+			Bukkit.getLogger().info("Checking if key is valid");
 			if(!keyValid(true, args[0])) {
 				sender.sendMessage(ChatColor.RED + "That key is invalid! Make sure you've entered it properly!");
 				stopTask();
@@ -151,6 +172,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			}
 			hash = args[0];
 			try {
+				debug("Writing hash to file.");
 				BufferedWriter writer = new BufferedWriter(new FileWriter(hashFile));
 				writer.write(hash);
 				writer.close();
@@ -173,11 +195,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				@Override
 				public void run() {
 					try {
-						if(!sendAPIQuery("minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
-							throw new Exception("Received 'false' from the enjin data server!");
-						}
+						sendAPIQuery("minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group);
 					} catch (Throwable t) {
-						Bukkit.getLogger().warning("There was an error synchronizing group " + group + ", for user " + player + ".");
+						Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing group " + group + ", for user " + player + ".");
 						t.printStackTrace();
 					}
 				}
@@ -191,11 +211,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				@Override
 				public void run() {
 					try {
-						if(!sendAPIQuery("minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group)) {
-							throw new Exception("Received 'false' from the enjin data server!");
-						}
+						sendAPIQuery("minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group);
 					} catch (Throwable t) {
-						Bukkit.getLogger().warning("There was an error synchronizing group " + group + ", for user " + player + ".");
+						Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing group " + group + ", for user " + player + ".");
 						t.printStackTrace();
 					}
 				}
@@ -217,18 +235,20 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				return sendAPIQuery("minecraft-auth", "key=" + key, "port=" + minecraftport); //just check info
 			}
 		} catch (Throwable t) {
-			Bukkit.getLogger().warning("There was an error synchronizing game data to the enjin server.");
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing game data to the enjin server.");
 			t.printStackTrace();
 			return false;
 		}
 	}
 	
 	public static boolean sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
-		URL url = new URL("https://api.enjin.com/api/" + urls);
+		URL url = new URL((usingSSL ? "https" : "http") + "://api.enjin.com/api/" + urls);
 		StringBuilder query = new StringBuilder();
 		try {
-			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("GET");
+			con.setReadTimeout(3000);
+			con.setConnectTimeout(3000);
 			con.setDoOutput(true);
 			con.setDoInput(true);
 			for(String val : queryValues) {
@@ -244,9 +264,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				return true;
 			}
 			return false;
+		} catch (SSLHandshakeException e) {
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
+			usingSSL = false;
+			return sendAPIQuery(urls, queryValues);
+		} catch (SocketTimeoutException e) {
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
+			return false;
 		} catch (Throwable t) {
 			t.printStackTrace();
-			Bukkit.getLogger().warning("Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
 			return false;
 		}
 	}

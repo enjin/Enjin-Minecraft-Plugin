@@ -2,6 +2,7 @@ package com.enjin.officialplugin;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -19,22 +20,17 @@ import org.bukkit.plugin.Plugin;
  */
 
 public class PeriodicEnjinTask implements Runnable {
-	final URL url = getUrl();
-	
-	private URL getUrl() {
-		try {
-			return new URL("https://api.enjin.com/api/minecraft-sync");
-		} catch (Throwable t) {
-			t.printStackTrace();
-			return null;
-		}
+	private URL getUrl() throws Throwable {
+		return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + "://api.enjin.com/api/minecraft-sync");
 	}
 	
 	@Override
 	public void run() {
 		try {
-			HttpURLConnection con = (HttpURLConnection)url.openConnection();
+			HttpURLConnection con = (HttpURLConnection)getUrl().openConnection();
 			con.setRequestMethod("POST");
+			con.setReadTimeout(3000);
+			con.setConnectTimeout(3000);
 			con.setDoInput(true);
 			con.setDoOutput(true);
 			con.setRequestProperty("User-Agent", "Mozilla/4.0");
@@ -53,6 +49,8 @@ public class PeriodicEnjinTask implements Runnable {
 			con.getOutputStream().write(builder.toString().getBytes());
 			InputStream in = con.getInputStream();
 			handleInput(in);
+		} catch (SocketTimeoutException e) {
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

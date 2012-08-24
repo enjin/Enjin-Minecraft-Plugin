@@ -3,6 +3,8 @@ package com.enjin.officialplugin;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.bukkit.Bukkit;
+
 /**
  * 
  * @author OverCaste (Enjin LTE PTD).
@@ -20,7 +22,12 @@ public class Packet10AddPlayerGroup {
 				String playername = msg[0];
 				String groupname = msg[1];
 				String world = (msg.length == 3) ? msg[2] : null;
-				EnjinMinecraftPlugin.permission.playerAddGroup(world, playername, groupname);
+				if("*".equals(world)) {
+					world = null;
+				}
+				if(!EnjinMinecraftPlugin.permission.playerAddGroup(world, playername, groupname)) {
+					Bukkit.getLogger().warning("Failed to update " + playername + "'s group. Please make sure that you have a valid permission plugin installed, and that your configurations are correct.");
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
