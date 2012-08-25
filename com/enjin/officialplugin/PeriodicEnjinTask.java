@@ -20,6 +20,12 @@ import org.bukkit.plugin.Plugin;
  */
 
 public class PeriodicEnjinTask implements Runnable {
+	
+	EnjinMinecraftPlugin plugin;
+	
+	public PeriodicEnjinTask(EnjinMinecraftPlugin plugin) {
+		this.plugin = plugin;
+	}
 	private URL getUrl() throws Throwable {
 		return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + "://api.enjin.com/api/minecraft-sync");
 	}
@@ -27,6 +33,7 @@ public class PeriodicEnjinTask implements Runnable {
 	@Override
 	public void run() {
 		try {
+			//System.out.println("Connecting to Enjin...");
 			HttpURLConnection con = (HttpURLConnection)getUrl().openConnection();
 			con.setRequestMethod("POST");
 			con.setReadTimeout(3000);
@@ -40,6 +47,7 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.append("&maxplayers=" + encode(String.valueOf(Bukkit.getServer().getMaxPlayers()))); //max players
 			builder.append("&players=" + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))); //current players
 			builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null) ? "FALSE" : "TRUE")));
+			//TODO: Why are we having to grab the plugin from the server when we can just pass it here?
 			builder.append("&pluginversion=" + encode(Bukkit.getPluginManager().getPlugin("Enjin Minecraft Plugin").getDescription().getVersion()));
 			builder.append("&plugins=" + encode(getPlugins()));
 			builder.append("&playerlist=" + encode(getPlayers()));
@@ -47,7 +55,9 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.append("&worlds=" + encode(getWorlds()));
 			con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
 			con.getOutputStream().write(builder.toString().getBytes());
+			//System.out.println("Getting input stream...");
 			InputStream in = con.getInputStream();
+			//System.out.println("Handling input stream...");
 			handleInput(in);
 		} catch (SocketTimeoutException e) {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
@@ -62,6 +72,7 @@ public class PeriodicEnjinTask implements Runnable {
 	}
 	
 	private void handleInput(InputStream in) throws IOException {
+		//TODO: A for loop??? Maybe a while(code = in.read() != -1) {}
 		for(;;) {
 			int code = in.read();
 			switch(code) {
@@ -74,10 +85,11 @@ public class PeriodicEnjinTask implements Runnable {
 				Packet11RemovePlayerGroup.handle(in);
 				break;
 			case 0x12:
-				Packet12ExecuteCommand.handle(in);
+				Packet12ExecuteCommand.handle(in, plugin);
 				break;
 			case 0x13:
-				Packet13ExecuteCommandAsPlayer.handle(in);
+			case 0x0D:
+				Packet13ExecuteCommandAsPlayer.handle(in, plugin);
 				break;
 			default :
 				Bukkit.getLogger().warning("[Enjin] Received an invalid opcode: " + code);

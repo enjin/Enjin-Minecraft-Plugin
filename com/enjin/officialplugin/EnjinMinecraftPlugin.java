@@ -36,12 +36,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	static Permission permission = null;
 	
 	final EMPListener listener = new EMPListener();
-	final PeriodicEnjinTask task = new PeriodicEnjinTask();
+	final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	static String minecraftport;
 	static boolean usingSSL = true;
+	NewKeyVerifier verifier = null;
 	
-	private void debug(String s) {
+	void debug(String s) {
 		//System.out.println("Enjin Debug: " + s);
 	}
 	
@@ -57,12 +58,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Init plugins done.");
 			usingGroupManager = (permission instanceof Permission_GroupManager);
 			debug("Checking key valid.");
-			if(keyValid(false, hash)) {
-				debug("Key valid.");
-				startTask();
-				registerEvents();
-			} else {
-				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Failed to authenticate with enjin! This may mean your key is invalid, or there was an error connecting.");
+			if(verifier == null || verifier.completed) {
+				verifier = new NewKeyVerifier(this, hash, null, true);
+				Thread verifierthread = new Thread(verifier);
+				verifierthread.start();
+			}else {
+				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] A key verification is already running. Did you /reload?");
 			}
 		}
 		catch(Throwable t) {
@@ -75,7 +76,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		stopTask();
-		unregisterEvents();
+		//unregisterEvents();
 	}
 	
 	private void initVariables() throws Throwable {
@@ -108,29 +109,32 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
-	private void startTask() {
+	void startTask() {
 		debug("Starting task.");
+		//TODO: Make this more stable.
 		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
 	}
 	
-	private void registerEvents() {
+	void registerEvents() {
 		debug("Registering events.");
 		Bukkit.getPluginManager().registerEvents(listener, this);
 	}
 	
-	private void stopTask() {
+	void stopTask() {
 		debug("Stopping task.");
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 	
-	private void unregisterEvents() {
+	
+	//TODO: Remove all references to this. Bukkit does this for us.
+	void unregisterEvents() {
 		debug("Unregistering events.");
 		HandlerList.unregisterAll(listener);
 	}
 	
 	private void initPlugins() throws Throwable {
 		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			throw new Exception("[Enjin Minecraft Plugin] Couldn't find the vault plugin! Please get it from dev.bukkit.org!");
+			throw new Exception("[Enjin Minecraft Plugin] Couldn't find the vault plugin! Please get it from dev.bukkit.org/server-mods/vault/!");
 		}
 		debug("Initializing permissions.");
 		initPermissions();
@@ -151,6 +155,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		//TODO: Add permissions support
+		//TODO: Add a way to sync all ranks and perms initially. (Going to need enjin to implement something
+		//on their end.
 		if(command.getName().equals("enjinkey")) {
 			if(!sender.isOp()) {
 				sender.sendMessage(ChatColor.RED + "You need to be an operator to run that command!");
@@ -160,35 +167,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				return false;
 			}
 			Bukkit.getLogger().info("Checking if key is valid");
-			if(!keyValid(true, args[0])) {
-				sender.sendMessage(ChatColor.RED + "That key is invalid! Make sure you've entered it properly!");
-				stopTask();
-				unregisterEvents();
-				return true;
+			//Make sure we don't have several verifier threads going at the same time.
+			if(verifier == null || verifier.completed) {
+				verifier = new NewKeyVerifier(this, args[0], sender, false);
+				Thread verifierthread = new Thread(verifier);
+				verifierthread.start();
+			}else {
+				sender.sendMessage(ChatColor.RED + "Please wait until we verify the key before you try again!");
 			}
-			if(args[0].equals(hash)) {
-				sender.sendMessage(ChatColor.YELLOW + "The speficied key and the existing one are the same!");
-				return true;
-			}
-			hash = args[0];
-			try {
-				debug("Writing hash to file.");
-				BufferedWriter writer = new BufferedWriter(new FileWriter(hashFile));
-				writer.write(hash);
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			sender.sendMessage(ChatColor.GREEN + "Set the enjin key to " + hash);
-			stopTask();
-			unregisterEvents();
-			startTask();
-			registerEvents();
 			return true;
 		}
 		return false;
 	}
 	
+	
+	//TODO: centralize the APIQuery tasks into one class file and take out all inline tasks.
 	public static void sendAddRank(final String world, final String group, final String player) {
 		exec.submit(
 			new Runnable() {
@@ -276,5 +269,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
 			return false;
 		}
+	}
+	
+	public static synchronized void setHash(String hash) {
+		EnjinMinecraftPlugin.hash = hash;
+	}
+	
+	public static synchronized String getHash() {
+		return EnjinMinecraftPlugin.hash;
 	}
 }

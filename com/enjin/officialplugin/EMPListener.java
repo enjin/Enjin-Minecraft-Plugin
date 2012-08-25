@@ -25,6 +25,7 @@ public class EMPListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		initialRankMap.put(p, EnjinMinecraftPlugin.permission.getPlayerGroups(p));
+		//TODO: Send ranks to Ejin.
 	}
 	
 	@EventHandler
