@@ -309,27 +309,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		);
 	}
 	
-	public static boolean keyValid(boolean save, String key) {
-		try {
-			if(key == null) {
-				return false;
-			}
-			if(key.length() < 2) {
-				return false;
-			}
-			if(save) {
-				return sendAPIQuery("minecraft-auth", "key=" + key, "port=" + minecraftport, "save=1"); //save
-			} else {
-				return sendAPIQuery("minecraft-auth", "key=" + key, "port=" + minecraftport); //just check info
-			}
-		} catch (Throwable t) {
-			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing game data to the enjin server.");
-			t.printStackTrace();
-			return false;
-		}
-	}
-	
-	public static boolean sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
+	/**
+	 * 
+	 * @param urls
+	 * @param queryValues
+	 * @return 0 = Invalid key, 1 = OK, 2 = Exception encountered.
+	 * @throws MalformedURLException
+	 */
+	public static int sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
 		URL url = new URL((usingSSL ? "https" : "http") + "://api.enjin.com/api/" + urls);
 		StringBuilder query = new StringBuilder();
 		try {
@@ -349,20 +336,20 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			con.setRequestProperty("Content-length", String.valueOf(query.length()));
 			con.getOutputStream().write(query.toString().getBytes());
 			if(con.getInputStream().read() == '1') {
-				return true;
+				return 1;
 			}
-			return false;
+			return 0;
 		} catch (SSLHandshakeException e) {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
 			usingSSL = false;
 			return sendAPIQuery(urls, queryValues);
 		} catch (SocketTimeoutException e) {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-			return false;
+			return 2;
 		} catch (Throwable t) {
 			t.printStackTrace();
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
-			return false;
+			return 2;
 		}
 	}
 	
