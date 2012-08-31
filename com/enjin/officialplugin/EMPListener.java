@@ -1,9 +1,5 @@
 package com.enjin.officialplugin;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,7 +17,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class EMPListener implements Listener {
 	
 	EnjinMinecraftPlugin plugin;
-	Map<Player, String[]> initialRankMap = new HashMap<Player, String[]>();
+	//Map<Player, String[]> initialRankMap = new HashMap<Player, String[]>();
 	
 	public EMPListener(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
@@ -30,7 +26,7 @@ public class EMPListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		initialRankMap.put(p, EnjinMinecraftPlugin.permission.getPlayerGroups(p));
+		//initialRankMap.put(p, EnjinMinecraftPlugin.permission.getPlayerGroups(p));
 		plugin.playerperms.put(new PlayerPerms(p.getName(), p.getWorld().getName()), EnjinMinecraftPlugin.permission.getPlayerGroups(p));
 		if(p.isOp() && !plugin.newversion.equals("")) {
 			p.sendMessage("Enjin Minecraft plugin was updated to version " + plugin.newversion + ". Please restart your server.");
@@ -40,6 +36,8 @@ public class EMPListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
+		plugin.playerperms.put(new PlayerPerms(p.getName(), p.getWorld().getName()), EnjinMinecraftPlugin.permission.getPlayerGroups(p));
+		/*
 		String[] initialRankArray = initialRankMap.get(p);
 		if(initialRankArray == null || initialRankArray.length == 0) { //no initial ranks
 			String[] currentRankArray = EnjinMinecraftPlugin.permission.getPlayerGroups(p);
@@ -78,9 +76,12 @@ public class EMPListener implements Listener {
 			}
 		}
 		initialRankMap.remove(p);
+		*/
 	}
 	
 	public void updatePlayerRanks(Player p) {
+		plugin.playerperms.put(new PlayerPerms(p.getName(), p.getWorld().getName()), EnjinMinecraftPlugin.permission.getPlayerGroups(p));
+		/*
 		String[] initialRankArray = initialRankMap.get(p);
 		if(initialRankArray == null || initialRankArray.length == 0) { //no initial ranks
 			String[] currentRankArray = EnjinMinecraftPlugin.permission.getPlayerGroups(p);
@@ -119,5 +120,6 @@ public class EMPListener implements Listener {
 			}
 		}
 		initialRankMap.put(p, EnjinMinecraftPlugin.permission.getPlayerGroups(p));
+		*/
 	}
 }

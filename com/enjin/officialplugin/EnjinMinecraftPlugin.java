@@ -2,6 +2,9 @@ package com.enjin.officialplugin;
 
 import java.io.*;
 import java.net.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -13,6 +16,7 @@ import javax.net.ssl.SSLHandshakeException;
 import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -21,6 +25,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import de.bananaco.bpermissions.imp.Permissions;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -43,6 +49,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	static Permission permission = null;
 	boolean debug = false;
 	PermissionsEx permissionsex;
+	GroupManager groupmanager;
+	Permissions bpermissions;
+	
 	boolean autoupdate = true;
 	String newversion = "";
 	
@@ -209,6 +218,61 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				sender.sendMessage(ChatColor.RED + "Please wait until we verify the key before you try again!");
 			}
 			return true;
+		}if (command.getName().equalsIgnoreCase("enjin")) {
+			if(args.length > 0) {
+				if(args[0].equalsIgnoreCase("report")) {
+					if(!sender.hasPermission("enjin.report")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.report\" permission or OP to run that command!");
+						return true;
+					}
+					sender.sendMessage(ChatColor.GREEN + "Please wait as we generate the report");
+					DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+					Date date = new Date();
+					StringBuilder report = new StringBuilder();
+					report.append("Enjin Debug Report generated on " + dateFormat.format(date) + "\n");
+					report.append("Enjin plugin version: " + getDescription().getVersion() + "\n");
+					String permsmanager = "Generic";
+					String permsversion = "Unknown";
+					if(permissionsex != null) {
+						permsmanager = "PermissionsEx";
+						permsversion = permissionsex.getDescription().getVersion();
+					}else if(bpermissions != null) {
+						permsmanager = "bPermissions";
+						permsversion = bpermissions.getDescription().getVersion();
+					}else if(groupmanager != null) {
+						permsmanager = "GroupManager";
+						permsversion = groupmanager.getDescription().getVersion();
+					}
+					report.append("Permissions plugin used: " + permsmanager + " version " + permsversion + "\n");
+					report.append("Bukkit version: " + getServer().getVersion() + "\n");
+					report.append("Java version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n");
+					report.append("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") + "\n");
+					report.append("Plugins: \n");
+					for(Plugin p : Bukkit.getPluginManager().getPlugins()) {
+						report.append(p.getName() + " version " + p.getDescription().getVersion() + "\n");
+					}
+					report.append("Worlds: \n");
+					for(World world : getServer().getWorlds()) {
+						report.append(world.getName() + "\n");
+					}
+					ReportMakerThread rmthread = new ReportMakerThread(this, report, sender);
+					Thread dispatchThread = new Thread(rmthread);
+		            dispatchThread.start();
+		            return true;
+				}else if(args[0].equalsIgnoreCase("debug")) {
+					if(!sender.hasPermission("enjin.debug")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.debug\" permission or OP to run that command!");
+						return true;
+					}
+					if(debug) {
+						debug = false;
+					}else {
+						debug = true;
+					}
+					sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + debug);
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -320,18 +384,20 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         }
         Plugin bperm = this.getServer().getPluginManager().getPlugin("bPermissions");
         if(bperm != null) {
+        	bpermissions = (Permissions)bperm;
             debug("bPermissions found, hooking custom events.");
         	Bukkit.getPluginManager().registerEvents(new bPermsChangeListener(this), this);
         	return;
         }
         Plugin groupmanager = this.getServer().getPluginManager().getPlugin("GroupManager");
         if(groupmanager != null) {
+        	this.groupmanager = (GroupManager)groupmanager;
             debug("GroupManager found, hooking custom events.");
         	Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
         	return;
         }
         debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
-        debug("You might want to switch to PermissionsEx, bPermissions.");
+        debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
         
 	}
 }

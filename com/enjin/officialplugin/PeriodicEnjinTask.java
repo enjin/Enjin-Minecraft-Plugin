@@ -67,7 +67,10 @@ public class PeriodicEnjinTask implements Runnable {
 		} catch (SocketTimeoutException e) {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 		} catch (Throwable t) {
-			t.printStackTrace();
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
+			if(plugin.debug) {
+				t.printStackTrace();
+			}
 		}
 	}
 	
