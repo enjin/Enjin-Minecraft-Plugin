@@ -3,6 +3,7 @@ package com.enjin.officialplugin;
 import java.io.*;
 import java.net.*;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -15,9 +16,13 @@ import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 /**
  * 
@@ -28,22 +33,34 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 
 public class EnjinMinecraftPlugin extends JavaPlugin {
+	
+	public FileConfiguration config;
 	public static boolean usingGroupManager = false;
 	File hashFile;
 	static String hash = "";
 	Server s;
 	Logger logger;
 	static Permission permission = null;
+	boolean debug = false;
+	PermissionsEx permissionsex;
+	boolean autoupdate = true;
+	String newversion = "";
 	
-	final EMPListener listener = new EMPListener();
+	boolean hasupdate = false;
+	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/EnjinMinecraftPlugin.jar";
+	
+	final EMPListener listener = new EMPListener(this);
 	final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	static String minecraftport;
 	static boolean usingSSL = true;
 	NewKeyVerifier verifier = null;
+	ConcurrentHashMap<PlayerPerms, String[]> playerperms = new ConcurrentHashMap<PlayerPerms, String[]>();
 	
 	void debug(String s) {
-		//System.out.println("Enjin Debug: " + s);
+		if(debug) {
+			System.out.println("Enjin Debug: " + s);
+		}
 	}
 	
 	@Override
@@ -56,6 +73,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Init files done.");
 			initPlugins();
 			debug("Init plugins done.");
+			setupPermissions();
+			debug("Setup permissions integration");
 			usingGroupManager = (permission instanceof Permission_GroupManager);
 			debug("Checking key valid.");
 			if(verifier == null || verifier.completed) {
@@ -95,23 +114,42 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
-	private void initFiles() throws Throwable {
-		File parent;
-		parent = hashFile.getParentFile();
-		if(parent != null) {
-			parent.mkdirs();
+	private void initFiles() {
+		//let's read in the old hash file if there is one and convert it to the new format.
+		if(hashFile.exists()) {
+			try {
+				BufferedReader r = new BufferedReader(new FileReader(hashFile));
+				hash = r.readLine();
+				r.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			//Remove it, we won't ever need it again.
+			hashFile.delete();
 		}
-		if(!hashFile.exists()) {
-			hashFile.createNewFile();
-		} else {
-			BufferedReader r = new BufferedReader(new FileReader(hashFile));
-			hash = r.readLine();
-		}
+		config = getConfig();
+		File configfile = new File(getDataFolder().toString() + "/config.yml");
+    	if(!configfile.exists()) {
+    		createConfig();
+    	}
+    	debug = config.getBoolean("debug", false);
+    	hash = config.getString("authkey", "");
+    	usingSSL = config.getBoolean("https", true);
+    	autoupdate = config.getBoolean("autoupdate", true);
 	}
 	
+	private void createConfig() {
+		config.set("debug", false);
+		config.set("authkey", hash);
+		config.set("https", true);
+		config.set("autoupdate", true);
+		saveConfig();
+	}
+
 	void startTask() {
 		debug("Starting task.");
-		//TODO: Make this more stable.
 		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
 	}
 	
@@ -125,8 +163,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 	
-	
-	//TODO: Remove all references to this. Bukkit does this for us.
 	void unregisterEvents() {
 		debug("Unregistering events.");
 		HandlerList.unregisterAll(listener);
@@ -155,12 +191,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		//TODO: Add permissions support
-		//TODO: Add a way to sync all ranks and perms initially. (Going to need enjin to implement something
-		//on their end.
 		if(command.getName().equals("enjinkey")) {
-			if(!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to run that command!");
+			if(!sender.hasPermission("enjin.setkey")) {
+				sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.setkey\" permission or OP to run that command!");
 				return true;
 			}
 			if(args.length != 1) {
@@ -180,8 +213,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		return false;
 	}
 	
-	
-	//TODO: centralize the APIQuery tasks into one class file and take out all inline tasks.
 	public static void sendAddRank(final String world, final String group, final String player) {
 		exec.submit(
 			new Runnable() {
@@ -277,5 +308,30 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public static synchronized String getHash() {
 		return EnjinMinecraftPlugin.hash;
+	}
+	
+	private void setupPermissions() {
+    	Plugin pex = this.getServer().getPluginManager().getPlugin("PermissionsEx");
+        if (pex != null) {
+            permissionsex = (PermissionsEx)pex;
+            debug("PermissionsEx found, hooking custom events.");
+            Bukkit.getPluginManager().registerEvents(new PexChangeListener(this), this);
+            return;
+        }
+        Plugin bperm = this.getServer().getPluginManager().getPlugin("bPermissions");
+        if(bperm != null) {
+            debug("bPermissions found, hooking custom events.");
+        	Bukkit.getPluginManager().registerEvents(new bPermsChangeListener(this), this);
+        	return;
+        }
+        Plugin groupmanager = this.getServer().getPluginManager().getPlugin("GroupManager");
+        if(groupmanager != null) {
+            debug("GroupManager found, hooking custom events.");
+        	Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
+        	return;
+        }
+        debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
+        debug("You might want to switch to PermissionsEx, bPermissions.");
+        
 	}
 }

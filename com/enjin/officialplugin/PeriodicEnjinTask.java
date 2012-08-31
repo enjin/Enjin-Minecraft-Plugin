@@ -5,6 +5,9 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -33,7 +36,7 @@ public class PeriodicEnjinTask implements Runnable {
 	@Override
 	public void run() {
 		try {
-			//System.out.println("Connecting to Enjin...");
+			plugin.debug("Connecting to Enjin...");
 			HttpURLConnection con = (HttpURLConnection)getUrl().openConnection();
 			con.setRequestMethod("POST");
 			con.setReadTimeout(3000);
@@ -47,12 +50,14 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.append("&maxplayers=" + encode(String.valueOf(Bukkit.getServer().getMaxPlayers()))); //max players
 			builder.append("&players=" + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))); //current players
 			builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null) ? "FALSE" : "TRUE")));
-			//TODO: Why are we having to grab the plugin from the server when we can just pass it here?
-			builder.append("&pluginversion=" + encode(Bukkit.getPluginManager().getPlugin("Enjin Minecraft Plugin").getDescription().getVersion()));
+			builder.append("&pluginversion=" + encode(plugin.getDescription().getVersion()));
 			builder.append("&plugins=" + encode(getPlugins()));
 			builder.append("&playerlist=" + encode(getPlayers()));
 			builder.append("&groups=" + encode(getGroups()));
 			builder.append("&worlds=" + encode(getWorlds()));
+			if(plugin.playerperms.size() > 0) {
+				builder.append("&playergroups=" + encode(getPlayerGroups()));
+			}
 			con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
 			con.getOutputStream().write(builder.toString().getBytes());
 			//System.out.println("Getting input stream...");
@@ -66,6 +71,45 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 	}
 	
+	private String getPlayerGroups() {
+		HashMap<String, String> theperms = new HashMap<String, String>();
+		Set<Entry<PlayerPerms, String[]>> es = plugin.playerperms.entrySet();
+		for(Entry<PlayerPerms, String[]> entry : es) {
+			StringBuilder perms = new StringBuilder();
+			if(theperms.containsKey(entry.getKey().getPlayerName())) {
+				perms.append(theperms.get(entry.getKey().getPlayerName()));
+			}
+			String[] tempperms = entry.getValue();
+			if(perms.length() > 0 && tempperms.length > 0) {
+				perms.append("|");
+			}
+			if(tempperms.length > 0) {
+				perms.append(entry.getKey().getWorldName() + ":");
+				for(int i = 0, j = 0; i < tempperms.length; i++) {
+					if(EnjinMinecraftPlugin.usingGroupManager && tempperms[i].startsWith("g:")) {
+						continue;
+					}
+					if(j > 0) {
+						perms.append(",");
+					}
+					perms.append(tempperms[i]);
+					j++;
+				}
+			}
+			theperms.put(entry.getKey().getPlayerName(), perms.toString());
+			//remove that player from the list.
+			plugin.playerperms.remove(entry.getKey());
+		}
+		StringBuilder allperms = new StringBuilder();
+		Set<Entry<String, String>> ns = theperms.entrySet();
+		for(Entry<String, String> entry : ns) {
+			if(allperms.length() > 0) {
+				allperms.append("\n");
+			}
+			allperms.append(entry.getKey() + ";" + entry.getValue());
+		}
+		return allperms.toString();
+	}
 	private String encode(String in) throws UnsupportedEncodingException {
 		return URLEncoder.encode(in, "UTF-8");
 		//return in;
@@ -90,6 +134,9 @@ public class PeriodicEnjinTask implements Runnable {
 			case 0x13:
 			case 0x0D:
 				Packet13ExecuteCommandAsPlayer.handle(in, plugin);
+				break;
+			case 0x14:
+				Packet14NewerVersion.handle(in, plugin);
 				break;
 			default :
 				Bukkit.getLogger().warning("[Enjin] Received an invalid opcode: " + code);

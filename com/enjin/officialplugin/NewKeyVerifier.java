@@ -1,9 +1,5 @@
 package com.enjin.officialplugin;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +10,7 @@ public class NewKeyVerifier implements Runnable {
 	EnjinMinecraftPlugin plugin;
 	String key;
 	CommandSender sender;
-	Player player;
+	Player player = null;
 	public boolean completed = false;
 	public boolean pluginboot = true;
 	
@@ -25,6 +21,7 @@ public class NewKeyVerifier implements Runnable {
 		if(sender instanceof Player) {
 			player = (Player)sender;
 		}
+		this.pluginboot = pluginboot;
 	}
 
 	@Override
@@ -37,6 +34,7 @@ public class NewKeyVerifier implements Runnable {
 			} else {
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Failed to authenticate with enjin! This may mean your key is invalid, or there was an error connecting.");
 			}
+			completed = true;
 		}else {
 			if(key.equals(EnjinMinecraftPlugin.getHash())) {
 				if(player == null || player.isOnline()) {
@@ -55,14 +53,9 @@ public class NewKeyVerifier implements Runnable {
 				return;
 			}
 			EnjinMinecraftPlugin.setHash(key);
-			try {
-				plugin.debug("Writing hash to file.");
-				BufferedWriter writer = new BufferedWriter(new FileWriter(plugin.hashFile));
-				writer.write(key);
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			plugin.debug("Writing hash to file.");
+			plugin.config.set("authkey", key);
+			plugin.saveConfig();
 			if(player == null || player.isOnline()) {
 				sender.sendMessage(ChatColor.GREEN + "Set the enjin key to " + key);
 			}
@@ -72,6 +65,7 @@ public class NewKeyVerifier implements Runnable {
 			plugin.registerEvents();
 			completed = true;
 		}
+		completed = true;
 	}
 
 	private boolean keyValid(boolean save, String key) {

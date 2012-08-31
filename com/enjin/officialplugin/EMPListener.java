@@ -19,13 +19,22 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 
 public class EMPListener implements Listener {
+	
+	EnjinMinecraftPlugin plugin;
 	Map<Player, String[]> initialRankMap = new HashMap<Player, String[]>();
+	
+	public EMPListener(EnjinMinecraftPlugin plugin) {
+		this.plugin = plugin;
+	}
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		initialRankMap.put(p, EnjinMinecraftPlugin.permission.getPlayerGroups(p));
-		//TODO: Send ranks to Ejin.
+		plugin.playerperms.put(new PlayerPerms(p.getName(), p.getWorld().getName()), EnjinMinecraftPlugin.permission.getPlayerGroups(p));
+		if(p.isOp() && !plugin.newversion.equals("")) {
+			p.sendMessage("Enjin Minecraft plugin was updated to version " + plugin.newversion + ". Please restart your server.");
+		}
 	}
 	
 	@EventHandler
@@ -34,20 +43,13 @@ public class EMPListener implements Listener {
 		String[] initialRankArray = initialRankMap.get(p);
 		if(initialRankArray == null || initialRankArray.length == 0) { //no initial ranks
 			String[] currentRankArray = EnjinMinecraftPlugin.permission.getPlayerGroups(p);
-			if(EnjinMinecraftPlugin.usingGroupManager) {
-				if(currentRankArray != null) { //no initial ranks, some ranks
-					for(String rank : currentRankArray) {
-						if(rank.startsWith("g:")) continue;
-						EnjinMinecraftPlugin.sendAddRank(p.getWorld().getName(), rank, p.getName());
-					}
-				}
-			} else {
-				if(currentRankArray != null) { //no initial ranks, some ranks
-					for(String rank : currentRankArray) {
-						EnjinMinecraftPlugin.sendAddRank(p.getWorld().getName(), rank, p.getName());
-					}
+			if(currentRankArray != null) { //no initial ranks, some ranks
+				for(String rank : currentRankArray) {
+					if(EnjinMinecraftPlugin.usingGroupManager && rank.startsWith("g:")) continue;
+					EnjinMinecraftPlugin.sendAddRank(p.getWorld().getName(), rank, p.getName());
 				}
 			}
+		
 		} else {
 			String[] currentRankArray = EnjinMinecraftPlugin.permission.getPlayerGroups(p);
 			if(currentRankArray == null || currentRankArray.length == 0) { //no current ranks
@@ -60,21 +62,12 @@ public class EMPListener implements Listener {
 					initialRanks.add(s);
 				}
 				HashSet<String> currentRanks = new HashSet<String>(currentRankArray.length/2);
-				if(EnjinMinecraftPlugin.usingGroupManager) {
-					for(String s : currentRankArray) {
-						if(s.startsWith("g:")) continue;
-						if(!initialRanks.contains(s)) {
-							EnjinMinecraftPlugin.sendAddRank(p.getWorld().getName(), s, p.getName());
-						}
-						currentRanks.add(s);
+				for(String s : currentRankArray) {
+					if(EnjinMinecraftPlugin.usingGroupManager && s.startsWith("g:")) continue;
+					if(!initialRanks.contains(s)) {
+						EnjinMinecraftPlugin.sendAddRank(p.getWorld().getName(), s, p.getName());
 					}
-				} else {
-					for(String s : currentRankArray) {
-						if(!initialRanks.contains(s)) {
-							EnjinMinecraftPlugin.sendAddRank(p.getWorld().getName(), s, p.getName());
-						}
-						currentRanks.add(s);
-					}
+					currentRanks.add(s);
 				}
 				for(String s : initialRankArray) {
 					if(!currentRanks.contains(s)) {
@@ -85,5 +78,46 @@ public class EMPListener implements Listener {
 			}
 		}
 		initialRankMap.remove(p);
+	}
+	
+	public void updatePlayerRanks(Player p) {
+		String[] initialRankArray = initialRankMap.get(p);
+		if(initialRankArray == null || initialRankArray.length == 0) { //no initial ranks
+			String[] currentRankArray = EnjinMinecraftPlugin.permission.getPlayerGroups(p);
+			if(currentRankArray != null) { //no initial ranks, some ranks
+				for(String rank : currentRankArray) {
+					if(EnjinMinecraftPlugin.usingGroupManager && rank.startsWith("g:")) continue;
+					EnjinMinecraftPlugin.sendAddRank(p.getWorld().getName(), rank, p.getName());
+				}
+			}
+		
+		} else {
+			String[] currentRankArray = EnjinMinecraftPlugin.permission.getPlayerGroups(p);
+			if(currentRankArray == null || currentRankArray.length == 0) { //no current ranks
+				for(String rank : initialRankArray) {
+					EnjinMinecraftPlugin.sendRemoveRank(p.getWorld().getName(), rank, p.getName());
+				}
+			} else {
+				HashSet<String> initialRanks = new HashSet<String>(initialRankArray.length/2);
+				for(String s : initialRankArray) {
+					initialRanks.add(s);
+				}
+				HashSet<String> currentRanks = new HashSet<String>(currentRankArray.length/2);
+				for(String s : currentRankArray) {
+					if(EnjinMinecraftPlugin.usingGroupManager && s.startsWith("g:")) continue;
+					if(!initialRanks.contains(s)) {
+						EnjinMinecraftPlugin.sendAddRank(p.getWorld().getName(), s, p.getName());
+					}
+					currentRanks.add(s);
+				}
+				for(String s : initialRankArray) {
+					if(!currentRanks.contains(s)) {
+						EnjinMinecraftPlugin.sendRemoveRank(p.getWorld().getName(), s, p.getName());
+					}
+				}
+				
+			}
+		}
+		initialRankMap.put(p, EnjinMinecraftPlugin.permission.getPlayerGroups(p));
 	}
 }
