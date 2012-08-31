@@ -37,7 +37,7 @@ public class ReportMakerThread implements Runnable {
 
 	@Override
 	public synchronized void run() {
-		builder.append("Last Severe error message: \n");
+		builder.append("\nLast Severe error message: \n");
 		File serverloglocation = plugin.getDataFolder().getAbsoluteFile().getParentFile().getParentFile();
 		try {
 			ReverseFileReader rfr = new ReverseFileReader(serverloglocation.getAbsolutePath() + File.separator + "server.log");
@@ -62,9 +62,9 @@ public class ReportMakerThread implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		builder.append("Enjin HTTPS test: " + (testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
+		builder.append("\n=========================================\nEnjin HTTPS test: " + (testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
 		builder.append("Enjin HTTP test: " + (testHTTPconnection() ? "passed" : "FAILED!") + "\n");
-		builder.append("Enjin web connectivity test: " + (testWebConnection() ? "passed" : "FAILED!") + "\n");
+		builder.append("Enjin web connectivity test: " + (testWebConnection() ? "passed" : "FAILED!") + "\n=========================================\n");
 		File bukkityml = new File(serverloglocation + File.separator + "bukkit.yml");
         YamlConfiguration ymlbukkit = new YamlConfiguration();
         if (bukkityml.exists()){
@@ -93,7 +93,7 @@ public class ReportMakerThread implements Runnable {
                 		if(timingsfile.exists()) {
                 			plugin.debug("Found timings file at: " + timingsfile.getAbsolutePath());
                 			foundtimings = true;
-                			builder.append("Timings file output:\n");
+                			builder.append("\nTimings file output:\n");
                 			FileInputStream fstream = new FileInputStream(timingsfile);
                 			DataInputStream in = new DataInputStream(fstream);
                 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -105,7 +105,7 @@ public class ReportMakerThread implements Runnable {
                 		}
                 	}
                 }else {
-                	builder.append("Timings file output not enabled!\n");
+                	builder.append("\nTimings file output not enabled!\n");
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -134,7 +134,7 @@ public class ReportMakerThread implements Runnable {
 	
 	private boolean testHTTPSconnection() {
 		try {
-			URL url = new URL("https://api.enjin.com/test.html");
+			URL url = new URL("https://api.enjin.com/ok.html");
 			URLConnection con = url.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine = in.readLine();
@@ -163,7 +163,7 @@ public class ReportMakerThread implements Runnable {
 	
 	private boolean testHTTPconnection() {
 		try {
-			URL url = new URL("http://api.enjin.com/test.html");
+			URL url = new URL("http://api.enjin.com/ok.html");
 			URLConnection con = url.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine = in.readLine();

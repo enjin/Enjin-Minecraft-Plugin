@@ -246,12 +246,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					report.append("Permissions plugin used: " + permsmanager + " version " + permsversion + "\n");
 					report.append("Bukkit version: " + getServer().getVersion() + "\n");
 					report.append("Java version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n");
-					report.append("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") + "\n");
+					report.append("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") + "\n\n");
 					report.append("Plugins: \n");
 					for(Plugin p : Bukkit.getPluginManager().getPlugins()) {
 						report.append(p.getName() + " version " + p.getDescription().getVersion() + "\n");
 					}
-					report.append("Worlds: \n");
+					report.append("\nWorlds: \n");
 					for(World world : getServer().getWorlds()) {
 						report.append(world.getName() + "\n");
 					}
