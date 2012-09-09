@@ -1,4 +1,4 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.permlisteners;
 
 import org.anjocaido.groupmanager.events.GMUserEvent;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
 public class GroupManagerListener implements Listener {
 	

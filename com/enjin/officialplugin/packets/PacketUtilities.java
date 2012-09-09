@@ -1,4 +1,4 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.packets;
 
 import java.io.IOException;
 import java.io.InputStream;

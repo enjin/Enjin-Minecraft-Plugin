@@ -1,6 +1,8 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.threaded;
 
 import org.bukkit.entity.Player;
+
+import com.enjin.officialplugin.EMPListener;
 
 public class DelayedPlayerPermsUpdate implements Runnable {
 	

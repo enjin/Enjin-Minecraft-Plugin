@@ -1,18 +1,28 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.threaded;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.officialplugin.packets.Packet10AddPlayerGroup;
+import com.enjin.officialplugin.packets.Packet11RemovePlayerGroup;
+import com.enjin.officialplugin.packets.Packet12ExecuteCommand;
+import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
+import com.enjin.officialplugin.packets.Packet14NewerVersion;
 
 /**
  * 
@@ -25,6 +35,8 @@ import org.bukkit.plugin.Plugin;
 public class PeriodicEnjinTask implements Runnable {
 	
 	EnjinMinecraftPlugin plugin;
+	ConcurrentHashMap<String, String> removedplayerperms = new ConcurrentHashMap<String, String>();
+	int numoffailedtries = 0;
 	
 	public PeriodicEnjinTask(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
@@ -35,9 +47,18 @@ public class PeriodicEnjinTask implements Runnable {
 	
 	@Override
 	public void run() {
+		boolean successful = false;
 		try {
 			plugin.debug("Connecting to Enjin...");
-			HttpURLConnection con = (HttpURLConnection)getUrl().openConnection();
+			URL enjinurl = getUrl();
+			HttpURLConnection con;
+			// Mineshafter creates a socks proxy, so we can safely bypass it
+	        // It does not reroute POST requests so we need to go around it
+	        if (isMineshafterPresent()) {
+	            con = (HttpURLConnection) enjinurl.openConnection(Proxy.NO_PROXY);
+	        } else {
+	            con = (HttpURLConnection) enjinurl.openConnection();
+	        }
 			con.setRequestMethod("POST");
 			con.setReadTimeout(3000);
 			con.setConnectTimeout(3000);
@@ -59,35 +80,63 @@ public class PeriodicEnjinTask implements Runnable {
 				builder.append("&playergroups=" + encode(getPlayerGroups()));
 			}
 			con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
+			plugin.debug("Sending content: \n" + builder.toString());
 			con.getOutputStream().write(builder.toString().getBytes());
 			//System.out.println("Getting input stream...");
 			InputStream in = con.getInputStream();
 			//System.out.println("Handling input stream...");
 			handleInput(in);
+			successful = true;
 		} catch (SocketTimeoutException e) {
-			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
+			//We don't need to spam the console every minute if the synch didn't complete correctly.
+			if(numoffailedtries++ > 5) {
+				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
+				numoffailedtries = 0;
+			}
 		} catch (Throwable t) {
-			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
+			//We don't need to spam the console every minute if the synch didn't complete correctly.
+			if(numoffailedtries++ > 5) {
+				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
+				numoffailedtries = 0;
+			}
 			if(plugin.debug) {
 				t.printStackTrace();
 			}
 		}
+		if(!successful) {
+			plugin.debug("Synch unsuccessful.");
+			Set<Entry<String, String>> es = removedplayerperms.entrySet();
+			for(Entry<String, String> entry : es) {
+				//If the plugin has put a new set of player perms in for this player,
+				//let's not overwrite it.
+				if(!plugin.playerperms.containsKey(entry.getKey())) {
+					plugin.playerperms.put(entry.getKey(), entry.getValue());
+				}
+				removedplayerperms.remove(entry.getKey());
+			}
+		}else {
+			plugin.debug("Synch successful.");
+		}
 	}
 	
 	private String getPlayerGroups() {
+		removedplayerperms.clear();
 		HashMap<String, String> theperms = new HashMap<String, String>();
-		Set<Entry<PlayerPerms, String[]>> es = plugin.playerperms.entrySet();
-		for(Entry<PlayerPerms, String[]> entry : es) {
+		Set<Entry<String, String>> es = plugin.playerperms.entrySet();
+		for(Entry<String, String> entry : es) {
 			StringBuilder perms = new StringBuilder();
+			/*
 			if(theperms.containsKey(entry.getKey().getPlayerName())) {
 				perms.append(theperms.get(entry.getKey().getPlayerName()));
-			}
-			String[] tempperms = entry.getValue();
+			}*/
+			//Let's get global groups
+			String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
 			if(perms.length() > 0 && tempperms.length > 0) {
 				perms.append("|");
 			}
+			LinkedList<String> globalperms = new LinkedList<String>();
 			if(tempperms.length > 0) {
-				perms.append(entry.getKey().getWorldName() + ":");
+				perms.append('*' + ":");
 				for(int i = 0, j = 0; i < tempperms.length; i++) {
 					if(EnjinMinecraftPlugin.usingGroupManager && tempperms[i].startsWith("g:")) {
 						continue;
@@ -95,13 +144,41 @@ public class PeriodicEnjinTask implements Runnable {
 					if(j > 0) {
 						perms.append(",");
 					}
+					globalperms.add(tempperms[i]);
 					perms.append(tempperms[i]);
 					j++;
 				}
 			}
-			theperms.put(entry.getKey().getPlayerName(), perms.toString());
+			//Now let's get groups per world.
+			for(World w: Bukkit.getWorlds()) {
+				tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
+				if(tempperms.length > 0) {
+					LinkedList<String> worldperms = new LinkedList<String>();
+					for(int i = 0; i < tempperms.length; i++) {
+						if(globalperms.contains(tempperms[i]) || (EnjinMinecraftPlugin.usingGroupManager && tempperms[i].startsWith("g:"))) {
+							continue;
+						}
+						worldperms.add(tempperms[i]);
+					}
+					if(perms.length() > 0 && worldperms.size() > 0) {
+						perms.append("|");
+					}
+					if(worldperms.size() > 0) {
+						perms.append(w.getName() + ":");
+						for(int i = 0; i < worldperms.size(); i++) {
+							if(i > 0) {
+								perms.append(",");
+							}
+							perms.append(worldperms.get(i));
+						}
+					}
+				}
+			}
+			theperms.put(entry.getKey(), perms.toString());
 			//remove that player from the list.
 			plugin.playerperms.remove(entry.getKey());
+			//If the synch fails we need to put the values back...
+			removedplayerperms.put(entry.getKey(), entry.getValue());
 		}
 		StringBuilder allperms = new StringBuilder();
 		Set<Entry<String, String>> ns = theperms.entrySet();
@@ -126,7 +203,7 @@ public class PeriodicEnjinTask implements Runnable {
 			case -1:
 				return; //end of stream reached
 			case 0x10:
-				Packet10AddPlayerGroup.handle(in);
+				Packet10AddPlayerGroup.handle(in, plugin);
 				break;
 			case 0x11:
 				Packet11RemovePlayerGroup.handle(in);
@@ -203,5 +280,18 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.deleteCharAt(0);
 		}
 		return builder.toString();
+	}
+	/**
+	 * Check if mineshafter is present. If it is, we need to bypass it to send POST requests
+	 *
+	 * @return
+	 */
+	private boolean isMineshafterPresent() {
+	    try {
+	        Class.forName("mineshafter.MineServer");
+	        return true;
+	    } catch (Exception e) {
+	        return false;
+	    }
 	}
 }

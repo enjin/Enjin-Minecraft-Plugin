@@ -1,4 +1,4 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.threaded;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

@@ -1,9 +1,11 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.packets;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.bukkit.Bukkit;
+
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
 /**
  * 
@@ -13,20 +15,17 @@ import org.bukkit.Bukkit;
  * 
  */
 
-public class Packet10AddPlayerGroup {
+public class Packet11RemovePlayerGroup {
 	
 	public static void handle(InputStream in) {
 		try {
-			String[] msg = PacketUtilities.readString(in).split(",");
+			String[] msg =PacketUtilities.readString(in).split(",");
 			if((msg.length == 2) || (msg.length == 3)) {
 				String playername = msg[0];
 				String groupname = msg[1];
 				String world = (msg.length == 3) ? msg[2] : null;
-				if("*".equals(world)) {
-					world = null;
-				}
-				if(!EnjinMinecraftPlugin.permission.playerAddGroup(world, playername, groupname)) {
-					Bukkit.getLogger().warning("Failed to update " + playername + "'s group. Please make sure that you have a valid permission plugin installed, and that your configurations are correct.");
+				if(!EnjinMinecraftPlugin.permission.playerRemoveGroup(world, playername, groupname)) {
+					Bukkit.getLogger().warning("Failed to update " + playername + "'s group.");
 				}
 			}
 		} catch (IOException e) {

@@ -1,4 +1,4 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.threaded;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -22,6 +22,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.officialplugin.ReverseFileReader;
 
 public class ReportMakerThread implements Runnable {
 	
@@ -64,7 +67,8 @@ public class ReportMakerThread implements Runnable {
 		}
 		builder.append("\n=========================================\nEnjin HTTPS test: " + (testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
 		builder.append("Enjin HTTP test: " + (testHTTPconnection() ? "passed" : "FAILED!") + "\n");
-		builder.append("Enjin web connectivity test: " + (testWebConnection() ? "passed" : "FAILED!") + "\n=========================================\n");
+		builder.append("Enjin web connectivity test: " + (testWebConnection() ? "passed" : "FAILED!") + "\n");
+		builder.append("Is mineshafter present: " + (isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
 		File bukkityml = new File(serverloglocation + File.separator + "bukkit.yml");
         YamlConfiguration ymlbukkit = new YamlConfiguration();
         if (bukkityml.exists()){
@@ -207,6 +211,15 @@ public class ReportMakerThread implements Runnable {
 			}
 			return false;
 		}
+	}
+	
+	private boolean isMineshafterPresent() {
+	    try {
+	        Class.forName("mineshafter.MineServer");
+	        return true;
+	    } catch (Exception e) {
+	        return false;
+	    }
 	}
 
 }

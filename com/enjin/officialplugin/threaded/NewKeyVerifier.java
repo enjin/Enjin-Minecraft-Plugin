@@ -1,9 +1,19 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.threaded;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
+
+import javax.net.ssl.SSLHandshakeException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
 public class NewKeyVerifier implements Runnable {
 	
@@ -25,8 +35,26 @@ public class NewKeyVerifier implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public synchronized void run() {
+		
 		if(pluginboot) {
+			//Make sure we have an internet connection before we
+			//validate the key.
+			int i = 0;
+			while(!testWebConnection()) {
+				//Let's spit out a warning message every 5 minutes that the plugin is unable to contact enjin.
+				if( ++i > 5) {
+					Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Unable to connect to the internet to verify your key! Please check your internet connection.");
+					i = 0;
+				}
+				try {
+					//let's wait a minute before trying again
+					wait(60000);
+				} catch (InterruptedException e) {
+					//e.printStackTrace();
+				}
+			}
+			
 			int validation = keyValid(false, key);
 			if(validation == 1) {
 				plugin.debug("Key valid.");
@@ -81,6 +109,10 @@ public class NewKeyVerifier implements Runnable {
 	}
 
 	private int keyValid(boolean save, String key) {
+		if(!testHTTPSconnection()) {
+			EnjinMinecraftPlugin.usingSSL = false;
+			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+		}
 		try {
 			if(key == null) {
 				return 0;
@@ -97,6 +129,59 @@ public class NewKeyVerifier implements Runnable {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing game data to the enjin server.");
 			t.printStackTrace();
 			return 2;
+		}
+	}
+	
+	private boolean testHTTPSconnection() {
+		try {
+			URL url = new URL("https://api.enjin.com/ok.html");
+			URLConnection con = url.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine = in.readLine();
+            in.close();
+			if(inputLine != null && inputLine.startsWith("OK")) {
+				return true;
+			}
+			return false;
+		} catch (SSLHandshakeException e) {
+			if(plugin.debug) {
+				e.printStackTrace();
+			}
+			return false;
+		} catch (SocketTimeoutException e) {
+			if(plugin.debug) {
+				e.printStackTrace();
+			}
+			return false;
+		} catch (Throwable t) {
+			if(plugin.debug) {
+				t.printStackTrace();
+			}
+			return false;
+		}
+	}
+	
+	private boolean testWebConnection() {
+		try {
+			URL url = new URL("http://google.com");
+			URLConnection con = url.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine = in.readLine();
+            in.close();
+			if(inputLine != null) {
+				return true;
+			}
+			return false;
+		} catch (SocketTimeoutException e) {
+			if(plugin.debug) {
+				e.printStackTrace();
+			}
+			return false;
+		} catch (Throwable t) {
+			if(plugin.debug) {
+				t.printStackTrace();
+			}
+			return false;
 		}
 	}
 

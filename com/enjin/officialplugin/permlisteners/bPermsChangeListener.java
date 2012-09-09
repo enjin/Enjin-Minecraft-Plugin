@@ -1,4 +1,4 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.permlisteners;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,6 +9,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.officialplugin.threaded.DelayedPlayerPermsUpdate;
 
 
 public class bPermsChangeListener implements Listener {

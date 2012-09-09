@@ -26,6 +26,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.enjin.officialplugin.permlisteners.GroupManagerListener;
+import com.enjin.officialplugin.permlisteners.PexChangeListener;
+import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
+import com.enjin.officialplugin.threaded.NewKeyVerifier;
+import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
+import com.enjin.officialplugin.threaded.ReportMakerThread;
+import com.platymuus.bukkit.permissions.PermissionsPlugin;
+
 import de.bananaco.bpermissions.imp.Permissions;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -43,30 +51,33 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public FileConfiguration config;
 	public static boolean usingGroupManager = false;
 	File hashFile;
-	static String hash = "";
+	public static String hash = "";
 	Server s;
 	Logger logger;
-	static Permission permission = null;
-	boolean debug = false;
-	PermissionsEx permissionsex;
-	GroupManager groupmanager;
-	Permissions bpermissions;
+	public static Permission permission = null;
+	public boolean debug = false;
+	public PermissionsEx permissionsex;
+	public GroupManager groupmanager;
+	public Permissions bpermissions;
+	public PermissionsPlugin permissionsbukkit;
+	static public boolean bukkitversion = true;
 	
-	boolean autoupdate = true;
-	String newversion = "";
+	public boolean autoupdate = true;
+	public String newversion = "";
 	
-	boolean hasupdate = false;
+	public boolean hasupdate = false;
 	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/EnjinMinecraftPlugin.jar";
+	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
 	
-	final EMPListener listener = new EMPListener(this);
+	public final EMPListener listener = new EMPListener(this);
 	final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
 	static final ExecutorService exec = Executors.newCachedThreadPool();
-	static String minecraftport;
-	static boolean usingSSL = true;
+	public static String minecraftport;
+	public static boolean usingSSL = true;
 	NewKeyVerifier verifier = null;
-	ConcurrentHashMap<PlayerPerms, String[]> playerperms = new ConcurrentHashMap<PlayerPerms, String[]>();
+	public ConcurrentHashMap<String, String> playerperms = new ConcurrentHashMap<String, String>();
 	
-	void debug(String s) {
+	public void debug(String s) {
 		if(debug) {
 			System.out.println("Enjin Debug: " + s);
 		}
@@ -157,22 +168,22 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		saveConfig();
 	}
 
-	void startTask() {
+	public void startTask() {
 		debug("Starting task.");
 		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
 	}
 	
-	void registerEvents() {
+	public void registerEvents() {
 		debug("Registering events.");
 		Bukkit.getPluginManager().registerEvents(listener, this);
 	}
 	
-	void stopTask() {
+	public void stopTask() {
 		debug("Stopping task.");
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 	
-	void unregisterEvents() {
+	public void unregisterEvents() {
 		debug("Unregistering events.");
 		HandlerList.unregisterAll(listener);
 	}
@@ -242,8 +253,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}else if(groupmanager != null) {
 						permsmanager = "GroupManager";
 						permsversion = groupmanager.getDescription().getVersion();
+					}else if(permissionsbukkit != null) {
+						permsmanager = "PermissionsBukkit";
+						permsversion = permissionsbukkit.getDescription().getVersion();
 					}
 					report.append("Permissions plugin used: " + permsmanager + " version " + permsversion + "\n");
+					if(permission != null) {
+						report.append("Vault permissions system reported: " + permission.getName() + "\n");
+					}
 					report.append("Bukkit version: " + getServer().getVersion() + "\n");
 					report.append("Java version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n");
 					report.append("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") + "\n\n");
@@ -381,6 +398,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         	this.groupmanager = (GroupManager)groupmanager;
             debug("GroupManager found, hooking custom events.");
         	Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
+        	return;
+        }
+        Plugin bukkitperms = this.getServer().getPluginManager().getPlugin("PermissionsBukkit");
+        if(bukkitperms != null) {
+        	this.permissionsbukkit = (PermissionsPlugin)bukkitperms;
+            debug("PermissionsBukkit found, hooking custom events.");
         	return;
         }
         debug("No suitable permissions plugin found, falling back to synching on player disconnect.");

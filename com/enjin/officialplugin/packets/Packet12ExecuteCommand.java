@@ -1,8 +1,11 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.packets;
 
 import java.io.InputStream;
 
 import org.bukkit.Bukkit;
+
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.officialplugin.threaded.CommandExecuter;
 
 /**
  * 

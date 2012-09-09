@@ -1,4 +1,4 @@
-package com.enjin.officialplugin;
+package com.enjin.officialplugin.threaded;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,6 +8,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 import org.bukkit.Bukkit;
+
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
 public class DownloadPluginThread implements Runnable {
 	
@@ -27,7 +29,14 @@ public class DownloadPluginThread implements Runnable {
 	public void run() {
 		File tempfile = new File(downloadlocation + File.separator + "EnjinMinecraftPlugin.jar.part");
 		try {
-			URL website = new URL(EnjinMinecraftPlugin.updatejar);
+			URL website;
+			if(EnjinMinecraftPlugin.bukkitversion) {
+				String[] versionsplit = versionnumber.split(",");
+				versionnumber = versionsplit[0];
+				website = new URL(EnjinMinecraftPlugin.bukkitupdatejar + versionsplit[1]);
+			}else {
+				website = new URL(EnjinMinecraftPlugin.updatejar);
+			}
 		    ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 		    FileOutputStream fos = new FileOutputStream(tempfile);
 		    fos.getChannel().transferFrom(rbc, 0, 1 << 24);
