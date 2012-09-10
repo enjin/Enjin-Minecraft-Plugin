@@ -135,7 +135,7 @@ public class PeriodicEnjinTask implements Runnable {
 				perms.append("|");
 			}
 			LinkedList<String> globalperms = new LinkedList<String>();
-			if(tempperms.length > 0) {
+			if(tempperms != null && tempperms.length > 0) {
 				perms.append('*' + ":");
 				for(int i = 0, j = 0; i < tempperms.length; i++) {
 					if(EnjinMinecraftPlugin.usingGroupManager && tempperms[i].startsWith("g:")) {
@@ -151,8 +151,8 @@ public class PeriodicEnjinTask implements Runnable {
 			}
 			//Now let's get groups per world.
 			for(World w: Bukkit.getWorlds()) {
-				tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
-				if(tempperms.length > 0) {
+				tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
+				if(tempperms != null && tempperms.length > 0) {
 					LinkedList<String> worldperms = new LinkedList<String>();
 					for(int i = 0; i < tempperms.length; i++) {
 						if(globalperms.contains(tempperms[i]) || (EnjinMinecraftPlugin.usingGroupManager && tempperms[i].startsWith("g:"))) {

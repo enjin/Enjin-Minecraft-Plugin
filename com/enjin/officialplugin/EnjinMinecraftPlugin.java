@@ -60,7 +60,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public GroupManager groupmanager;
 	public Permissions bpermissions;
 	public PermissionsPlugin permissionsbukkit;
-	static public boolean bukkitversion = true;
+	static public boolean bukkitversion = false;
 	
 	public boolean autoupdate = true;
 	public String newversion = "";
