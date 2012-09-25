@@ -60,6 +60,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public GroupManager groupmanager;
 	public Permissions bpermissions;
 	public PermissionsPlugin permissionsbukkit;
+	public boolean supportsglobalgroups = true;
 	static public boolean bukkitversion = false;
 	
 	public boolean autoupdate = true;
@@ -397,6 +398,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         if(groupmanager != null) {
         	this.groupmanager = (GroupManager)groupmanager;
             debug("GroupManager found, hooking custom events.");
+            supportsglobalgroups = false;
         	Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
         	return;
         }

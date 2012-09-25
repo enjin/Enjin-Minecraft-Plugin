@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,8 +61,8 @@ public class PeriodicEnjinTask implements Runnable {
 	            con = (HttpURLConnection) enjinurl.openConnection();
 	        }
 			con.setRequestMethod("POST");
-			con.setReadTimeout(3000);
-			con.setConnectTimeout(3000);
+			con.setReadTimeout(15000);
+			con.setConnectTimeout(15000);
 			con.setDoInput(true);
 			con.setDoOutput(true);
 			con.setRequestProperty("User-Agent", "Mozilla/4.0");
@@ -130,32 +131,48 @@ public class PeriodicEnjinTask implements Runnable {
 				perms.append(theperms.get(entry.getKey().getPlayerName()));
 			}*/
 			//Let's get global groups
-			String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
-			if(perms.length() > 0 && tempperms.length > 0) {
-				perms.append("|");
-			}
 			LinkedList<String> globalperms = new LinkedList<String>();
-			if(tempperms != null && tempperms.length > 0) {
-				perms.append('*' + ":");
-				for(int i = 0, j = 0; i < tempperms.length; i++) {
-					if(EnjinMinecraftPlugin.usingGroupManager && tempperms[i].startsWith("g:")) {
-						continue;
+			//We don't want to get global groups with plugins that don't support it.
+			if(plugin.supportsglobalgroups) {
+				String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
+				if(perms.length() > 0 && tempperms.length > 0) {
+					perms.append("|");
+				}
+
+				if(tempperms != null && tempperms.length > 0) {
+					perms.append('*' + ":");
+					for(int i = 0, j = 0; i < tempperms.length; i++) {
+						if(j > 0) {
+							perms.append(",");
+						}
+						globalperms.add(tempperms[i]);
+						perms.append(tempperms[i]);
+						j++;
 					}
-					if(j > 0) {
-						perms.append(",");
-					}
-					globalperms.add(tempperms[i]);
-					perms.append(tempperms[i]);
-					j++;
 				}
 			}
 			//Now let's get groups per world.
 			for(World w: Bukkit.getWorlds()) {
-				tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
+				String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
 				if(tempperms != null && tempperms.length > 0) {
+					
+					//The below variable is only used for GroupManager since it
+					//likes transmitting all the groups
+					LinkedList<String> skipgroups = new LinkedList<String>();
+					
 					LinkedList<String> worldperms = new LinkedList<String>();
 					for(int i = 0; i < tempperms.length; i++) {
-						if(globalperms.contains(tempperms[i]) || (EnjinMinecraftPlugin.usingGroupManager && tempperms[i].startsWith("g:"))) {
+						//GroupManager has a bug where all lower groups in a hierarchy get
+						//transmitted along with the main group, so we have to catch and
+						//process it differently.
+						if(plugin.groupmanager != null) {
+							List<String> subgroups = plugin.groupmanager.getWorldsHolder().getWorldData(w.getName()).getGroup(tempperms[i]).getInherits();
+							for(String group : subgroups) {
+								//Groups are case insensitive in GM
+								skipgroups.add(group.toLowerCase());
+							}
+						}
+						if(globalperms.contains(tempperms[i]) || (EnjinMinecraftPlugin.usingGroupManager && (tempperms[i].startsWith("g:") || skipgroups.contains(tempperms[i].toLowerCase())))) {
 							continue;
 						}
 						worldperms.add(tempperms[i]);
