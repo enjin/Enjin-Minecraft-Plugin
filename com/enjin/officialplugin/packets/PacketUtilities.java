@@ -1,7 +1,7 @@
 package com.enjin.officialplugin.packets;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * 
@@ -12,7 +12,7 @@ import java.io.InputStream;
  */
 
 public class PacketUtilities {
-	public static String readString(InputStream in) throws IOException {
+	public static String readString(BufferedInputStream in) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for(char c = (char) in.read(); c != '\r' ; c = (char) in.read()) {
 			builder.append(c);

@@ -53,6 +53,18 @@ public class ReportMakerThread implements Runnable {
 				}
 				errormessages.add(line);
 				if(line.contains("[SEVERE]")) {
+					//let's catch the entire severe error message.
+					boolean severeended = false;
+					while((line = rfr.readLine()) != null && !severeended) {
+						if(line.contains("[SEVERE]")) {
+							if(errormessages.size() >= 40) {
+								errormessages.removeFirst();
+							}
+							errormessages.add(line);
+						}else {
+							severeended = true;
+						}
+					}
 					for(int i = errormessages.size(); i > 0; i--) {
 						builder.append(errormessages.get(i - 1) + "\n");
 					}
@@ -64,6 +76,10 @@ public class ReportMakerThread implements Runnable {
 			if(plugin.debug) {
 				e.printStackTrace();
 			}
+		}
+		if(plugin.lasterror != null) {
+			builder.append("\nLast Enjin Plugin Severe error message: \n");
+			builder.append(plugin.lasterror.toString());
 		}
 		builder.append("\n=========================================\nEnjin HTTPS test: " + (testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
 		builder.append("Enjin HTTP test: " + (testHTTPconnection() ? "passed" : "FAILED!") + "\n");
@@ -115,13 +131,15 @@ public class ReportMakerThread implements Runnable {
                 e.printStackTrace();
             }
         }
-        System.out.println(builder.toString());
+        //let's make sure to hide the apikey, wherever it may occurr in the file.
+        String fullreport = builder.toString().replaceAll("authkey=\\w{50}", "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        System.out.println(fullreport);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 		Date date = new Date();
         BufferedWriter outChannel = null;
 		try {
 			outChannel = new BufferedWriter(new FileWriter(serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt"));
-			outChannel.write(builder.toString());
+			outChannel.write(fullreport);
 			outChannel.close();
 			sender.sendMessage(ChatColor.GOLD + "Enjin debug report created in " + serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt successfully!");
 		} catch (IOException e) {

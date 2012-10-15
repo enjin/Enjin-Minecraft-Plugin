@@ -1,11 +1,12 @@
 package com.enjin.officialplugin.packets;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.bukkit.Bukkit;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.officialplugin.events.AddPlayerGroupEvent;
 import com.enjin.officialplugin.threaded.CommandExecuter;
 
 /**
@@ -18,7 +19,7 @@ import com.enjin.officialplugin.threaded.CommandExecuter;
 
 public class Packet10AddPlayerGroup {
 	
-	public static void handle(InputStream in, EnjinMinecraftPlugin plugin) {
+	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String[] msg = PacketUtilities.readString(in).split(",");
 			if((msg.length == 2) || (msg.length == 3)) {
@@ -28,6 +29,8 @@ public class Packet10AddPlayerGroup {
 				if("*".equals(world)) {
 					world = null;
 				}
+				plugin.getServer().getPluginManager().callEvent(new AddPlayerGroupEvent(playername, groupname, world));
+				plugin.debug("Adding player " + playername + " from group " + groupname + " in world " + world + "world");
 				//Check to see if we have PermissionsBukkit. If we do we have to do something special
 				if(plugin.permissionsbukkit != null) {
 					plugin.debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);

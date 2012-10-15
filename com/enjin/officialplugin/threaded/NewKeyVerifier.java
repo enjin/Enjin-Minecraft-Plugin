@@ -13,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
 public class NewKeyVerifier implements Runnable {
@@ -109,7 +110,8 @@ public class NewKeyVerifier implements Runnable {
 	}
 
 	private int keyValid(boolean save, String key) {
-		if(!testHTTPSconnection()) {
+		//No need to test the ssl connection if it is already false.
+		if(EnjinMinecraftPlugin.usingSSL && !testHTTPSconnection()) {
 			EnjinMinecraftPlugin.usingSSL = false;
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
 		}
@@ -128,6 +130,7 @@ public class NewKeyVerifier implements Runnable {
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing game data to the enjin server.");
 			t.printStackTrace();
+			plugin.lasterror = new EnjinErrorReport(t, "Verifying key when error was thrown:");
 			return 2;
 		}
 	}

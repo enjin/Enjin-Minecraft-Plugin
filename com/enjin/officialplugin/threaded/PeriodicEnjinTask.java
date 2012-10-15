@@ -18,12 +18,15 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.packets.Packet10AddPlayerGroup;
 import com.enjin.officialplugin.packets.Packet11RemovePlayerGroup;
 import com.enjin.officialplugin.packets.Packet12ExecuteCommand;
 import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
 import com.enjin.officialplugin.packets.Packet14NewerVersion;
+import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
+import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
 
 /**
  * 
@@ -43,12 +46,13 @@ public class PeriodicEnjinTask implements Runnable {
 		this.plugin = plugin;
 	}
 	private URL getUrl() throws Throwable {
-		return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + "://api.enjin.com/api/minecraft-sync");
+		return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-sync");
 	}
 	
 	@Override
 	public void run() {
 		boolean successful = false;
+		StringBuilder builder = new StringBuilder();
 		try {
 			plugin.debug("Connecting to Enjin...");
 			URL enjinurl = getUrl();
@@ -67,18 +71,23 @@ public class PeriodicEnjinTask implements Runnable {
 			con.setDoOutput(true);
 			con.setRequestProperty("User-Agent", "Mozilla/4.0");
 			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			StringBuilder builder = new StringBuilder();
+			//StringBuilder builder = new StringBuilder();
 			builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
 			builder.append("&maxplayers=" + encode(String.valueOf(Bukkit.getServer().getMaxPlayers()))); //max players
 			builder.append("&players=" + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))); //current players
-			builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null) ? "FALSE" : "TRUE")));
+			builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null || EnjinMinecraftPlugin.permission.getName().equalsIgnoreCase("SuperPerms")) ? "FALSE" : "TRUE")));
 			builder.append("&pluginversion=" + encode(plugin.getDescription().getVersion()));
 			builder.append("&plugins=" + encode(getPlugins()));
 			builder.append("&playerlist=" + encode(getPlayers()));
-			builder.append("&groups=" + encode(getGroups()));
 			builder.append("&worlds=" + encode(getWorlds()));
-			if(plugin.playerperms.size() > 0) {
-				builder.append("&playergroups=" + encode(getPlayerGroups()));
+			
+			//We don't want to throw any errors if they are using superperms
+			//which doesn't support groups. Therefore we can't support it.
+			if(EnjinMinecraftPlugin.permission != null && !EnjinMinecraftPlugin.permission.getName().equalsIgnoreCase("SuperPerms")) {
+				builder.append("&groups=" + encode(getGroups()));
+				if(plugin.playerperms.size() > 0) {
+					builder.append("&playergroups=" + encode(getPlayerGroups()));
+				}
 			}
 			con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
 			plugin.debug("Sending content: \n" + builder.toString());
@@ -94,6 +103,7 @@ public class PeriodicEnjinTask implements Runnable {
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 				numoffailedtries = 0;
 			}
+			plugin.lasterror = new EnjinErrorReport(e, "Regular synch. Information sent:\n" + builder.toString());
 		} catch (Throwable t) {
 			//We don't need to spam the console every minute if the synch didn't complete correctly.
 			if(numoffailedtries++ > 5) {
@@ -103,6 +113,7 @@ public class PeriodicEnjinTask implements Runnable {
 			if(plugin.debug) {
 				t.printStackTrace();
 			}
+			plugin.lasterror = new EnjinErrorReport(t, "Regular synch. Information sent:\n" + builder.toString());
 		}
 		if(!successful) {
 			plugin.debug("Synch unsuccessful.");
@@ -213,27 +224,54 @@ public class PeriodicEnjinTask implements Runnable {
 	}
 	
 	private void handleInput(InputStream in) throws IOException {
+		BufferedInputStream bin = new BufferedInputStream(in);
+		bin.mark(Integer.MAX_VALUE);
 		//TODO: A for loop??? Maybe a while(code = in.read() != -1) {}
 		for(;;) {
-			int code = in.read();
+			int code = bin.read();
 			switch(code) {
 			case -1:
+				plugin.debug("No more packets. End of stream. Update ended.");
+				if(plugin.debug) {
+					bin.reset();
+					StringBuilder input = new StringBuilder();
+					while((code = bin.read()) != -1) {
+						input.append((char)code);
+					}
+					plugin.debug("Raw data received:\n" + input.toString());
+				}
 				return; //end of stream reached
 			case 0x10:
-				Packet10AddPlayerGroup.handle(in, plugin);
+				plugin.debug("Packet [0x10](Add Player Group) received.");
+				Packet10AddPlayerGroup.handle(bin, plugin);
 				break;
 			case 0x11:
-				Packet11RemovePlayerGroup.handle(in);
+				plugin.debug("Packet [0x11](Remove Player Group) received.");
+				Packet11RemovePlayerGroup.handle(bin, plugin);
 				break;
 			case 0x12:
-				Packet12ExecuteCommand.handle(in, plugin);
+				plugin.debug("Packet [0x12](Execute Command) received.");
+				Packet12ExecuteCommand.handle(bin, plugin);
 				break;
 			case 0x13:
+				plugin.debug("Packet [0x13](Execute command as Player) received.");
+				Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
+				break;
 			case 0x0D:
-				Packet13ExecuteCommandAsPlayer.handle(in, plugin);
+				plugin.debug("Packet [0x0D](Execute command as Player) received.");
+				Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
 				break;
 			case 0x14:
-				Packet14NewerVersion.handle(in, plugin);
+				plugin.debug("Packet [0x14](Newer Version) received.");
+				Packet14NewerVersion.handle(bin, plugin);
+				break;
+			case 0x17:
+				plugin.debug("Packet [0x17](Add Whitelist Players) received.");
+				Packet17AddWhitelistPlayers.handle(bin, plugin);
+				break;
+			case 0x18:
+				plugin.debug("Packet [0x18](Remove Players From Whitelist) received.");
+				Packet18RemovePlayersFromWhitelist.handle(bin, plugin);
 				break;
 			default :
 				Bukkit.getLogger().warning("[Enjin] Received an invalid opcode: " + code);

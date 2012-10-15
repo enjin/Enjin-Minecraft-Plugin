@@ -63,11 +63,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean supportsglobalgroups = true;
 	static public boolean bukkitversion = false;
 	
+	static public String apiurl = "://api.enjin.com/api/";
+	//static public String apiurl = "://gamers.enjin.ca/api/";
+	//static public String apiurl = "://tuxreminder.info/api/";
+	
 	public boolean autoupdate = true;
 	public String newversion = "";
 	
 	public boolean hasupdate = false;
-	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/EnjinMinecraftPlugin.jar";
+	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
 	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
 	
 	public final EMPListener listener = new EMPListener(this);
@@ -77,6 +81,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public static boolean usingSSL = true;
 	NewKeyVerifier verifier = null;
 	public ConcurrentHashMap<String, String> playerperms = new ConcurrentHashMap<String, String>();
+	
+	public EnjinErrorReport lasterror = null;
 	
 	public void debug(String s) {
 		if(debug) {
@@ -191,7 +197,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	private void initPlugins() throws Throwable {
 		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			throw new Exception("[Enjin Minecraft Plugin] Couldn't find the vault plugin! Please get it from dev.bukkit.org/server-mods/vault/!");
+			getLogger().warning("[Enjin Minecraft Plugin] Couldn't find the vault plugin! Please get it from dev.bukkit.org/server-mods/vault/!");
+			return;
 		}
 		debug("Initializing permissions.");
 		initPermissions();
@@ -238,7 +245,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						return true;
 					}
 					sender.sendMessage(ChatColor.GREEN + "Please wait as we generate the report");
-					DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+					DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 					Date date = new Date();
 					StringBuilder report = new StringBuilder();
 					report.append("Enjin Debug Report generated on " + dateFormat.format(date) + "\n");
@@ -335,7 +342,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	 * @throws MalformedURLException
 	 */
 	public static int sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
-		URL url = new URL((usingSSL ? "https" : "http") + "://api.enjin.com/api/" + urls);
+		URL url = new URL((usingSSL ? "https" : "http") + apiurl + urls);
 		StringBuilder query = new StringBuilder();
 		try {
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
