@@ -4,9 +4,11 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.RemovePlayerGroupEvent;
+import com.enjin.officialplugin.threaded.CommandExecuter;
 
 /**
  * 
@@ -28,9 +30,23 @@ public class Packet11RemovePlayerGroup {
 				String groupname = msg[1];
 				String world = (msg.length == 3) ? msg[2] : null;
 				plugin.getServer().getPluginManager().callEvent(new RemovePlayerGroupEvent(playername, groupname, world));
-				plugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + "world");
-				if(!EnjinMinecraftPlugin.permission.playerRemoveGroup(world, playername, groupname)) {
-					Bukkit.getLogger().warning("Failed to update " + playername + "'s group.");
+				plugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
+				if(plugin.permissionsbukkit != null) {
+					plugin.debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname));
+				}else {
+					//We need some support if they want the group removed from all worlds if the plugin doesn't support global groups
+					if((world != null) || (world == null && plugin.supportsglobalgroups)) {
+						if(!EnjinMinecraftPlugin.permission.playerRemoveGroup(world, playername, groupname)) {
+							Bukkit.getLogger().warning("Failed to update " + playername + "'s group.");
+						}
+					}else {
+						for(World w : Bukkit.getWorlds()) {
+							if(!EnjinMinecraftPlugin.permission.playerRemoveGroup(w.getName(), playername, groupname)) {
+								Bukkit.getLogger().warning("Failed to update " + playername + "'s group.");
+							}
+						}
+					}
 				}
 			}
 		} catch (IOException e) {

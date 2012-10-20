@@ -26,7 +26,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.permlisteners.GroupManagerListener;
+import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
 import com.enjin.officialplugin.permlisteners.PexChangeListener;
 import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
@@ -81,6 +83,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public static boolean usingSSL = true;
 	NewKeyVerifier verifier = null;
 	public ConcurrentHashMap<String, String> playerperms = new ConcurrentHashMap<String, String>();
+	//Player, lists voted on.
+	public ConcurrentHashMap<String, String> playervotes = new ConcurrentHashMap<String, String>();
 	
 	public EnjinErrorReport lasterror = null;
 	
@@ -102,6 +106,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Init plugins done.");
 			setupPermissions();
 			debug("Setup permissions integration");
+			setupVotifierListener();
+			debug("Setup Votifier integration");
 			usingGroupManager = (permission instanceof Permission_GroupManager);
 			debug("Checking key valid.");
 			if(verifier == null || verifier.completed) {
@@ -193,6 +199,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public void unregisterEvents() {
 		debug("Unregistering events.");
 		HandlerList.unregisterAll(listener);
+	}
+	
+	private void setupVotifierListener() {
+		if(Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
+			System.out.println("[Enjin Minecraft Plugin] Votifier plugin found, enabling Votifier support.");
+			Bukkit.getPluginManager().registerEvents(new VotifierListener(this), this);
+		}
 	}
 	
 	private void initPlugins() throws Throwable {
@@ -296,6 +309,44 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}
 					sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + debug);
 					return true;
+				}else if(args[0].equalsIgnoreCase("push")) {
+					if(!sender.hasPermission("enjin.push")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.push\" permission or OP to run that command!");
+						return true;
+					}
+					OfflinePlayer[] allplayers = getServer().getOfflinePlayers();
+					if(playerperms.size() > 3000 || playerperms.size() >= allplayers.length) {
+						int minutes = playerperms.size()/3000;
+						//Make sure to tack on an extra minute for the leftover players.
+						if(playerperms.size()%3000 > 0) {
+							minutes++;
+						}
+						//Add an extra 10% if it's going to take more than one synch.
+						//Just in case a synch fails.
+						if(playerperms.size() > 3000) {
+							minutes += minutes * 0.1;
+						}
+						sender.sendMessage(ChatColor.RED + "A rank sync is still in progress, please wait until the current sync completes.");
+						sender.sendMessage(ChatColor.RED + "Progress: + Integer.toString(playerperms.size()) + more player ranks to transmit, ETA: " + minutes + " minute" + (minutes > 1 ? "s" : "") + ".");
+						return true;
+					}
+					for(OfflinePlayer offlineplayer : allplayers) {
+						playerperms.put(offlineplayer.getName(), "");
+					}
+					
+					//Calculate how many minutes approximately it's going to take.
+					int minutes = playerperms.size()/3000;
+					//Make sure to tack on an extra minute for the leftover players.
+					if(playerperms.size()%3000 > 0) {
+						minutes++;
+					}
+					//Add an extra 10% if it's going to take more than one synch.
+					//Just in case a synch fails.
+					if(playerperms.size() > 3000) {
+						minutes += minutes * 0.1;
+					}
+					sender.sendMessage(ChatColor.GREEN + Integer.toString(playerperms.size()) + " players have been queued for synching. This should take approximately " + Integer.toString(minutes) + " minutes.");
+					return true;
 				}
 			}
 		}
@@ -398,6 +449,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         if(bperm != null) {
         	bpermissions = (Permissions)bperm;
             debug("bPermissions found, hooking custom events.");
+            supportsglobalgroups = false;
         	Bukkit.getPluginManager().registerEvents(new bPermsChangeListener(this), this);
         	return;
         }
@@ -413,6 +465,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         if(bukkitperms != null) {
         	this.permissionsbukkit = (PermissionsPlugin)bukkitperms;
             debug("PermissionsBukkit found, hooking custom events.");
+        	Bukkit.getPluginManager().registerEvents(new PermissionsBukkitChangeListener(this), this);
         	return;
         }
         debug("No suitable permissions plugin found, falling back to synching on player disconnect.");

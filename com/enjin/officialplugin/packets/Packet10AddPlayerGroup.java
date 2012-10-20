@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.AddPlayerGroupEvent;
@@ -30,14 +31,23 @@ public class Packet10AddPlayerGroup {
 					world = null;
 				}
 				plugin.getServer().getPluginManager().callEvent(new AddPlayerGroupEvent(playername, groupname, world));
-				plugin.debug("Adding player " + playername + " from group " + groupname + " in world " + world + "world");
+				plugin.debug("Adding player " + playername + " from group " + groupname + " in world " + world + " world");
 				//Check to see if we have PermissionsBukkit. If we do we have to do something special
 				if(plugin.permissionsbukkit != null) {
 					plugin.debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);
 					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname));
 				}else {
-					if(!EnjinMinecraftPlugin.permission.playerAddGroup(world, playername, groupname)) {
-						Bukkit.getLogger().warning("Failed to update " + playername + "'s group. Please make sure that you have a valid permission plugin installed, and that your configurations are correct.");
+					//We need some support if they want the group added to all worlds if the plugin doesn't support global groups
+					if((world != null) || (world == null && plugin.supportsglobalgroups)) {
+						if(!EnjinMinecraftPlugin.permission.playerAddGroup(world, playername, groupname)) {
+							Bukkit.getLogger().warning("Failed to update " + playername + "'s group. Please make sure that you have a valid permission plugin installed, and that your configurations are correct.");
+						}
+					}else {
+						for(World w : Bukkit.getWorlds()) {
+							if(!EnjinMinecraftPlugin.permission.playerAddGroup(w.getName(), playername, groupname)) {
+								Bukkit.getLogger().warning("Failed to update " + playername + "'s group in world " + w.getName() + ". Please make sure that you have a valid permission plugin installed, and that your configurations are correct.");
+							}
+						}
 					}
 				}
 			}

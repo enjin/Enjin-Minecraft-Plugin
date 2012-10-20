@@ -37,12 +37,9 @@ public class bPermsChangeListener implements Listener {
 				if(args.length > 2 && (args[1].trim().equalsIgnoreCase("addgroup") || args[1].trim().equalsIgnoreCase("rmgroup") ||
 						args[1].trim().equalsIgnoreCase("setgroup"))) {
 					if(usereditingwhatplayer.containsKey(p.getName())) {
-						Player ep = Bukkit.getPlayerExact(usereditingwhatplayer.get(p.getName()));
-						if(ep == null) {
-							return;
-						}
+						String ep = usereditingwhatplayer.get(p.getName());
 						//We need to make sure the command executes before we actually grab the data.
-						plugin.debug(ep.getName() + " just got a rank change... processing...");
+						plugin.debug(ep + " just got a rank change... processing...");
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 					}
 				}else {

@@ -7,6 +7,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -40,6 +42,7 @@ public class PeriodicEnjinTask implements Runnable {
 	
 	EnjinMinecraftPlugin plugin;
 	ConcurrentHashMap<String, String> removedplayerperms = new ConcurrentHashMap<String, String>();
+	ConcurrentHashMap<String, String> removedplayervotes = new ConcurrentHashMap<String, String>();
 	int numoffailedtries = 0;
 	
 	public PeriodicEnjinTask(EnjinMinecraftPlugin plugin) {
@@ -80,6 +83,11 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.append("&plugins=" + encode(getPlugins()));
 			builder.append("&playerlist=" + encode(getPlayers()));
 			builder.append("&worlds=" + encode(getWorlds()));
+			builder.append("&time=" + encode(getTimes()));
+			//Don't add the votifier tag if no one has voted.
+			if(plugin.playervotes.size() > 0) {
+				builder.append("&votifier=" + encode(getVotes()));
+			}
 			
 			//We don't want to throw any errors if they are using superperms
 			//which doesn't support groups. Therefore we can't support it.
@@ -126,21 +134,50 @@ public class PeriodicEnjinTask implements Runnable {
 				}
 				removedplayerperms.remove(entry.getKey());
 			}
+			
+			Set<Entry<String, String>> voteset = removedplayervotes.entrySet();
+			for(Entry<String, String> entry : voteset) {
+				//If the plugin has put new votes in, let's not overwrite them.
+				if(plugin.playervotes.containsKey(entry.getKey())) {
+					//combine the lists.
+					String lists = plugin.playervotes.get(entry.getKey()) + "," + entry.getValue();
+					plugin.playervotes.put(entry.getKey(), lists);
+				}else {
+					plugin.playervotes.put(entry.getKey(), entry.getValue());
+				}
+				removedplayervotes.remove(entry.getKey());
+			}
 		}else {
 			plugin.debug("Synch successful.");
 		}
 	}
 	
+	private String getVotes() {
+		removedplayervotes.clear();
+		StringBuilder votes = new StringBuilder();
+		Set<Entry<String,String>> voteset = plugin.playervotes.entrySet();
+		for(Entry<String, String> entry : voteset) {
+			String player = entry.getKey();
+			String lists = entry.getValue();
+			if(votes.length() != 0) {
+				votes.append(";");
+			}
+			votes.append(player + ":" + lists);
+			removedplayervotes.put(player, lists);
+			plugin.playervotes.remove(player);
+		}
+		return votes.toString();
+	}
 	private String getPlayerGroups() {
 		removedplayerperms.clear();
 		HashMap<String, String> theperms = new HashMap<String, String>();
-		Set<Entry<String, String>> es = plugin.playerperms.entrySet();
-		for(Entry<String, String> entry : es) {
+		Iterator<Entry<String, String>> es = plugin.playerperms.entrySet().iterator();
+		
+		//With the push command, we need to limit how many ranks we send
+		//with each synch.
+		for(int k = 0; es.hasNext() && k < 3000; k++) {
+			Entry<String, String> entry = es.next();
 			StringBuilder perms = new StringBuilder();
-			/*
-			if(theperms.containsKey(entry.getKey().getPlayerName())) {
-				perms.append(theperms.get(entry.getKey().getPlayerName()));
-			}*/
 			//Let's get global groups
 			LinkedList<String> globalperms = new LinkedList<String>();
 			//We don't want to get global groups with plugins that don't support it.
@@ -257,9 +294,11 @@ public class PeriodicEnjinTask implements Runnable {
 				plugin.debug("Packet [0x13](Execute command as Player) received.");
 				Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
 				break;
+			case 0x0A:
+				plugin.debug("Packet [0x0A](New Line) received, ignoring...");
+				break;
 			case 0x0D:
-				plugin.debug("Packet [0x0D](Execute command as Player) received.");
-				Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
+				plugin.debug("Packet [0x0D](Carriage Return) received, ignoring...");
 				break;
 			case 0x14:
 				plugin.debug("Packet [0x14](Newer Version) received.");
@@ -333,6 +372,33 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 		if(builder.length() > 2) {
 			builder.deleteCharAt(0);
+		}
+		return builder.toString();
+	}
+	
+	//Get world times strings
+	private String getTimes() {
+		StringBuilder builder = new StringBuilder();
+		for(World w : Bukkit.getWorlds()) {
+			//Make sure it's a normal envrionment, as the end and the
+			//nether don't have any weather.
+			if(w.getEnvironment() == Environment.NORMAL) {
+				if(builder.length() > 0) {
+					builder.append(";");
+				}
+				builder.append(w.getName() + ":" + Long.toString(w.getTime()) + ",");
+				int moonphase = (int) ((w.getFullTime()/24000)%8);
+				builder.append(Integer.toString(moonphase) + ",");
+				if(w.hasStorm()) {
+					if(w.isThundering()) {
+						builder.append("2");
+					}else {
+						builder.append("1");
+					}
+				}else {
+					builder.append("0");
+				}
+			}
 		}
 		return builder.toString();
 	}

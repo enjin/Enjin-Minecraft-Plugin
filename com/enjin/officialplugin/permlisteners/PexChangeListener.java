@@ -52,43 +52,31 @@ public class PexChangeListener implements Listener {
 		if(command.toLowerCase().startsWith("/pex group ")) {
 			String[] args = command.split(" ");
 			if(args.length > 5 && p.hasPermission("permissions.manage.membership." + args[2])) {
-				if(args[3].equalsIgnoreCase("user") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove"))) {
+				if(args[3].equalsIgnoreCase("user") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
 					//This command accepts csv lists of players
 					if(args[5].contains(",")) {
 						String[] players = args[5].split(",");
 						for(int i = 0; i < players.length; i++) {
-							Player ep = Bukkit.getPlayerExact(players[i]);
-							//If the player isn't on the server we can't process the rank change...
-							if(ep == null) {
-								continue;
-							}
+							String ep = players[i];
 							//We need to make sure the command executes before we actually grab the data.
-							plugin.debug(ep.getName() + " just got a rank change... processing...");
+							plugin.debug(ep + " just got a rank change... processing...");
 							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 						}
 					}else {
-						Player ep = Bukkit.getPlayerExact(args[5]);
-						//If the player isn't on the server we can't process the rank change...
-						if(ep == null) {
-							return;
-						}
+						String ep = args[5];
 						//We need to make sure the command executes before we actually grab the data.
-						plugin.debug(ep.getName() + " just got a rank change... processing...");
+						plugin.debug(ep + " just got a rank change... processing...");
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 					}
 				}
 			}
 		}else if(command.toLowerCase().startsWith("/pex user ")) {
 			String[] args = command.split(" ");
-			if(args.length > 6 && p.hasPermission("permissions.manage.membership." + args[5])) {
+			if(args.length > 5 && p.hasPermission("permissions.manage.membership." + args[5])) {
 				if(args[3].equalsIgnoreCase("group") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
-					Player ep = Bukkit.getPlayerExact(args[2]);
-					//If the player isn't on the server we can't process the rank change...
-					if(ep == null) {
-						return;
-					}
+					String ep = args[2];
 					//We need to make sure the command executes before we actually grab the data.
-					plugin.debug(ep.getName() + " just got a rank change... processing...");
+					plugin.debug(ep + " just got a rank change... processing...");
 					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 				}
 			}
