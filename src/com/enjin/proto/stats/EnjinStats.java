@@ -101,6 +101,20 @@ public final class EnjinStats {
       // optional int32 pvekills = 12;
       boolean hasPvekills();
       int getPvekills();
+      
+      // repeated .EnjinStats.Server.Player.PveKills pveentitykills = 13;
+      java.util.List<com.enjin.proto.stats.EnjinStats.Server.Player.PveKills> 
+          getPveentitykillsList();
+      com.enjin.proto.stats.EnjinStats.Server.Player.PveKills getPveentitykills(int index);
+      int getPveentitykillsCount();
+      java.util.List<? extends com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder> 
+          getPveentitykillsOrBuilderList();
+      com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder getPveentitykillsOrBuilder(
+          int index);
+      
+      // optional int32 chatlines = 14;
+      boolean hasChatlines();
+      int getChatlines();
     }
     public static final class Player extends
         com.google.protobuf.GeneratedMessage
@@ -2044,6 +2058,454 @@ public final class EnjinStats {
         // @@protoc_insertion_point(class_scope:EnjinStats.Server.Player.Blocks)
       }
       
+      public interface PveKillsOrBuilder
+          extends com.google.protobuf.MessageOrBuilder {
+        
+        // required string mob = 1;
+        boolean hasMob();
+        String getMob();
+        
+        // required int32 kills = 2;
+        boolean hasKills();
+        int getKills();
+      }
+      public static final class PveKills extends
+          com.google.protobuf.GeneratedMessage
+          implements PveKillsOrBuilder {
+        // Use PveKills.newBuilder() to construct.
+        private PveKills(Builder builder) {
+          super(builder);
+        }
+        private PveKills(boolean noInit) {}
+        
+        private static final PveKills defaultInstance;
+        public static PveKills getDefaultInstance() {
+          return defaultInstance;
+        }
+        
+        public PveKills getDefaultInstanceForType() {
+          return defaultInstance;
+        }
+        
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_Player_PveKills_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_Player_PveKills_fieldAccessorTable;
+        }
+        
+        private int bitField0_;
+        // required string mob = 1;
+        public static final int MOB_FIELD_NUMBER = 1;
+        private java.lang.Object mob_;
+        public boolean hasMob() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getMob() {
+          java.lang.Object ref = mob_;
+          if (ref instanceof String) {
+            return (String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            String s = bs.toStringUtf8();
+            if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+              mob_ = s;
+            }
+            return s;
+          }
+        }
+        private com.google.protobuf.ByteString getMobBytes() {
+          java.lang.Object ref = mob_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            mob_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        
+        // required int32 kills = 2;
+        public static final int KILLS_FIELD_NUMBER = 2;
+        private int kills_;
+        public boolean hasKills() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public int getKills() {
+          return kills_;
+        }
+        
+        private void initFields() {
+          mob_ = "";
+          kills_ = 0;
+        }
+        private byte memoizedIsInitialized = -1;
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized != -1) return isInitialized == 1;
+          
+          if (!hasMob()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+          if (!hasKills()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+          memoizedIsInitialized = 1;
+          return true;
+        }
+        
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          getSerializedSize();
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            output.writeBytes(1, getMobBytes());
+          }
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            output.writeInt32(2, kills_);
+          }
+          getUnknownFields().writeTo(output);
+        }
+        
+        private int memoizedSerializedSize = -1;
+        public int getSerializedSize() {
+          int size = memoizedSerializedSize;
+          if (size != -1) return size;
+        
+          size = 0;
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBytesSize(1, getMobBytes());
+          }
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeInt32Size(2, kills_);
+          }
+          size += getUnknownFields().getSerializedSize();
+          memoizedSerializedSize = size;
+          return size;
+        }
+        
+        private static final long serialVersionUID = 0L;
+        @java.lang.Override
+        protected java.lang.Object writeReplace()
+            throws java.io.ObjectStreamException {
+          return super.writeReplace();
+        }
+        
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          Builder builder = newBuilder();
+          if (builder.mergeDelimitedFrom(input)) {
+            return builder.buildParsed();
+          } else {
+            return null;
+          }
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          Builder builder = newBuilder();
+          if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+            return builder.buildParsed();
+          } else {
+            return null;
+          }
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static com.enjin.proto.stats.EnjinStats.Server.Player.PveKills parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        
+        public static Builder newBuilder() { return Builder.create(); }
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder(com.enjin.proto.stats.EnjinStats.Server.Player.PveKills prototype) {
+          return newBuilder().mergeFrom(prototype);
+        }
+        public Builder toBuilder() { return newBuilder(this); }
+        
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessage.Builder<Builder>
+           implements com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_Player_PveKills_descriptor;
+          }
+          
+          protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_Player_PveKills_fieldAccessorTable;
+          }
+          
+          // Construct using com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+          
+          private Builder(BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            }
+          }
+          private static Builder create() {
+            return new Builder();
+          }
+          
+          public Builder clear() {
+            super.clear();
+            mob_ = "";
+            bitField0_ = (bitField0_ & ~0x00000001);
+            kills_ = 0;
+            bitField0_ = (bitField0_ & ~0x00000002);
+            return this;
+          }
+          
+          public Builder clone() {
+            return create().mergeFrom(buildPartial());
+          }
+          
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.getDescriptor();
+          }
+          
+          public com.enjin.proto.stats.EnjinStats.Server.Player.PveKills getDefaultInstanceForType() {
+            return com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.getDefaultInstance();
+          }
+          
+          public com.enjin.proto.stats.EnjinStats.Server.Player.PveKills build() {
+            com.enjin.proto.stats.EnjinStats.Server.Player.PveKills result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+          
+          private com.enjin.proto.stats.EnjinStats.Server.Player.PveKills buildParsed()
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            com.enjin.proto.stats.EnjinStats.Server.Player.PveKills result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(
+                result).asInvalidProtocolBufferException();
+            }
+            return result;
+          }
+          
+          public com.enjin.proto.stats.EnjinStats.Server.Player.PveKills buildPartial() {
+            com.enjin.proto.stats.EnjinStats.Server.Player.PveKills result = new com.enjin.proto.stats.EnjinStats.Server.Player.PveKills(this);
+            int from_bitField0_ = bitField0_;
+            int to_bitField0_ = 0;
+            if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+              to_bitField0_ |= 0x00000001;
+            }
+            result.mob_ = mob_;
+            if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+              to_bitField0_ |= 0x00000002;
+            }
+            result.kills_ = kills_;
+            result.bitField0_ = to_bitField0_;
+            onBuilt();
+            return result;
+          }
+          
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof com.enjin.proto.stats.EnjinStats.Server.Player.PveKills) {
+              return mergeFrom((com.enjin.proto.stats.EnjinStats.Server.Player.PveKills)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+          
+          public Builder mergeFrom(com.enjin.proto.stats.EnjinStats.Server.Player.PveKills other) {
+            if (other == com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.getDefaultInstance()) return this;
+            if (other.hasMob()) {
+              setMob(other.getMob());
+            }
+            if (other.hasKills()) {
+              setKills(other.getKills());
+            }
+            this.mergeUnknownFields(other.getUnknownFields());
+            return this;
+          }
+          
+          public final boolean isInitialized() {
+            if (!hasMob()) {
+              
+              return false;
+            }
+            if (!hasKills()) {
+              
+              return false;
+            }
+            return true;
+          }
+          
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder(
+                this.getUnknownFields());
+            while (true) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    this.setUnknownFields(unknownFields.build());
+                    onChanged();
+                    return this;
+                  }
+                  break;
+                }
+                case 10: {
+                  bitField0_ |= 0x00000001;
+                  mob_ = input.readBytes();
+                  break;
+                }
+                case 16: {
+                  bitField0_ |= 0x00000002;
+                  kills_ = input.readInt32();
+                  break;
+                }
+              }
+            }
+          }
+          
+          private int bitField0_;
+          
+          // required string mob = 1;
+          private java.lang.Object mob_ = "";
+          public boolean hasMob() {
+            return ((bitField0_ & 0x00000001) == 0x00000001);
+          }
+          public String getMob() {
+            java.lang.Object ref = mob_;
+            if (!(ref instanceof String)) {
+              String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+              mob_ = s;
+              return s;
+            } else {
+              return (String) ref;
+            }
+          }
+          public Builder setMob(String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+            mob_ = value;
+            onChanged();
+            return this;
+          }
+          public Builder clearMob() {
+            bitField0_ = (bitField0_ & ~0x00000001);
+            mob_ = getDefaultInstance().getMob();
+            onChanged();
+            return this;
+          }
+          void setMob(com.google.protobuf.ByteString value) {
+            bitField0_ |= 0x00000001;
+            mob_ = value;
+            onChanged();
+          }
+          
+          // required int32 kills = 2;
+          private int kills_ ;
+          public boolean hasKills() {
+            return ((bitField0_ & 0x00000002) == 0x00000002);
+          }
+          public int getKills() {
+            return kills_;
+          }
+          public Builder setKills(int value) {
+            bitField0_ |= 0x00000002;
+            kills_ = value;
+            onChanged();
+            return this;
+          }
+          public Builder clearKills() {
+            bitField0_ = (bitField0_ & ~0x00000002);
+            kills_ = 0;
+            onChanged();
+            return this;
+          }
+          
+          // @@protoc_insertion_point(builder_scope:EnjinStats.Server.Player.PveKills)
+        }
+        
+        static {
+          defaultInstance = new PveKills(true);
+          defaultInstance.initFields();
+        }
+        
+        // @@protoc_insertion_point(class_scope:EnjinStats.Server.Player.PveKills)
+      }
+      
       private int bitField0_;
       // required string name = 1;
       public static final int NAME_FIELD_NUMBER = 1;
@@ -2193,6 +2655,37 @@ public final class EnjinStats {
         return pvekills_;
       }
       
+      // repeated .EnjinStats.Server.Player.PveKills pveentitykills = 13;
+      public static final int PVEENTITYKILLS_FIELD_NUMBER = 13;
+      private java.util.List<com.enjin.proto.stats.EnjinStats.Server.Player.PveKills> pveentitykills_;
+      public java.util.List<com.enjin.proto.stats.EnjinStats.Server.Player.PveKills> getPveentitykillsList() {
+        return pveentitykills_;
+      }
+      public java.util.List<? extends com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder> 
+          getPveentitykillsOrBuilderList() {
+        return pveentitykills_;
+      }
+      public int getPveentitykillsCount() {
+        return pveentitykills_.size();
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.Player.PveKills getPveentitykills(int index) {
+        return pveentitykills_.get(index);
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder getPveentitykillsOrBuilder(
+          int index) {
+        return pveentitykills_.get(index);
+      }
+      
+      // optional int32 chatlines = 14;
+      public static final int CHATLINES_FIELD_NUMBER = 14;
+      private int chatlines_;
+      public boolean hasChatlines() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      public int getChatlines() {
+        return chatlines_;
+      }
+      
       private void initFields() {
         name_ = "";
         firstimeplayer_ = false;
@@ -2206,6 +2699,8 @@ public final class EnjinStats {
         xplevel_ = 0;
         pvpkills_ = 0;
         pvekills_ = 0;
+        pveentitykills_ = java.util.Collections.emptyList();
+        chatlines_ = 0;
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -2218,6 +2713,12 @@ public final class EnjinStats {
         }
         if (hasBlocks()) {
           if (!getBlocks().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        for (int i = 0; i < getPveentitykillsCount(); i++) {
+          if (!getPveentitykills(i).isInitialized()) {
             memoizedIsInitialized = 0;
             return false;
           }
@@ -2264,6 +2765,12 @@ public final class EnjinStats {
         }
         if (((bitField0_ & 0x00000800) == 0x00000800)) {
           output.writeInt32(12, pvekills_);
+        }
+        for (int i = 0; i < pveentitykills_.size(); i++) {
+          output.writeMessage(13, pveentitykills_.get(i));
+        }
+        if (((bitField0_ & 0x00001000) == 0x00001000)) {
+          output.writeInt32(14, chatlines_);
         }
         getUnknownFields().writeTo(output);
       }
@@ -2321,6 +2828,14 @@ public final class EnjinStats {
         if (((bitField0_ & 0x00000800) == 0x00000800)) {
           size += com.google.protobuf.CodedOutputStream
             .computeInt32Size(12, pvekills_);
+        }
+        for (int i = 0; i < pveentitykills_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(13, pveentitykills_.get(i));
+        }
+        if (((bitField0_ & 0x00001000) == 0x00001000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(14, chatlines_);
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -2440,6 +2955,7 @@ public final class EnjinStats {
           if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
             getDistanceFieldBuilder();
             getBlocksFieldBuilder();
+            getPveentitykillsFieldBuilder();
           }
         }
         private static Builder create() {
@@ -2480,6 +2996,14 @@ public final class EnjinStats {
           bitField0_ = (bitField0_ & ~0x00000400);
           pvekills_ = 0;
           bitField0_ = (bitField0_ & ~0x00000800);
+          if (pveentitykillsBuilder_ == null) {
+            pveentitykills_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00001000);
+          } else {
+            pveentitykillsBuilder_.clear();
+          }
+          chatlines_ = 0;
+          bitField0_ = (bitField0_ & ~0x00002000);
           return this;
         }
         
@@ -2574,6 +3098,19 @@ public final class EnjinStats {
             to_bitField0_ |= 0x00000800;
           }
           result.pvekills_ = pvekills_;
+          if (pveentitykillsBuilder_ == null) {
+            if (((bitField0_ & 0x00001000) == 0x00001000)) {
+              pveentitykills_ = java.util.Collections.unmodifiableList(pveentitykills_);
+              bitField0_ = (bitField0_ & ~0x00001000);
+            }
+            result.pveentitykills_ = pveentitykills_;
+          } else {
+            result.pveentitykills_ = pveentitykillsBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+            to_bitField0_ |= 0x00001000;
+          }
+          result.chatlines_ = chatlines_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -2626,6 +3163,35 @@ public final class EnjinStats {
           if (other.hasPvekills()) {
             setPvekills(other.getPvekills());
           }
+          if (pveentitykillsBuilder_ == null) {
+            if (!other.pveentitykills_.isEmpty()) {
+              if (pveentitykills_.isEmpty()) {
+                pveentitykills_ = other.pveentitykills_;
+                bitField0_ = (bitField0_ & ~0x00001000);
+              } else {
+                ensurePveentitykillsIsMutable();
+                pveentitykills_.addAll(other.pveentitykills_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.pveentitykills_.isEmpty()) {
+              if (pveentitykillsBuilder_.isEmpty()) {
+                pveentitykillsBuilder_.dispose();
+                pveentitykillsBuilder_ = null;
+                pveentitykills_ = other.pveentitykills_;
+                bitField0_ = (bitField0_ & ~0x00001000);
+                pveentitykillsBuilder_ = 
+                  com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                     getPveentitykillsFieldBuilder() : null;
+              } else {
+                pveentitykillsBuilder_.addAllMessages(other.pveentitykills_);
+              }
+            }
+          }
+          if (other.hasChatlines()) {
+            setChatlines(other.getChatlines());
+          }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
         }
@@ -2637,6 +3203,12 @@ public final class EnjinStats {
           }
           if (hasBlocks()) {
             if (!getBlocks().isInitialized()) {
+              
+              return false;
+            }
+          }
+          for (int i = 0; i < getPveentitykillsCount(); i++) {
+            if (!getPveentitykills(i).isInitialized()) {
               
               return false;
             }
@@ -2733,6 +3305,17 @@ public final class EnjinStats {
               case 96: {
                 bitField0_ |= 0x00000800;
                 pvekills_ = input.readInt32();
+                break;
+              }
+              case 106: {
+                com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder subBuilder = com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.newBuilder();
+                input.readMessage(subBuilder, extensionRegistry);
+                addPveentitykills(subBuilder.buildPartial());
+                break;
+              }
+              case 112: {
+                bitField0_ |= 0x00002000;
+                chatlines_ = input.readInt32();
                 break;
               }
             }
@@ -3142,6 +3725,213 @@ public final class EnjinStats {
         public Builder clearPvekills() {
           bitField0_ = (bitField0_ & ~0x00000800);
           pvekills_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // repeated .EnjinStats.Server.Player.PveKills pveentitykills = 13;
+        private java.util.List<com.enjin.proto.stats.EnjinStats.Server.Player.PveKills> pveentitykills_ =
+          java.util.Collections.emptyList();
+        private void ensurePveentitykillsIsMutable() {
+          if (!((bitField0_ & 0x00001000) == 0x00001000)) {
+            pveentitykills_ = new java.util.ArrayList<com.enjin.proto.stats.EnjinStats.Server.Player.PveKills>(pveentitykills_);
+            bitField0_ |= 0x00001000;
+           }
+        }
+        
+        private com.google.protobuf.RepeatedFieldBuilder<
+            com.enjin.proto.stats.EnjinStats.Server.Player.PveKills, com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder, com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder> pveentitykillsBuilder_;
+        
+        public java.util.List<com.enjin.proto.stats.EnjinStats.Server.Player.PveKills> getPveentitykillsList() {
+          if (pveentitykillsBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(pveentitykills_);
+          } else {
+            return pveentitykillsBuilder_.getMessageList();
+          }
+        }
+        public int getPveentitykillsCount() {
+          if (pveentitykillsBuilder_ == null) {
+            return pveentitykills_.size();
+          } else {
+            return pveentitykillsBuilder_.getCount();
+          }
+        }
+        public com.enjin.proto.stats.EnjinStats.Server.Player.PveKills getPveentitykills(int index) {
+          if (pveentitykillsBuilder_ == null) {
+            return pveentitykills_.get(index);
+          } else {
+            return pveentitykillsBuilder_.getMessage(index);
+          }
+        }
+        public Builder setPveentitykills(
+            int index, com.enjin.proto.stats.EnjinStats.Server.Player.PveKills value) {
+          if (pveentitykillsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensurePveentitykillsIsMutable();
+            pveentitykills_.set(index, value);
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        public Builder setPveentitykills(
+            int index, com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder builderForValue) {
+          if (pveentitykillsBuilder_ == null) {
+            ensurePveentitykillsIsMutable();
+            pveentitykills_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addPveentitykills(com.enjin.proto.stats.EnjinStats.Server.Player.PveKills value) {
+          if (pveentitykillsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensurePveentitykillsIsMutable();
+            pveentitykills_.add(value);
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        public Builder addPveentitykills(
+            int index, com.enjin.proto.stats.EnjinStats.Server.Player.PveKills value) {
+          if (pveentitykillsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensurePveentitykillsIsMutable();
+            pveentitykills_.add(index, value);
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        public Builder addPveentitykills(
+            com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder builderForValue) {
+          if (pveentitykillsBuilder_ == null) {
+            ensurePveentitykillsIsMutable();
+            pveentitykills_.add(builderForValue.build());
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addPveentitykills(
+            int index, com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder builderForValue) {
+          if (pveentitykillsBuilder_ == null) {
+            ensurePveentitykillsIsMutable();
+            pveentitykills_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addAllPveentitykills(
+            java.lang.Iterable<? extends com.enjin.proto.stats.EnjinStats.Server.Player.PveKills> values) {
+          if (pveentitykillsBuilder_ == null) {
+            ensurePveentitykillsIsMutable();
+            super.addAll(values, pveentitykills_);
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        public Builder clearPveentitykills() {
+          if (pveentitykillsBuilder_ == null) {
+            pveentitykills_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00001000);
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.clear();
+          }
+          return this;
+        }
+        public Builder removePveentitykills(int index) {
+          if (pveentitykillsBuilder_ == null) {
+            ensurePveentitykillsIsMutable();
+            pveentitykills_.remove(index);
+            onChanged();
+          } else {
+            pveentitykillsBuilder_.remove(index);
+          }
+          return this;
+        }
+        public com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder getPveentitykillsBuilder(
+            int index) {
+          return getPveentitykillsFieldBuilder().getBuilder(index);
+        }
+        public com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder getPveentitykillsOrBuilder(
+            int index) {
+          if (pveentitykillsBuilder_ == null) {
+            return pveentitykills_.get(index);  } else {
+            return pveentitykillsBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        public java.util.List<? extends com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder> 
+             getPveentitykillsOrBuilderList() {
+          if (pveentitykillsBuilder_ != null) {
+            return pveentitykillsBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(pveentitykills_);
+          }
+        }
+        public com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder addPveentitykillsBuilder() {
+          return getPveentitykillsFieldBuilder().addBuilder(
+              com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.getDefaultInstance());
+        }
+        public com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder addPveentitykillsBuilder(
+            int index) {
+          return getPveentitykillsFieldBuilder().addBuilder(
+              index, com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.getDefaultInstance());
+        }
+        public java.util.List<com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder> 
+             getPveentitykillsBuilderList() {
+          return getPveentitykillsFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilder<
+            com.enjin.proto.stats.EnjinStats.Server.Player.PveKills, com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder, com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder> 
+            getPveentitykillsFieldBuilder() {
+          if (pveentitykillsBuilder_ == null) {
+            pveentitykillsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+                com.enjin.proto.stats.EnjinStats.Server.Player.PveKills, com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder, com.enjin.proto.stats.EnjinStats.Server.Player.PveKillsOrBuilder>(
+                    pveentitykills_,
+                    ((bitField0_ & 0x00001000) == 0x00001000),
+                    getParentForChildren(),
+                    isClean());
+            pveentitykills_ = null;
+          }
+          return pveentitykillsBuilder_;
+        }
+        
+        // optional int32 chatlines = 14;
+        private int chatlines_ ;
+        public boolean hasChatlines() {
+          return ((bitField0_ & 0x00002000) == 0x00002000);
+        }
+        public int getChatlines() {
+          return chatlines_;
+        }
+        public Builder setChatlines(int value) {
+          bitField0_ |= 0x00002000;
+          chatlines_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearChatlines() {
+          bitField0_ = (bitField0_ & ~0x00002000);
+          chatlines_ = 0;
           onChanged();
           return this;
         }
@@ -3704,6 +4494,11 @@ public final class EnjinStats {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_EnjinStats_Server_Player_Blocks_Block_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_EnjinStats_Server_Player_PveKills_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_EnjinStats_Server_Player_PveKills_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -3713,23 +4508,26 @@ public final class EnjinStats {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013Stats.proto\022\nEnjinStats\"\345\004\n\006Server\022*\n\007" +
+      "\n\013Stats.proto\022\nEnjinStats\"\334\005\n\006Server\022*\n\007" +
       "players\030\001 \003(\0132\031.EnjinStats.Server.Player" +
-      "\032\256\004\n\006Player\022\014\n\004name\030\001 \002(\t\022\035\n\016firstimepla" +
+      "\032\245\005\n\006Player\022\014\n\004name\030\001 \002(\t\022\035\n\016firstimepla" +
       "yer\030\002 \001(\010:\005false\022\016\n\006deaths\030\003 \001(\005\022\016\n\006kill" +
       "ed\030\004 \001(\005\0224\n\010distance\030\005 \001(\0132\".EnjinStats." +
       "Server.Player.Distance\0220\n\006blocks\030\006 \001(\0132 " +
       ".EnjinStats.Server.Player.Blocks\022\r\n\005kick" +
       "s\030\007 \001(\005\022\r\n\005money\030\010 \001(\001\022\n\n\002xp\030\t \001(\005\022\017\n\007xp" +
       "level\030\n \001(\005\022\020\n\010pvpkills\030\013 \001(\005\022\020\n\010pvekill" +
-      "s\030\014 \001(\005\032E\n\010Distance\022\014\n\004foot\030\001 \001(\001\022\014\n\004boa",
-      "t\030\002 \001(\001\022\013\n\003pig\030\003 \001(\001\022\020\n\010minecart\030\004 \001(\001\032\310" +
-      "\001\n\006Blocks\022\016\n\006broken\030\001 \001(\005\022\016\n\006placed\030\002 \001(" +
-      "\005\022<\n\014brokenblocks\030\003 \003(\0132&.EnjinStats.Ser" +
-      "ver.Player.Blocks.Block\022<\n\014placedblocks\030" +
-      "\004 \003(\0132&.EnjinStats.Server.Player.Blocks." +
-      "Block\032\"\n\005Block\022\n\n\002id\030\001 \002(\t\022\r\n\005count\030\002 \001(" +
-      "\005B#\n\025com.enjin.proto.statsB\nEnjinStats"
+      "s\030\014 \001(\005\022:\n\016pveentitykills\030\r \003(\0132\".EnjinS",
+      "tats.Server.Player.PveKills\022\021\n\tchatlines" +
+      "\030\016 \001(\005\032E\n\010Distance\022\014\n\004foot\030\001 \001(\001\022\014\n\004boat" +
+      "\030\002 \001(\001\022\013\n\003pig\030\003 \001(\001\022\020\n\010minecart\030\004 \001(\001\032\310\001" +
+      "\n\006Blocks\022\016\n\006broken\030\001 \001(\005\022\016\n\006placed\030\002 \001(\005" +
+      "\022<\n\014brokenblocks\030\003 \003(\0132&.EnjinStats.Serv" +
+      "er.Player.Blocks.Block\022<\n\014placedblocks\030\004" +
+      " \003(\0132&.EnjinStats.Server.Player.Blocks.B" +
+      "lock\032\"\n\005Block\022\n\n\002id\030\001 \002(\t\022\r\n\005count\030\002 \001(\005" +
+      "\032&\n\010PveKills\022\013\n\003mob\030\001 \002(\t\022\r\n\005kills\030\002 \002(\005" +
+      "B#\n\025com.enjin.proto.statsB\nEnjinStats"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3749,7 +4547,7 @@ public final class EnjinStats {
           internal_static_EnjinStats_Server_Player_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EnjinStats_Server_Player_descriptor,
-              new java.lang.String[] { "Name", "Firstimeplayer", "Deaths", "Killed", "Distance", "Blocks", "Kicks", "Money", "Xp", "Xplevel", "Pvpkills", "Pvekills", },
+              new java.lang.String[] { "Name", "Firstimeplayer", "Deaths", "Killed", "Distance", "Blocks", "Kicks", "Money", "Xp", "Xplevel", "Pvpkills", "Pvekills", "Pveentitykills", "Chatlines", },
               com.enjin.proto.stats.EnjinStats.Server.Player.class,
               com.enjin.proto.stats.EnjinStats.Server.Player.Builder.class);
           internal_static_EnjinStats_Server_Player_Distance_descriptor =
@@ -3776,6 +4574,14 @@ public final class EnjinStats {
               new java.lang.String[] { "Id", "Count", },
               com.enjin.proto.stats.EnjinStats.Server.Player.Blocks.Block.class,
               com.enjin.proto.stats.EnjinStats.Server.Player.Blocks.Block.Builder.class);
+          internal_static_EnjinStats_Server_Player_PveKills_descriptor =
+            internal_static_EnjinStats_Server_Player_descriptor.getNestedTypes().get(2);
+          internal_static_EnjinStats_Server_Player_PveKills_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_EnjinStats_Server_Player_PveKills_descriptor,
+              new java.lang.String[] { "Mob", "Kills", },
+              com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.class,
+              com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder.class);
           return null;
         }
       };

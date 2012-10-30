@@ -29,6 +29,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.enjin.officialplugin.listeners.EnjinStatsListener;
+import com.enjin.officialplugin.listeners.NewPlayerChatListener;
+import com.enjin.officialplugin.listeners.TekkitPlayerChatListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.permlisteners.GroupManagerListener;
 import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
@@ -73,6 +75,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean supportsglobalgroups = true;
 	public boolean votifierinstalled = false;
 	static public boolean bukkitversion = false;
+	public int xpversion = 0;
 	
 	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
 	
@@ -149,6 +152,33 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						playerstats.put(player.getName().toLowerCase(), new StatsPlayer(player));
 					}
 				}
+				String[] cbversionstring = getServer().getVersion().split(":");
+		        String[] versionstring = cbversionstring[1].split("\\.");
+		        try{
+		        	int majorversion = Integer.parseInt(versionstring[0].trim());
+		        	int minorversion = Integer.parseInt(versionstring[1].trim());
+		        	if(majorversion == 1) {
+		        		if(minorversion > 2) {
+		        			xpversion = 1;
+		        			logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
+		        		}else {
+		        			logger.info("[Enjin Minecraft Plugin] MC 1.2 or below found, enabling version 1 XP handling.");
+		        		}
+		        	}else if(majorversion > 1) {
+		        		xpversion = 1;
+		    			logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
+		        	}
+		        }catch (Exception e) {
+		        	logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP handling may occurr!");
+		        	logger.severe("[Enjin Minecraft Plugin] Server Version String: " + getServer().getVersion());
+		        }
+		        //XP handling and chat event handling changed at 1.3, so we can use the same variable. :D
+		        if(xpversion < 1) {
+		        	//We only keep this around for backwards compatibility with tekkit as it is still on 1.2.5
+		        	Bukkit.getPluginManager().registerEvents(new TekkitPlayerChatListener(this), this);
+		        }else {
+		        	Bukkit.getPluginManager().registerEvents(new NewPlayerChatListener(this), this);
+		        }
 			}
 			usingGroupManager = (permission instanceof Permission_GroupManager);
 			debug("Checking key valid.");
@@ -585,5 +615,47 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
         debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
         
+	}
+
+	public int getTotalXP(int level, float xp) {
+		int atlevel = 0;
+		int totalxp = 0;
+		int xpneededforlevel = 0;
+		if(xpversion == 1) {
+			xpneededforlevel = 17;
+			while(atlevel < level) {
+				atlevel++;
+				totalxp += xpneededforlevel;
+				if(atlevel >= 16) {
+					xpneededforlevel += 3;
+				}
+			}
+			//We only have 2 versions at the moment
+		}else {
+			xpneededforlevel = 7;
+	    	boolean odd = true;
+	    	while(atlevel < level) {
+	    		atlevel++;
+	    		totalxp += xpneededforlevel;
+	    		if(odd) {
+	    			xpneededforlevel += 3;
+	    			odd = false;
+	    		}else {
+	    			xpneededforlevel += 4;
+	    			odd = true;
+	    		}
+	    	}
+		}
+		totalxp = (int) (totalxp + (xp*xpneededforlevel));
+		return totalxp;
+	}
+	
+	public StatsPlayer GetPlayerStats(String name) {
+		StatsPlayer stats = playerstats.get(name.toLowerCase());
+		if(stats == null) {
+			stats = new StatsPlayer(name);
+			playerstats.put(name.toLowerCase(), stats);
+		}
+		return stats;
 	}
 }

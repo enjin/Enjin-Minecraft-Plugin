@@ -15,6 +15,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -41,7 +42,7 @@ public class EnjinStatsListener implements Listener {
 		if(event.isCancelled()) {
 			return;
 		}
-		StatsPlayer stats = GetPlayerStats(event.getPlayer().getName());
+		StatsPlayer stats = plugin.GetPlayerStats(event.getPlayer().getName());
 		stats.addBrokenBlock(event.getBlock());
 		//plugin.debug("Got a block broken by " + event.getPlayer().getName() + ". Bock type: " + event.getBlock().getType().toString());
 	}
@@ -51,7 +52,7 @@ public class EnjinStatsListener implements Listener {
 		if(event.isCancelled()) {
 			return;
 		}
-		StatsPlayer stats = GetPlayerStats(event.getPlayer().getName());
+		StatsPlayer stats = plugin.GetPlayerStats(event.getPlayer().getName());
 		stats.addPlacedBlock(event.getBlock());
 		//plugin.debug("Got a block placed by " + event.getPlayer().getName() + ". Bock type: " + event.getBlock().getType().toString());
 	}
@@ -59,7 +60,7 @@ public class EnjinStatsListener implements Listener {
 	//Listener to increment player deaths
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		StatsPlayer stats = GetPlayerStats(event.getEntity().getName());
+		StatsPlayer stats = plugin.GetPlayerStats(event.getEntity().getName());
 		stats.addDeath();
 	}
 	
@@ -69,7 +70,7 @@ public class EnjinStatsListener implements Listener {
 		if(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent damageevent = (EntityDamageByEntityEvent)event.getEntity().getLastDamageCause();
 			if(damageevent.getDamager() instanceof Player) {
-				StatsPlayer stats = GetPlayerStats(((Player)damageevent.getDamager()).getName());
+				StatsPlayer stats = plugin.GetPlayerStats(((Player)damageevent.getDamager()).getName());
 				stats.addKilled();
 				//Let's add to the player's pvp or pve kills
 				if(event.getEntityType() == EntityType.PLAYER) {
@@ -99,7 +100,7 @@ public class EnjinStatsListener implements Listener {
 		if(distance > 6) {
 			return;
 		}
-		StatsPlayer splayer = GetPlayerStats(player.getName());
+		StatsPlayer splayer = plugin.GetPlayerStats(player.getName());
 		if(player.isInsideVehicle()) {
 			Entity vehicle = player.getVehicle();
 			if(vehicle instanceof Minecart) {
@@ -118,12 +119,13 @@ public class EnjinStatsListener implements Listener {
 		}
 	}
 	
-	private StatsPlayer GetPlayerStats(String name) {
-		StatsPlayer stats = plugin.playerstats.get(name.toLowerCase());
-		if(stats == null) {
-			stats = new StatsPlayer(name);
-			plugin.playerstats.put(name.toLowerCase(), stats);
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void xpChange(PlayerExpChangeEvent event) {
+		if(event.getAmount() == 0) {
+			return;
 		}
-		return stats;
+		StatsPlayer splayer = plugin.GetPlayerStats(event.getPlayer().getName());
+		splayer.setXplevel(event.getPlayer().getLevel());
+		splayer.setTotalxp(plugin.getTotalXP(event.getPlayer().getLevel(), event.getPlayer().getExp()));
 	}
 }
