@@ -25,13 +25,13 @@ public class VotifierListener implements Listener {
 		}
 		Vote vote = event.getVote();
 		//Remove anything non-alphanumeric from the username, removing exploits
-		String username = vote.getUsername().replaceAll("[^0-9A-Za-z]", "");
+		String username = vote.getUsername().replaceAll("[^0-9A-Za-z_]", "");
 		String lists = "";
 		if(plugin.playervotes.containsKey(username)) {
 			lists = plugin.playervotes.get(username);
 			lists = lists + "," + vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 		}else {
-			lists = vote.getServiceName();
+			lists = vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 		}
 		plugin.playervotes.put(username, lists);
 	}

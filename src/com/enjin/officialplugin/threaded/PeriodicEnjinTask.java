@@ -29,6 +29,7 @@ import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
 import com.enjin.officialplugin.packets.Packet14NewerVersion;
 import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
 import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
+import com.enjin.officialplugin.stats.WriteStats;
 
 /**
  * 
@@ -55,6 +56,8 @@ public class PeriodicEnjinTask implements Runnable {
 	@Override
 	public void run() {
 		boolean successful = false;
+		new WriteStats(plugin).write("stats.stats");
+		plugin.debug("Stats saved to stats.stats.");
 		StringBuilder builder = new StringBuilder();
 		try {
 			plugin.debug("Connecting to Enjin...");
@@ -85,9 +88,10 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.append("&worlds=" + encode(getWorlds()));
 			builder.append("&time=" + encode(getTimes()));
 			//Don't add the votifier tag if no one has voted.
+			/* Votes are now handled in a separate thread.
 			if(plugin.playervotes.size() > 0) {
 				builder.append("&votifier=" + encode(getVotes()));
-			}
+			}*/
 			
 			//We don't want to throw any errors if they are using superperms
 			//which doesn't support groups. Therefore we can't support it.
@@ -108,6 +112,7 @@ public class PeriodicEnjinTask implements Runnable {
 		} catch (SocketTimeoutException e) {
 			//We don't need to spam the console every minute if the synch didn't complete correctly.
 			if(numoffailedtries++ > 5) {
+				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 				numoffailedtries = 0;
 			}
@@ -115,6 +120,7 @@ public class PeriodicEnjinTask implements Runnable {
 		} catch (Throwable t) {
 			//We don't need to spam the console every minute if the synch didn't complete correctly.
 			if(numoffailedtries++ > 5) {
+				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
 				numoffailedtries = 0;
 			}
@@ -122,6 +128,7 @@ public class PeriodicEnjinTask implements Runnable {
 				t.printStackTrace();
 			}
 			plugin.lasterror = new EnjinErrorReport(t, "Regular synch. Information sent:\n" + builder.toString());
+			EnjinMinecraftPlugin.enjinlogger.warning(plugin.lasterror.toString());
 		}
 		if(!successful) {
 			plugin.debug("Synch unsuccessful.");
@@ -152,22 +159,6 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 	}
 	
-	private String getVotes() {
-		removedplayervotes.clear();
-		StringBuilder votes = new StringBuilder();
-		Set<Entry<String,String>> voteset = plugin.playervotes.entrySet();
-		for(Entry<String, String> entry : voteset) {
-			String player = entry.getKey();
-			String lists = entry.getValue();
-			if(votes.length() != 0) {
-				votes.append(";");
-			}
-			votes.append(player + ":" + lists);
-			removedplayervotes.put(player, lists);
-			plugin.playervotes.remove(player);
-		}
-		return votes.toString();
-	}
 	private String getPlayerGroups() {
 		removedplayerperms.clear();
 		HashMap<String, String> theperms = new HashMap<String, String>();
@@ -314,6 +305,7 @@ public class PeriodicEnjinTask implements Runnable {
 				break;
 			default :
 				Bukkit.getLogger().warning("[Enjin] Received an invalid opcode: " + code);
+				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin] Received an invalid opcode: " + code);
 			}
 		}
 	}

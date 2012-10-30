@@ -1,5 +1,6 @@
 package com.enjin.officialplugin;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,6 +31,8 @@ public class EMPListener implements Listener {
 		updatePlayerRanks(p);
 		if(p.isOp() && !plugin.newversion.equals("")) {
 			p.sendMessage("Enjin Minecraft plugin was updated to version " + plugin.newversion + ". Please restart your server.");
+		}if(p.isOp() && plugin.updatefailed) {
+			p.sendMessage(ChatColor.DARK_RED + "Enjin Minecraft plugin failed to update to the newest version. Please download it manually.");
 		}
 	}
 	

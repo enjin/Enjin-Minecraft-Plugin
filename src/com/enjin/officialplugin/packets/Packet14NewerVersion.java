@@ -15,6 +15,9 @@ public class Packet14NewerVersion {
 			String newversion = PacketUtilities.readString(in);
 			plugin.debug("Got version string: " + newversion);
 			if(plugin.autoupdate && !plugin.hasupdate) {
+				if(plugin.updatefailed) {
+					return;
+				}
 				//plugin.newversion = newversion;
 				plugin.hasupdate = true;
 				DownloadPluginThread downloader = new DownloadPluginThread(plugin.getDataFolder().getParent(), newversion, new File(plugin.getDataFolder().getParent() + File.separator + "EnjinMinecraftPlugin.jar"), plugin);

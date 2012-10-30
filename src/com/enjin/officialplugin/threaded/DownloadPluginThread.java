@@ -48,6 +48,7 @@ public class DownloadPluginThread implements Runnable {
 		    	Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Enjin Minecraft plugin was updated to version " + versionnumber + ". Please restart your server.");
 		    	return;
 		    }else {
+		    	plugin.updatefailed = true;
 		    	Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Unable to update to new version. Please update manually!");
 		    }
 		} catch (IOException e) {

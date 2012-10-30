@@ -46,6 +46,7 @@ public class NewKeyVerifier implements Runnable {
 				//Let's spit out a warning message every 5 minutes that the plugin is unable to contact enjin.
 				if( ++i > 5) {
 					Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Unable to connect to the internet to verify your key! Please check your internet connection.");
+					EnjinMinecraftPlugin.enjinlogger.warning("Unable to connect to the internet to verify your key! Please check your internet connection.");
 					i = 0;
 				}
 				try {
@@ -63,8 +64,10 @@ public class NewKeyVerifier implements Runnable {
 				plugin.registerEvents();
 			} else if(validation == 0){
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Invalid key! Please regenerate your key and try again.");
+				EnjinMinecraftPlugin.enjinlogger.warning("Invalid key! Please regenerate your key and try again.");
 			} else {
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was a problem connecting to Enjin, please try again in a few minutes. (If you continue to see this message, please type \"/enjin report\" and send the enjinreport_xxx.txt file to Enjin Support for further assistance.)");
+				EnjinMinecraftPlugin.enjinlogger.warning("There was a problem connecting to Enjin, please try again in a few minutes. (If you continue to see this message, please type \"/enjin report\" and send the enjinreport_xxx.txt file to Enjin Support for further assistance.)");
 			}
 			completed = true;
 		}else {
@@ -114,6 +117,7 @@ public class NewKeyVerifier implements Runnable {
 		if(EnjinMinecraftPlugin.usingSSL && !testHTTPSconnection()) {
 			EnjinMinecraftPlugin.usingSSL = false;
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+			EnjinMinecraftPlugin.enjinlogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
 		}
 		try {
 			if(key == null) {
@@ -131,6 +135,7 @@ public class NewKeyVerifier implements Runnable {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing game data to the enjin server.");
 			t.printStackTrace();
 			plugin.lasterror = new EnjinErrorReport(t, "Verifying key when error was thrown:");
+			EnjinMinecraftPlugin.enjinlogger.warning("There was an error synchronizing game data to the enjin server." + plugin.lasterror.toString());
 			return 2;
 		}
 	}

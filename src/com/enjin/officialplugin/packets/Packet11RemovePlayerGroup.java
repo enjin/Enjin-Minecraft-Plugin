@@ -29,7 +29,9 @@ public class Packet11RemovePlayerGroup {
 				String playername = msg[0];
 				String groupname = msg[1];
 				String world = (msg.length == 3) ? msg[2] : null;
-				plugin.getServer().getPluginManager().callEvent(new RemovePlayerGroupEvent(playername, groupname, world));
+				if("*".equals(world)) {
+					world = null;
+				}
 				plugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
 				if(plugin.permissionsbukkit != null) {
 					plugin.debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
@@ -48,6 +50,7 @@ public class Packet11RemovePlayerGroup {
 						}
 					}
 				}
+				plugin.getServer().getPluginManager().callEvent(new RemovePlayerGroupEvent(playername, groupname, world));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -9,6 +9,8 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -26,14 +28,19 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.enjin.officialplugin.listeners.EnjinStatsListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.permlisteners.GroupManagerListener;
 import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
 import com.enjin.officialplugin.permlisteners.PexChangeListener;
 import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
+import com.enjin.officialplugin.stats.StatsPlayer;
+import com.enjin.officialplugin.stats.WriteStats;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
+import com.enjin.officialplugin.threaded.PeriodicVoteTask;
 import com.enjin.officialplugin.threaded.ReportMakerThread;
+import com.enjin.proto.stats.EnjinStats;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
 
 import de.bananaco.bpermissions.imp.Permissions;
@@ -58,12 +65,18 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	Logger logger;
 	public static Permission permission = null;
 	public boolean debug = false;
+	public boolean collectstats = true;
 	public PermissionsEx permissionsex;
 	public GroupManager groupmanager;
 	public Permissions bpermissions;
 	public PermissionsPlugin permissionsbukkit;
 	public boolean supportsglobalgroups = true;
+	public boolean votifierinstalled = false;
 	static public boolean bukkitversion = false;
+	
+	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
+	
+	public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
 	
 	static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
@@ -73,11 +86,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public String newversion = "";
 	
 	public boolean hasupdate = false;
+	public boolean updatefailed = false;
 	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
 	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
 	
 	public final EMPListener listener = new EMPListener(this);
 	final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
+	final PeriodicVoteTask votetask = new PeriodicVoteTask(this);
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	public static String minecraftport;
 	public static boolean usingSSL = true;
@@ -88,17 +103,31 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public EnjinErrorReport lasterror = null;
 	
+	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+	
 	public void debug(String s) {
 		if(debug) {
 			System.out.println("Enjin Debug: " + s);
+			enjinlogger.fine(s);
 		}
 	}
 	
 	@Override
 	public void onEnable() {
 		try {
+			File enjinlog = new File("enjin.log");
+			//Start a new log every time the server boots. Keeps the files nice and small
+			if(enjinlog.exists()) {
+				DateFormat edateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+				enjinlog.renameTo(new File("enjin-" + edateFormat.format(new Date()) + ".log"));
+			}
 			debug("Begin init");
 			initVariables();
+			enjinlogger.setLevel(Level.FINEST);
+			FileHandler fileTxt = new FileHandler("enjin.log");
+			EnjinLogFormatter formatterTxt = new EnjinLogFormatter();
+		    fileTxt.setFormatter(formatterTxt);
+		    enjinlogger.addHandler(fileTxt);
 			debug("Init vars done.");
 			initFiles();
 			debug("Init files done.");
@@ -108,6 +137,19 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Setup permissions integration");
 			setupVotifierListener();
 			debug("Setup Votifier integration");
+			if(collectstats) {
+				Bukkit.getPluginManager().registerEvents(new EnjinStatsListener(this), this);
+				File stats = new File("stats.stats");
+				if(stats.exists()) {
+					FileInputStream input = new FileInputStream(stats);
+					EnjinStats.Server serverstats = EnjinStats.Server.parseFrom(input);
+					debug("Parsing stats input.");
+					for(EnjinStats.Server.Player player : serverstats.getPlayersList()) {
+						debug("Adding player " + player.getName() + ".");
+						playerstats.put(player.getName().toLowerCase(), new StatsPlayer(player));
+					}
+				}
+			}
 			usingGroupManager = (permission instanceof Permission_GroupManager);
 			debug("Checking key valid.");
 			if(verifier == null || verifier.completed) {
@@ -116,10 +158,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				verifierthread.start();
 			}else {
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] A key verification is already running. Did you /reload?");
+				enjinlogger.warning("A key verification is already running. Did you /reload?");
 			}
 		}
 		catch(Throwable t) {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
+			enjinlogger.warning("Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
 			t.printStackTrace();
 			this.setEnabled(false);
 		}
@@ -143,6 +187,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			minecraftport = serverProperties.getProperty("server-port");
 		} catch (Throwable t) {
 			t.printStackTrace();
+			enjinlogger.severe("Couldn't find a localhost ip! Please report this problem!");
 			throw new Exception("[Enjin Minecraft Plugin] Couldn't find a localhost ip! Please report this problem!");
 		}
 	}
@@ -169,21 +214,33 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     	}
     	debug = config.getBoolean("debug", false);
     	hash = config.getString("authkey", "");
+    	debug("Key value retrieved: " + hash);
     	usingSSL = config.getBoolean("https", true);
     	autoupdate = config.getBoolean("autoupdate", true);
+    	//Test to see if we need to update the config file.
+    	String teststats = config.getString("collectstats", "");
+    	if(teststats.equals("")) {
+    		createConfig();
+    	}
+    	collectstats = config.getBoolean("collectstats", true);
 	}
 	
 	private void createConfig() {
-		config.set("debug", false);
+		config.set("debug", debug);
 		config.set("authkey", hash);
-		config.set("https", true);
-		config.set("autoupdate", true);
+		config.set("https", usingSSL);
+		config.set("autoupdate", autoupdate);
+		config.set("collectstats", collectstats);
 		saveConfig();
 	}
 
 	public void startTask() {
-		debug("Starting task.");
+		debug("Starting tasks.");
 		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
+		//Only start the vote task if votifier is installed.
+		if(votifierinstalled) {
+			Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, votetask, 80L, 80L);
+		}
 	}
 	
 	public void registerEvents() {
@@ -192,7 +249,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	}
 	
 	public void stopTask() {
-		debug("Stopping task.");
+		debug("Stopping tasks.");
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 	
@@ -204,12 +261,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	private void setupVotifierListener() {
 		if(Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
 			System.out.println("[Enjin Minecraft Plugin] Votifier plugin found, enabling Votifier support.");
+			enjinlogger.info("Votifier plugin found, enabling Votifier support.");
 			Bukkit.getPluginManager().registerEvents(new VotifierListener(this), this);
+			votifierinstalled = true;
 		}
 	}
 	
 	private void initPlugins() throws Throwable {
 		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+			enjinlogger.warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/server-mods/vault/!");
 			getLogger().warning("[Enjin Minecraft Plugin] Couldn't find the vault plugin! Please get it from dev.bukkit.org/server-mods/vault/!");
 			return;
 		}
@@ -220,11 +280,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	private void initPermissions() throws Throwable {
 		RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
 		if(provider == null) {
+			enjinlogger.warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
 			return;
 		}
 		permission = provider.getProvider();
 		if(permission == null) {
+			enjinlogger.warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
 			return;
 		}
@@ -240,6 +302,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(args.length != 1) {
 				return false;
 			}
+			enjinlogger.info("Checking if key is valid");
 			Bukkit.getLogger().info("Checking if key is valid");
 			//Make sure we don't have several verifier threads going at the same time.
 			if(verifier == null || verifier.completed) {
@@ -347,12 +410,57 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}
 					sender.sendMessage(ChatColor.GREEN + Integer.toString(playerperms.size()) + " players have been queued for synching. This should take approximately " + Integer.toString(minutes) + " minutes.");
 					return true;
+				}else if(args[0].equalsIgnoreCase("savestats")) {
+					if(!sender.hasPermission("enjin.savestats")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.savestats\" permission or OP to run that command!");
+						return true;
+					}
+					new WriteStats(this).write("stats.stats");
+					sender.sendMessage(ChatColor.GREEN + "Stats saved to stats.stats.");
+					return true;
+				}else if(args[0].equalsIgnoreCase("playerstats")) {
+					if(!sender.hasPermission("enjin.playerstats")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.playerstats\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 1) {
+						if(playerstats.containsKey(args[1].toLowerCase())) {
+							StatsPlayer player = playerstats.get(args[1].toLowerCase());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Player stats for player: " + ChatColor.GOLD + player.getName());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Deaths: " + ChatColor.GOLD + player.getDeaths());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Kills: " + ChatColor.GOLD + player.getKilled());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Blocks broken: " + ChatColor.GOLD + player.getBrokenblocks());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Blocks placed: " + ChatColor.GOLD + player.getPlacedblocks());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Block types broken: " + ChatColor.GOLD + player.getBrokenblocktypes().toString());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Block types placed: " + ChatColor.GOLD + player.getPlacedblocktypes().toString());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Foot distance traveled: " + ChatColor.GOLD + player.getFootdistance());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Boat distance traveled: " + ChatColor.GOLD + player.getBoatdistance());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Minecart distance traveled: " + ChatColor.GOLD + player.getMinecartdistance());
+							sender.sendMessage(ChatColor.DARK_GREEN + "Pig distance traveled: " + ChatColor.GOLD + player.getPigdistance());
+						}
+					}else {
+						return false;
+					}
+					return true;
+				}else if(apiurl.equals("://gamers.enjin.ca/api/") && args[0].equalsIgnoreCase("vote") && args.length > 2) {
+					String username = args[1];
+					String lists = "";
+					String listname = args[2];
+					if(playervotes.containsKey(username)) {
+						lists = playervotes.get(username);
+						lists = lists + "," + listname.replaceAll("[^0-9A-Za-z.\\-]", "");
+					}else {
+						lists = listname.replaceAll("[^0-9A-Za-z.\\-]", "");
+					}
+					playervotes.put(username, lists);
+					sender.sendMessage(ChatColor.GREEN + "You just added a vote for player " + username + " on list " + listname);
 				}
 			}
 		}
 		return false;
 	}
 	
+	@Deprecated
 	public static void sendAddRank(final String world, final String group, final String player) {
 		exec.submit(
 			new Runnable() {
@@ -361,6 +469,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					try {
 						sendAPIQuery("minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group);
 					} catch (Throwable t) {
+						enjinlogger.warning("There was an error synchronizing group " + group + ", for user " + player + ".");
 						Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing group " + group + ", for user " + player + ".");
 						t.printStackTrace();
 					}
@@ -369,6 +478,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		);
 	}
 	
+	@Deprecated
 	public static void sendRemoveRank(final String world, final String group, final String player) {
 		exec.submit(
 			new Runnable() {
@@ -377,6 +487,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					try {
 						sendAPIQuery("minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group);
 					} catch (Throwable t) {
+						enjinlogger.warning("There was an error synchronizing group " + group + ", for user " + player + ".");
 						Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing group " + group + ", for user " + player + ".");
 						t.printStackTrace();
 					}
@@ -416,14 +527,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			}
 			return 0;
 		} catch (SSLHandshakeException e) {
+			enjinlogger.warning("SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
 			usingSSL = false;
 			return sendAPIQuery(urls, queryValues);
 		} catch (SocketTimeoutException e) {
+			enjinlogger.warning("Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 			return 2;
 		} catch (Throwable t) {
 			t.printStackTrace();
+			enjinlogger.warning("Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
 			return 2;
 		}

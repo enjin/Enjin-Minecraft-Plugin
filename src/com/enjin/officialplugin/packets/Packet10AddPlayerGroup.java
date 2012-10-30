@@ -30,7 +30,6 @@ public class Packet10AddPlayerGroup {
 				if("*".equals(world)) {
 					world = null;
 				}
-				plugin.getServer().getPluginManager().callEvent(new AddPlayerGroupEvent(playername, groupname, world));
 				plugin.debug("Adding player " + playername + " from group " + groupname + " in world " + world + " world");
 				//Check to see if we have PermissionsBukkit. If we do we have to do something special
 				if(plugin.permissionsbukkit != null) {
@@ -50,6 +49,7 @@ public class Packet10AddPlayerGroup {
 						}
 					}
 				}
+				plugin.getServer().getPluginManager().callEvent(new AddPlayerGroupEvent(playername, groupname, world));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
