@@ -29,6 +29,7 @@ import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
 import com.enjin.officialplugin.packets.Packet14NewerVersion;
 import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
 import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
+import com.enjin.officialplugin.packets.PacketUtilities;
 import com.enjin.officialplugin.stats.WriteStats;
 
 /**
@@ -107,8 +108,39 @@ public class PeriodicEnjinTask implements Runnable {
 			//System.out.println("Getting input stream...");
 			InputStream in = con.getInputStream();
 			//System.out.println("Handling input stream...");
-			handleInput(in);
-			successful = true;
+			int success = handleInput(in);
+			switch(success) {
+			case 0:
+				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
+				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
+				plugin.stopTask();
+				plugin.unregisterEvents();
+				successful = false;
+				break;
+			case 1:
+				successful = true;
+				break;
+			case 2:
+				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+				successful = false;
+				break;
+			case 3:
+				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
+				Bukkit.getLogger().info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
+				successful = false;
+				break;
+			case 4:
+				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+				Bukkit.getLogger().info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+				successful = false;
+				break;
+			default:
+				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
+				Bukkit.getLogger().info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
+				successful = false;
+				break;
+			}
 		} catch (SocketTimeoutException e) {
 			//We don't need to spam the console every minute if the synch didn't complete correctly.
 			if(numoffailedtries++ > 5) {
@@ -251,7 +283,8 @@ public class PeriodicEnjinTask implements Runnable {
 		//return in;
 	}
 	
-	private void handleInput(InputStream in) throws IOException {
+	private int handleInput(InputStream in) throws IOException {
+		int tresult = 5;
 		BufferedInputStream bin = new BufferedInputStream(in);
 		bin.mark(Integer.MAX_VALUE);
 		//TODO: A for loop??? Maybe a while(code = in.read() != -1) {}
@@ -268,7 +301,7 @@ public class PeriodicEnjinTask implements Runnable {
 					}
 					plugin.debug("Raw data received:\n" + input.toString());
 				}
-				return; //end of stream reached
+				return tresult; //end of stream reached
 			case 0x10:
 				plugin.debug("Packet [0x10](Add Player Group) received.");
 				Packet10AddPlayerGroup.handle(bin, plugin);
@@ -302,6 +335,15 @@ public class PeriodicEnjinTask implements Runnable {
 			case 0x18:
 				plugin.debug("Packet [0x18](Remove Players From Whitelist) received.");
 				Packet18RemovePlayersFromWhitelist.handle(bin, plugin);
+				break;
+			case 0x20:
+				plugin.debug("Packet [0x20](Enjin Status) received.");
+				String result = PacketUtilities.readString(bin);
+				try {
+					tresult = Integer.getInteger(result);
+				}catch (NumberFormatException e) {
+					//tresult = 4;
+				}
 				break;
 			default :
 				Bukkit.getLogger().warning("[Enjin] Received an invalid opcode: " + code);

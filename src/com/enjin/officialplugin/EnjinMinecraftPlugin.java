@@ -181,15 +181,20 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		        }
 			}
 			usingGroupManager = (permission instanceof Permission_GroupManager);
-			debug("Checking key valid.");
-			if(verifier == null || verifier.completed) {
+			//debug("Checking key valid.");
+			//Bypass key checking, but only if the key looks valid
+			if(hash.length() == 50) {
+				startTask();
+				registerEvents();
+			}
+			/*if(verifier == null || verifier.completed) {
 				verifier = new NewKeyVerifier(this, hash, null, true);
 				Thread verifierthread = new Thread(verifier);
 				verifierthread.start();
 			}else {
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] A key verification is already running. Did you /reload?");
 				enjinlogger.warning("A key verification is already running. Did you /reload?");
-			}
+			}*/
 		}
 		catch(Throwable t) {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
