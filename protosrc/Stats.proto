@@ -53,5 +53,29 @@ message Server {
   }
   
   repeated Player players = 1;
+  optional int64 laststarttime = 2;
+  optional int32 totalkicks = 3;
+  
+  message KickPlayer {
+    required string name = 1;
+    required int32 count = 2;
+  }
+  
+  repeated KickPlayer playerskicked = 4;
+  optional int32 entities = 5;
+  optional int32 memoryused = 6;
+  optional int32 creeperexplosions = 7;
+  optional int32 servertickrate = 8;
+  
+  message ServerInformation {
+    optional string javaversion = 1;
+    optional string operatingsystem = 2;
+    optional int32 maxmemory = 3;
+    optional string serverversion = 4;
+    optional int32 corecount = 5;
+  }
+  
+  optional ServerInformation serverinfo = 9;
+  
 
 }

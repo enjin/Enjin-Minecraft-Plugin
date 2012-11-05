@@ -20,6 +20,45 @@ public final class EnjinStats {
         getPlayersOrBuilderList();
     com.enjin.proto.stats.EnjinStats.Server.PlayerOrBuilder getPlayersOrBuilder(
         int index);
+    
+    // optional int64 laststarttime = 2;
+    boolean hasLaststarttime();
+    long getLaststarttime();
+    
+    // optional int32 totalkicks = 3;
+    boolean hasTotalkicks();
+    int getTotalkicks();
+    
+    // repeated .EnjinStats.Server.KickPlayer playerskicked = 4;
+    java.util.List<com.enjin.proto.stats.EnjinStats.Server.KickPlayer> 
+        getPlayerskickedList();
+    com.enjin.proto.stats.EnjinStats.Server.KickPlayer getPlayerskicked(int index);
+    int getPlayerskickedCount();
+    java.util.List<? extends com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder> 
+        getPlayerskickedOrBuilderList();
+    com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder getPlayerskickedOrBuilder(
+        int index);
+    
+    // optional int32 entities = 5;
+    boolean hasEntities();
+    int getEntities();
+    
+    // optional int32 memoryused = 6;
+    boolean hasMemoryused();
+    int getMemoryused();
+    
+    // optional int32 creeperexplosions = 7;
+    boolean hasCreeperexplosions();
+    int getCreeperexplosions();
+    
+    // optional int32 servertickrate = 8;
+    boolean hasServertickrate();
+    int getServertickrate();
+    
+    // optional .EnjinStats.Server.ServerInformation serverinfo = 9;
+    boolean hasServerinfo();
+    com.enjin.proto.stats.EnjinStats.Server.ServerInformation getServerinfo();
+    com.enjin.proto.stats.EnjinStats.Server.ServerInformationOrBuilder getServerinfoOrBuilder();
   }
   public static final class Server extends
       com.google.protobuf.GeneratedMessage
@@ -3947,6 +3986,1132 @@ public final class EnjinStats {
       // @@protoc_insertion_point(class_scope:EnjinStats.Server.Player)
     }
     
+    public interface KickPlayerOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string name = 1;
+      boolean hasName();
+      String getName();
+      
+      // required int32 count = 2;
+      boolean hasCount();
+      int getCount();
+    }
+    public static final class KickPlayer extends
+        com.google.protobuf.GeneratedMessage
+        implements KickPlayerOrBuilder {
+      // Use KickPlayer.newBuilder() to construct.
+      private KickPlayer(Builder builder) {
+        super(builder);
+      }
+      private KickPlayer(boolean noInit) {}
+      
+      private static final KickPlayer defaultInstance;
+      public static KickPlayer getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public KickPlayer getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_KickPlayer_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_KickPlayer_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required string name = 1;
+      public static final int NAME_FIELD_NUMBER = 1;
+      private java.lang.Object name_;
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // required int32 count = 2;
+      public static final int COUNT_FIELD_NUMBER = 2;
+      private int count_;
+      public boolean hasCount() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getCount() {
+        return count_;
+      }
+      
+      private void initFields() {
+        name_ = "";
+        count_ = 0;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasName()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasCount()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeInt32(2, count_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(2, count_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.KickPlayer parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(com.enjin.proto.stats.EnjinStats.Server.KickPlayer prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_KickPlayer_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_KickPlayer_fieldAccessorTable;
+        }
+        
+        // Construct using com.enjin.proto.stats.EnjinStats.Server.KickPlayer.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          count_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.enjin.proto.stats.EnjinStats.Server.KickPlayer.getDescriptor();
+        }
+        
+        public com.enjin.proto.stats.EnjinStats.Server.KickPlayer getDefaultInstanceForType() {
+          return com.enjin.proto.stats.EnjinStats.Server.KickPlayer.getDefaultInstance();
+        }
+        
+        public com.enjin.proto.stats.EnjinStats.Server.KickPlayer build() {
+          com.enjin.proto.stats.EnjinStats.Server.KickPlayer result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private com.enjin.proto.stats.EnjinStats.Server.KickPlayer buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          com.enjin.proto.stats.EnjinStats.Server.KickPlayer result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public com.enjin.proto.stats.EnjinStats.Server.KickPlayer buildPartial() {
+          com.enjin.proto.stats.EnjinStats.Server.KickPlayer result = new com.enjin.proto.stats.EnjinStats.Server.KickPlayer(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.name_ = name_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.count_ = count_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.enjin.proto.stats.EnjinStats.Server.KickPlayer) {
+            return mergeFrom((com.enjin.proto.stats.EnjinStats.Server.KickPlayer)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(com.enjin.proto.stats.EnjinStats.Server.KickPlayer other) {
+          if (other == com.enjin.proto.stats.EnjinStats.Server.KickPlayer.getDefaultInstance()) return this;
+          if (other.hasName()) {
+            setName(other.getName());
+          }
+          if (other.hasCount()) {
+            setCount(other.getCount());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasName()) {
+            
+            return false;
+          }
+          if (!hasCount()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                name_ = input.readBytes();
+                break;
+              }
+              case 16: {
+                bitField0_ |= 0x00000002;
+                count_ = input.readInt32();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required string name = 1;
+        private java.lang.Object name_ = "";
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            name_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setName(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        void setName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+        }
+        
+        // required int32 count = 2;
+        private int count_ ;
+        public boolean hasCount() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public int getCount() {
+          return count_;
+        }
+        public Builder setCount(int value) {
+          bitField0_ |= 0x00000002;
+          count_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearCount() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          count_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:EnjinStats.Server.KickPlayer)
+      }
+      
+      static {
+        defaultInstance = new KickPlayer(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:EnjinStats.Server.KickPlayer)
+    }
+    
+    public interface ServerInformationOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // optional string javaversion = 1;
+      boolean hasJavaversion();
+      String getJavaversion();
+      
+      // optional string operatingsystem = 2;
+      boolean hasOperatingsystem();
+      String getOperatingsystem();
+      
+      // optional int32 maxmemory = 3;
+      boolean hasMaxmemory();
+      int getMaxmemory();
+      
+      // optional string serverversion = 4;
+      boolean hasServerversion();
+      String getServerversion();
+      
+      // optional int32 corecount = 5;
+      boolean hasCorecount();
+      int getCorecount();
+    }
+    public static final class ServerInformation extends
+        com.google.protobuf.GeneratedMessage
+        implements ServerInformationOrBuilder {
+      // Use ServerInformation.newBuilder() to construct.
+      private ServerInformation(Builder builder) {
+        super(builder);
+      }
+      private ServerInformation(boolean noInit) {}
+      
+      private static final ServerInformation defaultInstance;
+      public static ServerInformation getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public ServerInformation getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_ServerInformation_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_ServerInformation_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // optional string javaversion = 1;
+      public static final int JAVAVERSION_FIELD_NUMBER = 1;
+      private java.lang.Object javaversion_;
+      public boolean hasJavaversion() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getJavaversion() {
+        java.lang.Object ref = javaversion_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            javaversion_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getJavaversionBytes() {
+        java.lang.Object ref = javaversion_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          javaversion_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // optional string operatingsystem = 2;
+      public static final int OPERATINGSYSTEM_FIELD_NUMBER = 2;
+      private java.lang.Object operatingsystem_;
+      public boolean hasOperatingsystem() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getOperatingsystem() {
+        java.lang.Object ref = operatingsystem_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            operatingsystem_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getOperatingsystemBytes() {
+        java.lang.Object ref = operatingsystem_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          operatingsystem_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // optional int32 maxmemory = 3;
+      public static final int MAXMEMORY_FIELD_NUMBER = 3;
+      private int maxmemory_;
+      public boolean hasMaxmemory() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getMaxmemory() {
+        return maxmemory_;
+      }
+      
+      // optional string serverversion = 4;
+      public static final int SERVERVERSION_FIELD_NUMBER = 4;
+      private java.lang.Object serverversion_;
+      public boolean hasServerversion() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public String getServerversion() {
+        java.lang.Object ref = serverversion_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            serverversion_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getServerversionBytes() {
+        java.lang.Object ref = serverversion_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          serverversion_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // optional int32 corecount = 5;
+      public static final int CORECOUNT_FIELD_NUMBER = 5;
+      private int corecount_;
+      public boolean hasCorecount() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public int getCorecount() {
+        return corecount_;
+      }
+      
+      private void initFields() {
+        javaversion_ = "";
+        operatingsystem_ = "";
+        maxmemory_ = 0;
+        serverversion_ = "";
+        corecount_ = 0;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getJavaversionBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getOperatingsystemBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeInt32(3, maxmemory_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeBytes(4, getServerversionBytes());
+        }
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          output.writeInt32(5, corecount_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getJavaversionBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(2, getOperatingsystemBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(3, maxmemory_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(4, getServerversionBytes());
+        }
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(5, corecount_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static com.enjin.proto.stats.EnjinStats.Server.ServerInformation parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(com.enjin.proto.stats.EnjinStats.Server.ServerInformation prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements com.enjin.proto.stats.EnjinStats.Server.ServerInformationOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_ServerInformation_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return com.enjin.proto.stats.EnjinStats.internal_static_EnjinStats_Server_ServerInformation_fieldAccessorTable;
+        }
+        
+        // Construct using com.enjin.proto.stats.EnjinStats.Server.ServerInformation.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          javaversion_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          operatingsystem_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          maxmemory_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          serverversion_ = "";
+          bitField0_ = (bitField0_ & ~0x00000008);
+          corecount_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000010);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return com.enjin.proto.stats.EnjinStats.Server.ServerInformation.getDescriptor();
+        }
+        
+        public com.enjin.proto.stats.EnjinStats.Server.ServerInformation getDefaultInstanceForType() {
+          return com.enjin.proto.stats.EnjinStats.Server.ServerInformation.getDefaultInstance();
+        }
+        
+        public com.enjin.proto.stats.EnjinStats.Server.ServerInformation build() {
+          com.enjin.proto.stats.EnjinStats.Server.ServerInformation result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private com.enjin.proto.stats.EnjinStats.Server.ServerInformation buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          com.enjin.proto.stats.EnjinStats.Server.ServerInformation result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public com.enjin.proto.stats.EnjinStats.Server.ServerInformation buildPartial() {
+          com.enjin.proto.stats.EnjinStats.Server.ServerInformation result = new com.enjin.proto.stats.EnjinStats.Server.ServerInformation(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.javaversion_ = javaversion_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.operatingsystem_ = operatingsystem_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.maxmemory_ = maxmemory_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.serverversion_ = serverversion_;
+          if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+            to_bitField0_ |= 0x00000010;
+          }
+          result.corecount_ = corecount_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof com.enjin.proto.stats.EnjinStats.Server.ServerInformation) {
+            return mergeFrom((com.enjin.proto.stats.EnjinStats.Server.ServerInformation)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(com.enjin.proto.stats.EnjinStats.Server.ServerInformation other) {
+          if (other == com.enjin.proto.stats.EnjinStats.Server.ServerInformation.getDefaultInstance()) return this;
+          if (other.hasJavaversion()) {
+            setJavaversion(other.getJavaversion());
+          }
+          if (other.hasOperatingsystem()) {
+            setOperatingsystem(other.getOperatingsystem());
+          }
+          if (other.hasMaxmemory()) {
+            setMaxmemory(other.getMaxmemory());
+          }
+          if (other.hasServerversion()) {
+            setServerversion(other.getServerversion());
+          }
+          if (other.hasCorecount()) {
+            setCorecount(other.getCorecount());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                javaversion_ = input.readBytes();
+                break;
+              }
+              case 18: {
+                bitField0_ |= 0x00000002;
+                operatingsystem_ = input.readBytes();
+                break;
+              }
+              case 24: {
+                bitField0_ |= 0x00000004;
+                maxmemory_ = input.readInt32();
+                break;
+              }
+              case 34: {
+                bitField0_ |= 0x00000008;
+                serverversion_ = input.readBytes();
+                break;
+              }
+              case 40: {
+                bitField0_ |= 0x00000010;
+                corecount_ = input.readInt32();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // optional string javaversion = 1;
+        private java.lang.Object javaversion_ = "";
+        public boolean hasJavaversion() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getJavaversion() {
+          java.lang.Object ref = javaversion_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            javaversion_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setJavaversion(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          javaversion_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearJavaversion() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          javaversion_ = getDefaultInstance().getJavaversion();
+          onChanged();
+          return this;
+        }
+        void setJavaversion(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          javaversion_ = value;
+          onChanged();
+        }
+        
+        // optional string operatingsystem = 2;
+        private java.lang.Object operatingsystem_ = "";
+        public boolean hasOperatingsystem() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public String getOperatingsystem() {
+          java.lang.Object ref = operatingsystem_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            operatingsystem_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setOperatingsystem(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          operatingsystem_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearOperatingsystem() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          operatingsystem_ = getDefaultInstance().getOperatingsystem();
+          onChanged();
+          return this;
+        }
+        void setOperatingsystem(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          operatingsystem_ = value;
+          onChanged();
+        }
+        
+        // optional int32 maxmemory = 3;
+        private int maxmemory_ ;
+        public boolean hasMaxmemory() {
+          return ((bitField0_ & 0x00000004) == 0x00000004);
+        }
+        public int getMaxmemory() {
+          return maxmemory_;
+        }
+        public Builder setMaxmemory(int value) {
+          bitField0_ |= 0x00000004;
+          maxmemory_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearMaxmemory() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          maxmemory_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // optional string serverversion = 4;
+        private java.lang.Object serverversion_ = "";
+        public boolean hasServerversion() {
+          return ((bitField0_ & 0x00000008) == 0x00000008);
+        }
+        public String getServerversion() {
+          java.lang.Object ref = serverversion_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            serverversion_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setServerversion(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+          serverversion_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearServerversion() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          serverversion_ = getDefaultInstance().getServerversion();
+          onChanged();
+          return this;
+        }
+        void setServerversion(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000008;
+          serverversion_ = value;
+          onChanged();
+        }
+        
+        // optional int32 corecount = 5;
+        private int corecount_ ;
+        public boolean hasCorecount() {
+          return ((bitField0_ & 0x00000010) == 0x00000010);
+        }
+        public int getCorecount() {
+          return corecount_;
+        }
+        public Builder setCorecount(int value) {
+          bitField0_ |= 0x00000010;
+          corecount_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearCorecount() {
+          bitField0_ = (bitField0_ & ~0x00000010);
+          corecount_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:EnjinStats.Server.ServerInformation)
+      }
+      
+      static {
+        defaultInstance = new ServerInformation(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:EnjinStats.Server.ServerInformation)
+    }
+    
+    private int bitField0_;
     // repeated .EnjinStats.Server.Player players = 1;
     public static final int PLAYERS_FIELD_NUMBER = 1;
     private java.util.List<com.enjin.proto.stats.EnjinStats.Server.Player> players_;
@@ -3968,8 +5133,110 @@ public final class EnjinStats {
       return players_.get(index);
     }
     
+    // optional int64 laststarttime = 2;
+    public static final int LASTSTARTTIME_FIELD_NUMBER = 2;
+    private long laststarttime_;
+    public boolean hasLaststarttime() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public long getLaststarttime() {
+      return laststarttime_;
+    }
+    
+    // optional int32 totalkicks = 3;
+    public static final int TOTALKICKS_FIELD_NUMBER = 3;
+    private int totalkicks_;
+    public boolean hasTotalkicks() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getTotalkicks() {
+      return totalkicks_;
+    }
+    
+    // repeated .EnjinStats.Server.KickPlayer playerskicked = 4;
+    public static final int PLAYERSKICKED_FIELD_NUMBER = 4;
+    private java.util.List<com.enjin.proto.stats.EnjinStats.Server.KickPlayer> playerskicked_;
+    public java.util.List<com.enjin.proto.stats.EnjinStats.Server.KickPlayer> getPlayerskickedList() {
+      return playerskicked_;
+    }
+    public java.util.List<? extends com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder> 
+        getPlayerskickedOrBuilderList() {
+      return playerskicked_;
+    }
+    public int getPlayerskickedCount() {
+      return playerskicked_.size();
+    }
+    public com.enjin.proto.stats.EnjinStats.Server.KickPlayer getPlayerskicked(int index) {
+      return playerskicked_.get(index);
+    }
+    public com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder getPlayerskickedOrBuilder(
+        int index) {
+      return playerskicked_.get(index);
+    }
+    
+    // optional int32 entities = 5;
+    public static final int ENTITIES_FIELD_NUMBER = 5;
+    private int entities_;
+    public boolean hasEntities() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getEntities() {
+      return entities_;
+    }
+    
+    // optional int32 memoryused = 6;
+    public static final int MEMORYUSED_FIELD_NUMBER = 6;
+    private int memoryused_;
+    public boolean hasMemoryused() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public int getMemoryused() {
+      return memoryused_;
+    }
+    
+    // optional int32 creeperexplosions = 7;
+    public static final int CREEPEREXPLOSIONS_FIELD_NUMBER = 7;
+    private int creeperexplosions_;
+    public boolean hasCreeperexplosions() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public int getCreeperexplosions() {
+      return creeperexplosions_;
+    }
+    
+    // optional int32 servertickrate = 8;
+    public static final int SERVERTICKRATE_FIELD_NUMBER = 8;
+    private int servertickrate_;
+    public boolean hasServertickrate() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public int getServertickrate() {
+      return servertickrate_;
+    }
+    
+    // optional .EnjinStats.Server.ServerInformation serverinfo = 9;
+    public static final int SERVERINFO_FIELD_NUMBER = 9;
+    private com.enjin.proto.stats.EnjinStats.Server.ServerInformation serverinfo_;
+    public boolean hasServerinfo() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public com.enjin.proto.stats.EnjinStats.Server.ServerInformation getServerinfo() {
+      return serverinfo_;
+    }
+    public com.enjin.proto.stats.EnjinStats.Server.ServerInformationOrBuilder getServerinfoOrBuilder() {
+      return serverinfo_;
+    }
+    
     private void initFields() {
       players_ = java.util.Collections.emptyList();
+      laststarttime_ = 0L;
+      totalkicks_ = 0;
+      playerskicked_ = java.util.Collections.emptyList();
+      entities_ = 0;
+      memoryused_ = 0;
+      creeperexplosions_ = 0;
+      servertickrate_ = 0;
+      serverinfo_ = com.enjin.proto.stats.EnjinStats.Server.ServerInformation.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3978,6 +5245,12 @@ public final class EnjinStats {
       
       for (int i = 0; i < getPlayersCount(); i++) {
         if (!getPlayers(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getPlayerskickedCount(); i++) {
+        if (!getPlayerskicked(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -3992,6 +5265,30 @@ public final class EnjinStats {
       for (int i = 0; i < players_.size(); i++) {
         output.writeMessage(1, players_.get(i));
       }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt64(2, laststarttime_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(3, totalkicks_);
+      }
+      for (int i = 0; i < playerskicked_.size(); i++) {
+        output.writeMessage(4, playerskicked_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(5, entities_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeInt32(6, memoryused_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeInt32(7, creeperexplosions_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeInt32(8, servertickrate_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeMessage(9, serverinfo_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -4004,6 +5301,38 @@ public final class EnjinStats {
       for (int i = 0; i < players_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, players_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, laststarttime_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, totalkicks_);
+      }
+      for (int i = 0; i < playerskicked_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, playerskicked_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(5, entities_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(6, memoryused_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(7, creeperexplosions_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(8, servertickrate_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, serverinfo_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4122,6 +5451,8 @@ public final class EnjinStats {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getPlayersFieldBuilder();
+          getPlayerskickedFieldBuilder();
+          getServerinfoFieldBuilder();
         }
       }
       private static Builder create() {
@@ -4136,6 +5467,30 @@ public final class EnjinStats {
         } else {
           playersBuilder_.clear();
         }
+        laststarttime_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        totalkicks_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        if (playerskickedBuilder_ == null) {
+          playerskicked_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+        } else {
+          playerskickedBuilder_.clear();
+        }
+        entities_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        memoryused_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        creeperexplosions_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        servertickrate_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        if (serverinfoBuilder_ == null) {
+          serverinfo_ = com.enjin.proto.stats.EnjinStats.Server.ServerInformation.getDefaultInstance();
+        } else {
+          serverinfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -4173,6 +5528,7 @@ public final class EnjinStats {
       public com.enjin.proto.stats.EnjinStats.Server buildPartial() {
         com.enjin.proto.stats.EnjinStats.Server result = new com.enjin.proto.stats.EnjinStats.Server(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (playersBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
             players_ = java.util.Collections.unmodifiableList(players_);
@@ -4182,6 +5538,48 @@ public final class EnjinStats {
         } else {
           result.players_ = playersBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.laststarttime_ = laststarttime_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.totalkicks_ = totalkicks_;
+        if (playerskickedBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+            playerskicked_ = java.util.Collections.unmodifiableList(playerskicked_);
+            bitField0_ = (bitField0_ & ~0x00000008);
+          }
+          result.playerskicked_ = playerskicked_;
+        } else {
+          result.playerskicked_ = playerskickedBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.entities_ = entities_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.memoryused_ = memoryused_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.creeperexplosions_ = creeperexplosions_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.servertickrate_ = servertickrate_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        if (serverinfoBuilder_ == null) {
+          result.serverinfo_ = serverinfo_;
+        } else {
+          result.serverinfo_ = serverinfoBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -4223,6 +5621,53 @@ public final class EnjinStats {
             }
           }
         }
+        if (other.hasLaststarttime()) {
+          setLaststarttime(other.getLaststarttime());
+        }
+        if (other.hasTotalkicks()) {
+          setTotalkicks(other.getTotalkicks());
+        }
+        if (playerskickedBuilder_ == null) {
+          if (!other.playerskicked_.isEmpty()) {
+            if (playerskicked_.isEmpty()) {
+              playerskicked_ = other.playerskicked_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+            } else {
+              ensurePlayerskickedIsMutable();
+              playerskicked_.addAll(other.playerskicked_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.playerskicked_.isEmpty()) {
+            if (playerskickedBuilder_.isEmpty()) {
+              playerskickedBuilder_.dispose();
+              playerskickedBuilder_ = null;
+              playerskicked_ = other.playerskicked_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+              playerskickedBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getPlayerskickedFieldBuilder() : null;
+            } else {
+              playerskickedBuilder_.addAllMessages(other.playerskicked_);
+            }
+          }
+        }
+        if (other.hasEntities()) {
+          setEntities(other.getEntities());
+        }
+        if (other.hasMemoryused()) {
+          setMemoryused(other.getMemoryused());
+        }
+        if (other.hasCreeperexplosions()) {
+          setCreeperexplosions(other.getCreeperexplosions());
+        }
+        if (other.hasServertickrate()) {
+          setServertickrate(other.getServertickrate());
+        }
+        if (other.hasServerinfo()) {
+          mergeServerinfo(other.getServerinfo());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -4230,6 +5675,12 @@ public final class EnjinStats {
       public final boolean isInitialized() {
         for (int i = 0; i < getPlayersCount(); i++) {
           if (!getPlayers(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getPlayerskickedCount(); i++) {
+          if (!getPlayerskicked(i).isInitialized()) {
             
             return false;
           }
@@ -4264,6 +5715,51 @@ public final class EnjinStats {
               com.enjin.proto.stats.EnjinStats.Server.Player.Builder subBuilder = com.enjin.proto.stats.EnjinStats.Server.Player.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addPlayers(subBuilder.buildPartial());
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              laststarttime_ = input.readInt64();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              totalkicks_ = input.readInt32();
+              break;
+            }
+            case 34: {
+              com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder subBuilder = com.enjin.proto.stats.EnjinStats.Server.KickPlayer.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addPlayerskicked(subBuilder.buildPartial());
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              entities_ = input.readInt32();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              memoryused_ = input.readInt32();
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000040;
+              creeperexplosions_ = input.readInt32();
+              break;
+            }
+            case 64: {
+              bitField0_ |= 0x00000080;
+              servertickrate_ = input.readInt32();
+              break;
+            }
+            case 74: {
+              com.enjin.proto.stats.EnjinStats.Server.ServerInformation.Builder subBuilder = com.enjin.proto.stats.EnjinStats.Server.ServerInformation.newBuilder();
+              if (hasServerinfo()) {
+                subBuilder.mergeFrom(getServerinfo());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setServerinfo(subBuilder.buildPartial());
               break;
             }
           }
@@ -4458,6 +5954,408 @@ public final class EnjinStats {
         return playersBuilder_;
       }
       
+      // optional int64 laststarttime = 2;
+      private long laststarttime_ ;
+      public boolean hasLaststarttime() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public long getLaststarttime() {
+        return laststarttime_;
+      }
+      public Builder setLaststarttime(long value) {
+        bitField0_ |= 0x00000002;
+        laststarttime_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearLaststarttime() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        laststarttime_ = 0L;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 totalkicks = 3;
+      private int totalkicks_ ;
+      public boolean hasTotalkicks() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getTotalkicks() {
+        return totalkicks_;
+      }
+      public Builder setTotalkicks(int value) {
+        bitField0_ |= 0x00000004;
+        totalkicks_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTotalkicks() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        totalkicks_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // repeated .EnjinStats.Server.KickPlayer playerskicked = 4;
+      private java.util.List<com.enjin.proto.stats.EnjinStats.Server.KickPlayer> playerskicked_ =
+        java.util.Collections.emptyList();
+      private void ensurePlayerskickedIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          playerskicked_ = new java.util.ArrayList<com.enjin.proto.stats.EnjinStats.Server.KickPlayer>(playerskicked_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.enjin.proto.stats.EnjinStats.Server.KickPlayer, com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder, com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder> playerskickedBuilder_;
+      
+      public java.util.List<com.enjin.proto.stats.EnjinStats.Server.KickPlayer> getPlayerskickedList() {
+        if (playerskickedBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(playerskicked_);
+        } else {
+          return playerskickedBuilder_.getMessageList();
+        }
+      }
+      public int getPlayerskickedCount() {
+        if (playerskickedBuilder_ == null) {
+          return playerskicked_.size();
+        } else {
+          return playerskickedBuilder_.getCount();
+        }
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.KickPlayer getPlayerskicked(int index) {
+        if (playerskickedBuilder_ == null) {
+          return playerskicked_.get(index);
+        } else {
+          return playerskickedBuilder_.getMessage(index);
+        }
+      }
+      public Builder setPlayerskicked(
+          int index, com.enjin.proto.stats.EnjinStats.Server.KickPlayer value) {
+        if (playerskickedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePlayerskickedIsMutable();
+          playerskicked_.set(index, value);
+          onChanged();
+        } else {
+          playerskickedBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setPlayerskicked(
+          int index, com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder builderForValue) {
+        if (playerskickedBuilder_ == null) {
+          ensurePlayerskickedIsMutable();
+          playerskicked_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          playerskickedBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addPlayerskicked(com.enjin.proto.stats.EnjinStats.Server.KickPlayer value) {
+        if (playerskickedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePlayerskickedIsMutable();
+          playerskicked_.add(value);
+          onChanged();
+        } else {
+          playerskickedBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addPlayerskicked(
+          int index, com.enjin.proto.stats.EnjinStats.Server.KickPlayer value) {
+        if (playerskickedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePlayerskickedIsMutable();
+          playerskicked_.add(index, value);
+          onChanged();
+        } else {
+          playerskickedBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addPlayerskicked(
+          com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder builderForValue) {
+        if (playerskickedBuilder_ == null) {
+          ensurePlayerskickedIsMutable();
+          playerskicked_.add(builderForValue.build());
+          onChanged();
+        } else {
+          playerskickedBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addPlayerskicked(
+          int index, com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder builderForValue) {
+        if (playerskickedBuilder_ == null) {
+          ensurePlayerskickedIsMutable();
+          playerskicked_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          playerskickedBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllPlayerskicked(
+          java.lang.Iterable<? extends com.enjin.proto.stats.EnjinStats.Server.KickPlayer> values) {
+        if (playerskickedBuilder_ == null) {
+          ensurePlayerskickedIsMutable();
+          super.addAll(values, playerskicked_);
+          onChanged();
+        } else {
+          playerskickedBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearPlayerskicked() {
+        if (playerskickedBuilder_ == null) {
+          playerskicked_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          onChanged();
+        } else {
+          playerskickedBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removePlayerskicked(int index) {
+        if (playerskickedBuilder_ == null) {
+          ensurePlayerskickedIsMutable();
+          playerskicked_.remove(index);
+          onChanged();
+        } else {
+          playerskickedBuilder_.remove(index);
+        }
+        return this;
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder getPlayerskickedBuilder(
+          int index) {
+        return getPlayerskickedFieldBuilder().getBuilder(index);
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder getPlayerskickedOrBuilder(
+          int index) {
+        if (playerskickedBuilder_ == null) {
+          return playerskicked_.get(index);  } else {
+          return playerskickedBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder> 
+           getPlayerskickedOrBuilderList() {
+        if (playerskickedBuilder_ != null) {
+          return playerskickedBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(playerskicked_);
+        }
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder addPlayerskickedBuilder() {
+        return getPlayerskickedFieldBuilder().addBuilder(
+            com.enjin.proto.stats.EnjinStats.Server.KickPlayer.getDefaultInstance());
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder addPlayerskickedBuilder(
+          int index) {
+        return getPlayerskickedFieldBuilder().addBuilder(
+            index, com.enjin.proto.stats.EnjinStats.Server.KickPlayer.getDefaultInstance());
+      }
+      public java.util.List<com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder> 
+           getPlayerskickedBuilderList() {
+        return getPlayerskickedFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.enjin.proto.stats.EnjinStats.Server.KickPlayer, com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder, com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder> 
+          getPlayerskickedFieldBuilder() {
+        if (playerskickedBuilder_ == null) {
+          playerskickedBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.enjin.proto.stats.EnjinStats.Server.KickPlayer, com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder, com.enjin.proto.stats.EnjinStats.Server.KickPlayerOrBuilder>(
+                  playerskicked_,
+                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  getParentForChildren(),
+                  isClean());
+          playerskicked_ = null;
+        }
+        return playerskickedBuilder_;
+      }
+      
+      // optional int32 entities = 5;
+      private int entities_ ;
+      public boolean hasEntities() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public int getEntities() {
+        return entities_;
+      }
+      public Builder setEntities(int value) {
+        bitField0_ |= 0x00000010;
+        entities_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearEntities() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        entities_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 memoryused = 6;
+      private int memoryused_ ;
+      public boolean hasMemoryused() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public int getMemoryused() {
+        return memoryused_;
+      }
+      public Builder setMemoryused(int value) {
+        bitField0_ |= 0x00000020;
+        memoryused_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearMemoryused() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        memoryused_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 creeperexplosions = 7;
+      private int creeperexplosions_ ;
+      public boolean hasCreeperexplosions() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public int getCreeperexplosions() {
+        return creeperexplosions_;
+      }
+      public Builder setCreeperexplosions(int value) {
+        bitField0_ |= 0x00000040;
+        creeperexplosions_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCreeperexplosions() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        creeperexplosions_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 servertickrate = 8;
+      private int servertickrate_ ;
+      public boolean hasServertickrate() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public int getServertickrate() {
+        return servertickrate_;
+      }
+      public Builder setServertickrate(int value) {
+        bitField0_ |= 0x00000080;
+        servertickrate_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearServertickrate() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        servertickrate_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional .EnjinStats.Server.ServerInformation serverinfo = 9;
+      private com.enjin.proto.stats.EnjinStats.Server.ServerInformation serverinfo_ = com.enjin.proto.stats.EnjinStats.Server.ServerInformation.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.enjin.proto.stats.EnjinStats.Server.ServerInformation, com.enjin.proto.stats.EnjinStats.Server.ServerInformation.Builder, com.enjin.proto.stats.EnjinStats.Server.ServerInformationOrBuilder> serverinfoBuilder_;
+      public boolean hasServerinfo() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.ServerInformation getServerinfo() {
+        if (serverinfoBuilder_ == null) {
+          return serverinfo_;
+        } else {
+          return serverinfoBuilder_.getMessage();
+        }
+      }
+      public Builder setServerinfo(com.enjin.proto.stats.EnjinStats.Server.ServerInformation value) {
+        if (serverinfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          serverinfo_ = value;
+          onChanged();
+        } else {
+          serverinfoBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder setServerinfo(
+          com.enjin.proto.stats.EnjinStats.Server.ServerInformation.Builder builderForValue) {
+        if (serverinfoBuilder_ == null) {
+          serverinfo_ = builderForValue.build();
+          onChanged();
+        } else {
+          serverinfoBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder mergeServerinfo(com.enjin.proto.stats.EnjinStats.Server.ServerInformation value) {
+        if (serverinfoBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+              serverinfo_ != com.enjin.proto.stats.EnjinStats.Server.ServerInformation.getDefaultInstance()) {
+            serverinfo_ =
+              com.enjin.proto.stats.EnjinStats.Server.ServerInformation.newBuilder(serverinfo_).mergeFrom(value).buildPartial();
+          } else {
+            serverinfo_ = value;
+          }
+          onChanged();
+        } else {
+          serverinfoBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder clearServerinfo() {
+        if (serverinfoBuilder_ == null) {
+          serverinfo_ = com.enjin.proto.stats.EnjinStats.Server.ServerInformation.getDefaultInstance();
+          onChanged();
+        } else {
+          serverinfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.ServerInformation.Builder getServerinfoBuilder() {
+        bitField0_ |= 0x00000100;
+        onChanged();
+        return getServerinfoFieldBuilder().getBuilder();
+      }
+      public com.enjin.proto.stats.EnjinStats.Server.ServerInformationOrBuilder getServerinfoOrBuilder() {
+        if (serverinfoBuilder_ != null) {
+          return serverinfoBuilder_.getMessageOrBuilder();
+        } else {
+          return serverinfo_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          com.enjin.proto.stats.EnjinStats.Server.ServerInformation, com.enjin.proto.stats.EnjinStats.Server.ServerInformation.Builder, com.enjin.proto.stats.EnjinStats.Server.ServerInformationOrBuilder> 
+          getServerinfoFieldBuilder() {
+        if (serverinfoBuilder_ == null) {
+          serverinfoBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.enjin.proto.stats.EnjinStats.Server.ServerInformation, com.enjin.proto.stats.EnjinStats.Server.ServerInformation.Builder, com.enjin.proto.stats.EnjinStats.Server.ServerInformationOrBuilder>(
+                  serverinfo_,
+                  getParentForChildren(),
+                  isClean());
+          serverinfo_ = null;
+        }
+        return serverinfoBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:EnjinStats.Server)
     }
     
@@ -4499,6 +6397,16 @@ public final class EnjinStats {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_EnjinStats_Server_Player_PveKills_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_EnjinStats_Server_KickPlayer_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_EnjinStats_Server_KickPlayer_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_EnjinStats_Server_ServerInformation_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_EnjinStats_Server_ServerInformation_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -4508,26 +6416,37 @@ public final class EnjinStats {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013Stats.proto\022\nEnjinStats\"\334\005\n\006Server\022*\n\007" +
+      "\n\013Stats.proto\022\nEnjinStats\"\373\010\n\006Server\022*\n\007" +
       "players\030\001 \003(\0132\031.EnjinStats.Server.Player" +
-      "\032\245\005\n\006Player\022\014\n\004name\030\001 \002(\t\022\035\n\016firstimepla" +
-      "yer\030\002 \001(\010:\005false\022\016\n\006deaths\030\003 \001(\005\022\016\n\006kill" +
-      "ed\030\004 \001(\005\0224\n\010distance\030\005 \001(\0132\".EnjinStats." +
-      "Server.Player.Distance\0220\n\006blocks\030\006 \001(\0132 " +
-      ".EnjinStats.Server.Player.Blocks\022\r\n\005kick" +
-      "s\030\007 \001(\005\022\r\n\005money\030\010 \001(\001\022\n\n\002xp\030\t \001(\005\022\017\n\007xp" +
-      "level\030\n \001(\005\022\020\n\010pvpkills\030\013 \001(\005\022\020\n\010pvekill" +
-      "s\030\014 \001(\005\022:\n\016pveentitykills\030\r \003(\0132\".EnjinS",
-      "tats.Server.Player.PveKills\022\021\n\tchatlines" +
-      "\030\016 \001(\005\032E\n\010Distance\022\014\n\004foot\030\001 \001(\001\022\014\n\004boat" +
-      "\030\002 \001(\001\022\013\n\003pig\030\003 \001(\001\022\020\n\010minecart\030\004 \001(\001\032\310\001" +
-      "\n\006Blocks\022\016\n\006broken\030\001 \001(\005\022\016\n\006placed\030\002 \001(\005" +
-      "\022<\n\014brokenblocks\030\003 \003(\0132&.EnjinStats.Serv" +
-      "er.Player.Blocks.Block\022<\n\014placedblocks\030\004" +
-      " \003(\0132&.EnjinStats.Server.Player.Blocks.B" +
-      "lock\032\"\n\005Block\022\n\n\002id\030\001 \002(\t\022\r\n\005count\030\002 \001(\005" +
-      "\032&\n\010PveKills\022\013\n\003mob\030\001 \002(\t\022\r\n\005kills\030\002 \002(\005" +
-      "B#\n\025com.enjin.proto.statsB\nEnjinStats"
+      "\022\025\n\rlaststarttime\030\002 \001(\003\022\022\n\ntotalkicks\030\003 " +
+      "\001(\005\0224\n\rplayerskicked\030\004 \003(\0132\035.EnjinStats." +
+      "Server.KickPlayer\022\020\n\010entities\030\005 \001(\005\022\022\n\nm" +
+      "emoryused\030\006 \001(\005\022\031\n\021creeperexplosions\030\007 \001" +
+      "(\005\022\026\n\016servertickrate\030\010 \001(\005\0228\n\nserverinfo" +
+      "\030\t \001(\0132$.EnjinStats.Server.ServerInforma" +
+      "tion\032\245\005\n\006Player\022\014\n\004name\030\001 \002(\t\022\035\n\016firstim" +
+      "eplayer\030\002 \001(\010:\005false\022\016\n\006deaths\030\003 \001(\005\022\016\n\006",
+      "killed\030\004 \001(\005\0224\n\010distance\030\005 \001(\0132\".EnjinSt" +
+      "ats.Server.Player.Distance\0220\n\006blocks\030\006 \001" +
+      "(\0132 .EnjinStats.Server.Player.Blocks\022\r\n\005" +
+      "kicks\030\007 \001(\005\022\r\n\005money\030\010 \001(\001\022\n\n\002xp\030\t \001(\005\022\017" +
+      "\n\007xplevel\030\n \001(\005\022\020\n\010pvpkills\030\013 \001(\005\022\020\n\010pve" +
+      "kills\030\014 \001(\005\022:\n\016pveentitykills\030\r \003(\0132\".En" +
+      "jinStats.Server.Player.PveKills\022\021\n\tchatl" +
+      "ines\030\016 \001(\005\032E\n\010Distance\022\014\n\004foot\030\001 \001(\001\022\014\n\004" +
+      "boat\030\002 \001(\001\022\013\n\003pig\030\003 \001(\001\022\020\n\010minecart\030\004 \001(" +
+      "\001\032\310\001\n\006Blocks\022\016\n\006broken\030\001 \001(\005\022\016\n\006placed\030\002",
+      " \001(\005\022<\n\014brokenblocks\030\003 \003(\0132&.EnjinStats." +
+      "Server.Player.Blocks.Block\022<\n\014placedbloc" +
+      "ks\030\004 \003(\0132&.EnjinStats.Server.Player.Bloc" +
+      "ks.Block\032\"\n\005Block\022\n\n\002id\030\001 \002(\t\022\r\n\005count\030\002" +
+      " \001(\005\032&\n\010PveKills\022\013\n\003mob\030\001 \002(\t\022\r\n\005kills\030\002" +
+      " \002(\005\032)\n\nKickPlayer\022\014\n\004name\030\001 \002(\t\022\r\n\005coun" +
+      "t\030\002 \002(\005\032~\n\021ServerInformation\022\023\n\013javavers" +
+      "ion\030\001 \001(\t\022\027\n\017operatingsystem\030\002 \001(\t\022\021\n\tma" +
+      "xmemory\030\003 \001(\005\022\025\n\rserverversion\030\004 \001(\t\022\021\n\t" +
+      "corecount\030\005 \001(\005B#\n\025com.enjin.proto.stats",
+      "B\nEnjinStats"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4539,7 +6458,7 @@ public final class EnjinStats {
           internal_static_EnjinStats_Server_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EnjinStats_Server_descriptor,
-              new java.lang.String[] { "Players", },
+              new java.lang.String[] { "Players", "Laststarttime", "Totalkicks", "Playerskicked", "Entities", "Memoryused", "Creeperexplosions", "Servertickrate", "Serverinfo", },
               com.enjin.proto.stats.EnjinStats.Server.class,
               com.enjin.proto.stats.EnjinStats.Server.Builder.class);
           internal_static_EnjinStats_Server_Player_descriptor =
@@ -4582,6 +6501,22 @@ public final class EnjinStats {
               new java.lang.String[] { "Mob", "Kills", },
               com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.class,
               com.enjin.proto.stats.EnjinStats.Server.Player.PveKills.Builder.class);
+          internal_static_EnjinStats_Server_KickPlayer_descriptor =
+            internal_static_EnjinStats_Server_descriptor.getNestedTypes().get(1);
+          internal_static_EnjinStats_Server_KickPlayer_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_EnjinStats_Server_KickPlayer_descriptor,
+              new java.lang.String[] { "Name", "Count", },
+              com.enjin.proto.stats.EnjinStats.Server.KickPlayer.class,
+              com.enjin.proto.stats.EnjinStats.Server.KickPlayer.Builder.class);
+          internal_static_EnjinStats_Server_ServerInformation_descriptor =
+            internal_static_EnjinStats_Server_descriptor.getNestedTypes().get(2);
+          internal_static_EnjinStats_Server_ServerInformation_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_EnjinStats_Server_ServerInformation_descriptor,
+              new java.lang.String[] { "Javaversion", "Operatingsystem", "Maxmemory", "Serverversion", "Corecount", },
+              com.enjin.proto.stats.EnjinStats.Server.ServerInformation.class,
+              com.enjin.proto.stats.EnjinStats.Server.ServerInformation.Builder.class);
           return null;
         }
       };

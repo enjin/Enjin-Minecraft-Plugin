@@ -118,16 +118,20 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		try {
-			File enjinlog = new File("enjin.log");
+			File enjinlog = new File(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log");
 			//Start a new log every time the server boots. Keeps the files nice and small
 			if(enjinlog.exists()) {
 				DateFormat edateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
-				enjinlog.renameTo(new File("enjin-" + edateFormat.format(new Date()) + ".log"));
+				enjinlog.renameTo(new File(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin-" + edateFormat.format(new Date()) + ".log"));
 			}
 			debug("Begin init");
 			initVariables();
 			enjinlogger.setLevel(Level.FINEST);
-			FileHandler fileTxt = new FileHandler("enjin.log");
+			File logsfolder = new File(getDataFolder().getAbsolutePath() + File.separator + "logs");
+			if(!logsfolder.exists()) {
+				logsfolder.mkdirs();
+			}
+			FileHandler fileTxt = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log");
 			EnjinLogFormatter formatterTxt = new EnjinLogFormatter();
 		    fileTxt.setFormatter(formatterTxt);
 		    enjinlogger.addHandler(fileTxt);
