@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.proto.stats.EnjinStats;
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class WriteStats {
 	
@@ -17,7 +18,7 @@ public class WriteStats {
 	}
 	
 	public boolean write(String file) {
-		EnjinStats.Server.Builder stats = EnjinStats.Server.newBuilder();
+		EnjinStats.Server.Builder stats = plugin.serverstats.getSerialized();
 		for(Entry<String, StatsPlayer> eplayer : plugin.playerstats.entrySet()) {
 			stats.addPlayers(eplayer.getValue().getSerialized());
 		}
@@ -33,6 +34,22 @@ public class WriteStats {
 		}
 		
 		return true;
+	}
+	
+	public byte[] write() {
+		EnjinStats.Server.Builder stats = plugin.serverstats.getSerialized();
+		for(Entry<String, StatsPlayer> eplayer : plugin.playerstats.entrySet()) {
+			stats.addPlayers(eplayer.getValue().getSerialized());
+		}
+		ByteOutputStream output = new ByteOutputStream();
+		try {
+			stats.build().writeTo(output);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return output.getBytes();
 	}
 
 }

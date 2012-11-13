@@ -14,9 +14,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
@@ -35,6 +37,24 @@ public class EnjinStatsListener implements Listener {
 		if(!plugin.playerstats.containsKey(e.getPlayer().getName().toLowerCase())) {
 			plugin.playerstats.put(e.getPlayer().getName().toLowerCase(), new StatsPlayer(e.getPlayer().getName()));
 		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onExplosion(EntityExplodeEvent event) {
+		if(event.isCancelled()) {
+			return;
+		}
+		if(event.getEntityType() == EntityType.CREEPER) {
+			plugin.serverstats.addCreeperExplosion();
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onKick(PlayerKickEvent event) {
+		if(event.isCancelled()) {
+			return;
+		}
+		plugin.serverstats.addKick(event.getPlayer().getName());
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)

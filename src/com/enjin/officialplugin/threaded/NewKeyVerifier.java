@@ -59,13 +59,16 @@ public class NewKeyVerifier implements Runnable {
 			
 			int validation = keyValid(false, key);
 			if(validation == 1) {
+				plugin.authkeyinvalid = false;
 				plugin.debug("Key valid.");
 				plugin.startTask();
 				plugin.registerEvents();
 			} else if(validation == 0){
+				plugin.authkeyinvalid = true;
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Invalid key! Please regenerate your key and try again.");
 				EnjinMinecraftPlugin.enjinlogger.warning("Invalid key! Please regenerate your key and try again.");
 			} else {
+				plugin.authkeyinvalid = true;
 				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was a problem connecting to Enjin, please try again in a few minutes. (If you continue to see this message, please type \"/enjin report\" and send the enjinreport_xxx.txt file to Enjin Support for further assistance.)");
 				EnjinMinecraftPlugin.enjinlogger.warning("There was a problem connecting to Enjin, please try again in a few minutes. (If you continue to see this message, please type \"/enjin report\" and send the enjinreport_xxx.txt file to Enjin Support for further assistance.)");
 			}
@@ -96,6 +99,7 @@ public class NewKeyVerifier implements Runnable {
 				completed = true;
 				return;
 			}
+			plugin.authkeyinvalid = false;
 			EnjinMinecraftPlugin.setHash(key);
 			plugin.debug("Writing hash to file.");
 			plugin.config.set("authkey", key);

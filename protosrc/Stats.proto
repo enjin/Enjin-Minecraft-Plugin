@@ -73,6 +73,7 @@ message Server {
     optional int32 maxmemory = 3;
     optional string serverversion = 4;
     optional int32 corecount = 5;
+    optional int32 laststarttime = 6;
   }
   
   optional ServerInformation serverinfo = 9;

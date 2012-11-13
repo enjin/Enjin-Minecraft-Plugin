@@ -29,10 +29,18 @@ public class EMPListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		updatePlayerRanks(p);
-		if(p.isOp() && !plugin.newversion.equals("")) {
+		if(!plugin.newversion.equals("") && p.hasPermission("enjin.notify.update")) {
 			p.sendMessage("Enjin Minecraft plugin was updated to version " + plugin.newversion + ". Please restart your server.");
-		}if(p.isOp() && plugin.updatefailed) {
+		}
+		if(plugin.updatefailed && p.hasPermission("enjin.notify.failedupdate")) {
 			p.sendMessage(ChatColor.DARK_RED + "Enjin Minecraft plugin failed to update to the newest version. Please download it manually.");
+		}
+		if(plugin.authkeyinvalid && p.hasPermission("enjin.notify.invalidauthkey")) {
+			p.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Auth key is invalid. Please generate a new one.");
+		}
+		if(plugin.unabletocontactenjin && p.hasPermission("enjin.notify.connectionstatus")) {
+			p.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
+			p.sendMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin log");
 		}
 	}
 	

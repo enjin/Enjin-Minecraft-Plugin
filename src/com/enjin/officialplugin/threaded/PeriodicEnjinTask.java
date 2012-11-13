@@ -13,8 +13,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.Deflater;
+import java.util.zip.GZIPOutputStream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
@@ -31,6 +34,7 @@ import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
 import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
 import com.enjin.officialplugin.packets.PacketUtilities;
 import com.enjin.officialplugin.stats.WriteStats;
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 /**
  * 
@@ -46,6 +50,8 @@ public class PeriodicEnjinTask implements Runnable {
 	ConcurrentHashMap<String, String> removedplayerperms = new ConcurrentHashMap<String, String>();
 	ConcurrentHashMap<String, String> removedplayervotes = new ConcurrentHashMap<String, String>();
 	int numoffailedtries = 0;
+	int statdelay = 0;
+	int plugindelay = 60;
 	
 	public PeriodicEnjinTask(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
@@ -57,8 +63,6 @@ public class PeriodicEnjinTask implements Runnable {
 	@Override
 	public void run() {
 		boolean successful = false;
-		new WriteStats(plugin).write("stats.stats");
-		plugin.debug("Stats saved to stats.stats.");
 		StringBuilder builder = new StringBuilder();
 		try {
 			plugin.debug("Connecting to Enjin...");
@@ -84,7 +88,10 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.append("&players=" + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))); //current players
 			builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null || EnjinMinecraftPlugin.permission.getName().equalsIgnoreCase("SuperPerms")) ? "FALSE" : "TRUE")));
 			builder.append("&pluginversion=" + encode(plugin.getDescription().getVersion()));
-			builder.append("&plugins=" + encode(getPlugins()));
+			//We only want to send the list of plugins every hour
+			if(plugindelay++ >= 59) {
+				builder.append("&plugins=" + encode(getPlugins()));
+			}
 			builder.append("&playerlist=" + encode(getPlayers()));
 			builder.append("&worlds=" + encode(getWorlds()));
 			builder.append("&time=" + encode(getTimes()));
@@ -102,59 +109,85 @@ public class PeriodicEnjinTask implements Runnable {
 					builder.append("&playergroups=" + encode(getPlayerGroups()));
 				}
 			}
+			if(plugin.collectstats && (plugin.statssendinterval - 1) <= statdelay) {
+				builder.append("&stats=" + encode(getStats()));
+			}
 			con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
 			plugin.debug("Sending content: \n" + builder.toString());
 			con.getOutputStream().write(builder.toString().getBytes());
 			//System.out.println("Getting input stream...");
 			InputStream in = con.getInputStream();
 			//System.out.println("Handling input stream...");
-			int success = handleInput(in);
-			switch(success) {
-			case 0:
+			String success = handleInput(in);
+			if(success.equalsIgnoreCase("ok")) {
+				successful = true;
+				if(plugin.unabletocontactenjin) {
+					plugin.unabletocontactenjin = false;
+					Player[] players = plugin.getServer().getOnlinePlayers();
+					for(Player player : players) {
+						if(player.hasPermission("enjin.notify.connectionstatus")) {
+							player.sendMessage(ChatColor.DARK_GREEN + "[Enjin Minecraft Plugin] Connection to Enjin re-established!");
+							plugin.getLogger().info("Connection to Enjin re-established!");
+						}
+					}
+				}
+			}else if(success.equalsIgnoreCase("auth_error")) {
+				plugin.authkeyinvalid = true;
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
-				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
+				plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
 				plugin.stopTask();
 				plugin.unregisterEvents();
+				Player[] players = plugin.getServer().getOnlinePlayers();
+				for(Player player : players) {
+					if(player.hasPermission("enjin.notify.invalidauthkey")) {
+						player.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Auth key is invalid. Please generate a new one.");
+					}
+				}
 				successful = false;
-				break;
-			case 1:
-				successful = true;
-				break;
-			case 2:
+			}else if(success.equalsIgnoreCase("bad_data")) {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
-				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+				plugin.getLogger().warning("Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
 				successful = false;
-				break;
-			case 3:
+			}else if(success.equalsIgnoreCase("retry_later")) {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
-				Bukkit.getLogger().info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
+				plugin.getLogger().info("Enjin said to wait, saving data for next sync.");
 				successful = false;
-				break;
-			case 4:
+			}else if(success.equalsIgnoreCase("connect_error")) {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
-				Bukkit.getLogger().info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+				plugin.getLogger().info("Enjin is having something going on, if you continue to see this error please report it to enjin.");
 				successful = false;
-				break;
-			default:
+			}else {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
-				Bukkit.getLogger().info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
+				EnjinMinecraftPlugin.enjinlogger.info("Response code: " + success);
+				plugin.getLogger().info("Something happened on sync, if you continue to see this error please report it to enjin.");
+				plugin.getLogger().info("Response code: " + success);
 				successful = false;
-				break;
+			}
+			if(!successful) {
+				if(numoffailedtries++ > 5 && !plugin.unabletocontactenjin) {
+					numoffailedtries = 0;
+					plugin.noEnjinConnectionEvent();
+				}
+			}else {
+				//If the sync is successful let's reset the number of failed tries
+				numoffailedtries = 0;
 			}
 		} catch (SocketTimeoutException e) {
 			//We don't need to spam the console every minute if the synch didn't complete correctly.
 			if(numoffailedtries++ > 5) {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
+				plugin.getLogger().warning("Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 				numoffailedtries = 0;
+				plugin.noEnjinConnectionEvent();
 			}
 			plugin.lasterror = new EnjinErrorReport(e, "Regular synch. Information sent:\n" + builder.toString());
 		} catch (Throwable t) {
 			//We don't need to spam the console every minute if the synch didn't complete correctly.
 			if(numoffailedtries++ > 5) {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
-				Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
+				plugin.getLogger().warning("Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
 				numoffailedtries = 0;
+				plugin.noEnjinConnectionEvent();
 			}
 			if(plugin.debug) {
 				t.printStackTrace();
@@ -164,6 +197,7 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 		if(!successful) {
 			plugin.debug("Synch unsuccessful.");
+			statdelay++;
 			Set<Entry<String, String>> es = removedplayerperms.entrySet();
 			for(Entry<String, String> entry : es) {
 				//If the plugin has put a new set of player perms in for this player,
@@ -188,9 +222,49 @@ public class PeriodicEnjinTask implements Runnable {
 			}
 		}else {
 			plugin.debug("Synch successful.");
+			if(plugin.collectstats && (plugin.statssendinterval - 1) <= statdelay) {
+				statdelay = 0;
+				//Let's remove the old stats...
+				plugin.serverstats.reset();
+				plugin.playerstats.clear();
+			}else {
+				statdelay++;
+			}
+			if(plugindelay >= 59) {
+				plugindelay = 0;
+			}
+		}
+		if(plugin.collectstats) {
+			new WriteStats(plugin).write("stats.stats");
+			plugin.debug("Stats saved to stats.stats.");
 		}
 	}
 	
+	private String getStats() {
+		long statsserialize = System.currentTimeMillis();
+		byte[] rawstats = new WriteStats(plugin).write();
+		long statsserializestop = System.currentTimeMillis();
+		long gzipstart = System.currentTimeMillis();
+		ByteOutputStream output = new ByteOutputStream();
+		try {
+			GZIPOutputStream out = new GZIPOutputStream(output);
+			out.write(rawstats, 0, rawstats.length);
+			out.finish();
+			out.close();
+			long gzipstop = System.currentTimeMillis();
+			long startbase64 = System.currentTimeMillis();
+			String serialized = javax.xml.bind.DatatypeConverter.printBase64Binary(output.getBytes());
+			long stopbase64 = System.currentTimeMillis();
+			plugin.debug("Time taken to serialize: " + String.valueOf(statsserializestop - statsserialize) + " ms.");
+			plugin.debug("Time taken to gzip: " + String.valueOf(gzipstop - gzipstart) + " ms. Resulting size: " + String.valueOf(output.getBytes().length));
+			plugin.debug("Time taken to serialize: " + String.valueOf(stopbase64 - startbase64) + " ms");
+			return serialized;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
 	private String getPlayerGroups() {
 		removedplayerperms.clear();
 		HashMap<String, String> theperms = new HashMap<String, String>();
@@ -283,8 +357,8 @@ public class PeriodicEnjinTask implements Runnable {
 		//return in;
 	}
 	
-	private int handleInput(InputStream in) throws IOException {
-		int tresult = 5;
+	private String handleInput(InputStream in) throws IOException {
+		String tresult = "Unknown Error";
 		BufferedInputStream bin = new BufferedInputStream(in);
 		bin.mark(Integer.MAX_VALUE);
 		//TODO: A for loop??? Maybe a while(code = in.read() != -1) {}
@@ -293,14 +367,12 @@ public class PeriodicEnjinTask implements Runnable {
 			switch(code) {
 			case -1:
 				plugin.debug("No more packets. End of stream. Update ended.");
-				if(plugin.debug) {
-					bin.reset();
-					StringBuilder input = new StringBuilder();
-					while((code = bin.read()) != -1) {
-						input.append((char)code);
-					}
-					plugin.debug("Raw data received:\n" + input.toString());
+				bin.reset();
+				StringBuilder input = new StringBuilder();
+				while((code = bin.read()) != -1) {
+					input.append((char)code);
 				}
+				plugin.debug("Raw data received:\n" + input.toString());
 				return tresult; //end of stream reached
 			case 0x10:
 				plugin.debug("Packet [0x10](Add Player Group) received.");
@@ -336,17 +408,12 @@ public class PeriodicEnjinTask implements Runnable {
 				plugin.debug("Packet [0x18](Remove Players From Whitelist) received.");
 				Packet18RemovePlayersFromWhitelist.handle(bin, plugin);
 				break;
-			case 0x20:
+			case 0x19:
 				plugin.debug("Packet [0x20](Enjin Status) received.");
-				String result = PacketUtilities.readString(bin);
-				try {
-					tresult = Integer.getInteger(result);
-				}catch (NumberFormatException e) {
-					//tresult = 4;
-				}
+				tresult = PacketUtilities.readString(bin);
 				break;
 			default :
-				Bukkit.getLogger().warning("[Enjin] Received an invalid opcode: " + code);
+				plugin.getLogger().warning("[Enjin] Received an invalid opcode: " + code);
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin] Received an invalid opcode: " + code);
 			}
 		}

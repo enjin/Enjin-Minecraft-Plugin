@@ -27,3 +27,23 @@ permissions:
   enjin.push:
     description: Pushes all ranks from server to enjin.
     default: op
+  enjin.notify.*:
+    default: op
+    description: Enables all notifications.
+    children:
+      enjin.notify.connectionstatus: true
+      enjin.notify.update: true
+      enjin.notify.failedupdate: true
+      enjin.notify.invalidauthkey: true
+  enjin.notify.connectionstatus:
+    description: Let's the player know if the plugin's connection status changes.
+    default: op
+  enjin.notify.update:
+    description: Receive notifications upon login if the plugin has been updated.
+    default: op
+  enjin.notify.failedupdate:
+    description: Receive notifications upon login if the plugin has failed to update.
+    default: op
+  enjin.notify.invalidauthkey:
+    description: Receive notification if the auth key is invalid.
+    default: op

@@ -4456,6 +4456,10 @@ public final class EnjinStats {
       // optional int32 corecount = 5;
       boolean hasCorecount();
       int getCorecount();
+      
+      // optional int32 laststarttime = 6;
+      boolean hasLaststarttime();
+      int getLaststarttime();
     }
     public static final class ServerInformation extends
         com.google.protobuf.GeneratedMessage
@@ -4602,12 +4606,23 @@ public final class EnjinStats {
         return corecount_;
       }
       
+      // optional int32 laststarttime = 6;
+      public static final int LASTSTARTTIME_FIELD_NUMBER = 6;
+      private int laststarttime_;
+      public boolean hasLaststarttime() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public int getLaststarttime() {
+        return laststarttime_;
+      }
+      
       private void initFields() {
         javaversion_ = "";
         operatingsystem_ = "";
         maxmemory_ = 0;
         serverversion_ = "";
         corecount_ = 0;
+        laststarttime_ = 0;
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -4635,6 +4650,9 @@ public final class EnjinStats {
         }
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
           output.writeInt32(5, corecount_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          output.writeInt32(6, laststarttime_);
         }
         getUnknownFields().writeTo(output);
       }
@@ -4664,6 +4682,10 @@ public final class EnjinStats {
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
           size += com.google.protobuf.CodedOutputStream
             .computeInt32Size(5, corecount_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(6, laststarttime_);
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -4799,6 +4821,8 @@ public final class EnjinStats {
           bitField0_ = (bitField0_ & ~0x00000008);
           corecount_ = 0;
           bitField0_ = (bitField0_ & ~0x00000010);
+          laststarttime_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000020);
           return this;
         }
         
@@ -4857,6 +4881,10 @@ public final class EnjinStats {
             to_bitField0_ |= 0x00000010;
           }
           result.corecount_ = corecount_;
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+            to_bitField0_ |= 0x00000020;
+          }
+          result.laststarttime_ = laststarttime_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -4887,6 +4915,9 @@ public final class EnjinStats {
           }
           if (other.hasCorecount()) {
             setCorecount(other.getCorecount());
+          }
+          if (other.hasLaststarttime()) {
+            setLaststarttime(other.getLaststarttime());
           }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
@@ -4942,6 +4973,11 @@ public final class EnjinStats {
               case 40: {
                 bitField0_ |= 0x00000010;
                 corecount_ = input.readInt32();
+                break;
+              }
+              case 48: {
+                bitField0_ |= 0x00000020;
+                laststarttime_ = input.readInt32();
                 break;
               }
             }
@@ -5096,6 +5132,27 @@ public final class EnjinStats {
         public Builder clearCorecount() {
           bitField0_ = (bitField0_ & ~0x00000010);
           corecount_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // optional int32 laststarttime = 6;
+        private int laststarttime_ ;
+        public boolean hasLaststarttime() {
+          return ((bitField0_ & 0x00000020) == 0x00000020);
+        }
+        public int getLaststarttime() {
+          return laststarttime_;
+        }
+        public Builder setLaststarttime(int value) {
+          bitField0_ |= 0x00000020;
+          laststarttime_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearLaststarttime() {
+          bitField0_ = (bitField0_ & ~0x00000020);
+          laststarttime_ = 0;
           onChanged();
           return this;
         }
@@ -6416,7 +6473,7 @@ public final class EnjinStats {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013Stats.proto\022\nEnjinStats\"\373\010\n\006Server\022*\n\007" +
+      "\n\013Stats.proto\022\nEnjinStats\"\223\t\n\006Server\022*\n\007" +
       "players\030\001 \003(\0132\031.EnjinStats.Server.Player" +
       "\022\025\n\rlaststarttime\030\002 \001(\003\022\022\n\ntotalkicks\030\003 " +
       "\001(\005\0224\n\rplayerskicked\030\004 \003(\0132\035.EnjinStats." +
@@ -6442,11 +6499,11 @@ public final class EnjinStats {
       "ks.Block\032\"\n\005Block\022\n\n\002id\030\001 \002(\t\022\r\n\005count\030\002" +
       " \001(\005\032&\n\010PveKills\022\013\n\003mob\030\001 \002(\t\022\r\n\005kills\030\002" +
       " \002(\005\032)\n\nKickPlayer\022\014\n\004name\030\001 \002(\t\022\r\n\005coun" +
-      "t\030\002 \002(\005\032~\n\021ServerInformation\022\023\n\013javavers" +
-      "ion\030\001 \001(\t\022\027\n\017operatingsystem\030\002 \001(\t\022\021\n\tma" +
-      "xmemory\030\003 \001(\005\022\025\n\rserverversion\030\004 \001(\t\022\021\n\t" +
-      "corecount\030\005 \001(\005B#\n\025com.enjin.proto.stats",
-      "B\nEnjinStats"
+      "t\030\002 \002(\005\032\225\001\n\021ServerInformation\022\023\n\013javaver" +
+      "sion\030\001 \001(\t\022\027\n\017operatingsystem\030\002 \001(\t\022\021\n\tm" +
+      "axmemory\030\003 \001(\005\022\025\n\rserverversion\030\004 \001(\t\022\021\n" +
+      "\tcorecount\030\005 \001(\005\022\025\n\rlaststarttime\030\006 \001(\005B",
+      "#\n\025com.enjin.proto.statsB\nEnjinStats"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -6514,7 +6571,7 @@ public final class EnjinStats {
           internal_static_EnjinStats_Server_ServerInformation_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EnjinStats_Server_ServerInformation_descriptor,
-              new java.lang.String[] { "Javaversion", "Operatingsystem", "Maxmemory", "Serverversion", "Corecount", },
+              new java.lang.String[] { "Javaversion", "Operatingsystem", "Maxmemory", "Serverversion", "Corecount", "Laststarttime", },
               com.enjin.proto.stats.EnjinStats.Server.ServerInformation.class,
               com.enjin.proto.stats.EnjinStats.Server.ServerInformation.Builder.class);
           return null;
