@@ -19,6 +19,7 @@ public class AddWhitelistPlayersEvent extends Event {
     String[] players;
     
     public AddWhitelistPlayersEvent(String[] players) {
+    	super(true);
 		this.players = players;
 	}
 

@@ -5,7 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
@@ -19,7 +21,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class EMPListener implements Listener {
 	
 	EnjinMinecraftPlugin plugin;
-	//Map<Player, String[]> initialRankMap = new HashMap<Player, String[]>();
 	
 	public EMPListener(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
@@ -50,13 +51,37 @@ public class EMPListener implements Listener {
 		updatePlayerRanks(p);
 	}
 	
-	public void updatePlayerRanks(Player p) {
-		//permissionsbukkit doesn't support per world permissions
-		/*
-		if(plugin.permissionsbukkit != null) {
-			plugin.playerperms.put(new PlayerPerms(p.getName(), (String)null), EnjinMinecraftPlugin.permission.getPlayerGroups((String)null, p.getName()));
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerBan(PlayerKickEvent event) {
+		if(event.isCancelled()) {
+			return;
 		}
-		plugin.playerperms.put(new PlayerPerms(p.getName(), p.getWorld().getName()), EnjinMinecraftPlugin.permission.getPlayerGroups(p));*/
+		if(event.getPlayer().isBanned() && !plugin.banlistertask.playerIsBanned(event.getPlayer().getName())) {
+			plugin.bannedplayers.put(event.getPlayer().getName(), "");
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void banAndPardonListener(PlayerCommandPreprocessEvent event) {
+		if(event.isCancelled()) {
+			return;
+		}
+		if(event.getMessage().toLowerCase().startsWith("/ban ") && event.getPlayer().hasPermission("bukkit.command.ban.player")) {
+			String[] args = event.getMessage().split(" ");
+			if(args.length > 1) {
+				plugin.banlistertask.addBannedPlayer(args[1].toLowerCase());
+				plugin.bannedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
+			}
+		}else if(event.getMessage().toLowerCase().startsWith("/pardon ") && event.getPlayer().hasPermission("bukkit.command.unban.player")) {
+			String[] args = event.getMessage().split(" ");
+			if(args.length > 1) {
+				plugin.banlistertask.pardonBannedPlayer(args[1].toLowerCase());
+				plugin.pardonedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
+			}
+		}
+	}
+	
+	public void updatePlayerRanks(Player p) {
 		updatePlayerRanks(p.getName());
 	}
 	

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 
 import org.bukkit.Bukkit;
@@ -32,6 +31,8 @@ import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
 import com.enjin.officialplugin.packets.Packet14NewerVersion;
 import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
 import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
+import com.enjin.officialplugin.packets.Packet1ABanPlayers;
+import com.enjin.officialplugin.packets.Packet1BPardonPlayers;
 import com.enjin.officialplugin.packets.PacketUtilities;
 import com.enjin.officialplugin.stats.WriteStats;
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
@@ -49,9 +50,12 @@ public class PeriodicEnjinTask implements Runnable {
 	EnjinMinecraftPlugin plugin;
 	ConcurrentHashMap<String, String> removedplayerperms = new ConcurrentHashMap<String, String>();
 	ConcurrentHashMap<String, String> removedplayervotes = new ConcurrentHashMap<String, String>();
+	HashMap<String, String> removedbans = new HashMap<String, String>();
+	HashMap<String, String> removedpardons = new HashMap<String, String>();
 	int numoffailedtries = 0;
 	int statdelay = 0;
 	int plugindelay = 60;
+	boolean firstrun = true;
 	
 	public PeriodicEnjinTask(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
@@ -62,6 +66,14 @@ public class PeriodicEnjinTask implements Runnable {
 	
 	@Override
 	public void run() {
+		//Only run the ssl test on first run.
+		if(firstrun && EnjinMinecraftPlugin.usingSSL) {
+			if(!plugin.testHTTPSconnection()) {
+				EnjinMinecraftPlugin.usingSSL = false;
+				plugin.getLogger().warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+				EnjinMinecraftPlugin.enjinlogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+			}
+		}
 		boolean successful = false;
 		StringBuilder builder = new StringBuilder();
 		try {
@@ -70,7 +82,7 @@ public class PeriodicEnjinTask implements Runnable {
 			HttpURLConnection con;
 			// Mineshafter creates a socks proxy, so we can safely bypass it
 	        // It does not reroute POST requests so we need to go around it
-	        if (isMineshafterPresent()) {
+	        if (EnjinMinecraftPlugin.isMineshafterPresent()) {
 	            con = (HttpURLConnection) enjinurl.openConnection(Proxy.NO_PROXY);
 	        } else {
 	            con = (HttpURLConnection) enjinurl.openConnection();
@@ -84,7 +96,10 @@ public class PeriodicEnjinTask implements Runnable {
 			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			//StringBuilder builder = new StringBuilder();
 			builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
-			builder.append("&maxplayers=" + encode(String.valueOf(Bukkit.getServer().getMaxPlayers()))); //max players
+			if(firstrun) {
+				builder.append("&maxplayers=" + encode(String.valueOf(Bukkit.getServer().getMaxPlayers()))); //max players
+				builder.append("&mc_version=" + encode(plugin.mcversion));
+			}
 			builder.append("&players=" + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))); //current players
 			builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null || EnjinMinecraftPlugin.permission.getName().equalsIgnoreCase("SuperPerms")) ? "FALSE" : "TRUE")));
 			builder.append("&pluginversion=" + encode(plugin.getDescription().getVersion()));
@@ -95,6 +110,12 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.append("&playerlist=" + encode(getPlayers()));
 			builder.append("&worlds=" + encode(getWorlds()));
 			builder.append("&time=" + encode(getTimes()));
+			if(plugin.bannedplayers.size() > 0) {
+				builder.append("&banned=" + encode(getBans()));
+			}
+			if(plugin.pardonedplayers.size() > 0) {
+				builder.append("&unbanned=" + encode(getPardons()));
+			}
 			//Don't add the votifier tag if no one has voted.
 			/* Votes are now handled in a separate thread.
 			if(plugin.playervotes.size() > 0) {
@@ -136,7 +157,6 @@ public class PeriodicEnjinTask implements Runnable {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
 				plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
 				plugin.stopTask();
-				plugin.unregisterEvents();
 				Player[] players = plugin.getServer().getOnlinePlayers();
 				for(Player player : players) {
 					if(player.hasPermission("enjin.notify.invalidauthkey")) {
@@ -220,7 +240,20 @@ public class PeriodicEnjinTask implements Runnable {
 				}
 				removedplayervotes.remove(entry.getKey());
 			}
+			Set<Entry<String, String>> banset = removedbans.entrySet();
+			for(Entry<String, String> entry : banset) {
+				plugin.bannedplayers.put(entry.getKey(), entry.getValue());
+			}
+			banset.clear();
+			Set<Entry<String, String>> pardonset = removedpardons.entrySet();
+			for(Entry<String, String> entry : pardonset) {
+				plugin.pardonedplayers.put(entry.getKey(), entry.getValue());
+			}
+			pardonset.clear();
 		}else {
+			firstrun = false;
+			removedbans.clear();
+			removedpardons.clear();
 			plugin.debug("Synch successful.");
 			if(plugin.collectstats && (plugin.statssendinterval - 1) <= statdelay) {
 				statdelay = 0;
@@ -240,27 +273,53 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 	}
 	
+	private String getPardons() {
+		StringBuilder pardons = new StringBuilder();
+		Set<Entry<String, String>> pardonset = plugin.pardonedplayers.entrySet();
+		for(Entry<String, String> pardon : pardonset) {
+			if(pardons.length() > 0) {
+				pardons.append(",");
+			}
+			if(pardon.getValue().equals("")) {
+				pardons.append(pardon.getKey());
+			}else {
+				pardons.append(pardon.getValue() + ":" + pardon.getKey());
+			}
+			plugin.pardonedplayers.remove(pardon.getKey());
+			removedpardons.put(pardon.getKey(), pardon.getValue());
+		}
+		return pardons.toString();
+	}
+	
+	private String getBans() {
+		StringBuilder bans = new StringBuilder();
+		Set<Entry<String, String>> banset = plugin.bannedplayers.entrySet();
+		for(Entry<String, String> ban : banset) {
+			if(bans.length() > 0) {
+				bans.append(",");
+			}
+			if(ban.getValue().equals("")) {
+				bans.append(ban.getKey());
+			}else {
+				bans.append(ban.getValue() + ":" + ban.getKey());
+			}
+			plugin.bannedplayers.remove(ban.getKey());
+			removedbans.put(ban.getKey(), ban.getValue());
+		}
+		return bans.toString();
+	}
+	
 	private String getStats() {
-		long statsserialize = System.currentTimeMillis();
 		byte[] rawstats = new WriteStats(plugin).write();
-		long statsserializestop = System.currentTimeMillis();
-		long gzipstart = System.currentTimeMillis();
 		ByteOutputStream output = new ByteOutputStream();
 		try {
 			GZIPOutputStream out = new GZIPOutputStream(output);
 			out.write(rawstats, 0, rawstats.length);
 			out.finish();
 			out.close();
-			long gzipstop = System.currentTimeMillis();
-			long startbase64 = System.currentTimeMillis();
 			String serialized = javax.xml.bind.DatatypeConverter.printBase64Binary(output.getBytes());
-			long stopbase64 = System.currentTimeMillis();
-			plugin.debug("Time taken to serialize: " + String.valueOf(statsserializestop - statsserialize) + " ms.");
-			plugin.debug("Time taken to gzip: " + String.valueOf(gzipstop - gzipstart) + " ms. Resulting size: " + String.valueOf(output.getBytes().length));
-			plugin.debug("Time taken to serialize: " + String.valueOf(stopbase64 - startbase64) + " ms");
 			return serialized;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "";
@@ -357,11 +416,10 @@ public class PeriodicEnjinTask implements Runnable {
 		//return in;
 	}
 	
-	private String handleInput(InputStream in) throws IOException {
+	public String handleInput(InputStream in) throws IOException {
 		String tresult = "Unknown Error";
 		BufferedInputStream bin = new BufferedInputStream(in);
 		bin.mark(Integer.MAX_VALUE);
-		//TODO: A for loop??? Maybe a while(code = in.read() != -1) {}
 		for(;;) {
 			int code = bin.read();
 			switch(code) {
@@ -409,8 +467,16 @@ public class PeriodicEnjinTask implements Runnable {
 				Packet18RemovePlayersFromWhitelist.handle(bin, plugin);
 				break;
 			case 0x19:
-				plugin.debug("Packet [0x20](Enjin Status) received.");
+				plugin.debug("Packet [0x19](Enjin Status) received.");
 				tresult = PacketUtilities.readString(bin);
+				break;
+			case 0x1A:
+				plugin.debug("Packet [0x1A](Ban Player) received.");
+				Packet1ABanPlayers.handle(bin, plugin);
+				break;
+			case 0x1B:
+				plugin.debug("Packet [0x1B](Pardon Player) received.");
+				Packet1BPardonPlayers.handle(bin, plugin);
 				break;
 			default :
 				plugin.getLogger().warning("[Enjin] Received an invalid opcode: " + code);
@@ -502,18 +568,5 @@ public class PeriodicEnjinTask implements Runnable {
 			}
 		}
 		return builder.toString();
-	}
-	/**
-	 * Check if mineshafter is present. If it is, we need to bypass it to send POST requests
-	 *
-	 * @return
-	 */
-	private boolean isMineshafterPresent() {
-	    try {
-	        Class.forName("mineshafter.MineServer");
-	        return true;
-	    } catch (Exception e) {
-	        return false;
-	    }
 	}
 }

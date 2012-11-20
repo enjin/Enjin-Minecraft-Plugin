@@ -41,6 +41,7 @@ import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
 import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
 import com.enjin.officialplugin.stats.WriteStats;
+import com.enjin.officialplugin.threaded.BanLister;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
@@ -80,7 +81,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	Logger logger;
 	public static Permission permission = null;
 	public boolean debug = false;
-	public boolean collectstats = true;
+	public boolean collectstats = false;
 	public PermissionsEx permissionsex;
 	public GroupManager groupmanager;
 	public Permissions bpermissions;
@@ -89,6 +90,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean votifierinstalled = false;
 	static public boolean bukkitversion = false;
 	public int xpversion = 0;
+	public String mcversion = "";
 	
 	public int statssendinterval = 5;
 	
@@ -96,6 +98,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public StatsServer serverstats = new StatsServer(this);
 	public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
+	/**Key is banned player, value is admin that banned the player or blank if the console banned*/
+	public ConcurrentHashMap<String, String> bannedplayers = new ConcurrentHashMap<String, String>();
+	/**Key is banned player, value is admin that pardoned the player or blank if the console pardoned*/
+	public ConcurrentHashMap<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
+	
 	
 	static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
@@ -114,6 +121,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public final EMPListener listener = new EMPListener(this);
 	final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
 	final PeriodicVoteTask votetask = new PeriodicVoteTask(this);
+	public BanLister banlistertask;
+	int synctaskid = -1;
+	int votetaskid = -1;
+	int banlisttask = -1;
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	public static String minecraftport;
 	public static boolean usingSSL = true;
@@ -144,8 +155,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(!logsfolder.exists()) {
 				logsfolder.mkdirs();
 			}
-			DateFormat edateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
-			FileHandler fileTxt = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin-" + edateFormat.format(new Date()) + ".log");
+			banlistertask = new BanLister(this);
+			FileHandler fileTxt = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
 			EnjinLogFormatter formatterTxt = new EnjinLogFormatter();
 		    fileTxt.setFormatter(formatterTxt);
 		    enjinlogger.addHandler(fileTxt);
@@ -159,6 +170,38 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Setup permissions integration");
 			setupVotifierListener();
 			debug("Setup Votifier integration");
+			
+			//Let's get the minecraft version.
+			String[] cbversionstring = getServer().getVersion().split(":");
+	        String[] versionstring = cbversionstring[1].split("\\.");
+	        try{
+	        	int majorversion = Integer.parseInt(versionstring[0].trim());
+	        	int minorversion = Integer.parseInt(versionstring[1].trim());
+	        	int buildnumber = 0;
+	        	if(versionstring.length > 2) {
+	        		try {
+		        		buildnumber = Integer.parseInt(versionstring[2].substring(0, 1));
+	        		}catch(NumberFormatException e) {
+	        			
+	        		}
+	        	}
+	        	mcversion = majorversion + "." + minorversion + "." + buildnumber;
+	        	if(majorversion == 1) {
+	        		if(minorversion > 2) {
+	        			xpversion = 1;
+	        			logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
+	        		}else {
+	        			logger.info("[Enjin Minecraft Plugin] MC 1.2 or below found, enabling version 1 XP handling.");
+	        		}
+	        	}else if(majorversion > 1) {
+	        		xpversion = 1;
+	    			logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
+	        	}
+	        }catch (Exception e) {
+	        	logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP handling may occurr!");
+	        	logger.severe("[Enjin Minecraft Plugin] Server Version String: " + getServer().getVersion());
+	        }
+			
 			if(collectstats) {
 				Bukkit.getPluginManager().registerEvents(new EnjinStatsListener(this), this);
 				File stats = new File("stats.stats");
@@ -172,26 +215,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						playerstats.put(player.getName().toLowerCase(), new StatsPlayer(player));
 					}
 				}
-				String[] cbversionstring = getServer().getVersion().split(":");
-		        String[] versionstring = cbversionstring[1].split("\\.");
-		        try{
-		        	int majorversion = Integer.parseInt(versionstring[0].trim());
-		        	int minorversion = Integer.parseInt(versionstring[1].trim());
-		        	if(majorversion == 1) {
-		        		if(minorversion > 2) {
-		        			xpversion = 1;
-		        			logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
-		        		}else {
-		        			logger.info("[Enjin Minecraft Plugin] MC 1.2 or below found, enabling version 1 XP handling.");
-		        		}
-		        	}else if(majorversion > 1) {
-		        		xpversion = 1;
-		    			logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
-		        	}
-		        }catch (Exception e) {
-		        	logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP handling may occurr!");
-		        	logger.severe("[Enjin Minecraft Plugin] Server Version String: " + getServer().getVersion());
-		        }
 		        //XP handling and chat event handling changed at 1.3, so we can use the same variable. :D
 		        if(xpversion < 1) {
 		        	//We only keep this around for backwards compatibility with tekkit as it is still on 1.2.5
@@ -277,7 +300,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     	if(teststats.equals("")) {
     		createConfig();
     	}
-    	collectstats = config.getBoolean("collectstats", true);
+    	collectstats = config.getBoolean("collectstats", collectstats);
     	statssendinterval = config.getInt("sendstatsinterval", 5);
 	}
 	
@@ -293,11 +316,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public void startTask() {
 		debug("Starting tasks.");
-		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
+		synctaskid = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
+		banlisttask = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, banlistertask, 1800L, 1800L);
 		//Only start the vote task if votifier is installed.
 		if(votifierinstalled) {
 			debug("Starting votifier task.");
-			Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, votetask, 80L, 80L);
+			votetaskid = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, votetask, 80L, 80L);
 		}
 	}
 	
@@ -308,6 +332,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public void stopTask() {
 		debug("Stopping tasks.");
+		if(synctaskid != -1) {
+			Bukkit.getScheduler().cancelTask(synctaskid);
+		}
+		if(votetaskid != -1) {
+			Bukkit.getScheduler().cancelTask(votetaskid);
+		}
+		if(banlisttask != -1) {
+			Bukkit.getScheduler().cancelTask(banlisttask);
+		}
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 	
@@ -800,5 +833,95 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		newstring = chatItalicPattern.matcher(newstring).replaceAll("\u00A7$1");
 		newstring = chatResetPattern.matcher(newstring).replaceAll("\u00A7$1");
 		return newstring;
+	}
+
+	public boolean testHTTPSconnection() {
+		try {
+			URL url = new URL("https://api.enjin.com/ok.html");
+			URLConnection con = url.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	        String inputLine = in.readLine();
+	        in.close();
+			if(inputLine != null && inputLine.startsWith("OK")) {
+				return true;
+			}
+			return false;
+		} catch (SSLHandshakeException e) {
+			if(debug) {
+				e.printStackTrace();
+			}
+			return false;
+		} catch (SocketTimeoutException e) {
+			if(debug) {
+				e.printStackTrace();
+			}
+			return false;
+		} catch (Throwable t) {
+			if(debug) {
+				t.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	public boolean testWebConnection() {
+		try {
+			URL url = new URL("http://google.com");
+			URLConnection con = url.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	        String inputLine = in.readLine();
+	        in.close();
+			if(inputLine != null) {
+				return true;
+			}
+			return false;
+		} catch (SocketTimeoutException e) {
+			if(debug) {
+				e.printStackTrace();
+			}
+			return false;
+		} catch (Throwable t) {
+			if(debug) {
+				t.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	public boolean testHTTPconnection() {
+		try {
+			URL url = new URL("http://api.enjin.com/ok.html");
+			URLConnection con = url.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	        String inputLine = in.readLine();
+	        in.close();
+			if(inputLine != null && inputLine.startsWith("OK")) {
+				return true;
+			}
+			return false;
+		} catch (SocketTimeoutException e) {
+			if(debug) {
+				e.printStackTrace();
+			}
+			return false;
+		} catch (Throwable t) {
+			if(debug) {
+				t.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	public static boolean isMineshafterPresent() {
+	    try {
+	        Class.forName("mineshafter.MineServer");
+	        return true;
+	    } catch (Exception e) {
+	        return false;
+	    }
+	}
+	
+	public PeriodicEnjinTask getTask() {
+		return task;
 	}
 }

@@ -16,14 +16,6 @@ import org.bukkit.entity.Player;
 
 import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.packets.Packet10AddPlayerGroup;
-import com.enjin.officialplugin.packets.Packet11RemovePlayerGroup;
-import com.enjin.officialplugin.packets.Packet12ExecuteCommand;
-import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
-import com.enjin.officialplugin.packets.Packet14NewerVersion;
-import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
-import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
-import com.enjin.officialplugin.packets.PacketUtilities;
 
 /**
  * 
@@ -38,6 +30,7 @@ public class PeriodicVoteTask implements Runnable {
 	EnjinMinecraftPlugin plugin;
 	ConcurrentHashMap<String, String> removedplayervotes = new ConcurrentHashMap<String, String>();
 	int numoffailedtries = 0;
+	boolean firstrun = true;
 	
 	public PeriodicVoteTask(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
@@ -50,7 +43,16 @@ public class PeriodicVoteTask implements Runnable {
 	public void run() {
 		//Only run if we have votes to send.
 		if(plugin.playervotes.size() > 0) {
-
+			
+			//Only run the ssl test on first run.
+			if(firstrun && EnjinMinecraftPlugin.usingSSL) {
+				if(!plugin.testHTTPSconnection()) {
+					EnjinMinecraftPlugin.usingSSL = false;
+					plugin.getLogger().warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+					EnjinMinecraftPlugin.enjinlogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+				}
+			}
+			
 			boolean successful = false;
 			StringBuilder builder = new StringBuilder();
 			try {
@@ -59,7 +61,7 @@ public class PeriodicVoteTask implements Runnable {
 				HttpURLConnection con;
 				// Mineshafter creates a socks proxy, so we can safely bypass it
 		        // It does not reroute POST requests so we need to go around it
-		        if (isMineshafterPresent()) {
+		        if (EnjinMinecraftPlugin.isMineshafterPresent()) {
 		            con = (HttpURLConnection) enjinurl.openConnection(Proxy.NO_PROXY);
 		        } else {
 		            con = (HttpURLConnection) enjinurl.openConnection();
@@ -80,7 +82,9 @@ public class PeriodicVoteTask implements Runnable {
 				con.getOutputStream().write(builder.toString().getBytes());
 				//System.out.println("Getting input stream...");
 				InputStream in = con.getInputStream();
-				String success = handleInput(in);
+				//Let's just use the other method we already have so that there is
+				//only one place to maintain.
+				String success = plugin.getTask().handleInput(in);
 				//System.out.println("Handling input stream...");
 				if(success.equalsIgnoreCase("ok")) {
 					successful = true;
@@ -99,7 +103,6 @@ public class PeriodicVoteTask implements Runnable {
 					EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
 					plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
 					plugin.stopTask();
-					plugin.unregisterEvents();
 					Player[] players = plugin.getServer().getOnlinePlayers();
 					for(Player player : players) {
 						if(player.hasPermission("enjin.notify.invalidauthkey")) {
@@ -148,7 +151,7 @@ public class PeriodicVoteTask implements Runnable {
 				EnjinMinecraftPlugin.enjinlogger.warning(plugin.lasterror.toString());
 			}
 			if(!successful) {
-				plugin.debug("Vote synch unsuccessful.");
+				plugin.debug("Vote sync unsuccessful.");
 				
 				Set<Entry<String, String>> voteset = removedplayervotes.entrySet();
 				for(Entry<String, String> entry : voteset) {
@@ -163,7 +166,8 @@ public class PeriodicVoteTask implements Runnable {
 					removedplayervotes.remove(entry.getKey());
 				}
 			}else {
-				plugin.debug("Vote synch successful.");
+				plugin.debug("Vote sync successful.");
+				firstrun = false;
 			}
 		}
 	}
@@ -187,80 +191,5 @@ public class PeriodicVoteTask implements Runnable {
 	private String encode(String in) throws UnsupportedEncodingException {
 		return URLEncoder.encode(in, "UTF-8");
 		//return in;
-	}
-	
-	/**
-	 * Check if mineshafter is present. If it is, we need to bypass it to send POST requests
-	 *
-	 * @return
-	 */
-	private boolean isMineshafterPresent() {
-	    try {
-	        Class.forName("mineshafter.MineServer");
-	        return true;
-	    } catch (Exception e) {
-	        return false;
-	    }
-	}
-	private String handleInput(InputStream in) throws IOException {
-		String tresult = "Unknown Error";
-		BufferedInputStream bin = new BufferedInputStream(in);
-		bin.mark(Integer.MAX_VALUE);
-		//TODO: A for loop??? Maybe a while(code = in.read() != -1) {}
-		for(;;) {
-			int code = bin.read();
-			switch(code) {
-			case -1:
-				plugin.debug("No more packets. End of stream. Update ended.");
-				bin.reset();
-				StringBuilder input = new StringBuilder();
-				while((code = bin.read()) != -1) {
-					input.append((char)code);
-				}
-				plugin.debug("Raw data received:\n" + input.toString());
-				return tresult; //end of stream reached
-			case 0x10:
-				plugin.debug("Packet [0x10](Add Player Group) received.");
-				Packet10AddPlayerGroup.handle(bin, plugin);
-				break;
-			case 0x11:
-				plugin.debug("Packet [0x11](Remove Player Group) received.");
-				Packet11RemovePlayerGroup.handle(bin, plugin);
-				break;
-			case 0x12:
-				plugin.debug("Packet [0x12](Execute Command) received.");
-				Packet12ExecuteCommand.handle(bin, plugin);
-				break;
-			case 0x13:
-				plugin.debug("Packet [0x13](Execute command as Player) received.");
-				Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
-				break;
-			case 0x0A:
-				plugin.debug("Packet [0x0A](New Line) received, ignoring...");
-				break;
-			case 0x0D:
-				plugin.debug("Packet [0x0D](Carriage Return) received, ignoring...");
-				break;
-			case 0x14:
-				plugin.debug("Packet [0x14](Newer Version) received.");
-				Packet14NewerVersion.handle(bin, plugin);
-				break;
-			case 0x17:
-				plugin.debug("Packet [0x17](Add Whitelist Players) received.");
-				Packet17AddWhitelistPlayers.handle(bin, plugin);
-				break;
-			case 0x18:
-				plugin.debug("Packet [0x18](Remove Players From Whitelist) received.");
-				Packet18RemovePlayersFromWhitelist.handle(bin, plugin);
-				break;
-			case 0x19:
-				plugin.debug("Packet [0x20](Enjin Status) received.");
-				tresult = PacketUtilities.readString(bin);
-				break;
-			default :
-				plugin.getLogger().warning("[Enjin] Received an invalid opcode: " + code);
-				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin] Received an invalid opcode: " + code);
-			}
-		}
 	}
 }

@@ -21,6 +21,7 @@ public class RemovePlayerGroupEvent extends Event {
     String world;
     
     public RemovePlayerGroupEvent(String player, String groupname, String world) {
+    	super(true);
 		this.player = player;
 		this.groupname = groupname;
 		this.world = world;

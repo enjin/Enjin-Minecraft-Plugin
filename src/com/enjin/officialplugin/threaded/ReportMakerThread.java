@@ -8,15 +8,10 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
-
-import javax.net.ssl.SSLHandshakeException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -81,10 +76,10 @@ public class ReportMakerThread implements Runnable {
 			builder.append("\nLast Enjin Plugin Severe error message: \n");
 			builder.append(plugin.lasterror.toString());
 		}
-		builder.append("\n=========================================\nEnjin HTTPS test: " + (testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
-		builder.append("Enjin HTTP test: " + (testHTTPconnection() ? "passed" : "FAILED!") + "\n");
-		builder.append("Enjin web connectivity test: " + (testWebConnection() ? "passed" : "FAILED!") + "\n");
-		builder.append("Is mineshafter present: " + (isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
+		builder.append("\n=========================================\nEnjin HTTPS test: " + (plugin.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
+		builder.append("Enjin HTTP test: " + (plugin.testHTTPconnection() ? "passed" : "FAILED!") + "\n");
+		builder.append("Enjin web connectivity test: " + (plugin.testWebConnection() ? "passed" : "FAILED!") + "\n");
+		builder.append("Is mineshafter present: " + (EnjinMinecraftPlugin.isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
 		File bukkityml = new File(serverloglocation + File.separator + "bukkit.yml");
         YamlConfiguration ymlbukkit = new YamlConfiguration();
         if (bukkityml.exists()){
@@ -152,92 +147,6 @@ public class ReportMakerThread implements Runnable {
 			sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin debug report!");
 			e.printStackTrace();
 		}
-	}
-	
-	private boolean testHTTPSconnection() {
-		try {
-			URL url = new URL("https://api.enjin.com/ok.html");
-			URLConnection con = url.openConnection();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine = in.readLine();
-            in.close();
-			if(inputLine != null && inputLine.startsWith("OK")) {
-				return true;
-			}
-			return false;
-		} catch (SSLHandshakeException e) {
-			if(plugin.debug) {
-				e.printStackTrace();
-			}
-			return false;
-		} catch (SocketTimeoutException e) {
-			if(plugin.debug) {
-				e.printStackTrace();
-			}
-			return false;
-		} catch (Throwable t) {
-			if(plugin.debug) {
-				t.printStackTrace();
-			}
-			return false;
-		}
-	}
-	
-	private boolean testHTTPconnection() {
-		try {
-			URL url = new URL("http://api.enjin.com/ok.html");
-			URLConnection con = url.openConnection();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine = in.readLine();
-            in.close();
-			if(inputLine != null && inputLine.startsWith("OK")) {
-				return true;
-			}
-			return false;
-		} catch (SocketTimeoutException e) {
-			if(plugin.debug) {
-				e.printStackTrace();
-			}
-			return false;
-		} catch (Throwable t) {
-			if(plugin.debug) {
-				t.printStackTrace();
-			}
-			return false;
-		}
-	}
-	
-	private boolean testWebConnection() {
-		try {
-			URL url = new URL("http://google.com");
-			URLConnection con = url.openConnection();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine = in.readLine();
-            in.close();
-			if(inputLine != null) {
-				return true;
-			}
-			return false;
-		} catch (SocketTimeoutException e) {
-			if(plugin.debug) {
-				e.printStackTrace();
-			}
-			return false;
-		} catch (Throwable t) {
-			if(plugin.debug) {
-				t.printStackTrace();
-			}
-			return false;
-		}
-	}
-	
-	private boolean isMineshafterPresent() {
-	    try {
-	        Class.forName("mineshafter.MineServer");
-	        return true;
-	    } catch (Exception e) {
-	        return false;
-	    }
 	}
 
 }
