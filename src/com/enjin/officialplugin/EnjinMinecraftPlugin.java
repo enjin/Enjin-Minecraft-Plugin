@@ -26,7 +26,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -46,6 +55,7 @@ import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
 import com.enjin.officialplugin.threaded.ReportMakerThread;
+import com.enjin.officialplugin.tpsmeter.MonitorTPS;
 import com.enjin.proto.stats.EnjinStats;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
 
@@ -119,12 +129,19 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
 	
 	public final EMPListener listener = new EMPListener(this);
+	
+	//------------Threaded tasks---------------
 	final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
 	final PeriodicVoteTask votetask = new PeriodicVoteTask(this);
 	public BanLister banlistertask;
+	//Initialize in the onEnable
+	public MonitorTPS tpstask;
+	//-------------Thread IDS-------------------
 	int synctaskid = -1;
 	int votetaskid = -1;
 	int banlisttask = -1;
+	int tpstaskid = -1;
+	
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	public static String minecraftport;
 	public static boolean usingSSL = true;
@@ -171,6 +188,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			setupVotifierListener();
 			debug("Setup Votifier integration");
 			
+			//------We should do TPS even if we have an invalid auth key
+			Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, tpstask = new MonitorTPS(this), 40, 40);
+			
 			//Let's get the minecraft version.
 			String[] cbversionstring = getServer().getVersion().split(":");
 	        String[] versionstring = cbversionstring[1].split("\\.");
@@ -203,7 +223,33 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	        }
 			
 			if(collectstats) {
-				Bukkit.getPluginManager().registerEvents(new EnjinStatsListener(this), this);
+				EnjinStatsListener esl = new EnjinStatsListener(this);
+				PluginManager pm = Bukkit.getPluginManager();
+				pm.registerEvents(esl, this);
+				if(!config.getBoolean("statscollected.player.travel", true)) {
+					PlayerMoveEvent.getHandlerList().unregister(esl);
+				}
+				if(!config.getBoolean("statscollected.player.blocksbroken", true)) {
+					BlockBreakEvent.getHandlerList().unregister(esl);
+				}
+				if(!config.getBoolean("statscollected.player.blocksplaced", true)) {
+					BlockPlaceEvent.getHandlerList().unregister(esl);
+				}
+				if(!config.getBoolean("statscollected.player.kills", true)) {
+					EntityDeathEvent.getHandlerList().unregister(esl);
+				}
+				if(!config.getBoolean("statscollected.player.deaths", true)) {
+					PlayerDeathEvent.getHandlerList().unregister(esl);
+				}
+				if(!config.getBoolean("statscollected.player.xp", true)) {
+					PlayerExpChangeEvent.getHandlerList().unregister(esl);
+				}
+				if(!config.getBoolean("statscollected.server.creeperexplosions", true)) {
+					EntityExplodeEvent.getHandlerList().unregister(esl);
+				}
+				if(!config.getBoolean("statscollected.server.playerkicks", true)) {
+					PlayerKickEvent.getHandlerList().unregister(esl);
+				}
 				File stats = new File("stats.stats");
 				if(stats.exists()) {
 					FileInputStream input = new FileInputStream(stats);
@@ -302,6 +348,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     	}
     	collectstats = config.getBoolean("collectstats", collectstats);
     	statssendinterval = config.getInt("sendstatsinterval", 5);
+    	teststats = config.getString("statscollected.player.travel", "");
+    	if(teststats.equals("")) {
+    		createConfig();
+    	}
 	}
 	
 	private void createConfig() {
@@ -311,6 +361,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		config.set("autoupdate", autoupdate);
 		config.set("collectstats", collectstats);
 		config.set("sendstatsinterval", statssendinterval);
+		config.set("statscollected.player.travel", true);
+		config.set("statscollected.player.blocksbroken", true);
+		config.set("statscollected.player.blocksplaced", true);
+		config.set("statscollected.player.kills", true);
+		config.set("statscollected.player.deaths", true);
+		config.set("statscollected.player.xp", true);
+		config.set("statscollected.server.creeperexplosions", true);
+		config.set("statscollected.server.playerkicks", true);
 		saveConfig();
 	}
 
@@ -341,7 +399,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		if(banlisttask != -1) {
 			Bukkit.getScheduler().cancelTask(banlisttask);
 		}
-		Bukkit.getScheduler().cancelTasks(this);
+		//Bukkit.getScheduler().cancelTasks(this);
 	}
 	
 	public void unregisterEvents() {
@@ -630,6 +688,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						thestring.append(args[i]);
 					}
 					getServer().broadcastMessage(translateColorCodes(thestring.toString()));
+					return true;
+				}else if(args[0].equalsIgnoreCase("lag")) {
+					if(!sender.hasPermission("enjin.lag")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.lag\" permission or OP to run that command!");
+						return true;
+					}
+					sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + tpstask.getTPSAverage());
+					sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + tpstask.getLastTPSMeasurement());
 					return true;
 				}
 			}

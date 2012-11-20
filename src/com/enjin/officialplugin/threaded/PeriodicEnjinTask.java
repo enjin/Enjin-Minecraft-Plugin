@@ -109,6 +109,7 @@ public class PeriodicEnjinTask implements Runnable {
 			}
 			builder.append("&playerlist=" + encode(getPlayers()));
 			builder.append("&worlds=" + encode(getWorlds()));
+			builder.append("&tps=" + encode(getTPS()));
 			builder.append("&time=" + encode(getTimes()));
 			if(plugin.bannedplayers.size() > 0) {
 				builder.append("&banned=" + encode(getBans()));
@@ -273,6 +274,9 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 	}
 	
+	private String getTPS() {
+		return String.valueOf(plugin.tpstask.getTPSAverage());
+	}
 	private String getPardons() {
 		StringBuilder pardons = new StringBuilder();
 		Set<Entry<String, String>> pardonset = plugin.pardonedplayers.entrySet();
