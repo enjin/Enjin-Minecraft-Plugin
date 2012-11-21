@@ -51,6 +51,7 @@ import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
 import com.enjin.officialplugin.stats.WriteStats;
 import com.enjin.officialplugin.threaded.BanLister;
+import com.enjin.officialplugin.threaded.ConfigSender;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
@@ -102,6 +103,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public int xpversion = 0;
 	public String mcversion = "";
 	
+	/**Key is the config value, value is the type, string, boolean, etc.*/
+	public ConcurrentHashMap<String, ConfigValueTypes> configvalues = new ConcurrentHashMap<String, ConfigValueTypes>();
+	
 	public int statssendinterval = 5;
 	
 	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
@@ -152,6 +156,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public EnjinErrorReport lasterror = null;
 	
+	public EnjinStatsListener esl = null;
+	
 	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 	
 	public void debug(String s) {
@@ -191,6 +197,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			//------We should do TPS even if we have an invalid auth key
 			Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, tpstask = new MonitorTPS(this), 40, 40);
 			
+			Thread configthread = new Thread(new ConfigSender(this));
+			configthread.start();
+			
 			//Let's get the minecraft version.
 			String[] cbversionstring = getServer().getVersion().split(":");
 	        String[] versionstring = cbversionstring[1].split("\\.");
@@ -223,33 +232,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	        }
 			
 			if(collectstats) {
-				EnjinStatsListener esl = new EnjinStatsListener(this);
-				PluginManager pm = Bukkit.getPluginManager();
-				pm.registerEvents(esl, this);
-				if(!config.getBoolean("statscollected.player.travel", true)) {
-					PlayerMoveEvent.getHandlerList().unregister(esl);
-				}
-				if(!config.getBoolean("statscollected.player.blocksbroken", true)) {
-					BlockBreakEvent.getHandlerList().unregister(esl);
-				}
-				if(!config.getBoolean("statscollected.player.blocksplaced", true)) {
-					BlockPlaceEvent.getHandlerList().unregister(esl);
-				}
-				if(!config.getBoolean("statscollected.player.kills", true)) {
-					EntityDeathEvent.getHandlerList().unregister(esl);
-				}
-				if(!config.getBoolean("statscollected.player.deaths", true)) {
-					PlayerDeathEvent.getHandlerList().unregister(esl);
-				}
-				if(!config.getBoolean("statscollected.player.xp", true)) {
-					PlayerExpChangeEvent.getHandlerList().unregister(esl);
-				}
-				if(!config.getBoolean("statscollected.server.creeperexplosions", true)) {
-					EntityExplodeEvent.getHandlerList().unregister(esl);
-				}
-				if(!config.getBoolean("statscollected.server.playerkicks", true)) {
-					PlayerKickEvent.getHandlerList().unregister(esl);
-				}
+				startStatsCollecting();
 				File stats = new File("stats.stats");
 				if(stats.exists()) {
 					FileInputStream input = new FileInputStream(stats);
@@ -289,6 +272,42 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
+	public void stopStatsCollecting() {
+		 HandlerList.unregisterAll(esl);
+	}
+	
+	public void startStatsCollecting() {
+		if(esl == null) {
+			esl = new EnjinStatsListener(this);
+		}
+		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(esl, this);
+		if(!config.getBoolean("statscollected.player.travel", true)) {
+			PlayerMoveEvent.getHandlerList().unregister(esl);
+		}
+		if(!config.getBoolean("statscollected.player.blocksbroken", true)) {
+			BlockBreakEvent.getHandlerList().unregister(esl);
+		}
+		if(!config.getBoolean("statscollected.player.blocksplaced", true)) {
+			BlockPlaceEvent.getHandlerList().unregister(esl);
+		}
+		if(!config.getBoolean("statscollected.player.kills", true)) {
+			EntityDeathEvent.getHandlerList().unregister(esl);
+		}
+		if(!config.getBoolean("statscollected.player.deaths", true)) {
+			PlayerDeathEvent.getHandlerList().unregister(esl);
+		}
+		if(!config.getBoolean("statscollected.player.xp", true)) {
+			PlayerExpChangeEvent.getHandlerList().unregister(esl);
+		}
+		if(!config.getBoolean("statscollected.server.creeperexplosions", true)) {
+			EntityExplodeEvent.getHandlerList().unregister(esl);
+		}
+		if(!config.getBoolean("statscollected.server.playerkicks", true)) {
+			PlayerKickEvent.getHandlerList().unregister(esl);
+		}
+	}
+
 	@Override
 	public void onDisable() {
 		stopTask();
@@ -336,18 +355,32 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     	if(!configfile.exists()) {
     		createConfig();
     	}
+    	configvalues.put("debug", ConfigValueTypes.BOOLEAN);
     	debug = config.getBoolean("debug", false);
+    	configvalues.put("authkey", ConfigValueTypes.FORBIDDEN);
     	hash = config.getString("authkey", "");
     	debug("Key value retrieved: " + hash);
+    	configvalues.put("https", ConfigValueTypes.BOOLEAN);
     	usingSSL = config.getBoolean("https", true);
+    	configvalues.put("autoupdate", ConfigValueTypes.BOOLEAN);
     	autoupdate = config.getBoolean("autoupdate", true);
     	//Test to see if we need to update the config file.
     	String teststats = config.getString("collectstats", "");
     	if(teststats.equals("")) {
     		createConfig();
     	}
+    	configvalues.put("collectstats", ConfigValueTypes.BOOLEAN);
     	collectstats = config.getBoolean("collectstats", collectstats);
+    	configvalues.put("sendstatsinterval", ConfigValueTypes.INT);
     	statssendinterval = config.getInt("sendstatsinterval", 5);
+    	configvalues.put("statscollected.player.travel", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("statscollected.player.blocksbroken", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("statscollected.player.blocksplaced", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("statscollected.player.kills", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("statscollected.player.deaths", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("statscollected.player.xp", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("statscollected.player.creeperexplosions", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("statscollected.player.playerkicks", ConfigValueTypes.BOOLEAN);
     	teststats = config.getString("statscollected.player.travel", "");
     	if(teststats.equals("")) {
     		createConfig();
