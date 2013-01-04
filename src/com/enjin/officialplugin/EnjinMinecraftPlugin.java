@@ -729,47 +729,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}
 					sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + tpstask.getTPSAverage());
 					sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + tpstask.getLastTPSMeasurement());
+					Runtime runtime = Runtime.getRuntime();
+					long memused = runtime.totalMemory()/(1024*1024);
+					long maxmemory = runtime.maxMemory()/(1024*1024);
+					sender.sendMessage(ChatColor.GOLD + "Memory Used: " + ChatColor.GREEN + memused + "MB/" + maxmemory + "MB");
 					return true;
 				}
 			}
 		}
 		return false;
-	}
-	
-	@Deprecated
-	public static void sendAddRank(final String world, final String group, final String player) {
-		exec.submit(
-			new Runnable() {
-				@Override
-				public void run() {
-					try {
-						sendAPIQuery("minecraft-set-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group);
-					} catch (Throwable t) {
-						enjinlogger.warning("There was an error synchronizing group " + group + ", for user " + player + ".");
-						Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing group " + group + ", for user " + player + ".");
-						t.printStackTrace();
-					}
-				}
-			}
-		);
-	}
-	
-	@Deprecated
-	public static void sendRemoveRank(final String world, final String group, final String player) {
-		exec.submit(
-			new Runnable() {
-				@Override
-				public void run() {
-					try {
-						sendAPIQuery("minecraft-remove-rank", "authkey=" + hash, "world=" + world, "player=" + player, "group=" + group);
-					} catch (Throwable t) {
-						enjinlogger.warning("There was an error synchronizing group " + group + ", for user " + player + ".");
-						Bukkit.getLogger().warning("[Enjin Minecraft Plugin] There was an error synchronizing group " + group + ", for user " + player + ".");
-						t.printStackTrace();
-					}
-				}
-			}
-		);
 	}
 	
 	/**

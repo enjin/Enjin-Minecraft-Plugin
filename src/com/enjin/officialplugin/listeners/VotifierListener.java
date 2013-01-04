@@ -20,12 +20,14 @@ public class VotifierListener implements Listener {
 	public void voteRecieved(VotifierEvent event) {
 		//Lists when testing will send a user called "test", let's
 		//make sure we don't process those votes.
-		if(event.getVote().getUsername().equalsIgnoreCase("test")) {
+		if(event.getVote().getUsername().equalsIgnoreCase("test") ||
+				event.getVote().getUsername().isEmpty()) {
 			return;
 		}
 		Vote vote = event.getVote();
 		//Remove anything non-alphanumeric from the username, removing exploits
 		String username = vote.getUsername().replaceAll("[^0-9A-Za-z_]", "");
+		if(username.isEmpty()) return;
 		String lists = "";
 		if(plugin.playervotes.containsKey(username)) {
 			lists = plugin.playervotes.get(username);

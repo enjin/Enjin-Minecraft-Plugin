@@ -44,7 +44,7 @@ public class EnjinStatsListener implements Listener {
 		if(event.isCancelled()) {
 			return;
 		}
-		if(event.getEntityType() == EntityType.CREEPER) {
+		if(event.getEntity() != null && event.getEntityType() == EntityType.CREEPER) {
 			plugin.serverstats.addCreeperExplosion();
 		}
 	}
