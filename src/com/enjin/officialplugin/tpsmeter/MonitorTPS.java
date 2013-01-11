@@ -17,7 +17,7 @@ public class MonitorTPS implements Runnable {
 	private LinkedList<Double> tpslist = new LinkedList<Double>();
 	private int tickmeasurementinterval = 40;
 	EnjinMinecraftPlugin plugin;
-	private int maxentries = 30;
+	private int maxentries = 25;
 
 	public MonitorTPS(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;

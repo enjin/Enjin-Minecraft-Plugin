@@ -284,8 +284,10 @@ public class StatsPlayer {
     		blocks.addPlacedblocks(Block.newBuilder().setId(blockdata.getKey()).setCount(blockdata.getValue().intValue()).build());
     	}
     	EnjinStats.Server.Player.Builder stats = EnjinStats.Server.Player.newBuilder().setName(name).
-    	    setFirstimeplayer(firsttimeplayer).setDeaths(deaths).setKilled(killed).setDistance(EnjinStats.Server.Player.Distance.newBuilder().setFoot(footdistance).
-    	    		setBoat(boatdistance).setPig(pigdistance).setMinecart(minecartdistance).build()).setBlocks(blocks.setBroken(brokenblocks).setPlaced(placedblocks));
+    	    setFirstimeplayer(firsttimeplayer).setDeaths(deaths).setKilled(killed).setDistance(
+    	    		EnjinStats.Server.Player.Distance.newBuilder().setFoot(getRealDistance(footdistance)).
+    	    		setBoat(getRealDistance(boatdistance)).setPig(getRealDistance(pigdistance)).
+    	    		setMinecart(getRealDistance(minecartdistance)).build()).setBlocks(blocks.setBroken(brokenblocks).setPlaced(placedblocks));
     	stats.setPvekills(pvekills).setPvpkills(pvpkills).setXp(totalxp).setXplevel(xplevel);
     	for(Entry<EntityType, Integer> ent : creaturekills.entrySet()) {
     		stats.addPveentitykills(EnjinStats.Server.Player.PveKills.newBuilder().setMob(ent.getKey().getName()).setKills(ent.getValue()).build());
@@ -293,4 +295,8 @@ public class StatsPlayer {
     	stats.setChatlines(chats);
     	return stats.build();
     }
+	
+	private double getRealDistance(double squareddistance) {
+		return Math.sqrt(squareddistance);
+	}
 }

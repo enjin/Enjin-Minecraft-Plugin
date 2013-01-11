@@ -115,9 +115,9 @@ public class EnjinStatsListener implements Listener {
 		if(!from.getWorld().getName().equals(to.getWorld().getName())) {
 			return;
 		}
-		double distance = Math.sqrt((to.getX() - from.getX()) * (to.getX() - from.getX()) + (to.getY() - from.getY()) * (to.getY() - from.getY()) + (to.getZ() - from.getZ()) * (to.getZ() - from.getZ()));
+		double distance = (to.getX() - from.getX()) * (to.getX() - from.getX()) + (to.getY() - from.getY()) * (to.getY() - from.getY()) + (to.getZ() - from.getZ()) * (to.getZ() - from.getZ());
 		//You can't go over 4 blocks before a teleport event happens, otherwise you are using hacks to move.
-		if(distance > 6) {
+		if(distance > 36) {
 			return;
 		}
 		StatsPlayer splayer = plugin.GetPlayerStats(player.getName());

@@ -38,10 +38,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import com.enjin.officialplugin.listeners.EnjinStatsListener;
 import com.enjin.officialplugin.listeners.NewPlayerChatListener;
-import com.enjin.officialplugin.listeners.TekkitPlayerChatListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.permlisteners.GroupManagerListener;
 import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
@@ -195,7 +195,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Setup Votifier integration");
 			
 			//------We should do TPS even if we have an invalid auth key
-			Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, tpstask = new MonitorTPS(this), 40, 40);
+			Bukkit.getScheduler().runTaskTimerAsynchronously(this, tpstask = new MonitorTPS(this), 40, 40);
 			
 			Thread configthread = new Thread(new ConfigSender(this));
 			configthread.start();
@@ -247,7 +247,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		        //XP handling and chat event handling changed at 1.3, so we can use the same variable. :D
 		        if(xpversion < 1) {
 		        	//We only keep this around for backwards compatibility with tekkit as it is still on 1.2.5
-		        	Bukkit.getPluginManager().registerEvents(new TekkitPlayerChatListener(this), this);
+		        	getLogger().severe("This version of the Enjin Minecraft Plugin does not support Tekkit Classic! Please downgrade to version 2.4.0.");
 		        }else {
 		        	Bukkit.getPluginManager().registerEvents(new NewPlayerChatListener(this), this);
 		        }
@@ -407,12 +407,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public void startTask() {
 		debug("Starting tasks.");
-		synctaskid = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
-		banlisttask = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, banlistertask, 1800L, 1800L);
+		BukkitScheduler scheduler = Bukkit.getScheduler();
+		synctaskid = scheduler.runTaskTimerAsynchronously(this, task, 1200L, 1200L).getTaskId();
+		banlisttask = scheduler.runTaskTimerAsynchronously(this, banlistertask, 1800L, 1800L).getTaskId();
 		//Only start the vote task if votifier is installed.
 		if(votifierinstalled) {
 			debug("Starting votifier task.");
-			votetaskid = Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, votetask, 80L, 80L);
+			votetaskid = scheduler.runTaskTimerAsynchronously(this, votetask, 80L, 80L).getTaskId();
 		}
 	}
 	
