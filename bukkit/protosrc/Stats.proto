@@ -1,0 +1,82 @@
+package EnjinStats;
+
+option java_package = "com.enjin.proto.stats";
+option java_outer_classname = "EnjinStats";
+
+message Server {
+  
+  message Player {
+    required string name = 1;
+    optional bool firstimeplayer = 2 [default = false];
+    optional int32 deaths = 3;
+    optional int32 killed = 4;
+    
+    message Distance {
+      optional double foot = 1;
+      optional double boat = 2;
+      optional double pig = 3;
+      optional double minecart = 4;
+    }
+    
+    optional Distance distance = 5;
+    
+    message Blocks {
+      optional int32 broken = 1;
+      optional int32 placed = 2;
+        
+      message Block {
+        required string id = 1;
+        optional int32 count = 2;
+      }
+      
+      repeated Block brokenblocks = 3;
+      repeated Block placedblocks = 4;
+      
+    }
+    
+    optional Blocks blocks = 6;
+    optional int32 kicks = 7;
+    optional double money = 8;
+    optional int32 xp = 9;
+    optional int32 xplevel = 10;
+    optional int32 pvpkills = 11;
+    optional int32 pvekills = 12;
+    
+    message PveKills {
+      required string mob = 1;
+      required int32 kills = 2;
+    }
+    
+    repeated PveKills pveentitykills = 13;
+    optional int32 chatlines = 14;
+    
+  }
+  
+  repeated Player players = 1;
+  optional int64 laststarttime = 2;
+  optional int32 totalkicks = 3;
+  
+  message KickPlayer {
+    required string name = 1;
+    required int32 count = 2;
+  }
+  
+  repeated KickPlayer playerskicked = 4;
+  optional int32 entities = 5;
+  optional int32 memoryused = 6;
+  optional int32 creeperexplosions = 7;
+  optional int32 servertickrate = 8;
+  
+  message ServerInformation {
+    optional string javaversion = 1;
+    optional string operatingsystem = 2;
+    optional int32 maxmemory = 3;
+    optional string serverversion = 4;
+    optional int32 corecount = 5;
+    optional int32 laststarttime = 6;
+  }
+  
+  optional ServerInformation serverinfo = 9;
+  
+
+}
