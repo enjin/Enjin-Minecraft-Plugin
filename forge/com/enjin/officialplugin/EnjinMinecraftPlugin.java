@@ -66,7 +66,7 @@ import cpw.mods.fml.relauncher.Side;
  * 
  */
 
-@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.1")
+@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.1-150")
 public class EnjinMinecraftPlugin {
 
 	@Instance("EnjinMinecraftPlugin")
@@ -83,7 +83,6 @@ public class EnjinMinecraftPlugin {
 
 	public static String hash = "";
 	MinecraftServer s;
-	Logger logger;
 	public boolean debug = false;
 	public boolean collectstats = false;
 	public boolean supportsglobalgroups = true;
@@ -91,7 +90,7 @@ public class EnjinMinecraftPlugin {
 	public int xpversion = 0;
 	
 	//----------------Make sure to change this for every minecraft version!
-	public String mcversion = "1.4.7";
+	public String mcversion = "1.5.0";
 	
 	//Since forge mods can be installed on a client, we want to make sure we only run on a server.
 	public boolean enable = true;
@@ -192,9 +191,9 @@ public class EnjinMinecraftPlugin {
 			    fileTxt.setFormatter(formatterTxt);
 			    enjinlogger.addHandler(fileTxt);
 			} catch (SecurityException e) {
-				logger.warning("[EnjinMinecraftPlugin] Unable to enable debug logging!");
+				s.logWarning("[EnjinMinecraftPlugin] Unable to enable debug logging!");
 			} catch (IOException e) {
-				logger.warning("[EnjinMinecraftPlugin] Unable to enable debug logging!");
+				s.logWarning("[EnjinMinecraftPlugin] Unable to enable debug logging!");
 			}
 		    enjinlogger.setUseParentHandlers(false);
 			debug("Init vars done.");
@@ -223,7 +222,7 @@ public class EnjinMinecraftPlugin {
 			
 		}
 		catch(Throwable t) {
-			MinecraftServer.getServer().logger.warning("[Enjin Minecraft Plugin] Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
+			MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
 			enjinlogger.warning("Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
 			t.printStackTrace();
 			enable = false;
@@ -235,7 +234,6 @@ public class EnjinMinecraftPlugin {
 	@ServerStarting
 	public void serverStarting(FMLServerStartingEvent ev) {
 		s = ev.getServer();
-		logger = s.logger;
 		if(s.getCommandManager() instanceof ServerCommandManager) {
 			ServerCommandManager scm = (ServerCommandManager)s.getCommandManager();
 			scm.registerCommand(new CommandListener(this));
@@ -316,7 +314,6 @@ public class EnjinMinecraftPlugin {
 	
 	private void initVariables() throws Throwable {
 		s = MinecraftServer.getServer();
-		logger = MinecraftServer.getServer().logger;
 		try {
 			Properties serverProperties = new Properties();
 			FileInputStream in = new FileInputStream(new File("server.properties"));
@@ -477,17 +474,17 @@ public class EnjinMinecraftPlugin {
 			return 0;
 		} catch (SSLHandshakeException e) {
 			enjinlogger.warning("SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
-			MinecraftServer.logger.warning("[Enjin Minecraft Plugin] SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
+			MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
 			usingSSL = false;
 			return sendAPIQuery(urls, queryValues);
 		} catch (SocketTimeoutException e) {
 			enjinlogger.warning("Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-			MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
+			MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 			return 2;
 		} catch (Throwable t) {
 			t.printStackTrace();
 			enjinlogger.warning("Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
-			MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
+			MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
 			return 2;
 		}
 	}

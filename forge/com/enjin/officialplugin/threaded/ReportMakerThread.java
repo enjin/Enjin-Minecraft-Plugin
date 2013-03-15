@@ -80,7 +80,12 @@ public class ReportMakerThread implements Runnable {
 		builder.append("Enjin web connectivity test: " + (plugin.testWebConnection() ? "passed" : "FAILED!") + "\n");
 		builder.append("Is mineshafter present: " + (EnjinMinecraftPlugin.isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
 		//let's make sure to hide the apikey, wherever it may occurr in the file.
-        String fullreport = builder.toString().replaceAll(plugin.hash, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		String fullreport;
+		if(plugin.hash.length() > 0) {
+	        fullreport = builder.toString().replaceAll(plugin.hash, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		}else {
+			fullreport = builder.toString();
+		}
         System.out.println(fullreport);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 		Date date = new Date();
@@ -90,7 +95,7 @@ public class ReportMakerThread implements Runnable {
 			outChannel.write(fullreport);
 			outChannel.close();
 			if(sender == null) {
-				MinecraftServer.logger.info("Enjin debug report created in " + serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt successfully!");
+				MinecraftServer.getServer().logInfo("Enjin debug report created in " + serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt successfully!");
 			}else {
 				sender.sendChatToPlayer(ChatColor.GOLD + "Enjin debug report created in " + serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt successfully!");
 			}
@@ -102,7 +107,7 @@ public class ReportMakerThread implements Runnable {
 				}
 			}
 			if(sender == null) {
-				MinecraftServer.logger.info("Unable to write enjin debug report!");
+				MinecraftServer.getServer().logInfo("Unable to write enjin debug report!");
 			}else {
 				sender.sendChatToPlayer(ChatColor.DARK_RED + "Unable to write enjin debug report!");
 			}

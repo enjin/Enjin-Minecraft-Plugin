@@ -26,7 +26,7 @@ public class Packet14NewerVersion {
 				plugin.debug("Updating to new version " + newversion);
 			}
 		} catch (Throwable t) {
-			MinecraftServer.logger.warning("Failed to dispatch command via 0x14, " + t.getMessage());
+			MinecraftServer.getServer().logWarning("Failed to dispatch command via 0x14, " + t.getMessage());
 			t.printStackTrace();
 		}
 	}

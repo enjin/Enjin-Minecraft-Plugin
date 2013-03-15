@@ -39,11 +39,11 @@ public class DownloadPluginThread implements Runnable {
 		    if(destination.delete() && tempfile.renameTo(destination)) {
 		    	plugin.hasupdate = true;
 		    	plugin.newversion = versionnumber;
-		    	MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Enjin Minecraft plugin was updated to version " + versionnumber + ". Please restart your server.");
+		    	MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Enjin Minecraft plugin was updated to version " + versionnumber + ". Please restart your server.");
 		    	return;
 		    }else {
 		    	plugin.updatefailed = true;
-		    	MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Unable to update to new version. Please update manually!");
+		    	MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Unable to update to new version. Please update manually!");
 		    }
 		} catch (IOException e) {
 			e.printStackTrace();

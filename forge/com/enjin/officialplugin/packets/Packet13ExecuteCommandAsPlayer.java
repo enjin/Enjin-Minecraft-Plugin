@@ -33,7 +33,7 @@ public class Packet13ExecuteCommandAsPlayer {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(p, command));
 			//Bukkit.getServer().dispatchCommand(p, command);*/
 		} catch (Throwable t) {
-			MinecraftServer.logger.warning("Failed to dispatch command via 0x13, " + t.getMessage());
+			MinecraftServer.getServer().logWarning("Failed to dispatch command via 0x13, " + t.getMessage());
 			t.printStackTrace();
 		}
 	}

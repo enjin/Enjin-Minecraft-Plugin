@@ -73,7 +73,7 @@ public class PeriodicEnjinTask implements Runnable {
 		if(firstrun && EnjinMinecraftPlugin.usingSSL) {
 			if(!plugin.testHTTPSconnection()) {
 				EnjinMinecraftPlugin.usingSSL = false;
-				MinecraftServer.logger.warning("[Enjin Minecraft Plugin] SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+				MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
 				EnjinMinecraftPlugin.enjinlogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
 			}
 		}
@@ -136,14 +136,14 @@ public class PeriodicEnjinTask implements Runnable {
 						if(MinecraftServer.getServer().getConfigurationManager().getOps().contains(player.toLowerCase())) {
 							EntityPlayerMP rplayer = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(player);
 							rplayer.addChatMessage(ChatColor.DARK_GREEN + "[Enjin Minecraft Plugin] Connection to Enjin re-established!");
-							MinecraftServer.logger.info("[Enjin Minecraft Plugin] Connection to Enjin re-established!");
+							MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Connection to Enjin re-established!");
 						}
 					}
 				}
 			}else if(success.equalsIgnoreCase("auth_error")) {
 				plugin.authkeyinvalid = true;
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
-				MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
+				MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
 				plugin.stopTask();
 				String[] players = MinecraftServer.getServer().getConfigurationManager().getAllUsernames();
 				for(String player : players) {
@@ -155,21 +155,21 @@ public class PeriodicEnjinTask implements Runnable {
 				successful = false;
 			}else if(success.equalsIgnoreCase("bad_data")) {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
-				MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+				MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
 				successful = false;
 			}else if(success.equalsIgnoreCase("retry_later")) {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
-				MinecraftServer.logger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
+				MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
 				successful = false;
 			}else if(success.equalsIgnoreCase("connect_error")) {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
-				MinecraftServer.logger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+				MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
 				successful = false;
 			}else {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
 				EnjinMinecraftPlugin.enjinlogger.info("Response code: " + success);
-				MinecraftServer.logger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
-				MinecraftServer.logger.info("[Enjin Minecraft Plugin] Response code: " + success);
+				MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
+				MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Response code: " + success);
 				successful = false;
 			}
 			if(!successful) {
@@ -185,7 +185,7 @@ public class PeriodicEnjinTask implements Runnable {
 			//We don't need to spam the console every minute if the synch didn't complete correctly.
 			if(numoffailedtries++ > 5) {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-				MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
+				MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
 				numoffailedtries = 0;
 				plugin.noEnjinConnectionEvent();
 			}
@@ -194,7 +194,7 @@ public class PeriodicEnjinTask implements Runnable {
 			//We don't need to spam the console every minute if the synch didn't complete correctly.
 			if(numoffailedtries++ > 5) {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
-				MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
+				MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
 				numoffailedtries = 0;
 				plugin.noEnjinConnectionEvent();
 			}
@@ -470,7 +470,7 @@ public class PeriodicEnjinTask implements Runnable {
 				Packet1BPardonPlayers.handle(bin, plugin);
 				break;
 			default :
-				MinecraftServer.logger.warning("[Enjin] Received an invalid opcode: " + code);
+				MinecraftServer.getServer().logWarning("[Enjin] Received an invalid opcode: " + code);
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin] Received an invalid opcode: " + code);
 			}
 		}

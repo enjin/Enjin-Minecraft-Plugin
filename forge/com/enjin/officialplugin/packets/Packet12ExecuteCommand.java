@@ -24,7 +24,7 @@ public class Packet12ExecuteCommand {
 			plugin.scheduler.scheduleSyncDelayedTask(new CommandExecuter(null, command));
 			//Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PacketUtilities.readString(in));
 		} catch (Throwable t) {
-			MinecraftServer.logger.warning("Failed to dispatch command via 0x12, " + t.getMessage());
+			MinecraftServer.getServer().logWarning("Failed to dispatch command via 0x12, " + t.getMessage());
 			t.printStackTrace();
 		}
 	}

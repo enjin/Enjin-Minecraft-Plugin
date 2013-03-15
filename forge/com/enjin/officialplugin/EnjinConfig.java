@@ -26,7 +26,7 @@ public class EnjinConfig {
 				iniSettings.load(new FileInputStream(INIFILE));
 
 			}catch (Exception e) {
-				MinecraftServer.logger.info("[EnjinMinecraftPlugin] - properties file load failed, using defaults.");
+				MinecraftServer.getServer().logInfo("[EnjinMinecraftPlugin] - properties file load failed, using defaults.");
 			}		
 		}else {
 			createIni();
@@ -40,7 +40,7 @@ public class EnjinConfig {
 			INIFILE.createNewFile();
 			iniSettings.load(new FileInputStream(INIFILE));
 		} catch (Exception e) {
-			MinecraftServer.logger.info("[EnjinMinecraftPlugin] - properties file creation failed, using defaults.");
+			MinecraftServer.getServer().logInfo("[EnjinMinecraftPlugin] - properties file creation failed, using defaults.");
 		}
 
 	}

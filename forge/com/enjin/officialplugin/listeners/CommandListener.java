@@ -67,7 +67,7 @@ public class CommandListener extends CommandBase {
 					return;
 				}
 				plugin.enjinlogger.info("Checking if key is valid");
-				MinecraftServer.logger.info("Checking if key is valid");
+				MinecraftServer.getServer().logInfo("Checking if key is valid");
 				//Make sure we don't have several verifier threads going at the same time.
 				if(plugin.verifier == null || plugin.verifier.completed) {
 					plugin.verifier = new NewKeyVerifier(plugin, args[1], sender, false);
@@ -75,7 +75,7 @@ public class CommandListener extends CommandBase {
 					verifierthread.start();
 				}else {
 					if(sender == null) {
-						MinecraftServer.logger.info("Please wait until we verify the key before you try again!");
+						MinecraftServer.getServer().logInfo("Please wait until we verify the key before you try again!");
 					}else {
 						sender.sendChatToPlayer(ChatColor.RED + "Please wait until we verify the key before you try again!");
 					}
@@ -83,7 +83,7 @@ public class CommandListener extends CommandBase {
 				return;
 			}else if(args[0].equalsIgnoreCase("report")) {
 				if(sender == null) {
-					MinecraftServer.logger.info("Please wait as we generate the report");
+					MinecraftServer.getServer().logInfo("Please wait as we generate the report");
 				}else {
 					sender.sendChatToPlayer(ChatColor.GREEN + "Please wait as we generate the report");
 				}
@@ -128,7 +128,7 @@ public class CommandListener extends CommandBase {
 					plugin.debug = true;
 				}
 				if(sender == null) {
-					MinecraftServer.logger.info("Debugging has been set to " + plugin.debug);
+					MinecraftServer.getServer().logInfo("Debugging has been set to " + plugin.debug);
 				}else {
 					sender.sendChatToPlayer(ChatColor.GREEN + "Debugging has been set to " + plugin.debug);
 				}
@@ -178,7 +178,7 @@ public class CommandListener extends CommandBase {
 			}*/else if(args[0].equalsIgnoreCase("inform")) {
 				if(args.length < 3) {
 					if(sender == null) {
-						MinecraftServer.logger.info("To send a message do: /enjin inform playername message");
+						MinecraftServer.getServer().logInfo("To send a message do: /enjin inform playername message");
 					}else {
 						sender.sendChatToPlayer(ChatColor.RED + "To send a message do: /enjin inform playername message");
 					}
@@ -187,7 +187,7 @@ public class CommandListener extends CommandBase {
 				EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(args[1]);
 				if(player == null) {
 					if(sender == null) {
-						MinecraftServer.logger.info("That player isn't on the server at the moment.");
+						MinecraftServer.getServer().logInfo("That player isn't on the server at the moment.");
 					}else {
 						sender.sendChatToPlayer(ChatColor.RED + "That player isn't on the server at the moment.");
 					}
@@ -205,7 +205,7 @@ public class CommandListener extends CommandBase {
 			}else if(args[0].equalsIgnoreCase("broadcast")) {
 				if(args.length < 2) {
 					if(sender == null) {
-						MinecraftServer.logger.info("To broadcast a message do: /enjin broadcast message");
+						MinecraftServer.getServer().logInfo("To broadcast a message do: /enjin broadcast message");
 					}else {
 						sender.sendChatToPlayer(ChatColor.RED + "To broadcast a message do: /enjin broadcast message");
 					}
@@ -227,9 +227,9 @@ public class CommandListener extends CommandBase {
 				long memused = runtime.totalMemory()/(1024*1024);
 				long maxmemory = runtime.maxMemory()/(1024*1024);
 				if(sender == null) {
-					MinecraftServer.logger.info("Average TPS: " + plugin.tpstask.getTPSAverage());
-					MinecraftServer.logger.info("Last TPS measurement: " + plugin.tpstask.getLastTPSMeasurement());
-					MinecraftServer.logger.info("Memory Used: " + memused + "MB/" + maxmemory + "MB");
+					MinecraftServer.getServer().logInfo("Average TPS: " + plugin.tpstask.getTPSAverage());
+					MinecraftServer.getServer().logInfo("Last TPS measurement: " + plugin.tpstask.getLastTPSMeasurement());
+					MinecraftServer.getServer().logInfo("Memory Used: " + memused + "MB/" + maxmemory + "MB");
 				}else {
 					sender.sendChatToPlayer(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + plugin.tpstask.getTPSAverage());
 					sender.sendChatToPlayer(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + plugin.tpstask.getLastTPSMeasurement());

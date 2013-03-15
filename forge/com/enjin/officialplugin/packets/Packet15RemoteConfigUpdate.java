@@ -49,7 +49,7 @@ public class Packet15RemoteConfigUpdate {
 							plugin.config.set(split[0].toLowerCase(), number);
 							plugin.config.save();
 						}catch (NumberFormatException e) {
-							MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Unable to set " + split[0] + " to " + split[1] + " as it is not a double.");
+							MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Unable to set " + split[0] + " to " + split[1] + " as it is not a double.");
 						}
 						break;
 					case FLOAT:
@@ -58,7 +58,7 @@ public class Packet15RemoteConfigUpdate {
 							plugin.config.set(split[0].toLowerCase(), number);
 							plugin.config.save();
 						}catch (NumberFormatException e) {
-							MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Unable to set " + split[0] + " to " + split[1] + " as it is not a float.");
+							MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Unable to set " + split[0] + " to " + split[1] + " as it is not a float.");
 						}
 						break;
 					case INT:
@@ -67,19 +67,19 @@ public class Packet15RemoteConfigUpdate {
 							plugin.config.set(split[0].toLowerCase(), number);
 							plugin.config.save();
 						}catch (NumberFormatException e) {
-							MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Unable to set " + split[0] + " to " + split[1] + " as it is not an int.");
+							MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Unable to set " + split[0] + " to " + split[1] + " as it is not an int.");
 						}
 						break;
 					case FORBIDDEN:
-						MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Enjin tried setting the value " + split[0] + " to " + split[1] + " but was forbidden!");
+						MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Enjin tried setting the value " + split[0] + " to " + split[1] + " but was forbidden!");
 					}
 				}else {
-					MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Enjin tried setting the value " + split[0] + " to " + split[1] + " but it doesn't exist!");
+					MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Enjin tried setting the value " + split[0] + " to " + split[1] + " but it doesn't exist!");
 				}
 			}
 			//Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PacketUtilities.readString(in));
 		} catch (Throwable t) {
-			MinecraftServer.logger.warning("[Enjin Minecraft Plugin] Failed to set config variables via 0x15, " + t.getMessage());
+			MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Failed to set config variables via 0x15, " + t.getMessage());
 			t.printStackTrace();
 		}
 	}
