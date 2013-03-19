@@ -12,24 +12,6 @@ public class EnjinConsole {
             ChatColor.GREEN + "=== Enjin Minecraft Plugin ==="
         };
 
-        /*
-        String[] text = new String[]{
-            " _____             _   _         ",
-            "|     ___| ___   |_| |_|  ___ ",
-            "|     ___| |       |  |  | |  |  |      | ",
-            "|_____| |_ |_|_|  | |_| |_ |_| ",
-            "                      |__/              "
-        };
-        */
-        /*
-        String[] text = new String[]{
-            " _____         _  _      ",
-            "|   __| ___   |_||_| ___ ",
-            "|   __||   |  | || ||   |",
-            "|_____||_|_| _| ||_||_|_|",
-            "            |___|        "
-        };
-        */
         return text;
     }
 }
