@@ -99,7 +99,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public PermissionsPlugin permissionsbukkit;
 	public boolean supportsglobalgroups = true;
 	public boolean votifierinstalled = false;
-	static public boolean bukkitversion = false;
 	public int xpversion = 0;
 	public String mcversion = "";
 	
@@ -132,6 +131,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean unabletocontactenjin = false;
 	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
 	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
+	static public boolean bukkitversion = false;
 	
 	public final EMPListener listener = new EMPListener(this);
 	
@@ -892,7 +892,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
-	protected String translateColorCodes(String string) {
+	public String translateColorCodes(String string) {
 		if (string == null) {
 			return "";
 		}
