@@ -31,6 +31,5 @@ public class EnjinConsole {
         };
         */
         return text;
-//        return ChatColor.WHITE + "|----------------------" + ChatColor.LIGHT_PURPLE + " BUYCRAFT " + ChatColor.WHITE + "---------------------";
     }
 }
