@@ -750,7 +750,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin
 
                 if(sender.hasPermission("enjin.setkey"))
                     sender.sendMessage(ChatColor.GOLD + "/e key <KEY>: "
-                                     + ChatColor.RESET + "Enter the secret key from your " + ChatColor.YELLOW + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
+                                     + ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
                 if(sender.hasPermission("enjin.broadcast"))
                     sender.sendMessage(ChatColor.GOLD + "/e broadcast <MESSAGE>: "
                             + ChatColor.RESET + "Broadcast a message to all players.");
