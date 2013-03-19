@@ -57,6 +57,7 @@ import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
 import com.enjin.officialplugin.threaded.ReportMakerThread;
 import com.enjin.officialplugin.tpsmeter.MonitorTPS;
+import com.enjin.officialplugin.EnjinConsole;
 import com.enjin.proto.stats.EnjinStats;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
 
@@ -68,13 +69,12 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  * 
  * @author OverCaste (Enjin LTE PTD).
  * This software is released under an Open Source license.
- * @copyright Enjin 2012.
+ * @copyright Enjin 2013.
  * 
  */
 
-public class EnjinMinecraftPlugin extends JavaPlugin {
-
-	
+public class EnjinMinecraftPlugin extends JavaPlugin
+{
 	//Chat color codes.
 	protected static Pattern chatColorPattern = Pattern.compile("(?i)&([0-9A-F])");
 	protected static Pattern chatMagicPattern = Pattern.compile("(?i)&([K])");
@@ -742,6 +742,48 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					return true;
 				}
 			}
+            else {
+                /*
+                 * Display detailed Enjin help in console
+                 */
+                sender.sendMessage(EnjinConsole.header());
+
+                if(sender.hasPermission("enjin.setkey"))
+                    sender.sendMessage(ChatColor.GOLD + "/e key <KEY>: "
+                                     + ChatColor.RESET + "Enter the secret key from your " + ChatColor.YELLOW + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
+                if(sender.hasPermission("enjin.broadcast"))
+                    sender.sendMessage(ChatColor.GOLD + "/e broadcast <MESSAGE>: "
+                            + ChatColor.RESET + "Broadcast a message to all players.");
+                if(sender.hasPermission("enjin.push"))
+                    sender.sendMessage(ChatColor.GOLD + "/e push: "
+                            + ChatColor.RESET + "Sync your website tags with the current ranks.");
+                if(sender.hasPermission("enjin.playerstats"))
+                    sender.sendMessage(ChatColor.GOLD + "/e playerstats <NAME>: "
+                            + ChatColor.RESET + "Display player statistics.");
+                if(sender.hasPermission("enjin.serverstats"))
+                    sender.sendMessage(ChatColor.GOLD + "/e serverstats: "
+                            + ChatColor.RESET + "Display server statistics.");
+                if(sender.hasPermission("enjin.lag"))
+                    sender.sendMessage(ChatColor.GOLD + "/e lag: "
+                            + ChatColor.RESET + "Display TPS average and memory usage.");
+                if(sender.hasPermission("enjin.debug"))
+                    sender.sendMessage(ChatColor.GOLD + "/e debug: "
+                            + ChatColor.RESET + "Enable debug mode and display extra information.");
+                if(sender.hasPermission("enjin.report"))
+                    sender.sendMessage(ChatColor.GOLD + "/e report: "
+                            + ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.");
+
+                /*
+                // Shop buy commands
+                sender.sendMessage(ChatColor.GOLD + "/buy: "
+                        + ChatColor.RESET + "Display items available for purchase.");
+                sender.sendMessage(ChatColor.GOLD + "/buy page <#>: "
+                        + ChatColor.RESET + "View the next page of results.");
+                sender.sendMessage(ChatColor.GOLD + "/buy <ID>: "
+                        + ChatColor.RESET + "Purchase the specified item ID in the server shop.");
+                */
+                return true;
+            }
 		}
 		return false;
 	}
