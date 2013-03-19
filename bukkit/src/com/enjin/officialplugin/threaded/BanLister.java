@@ -13,36 +13,41 @@ public class BanLister implements Runnable {
 	
 	ConcurrentHashMap<String, String> currentbannedplayers = new ConcurrentHashMap<String, String>();
 	EnjinMinecraftPlugin plugin;
+	boolean firstrun = true;
 	
 	public BanLister(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
-		Set<OfflinePlayer> bannedplayerlist = Bukkit.getServer().getBannedPlayers();
-		for(OfflinePlayer player : bannedplayerlist) {
-			currentbannedplayers.put(player.getName().toLowerCase(), "");
-		}
 	}
 
 	@Override
 	public void run() {
-		plugin.debug("Scanning banned player list");
-		Set<OfflinePlayer> bannedplayerlist = Bukkit.getServer().getBannedPlayers();
-		HashMap<String,String> lowercasebans = new HashMap<String,String>();
-		//Checking for bans being added by console or plugin
-		for(OfflinePlayer player : bannedplayerlist) {
-			lowercasebans.put(player.getName().toLowerCase(), "");
-			if(!currentbannedplayers.containsKey(player.getName().toLowerCase())) {
+		if(firstrun) {
+			Set<OfflinePlayer> bannedplayerlist = Bukkit.getServer().getBannedPlayers();
+			for(OfflinePlayer player : bannedplayerlist) {
 				currentbannedplayers.put(player.getName().toLowerCase(), "");
-				plugin.bannedplayers.put(player.getName().toLowerCase(), "");
-				plugin.debug("Adding banned player " + player.getName());
 			}
-		}
-		//checking for pardons being done by console or plugin
-		Set<String> keys = currentbannedplayers.keySet();
-		for(String player : keys) {
-			if(!lowercasebans.containsKey(player)) {
-				currentbannedplayers.remove(player);
-				plugin.pardonedplayers.put(player, "");
-				plugin.debug(player + " was pardoned. Adding to pardoned list.");
+			firstrun = false;
+		}else {
+			plugin.debug("Scanning banned player list");
+			Set<OfflinePlayer> bannedplayerlist = Bukkit.getServer().getBannedPlayers();
+			HashMap<String,String> lowercasebans = new HashMap<String,String>();
+			//Checking for bans being added by console or plugin
+			for(OfflinePlayer player : bannedplayerlist) {
+				lowercasebans.put(player.getName().toLowerCase(), "");
+				if(!currentbannedplayers.containsKey(player.getName().toLowerCase())) {
+					currentbannedplayers.put(player.getName().toLowerCase(), "");
+					plugin.bannedplayers.put(player.getName().toLowerCase(), "");
+					plugin.debug("Adding banned player " + player.getName());
+				}
+			}
+			//checking for pardons being done by console or plugin
+			Set<String> keys = currentbannedplayers.keySet();
+			for(String player : keys) {
+				if(!lowercasebans.containsKey(player)) {
+					currentbannedplayers.remove(player);
+					plugin.pardonedplayers.put(player, "");
+					plugin.debug(player + " was pardoned. Adding to pardoned list.");
+				}
 			}
 		}
 	}

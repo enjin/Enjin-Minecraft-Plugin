@@ -121,6 +121,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
 	//static public String apiurl = "://tuxreminder.info/api/";
+	//static public String apiurl = "://mxm.enjin.com/api/";
 	
 	public boolean autoupdate = true;
 	public String newversion = "";
@@ -170,21 +171,25 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		try {
-			debug("Begin init");
-			initVariables();
 			debug("Initializing internal logger");
 			enjinlogger.setLevel(Level.FINEST);
 			File logsfolder = new File(getDataFolder().getAbsolutePath() + File.separator + "logs");
 			if(!logsfolder.exists()) {
 				logsfolder.mkdirs();
 			}
-			banlistertask = new BanLister(this);
 			FileHandler fileTxt = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
 			EnjinLogFormatter formatterTxt = new EnjinLogFormatter();
 		    fileTxt.setFormatter(formatterTxt);
 		    enjinlogger.addHandler(fileTxt);
 		    enjinlogger.setUseParentHandlers(false);
+		    debug("Logger initialized.");
+			debug("Begin init");
+			initVariables();
 			debug("Init vars done.");
+			debug("Get the ban list");
+			banlistertask = new BanLister(this);
+			debug("Ban list loaded");
+			debug("Init Files");
 			initFiles();
 			debug("Init files done.");
 			initPlugins();
@@ -205,7 +210,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	        String[] versionstring = cbversionstring[1].split("\\.");
 	        try{
 	        	int majorversion = Integer.parseInt(versionstring[0].trim());
-	        	int minorversion = Integer.parseInt(versionstring[1].trim());
+	        	int minorversion = Integer.parseInt(versionstring[1].trim().substring(0, 1));
 	        	int buildnumber = 0;
 	        	if(versionstring.length > 2) {
 	        		try {
@@ -409,7 +414,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		debug("Starting tasks.");
 		BukkitScheduler scheduler = Bukkit.getScheduler();
 		synctaskid = scheduler.runTaskTimerAsynchronously(this, task, 1200L, 1200L).getTaskId();
-		banlisttask = scheduler.runTaskTimerAsynchronously(this, banlistertask, 1800L, 1800L).getTaskId();
+		banlisttask = scheduler.runTaskTimerAsynchronously(this, banlistertask, 40L, 1800L).getTaskId();
 		//Only start the vote task if votifier is installed.
 		if(votifierinstalled) {
 			debug("Starting votifier task.");

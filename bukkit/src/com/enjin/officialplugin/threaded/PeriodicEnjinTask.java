@@ -168,15 +168,20 @@ public class PeriodicEnjinTask implements Runnable {
 				successful = false;
 			}else if(success.equalsIgnoreCase("bad_data")) {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
-				plugin.getLogger().warning("Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+				plugin.lasterror = new EnjinErrorReport("Enjin reported bad data", "Regular synch. Information sent:\n" + builder.toString());
+				//plugin.getLogger().warning("Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
 				successful = false;
 			}else if(success.equalsIgnoreCase("retry_later")) {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
-				plugin.getLogger().info("Enjin said to wait, saving data for next sync.");
+				//plugin.getLogger().info("Enjin said to wait, saving data for next sync.");
 				successful = false;
 			}else if(success.equalsIgnoreCase("connect_error")) {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
-				plugin.getLogger().info("Enjin is having something going on, if you continue to see this error please report it to enjin.");
+				plugin.lasterror = new EnjinErrorReport("Enjin said there's a connection error somewhere.", "Regular synch. Information sent:\n" + builder.toString());
+				//plugin.getLogger().info("Enjin is having something going on, if you continue to see this error please report it to enjin.");
+				successful = false;
+			}else if(success.startsWith("invalid_op")) {
+				plugin.lasterror = new EnjinErrorReport(success, "Regular synch. Information sent:\n" + builder.toString());
 				successful = false;
 			}else {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
@@ -486,9 +491,24 @@ public class PeriodicEnjinTask implements Runnable {
 				plugin.debug("Packet [0x1B](Pardon Player) received.");
 				Packet1BPardonPlayers.handle(bin, plugin);
 				break;
+			case 0x3C:
+				plugin.debug("Packet [0x3C](Enjin Maintenance Page) received. Aborting sync.");
+				bin.reset();
+				StringBuilder input1 = new StringBuilder();
+				while((code = bin.read()) != -1) {
+					input1.append((char)code);
+				}
+				plugin.debug("Raw data received:\n" + input1.toString());
+				return "retry_later";
 			default :
-				plugin.getLogger().warning("[Enjin] Received an invalid opcode: " + code);
-				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin] Received an invalid opcode: " + code);
+				plugin.debug("[Enjin] Received an invalid opcode: " + code);
+				bin.reset();
+				StringBuilder input2 = new StringBuilder();
+				while((code = bin.read()) != -1) {
+					input2.append((char)code);
+				}
+				plugin.debug("Raw data received:\n" + input2.toString());
+				return "invalid_op\nRaw data received:\n" + input2.toString();
 			}
 		}
 	}

@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -112,38 +111,31 @@ public class PeriodicVoteTask implements Runnable {
 					successful = false;
 				}else if(success.equalsIgnoreCase("bad_data")) {
 					EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
-					plugin.getLogger().warning("Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+					plugin.lasterror = new EnjinErrorReport("Enjin reported bad data", "Vote synch. Information sent:\n" + builder.toString());
+					//plugin.getLogger().warning("Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
 					successful = false;
 				}else if(success.equalsIgnoreCase("retry_later")) {
 					EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
-					plugin.getLogger().info("Enjin said to wait, saving data for next sync.");
+					//plugin.getLogger().info("Enjin said to wait, saving data for next sync.");
 					successful = false;
 				}else if(success.equalsIgnoreCase("connect_error")) {
 					EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
-					plugin.getLogger().info("Enjin is having something going on, if you continue to see this error please report it to enjin.");
+					plugin.lasterror = new EnjinErrorReport("Enjin reported a connection issue.", "Vote synch. Information sent:\n" + builder.toString());
+					//plugin.getLogger().info("Enjin is having something going on, if you continue to see this error please report it to enjin.");
+					successful = false;
+				}else if(success.startsWith("invalid_op")) {
+					plugin.lasterror = new EnjinErrorReport(success, "Vote synch. Information sent:\n" + builder.toString());
 					successful = false;
 				}else {
-					EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
+					EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on vote sync, if you continue to see this error please report it to enjin.");
 					EnjinMinecraftPlugin.enjinlogger.info("Response code: " + success);
 					plugin.getLogger().info("Something happened on sync, if you continue to see this error please report it to enjin.");
 					plugin.getLogger().info("Response code: " + success);
 					successful = false;
 				}
 			} catch (SocketTimeoutException e) {
-				//We don't need to spam the console every minute if the synch didn't complete correctly.
-				if(numoffailedtries++ > 5) {
-					EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-					Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-					numoffailedtries = 0;
-				}
-				plugin.lasterror = new EnjinErrorReport(e, "Regular synch. Information sent:\n" + builder.toString());
+				plugin.lasterror = new EnjinErrorReport(e, "Vote synch. Information sent:\n" + builder.toString());
 			} catch (Throwable t) {
-				//We don't need to spam the console every minute if the synch didn't complete correctly.
-				if(numoffailedtries++ > 30) {
-					EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
-					Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Oops, we didn't get a proper response, we may be doing some maintenance. Please be patient and report this bug to enjin if it persists.");
-					numoffailedtries = 0;
-				}
 				if(plugin.debug) {
 					t.printStackTrace();
 				}

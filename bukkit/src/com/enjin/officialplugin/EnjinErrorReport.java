@@ -7,11 +7,17 @@ import java.util.Date;
 public class EnjinErrorReport {
 	
 	Throwable e = null;
+	String info = "";
 	String otherinformation = "";
 	long timethrown = System.currentTimeMillis();
 	
 	public EnjinErrorReport(Throwable e, String otherinformation) {
 		this.e = e;
+		this.otherinformation = otherinformation;
+	}
+	
+	public EnjinErrorReport(String data, String otherinformation) {
+		info = data;
 		this.otherinformation = otherinformation;
 	}
 	
@@ -22,11 +28,16 @@ public class EnjinErrorReport {
 		Date date = new Date(timethrown);
 		errorstring.append("Enjin plugin error report. Error generated on: " + dateFormat.format(date) + ":\n");
 		errorstring.append("Extra data: " + otherinformation + "\n");
-		errorstring.append("Stack trace:\n");
-		errorstring.append(e.toString() + "\n");
-		StackTraceElement[] stacktrace = e.getStackTrace();
-		for(int i = 0; i < stacktrace.length; i++) {
-			errorstring.append(stacktrace[i].toString() + "\n");
+		if(e != null) {
+			errorstring.append("Stack trace:\n");
+			errorstring.append(e.toString() + "\n");
+			StackTraceElement[] stacktrace = e.getStackTrace();
+			for(int i = 0; i < stacktrace.length; i++) {
+				errorstring.append(stacktrace[i].toString() + "\n");
+			}
+		}else {
+			errorstring.append("More Info:\n");
+			errorstring.append(info);
 		}
 		return errorstring.toString();
 	}
