@@ -757,12 +757,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin
                 if(sender.hasPermission("enjin.push"))
                     sender.sendMessage(ChatColor.GOLD + "/e push: "
                             + ChatColor.RESET + "Sync your website tags with the current ranks.");
-                if(sender.hasPermission("enjin.playerstats"))
+                /*if(sender.hasPermission("enjin.playerstats"))
                     sender.sendMessage(ChatColor.GOLD + "/e playerstats <NAME>: "
                             + ChatColor.RESET + "Display player statistics.");
                 if(sender.hasPermission("enjin.serverstats"))
                     sender.sendMessage(ChatColor.GOLD + "/e serverstats: "
-                            + ChatColor.RESET + "Display server statistics.");
+                            + ChatColor.RESET + "Display server statistics.");*/
                 if(sender.hasPermission("enjin.lag"))
                     sender.sendMessage(ChatColor.GOLD + "/e lag: "
                             + ChatColor.RESET + "Display TPS average and memory usage.");
