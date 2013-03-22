@@ -73,8 +73,9 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  * 
  */
 
-public class EnjinMinecraftPlugin extends JavaPlugin
-{
+public class EnjinMinecraftPlugin extends JavaPlugin {
+
+	
 	//Chat color codes.
 	protected static Pattern chatColorPattern = Pattern.compile("(?i)&([0-9A-F])");
 	protected static Pattern chatMagicPattern = Pattern.compile("(?i)&([K])");
@@ -611,7 +612,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin
 							minutes += minutes * 0.1;
 						}
 						sender.sendMessage(ChatColor.RED + "A rank sync is still in progress, please wait until the current sync completes.");
-						sender.sendMessage(ChatColor.RED + "Progress: + Integer.toString(playerperms.size()) + more player ranks to transmit, ETA: " + minutes + " minute" + (minutes > 1 ? "s" : "") + ".");
+						sender.sendMessage(ChatColor.RED + "Progress:" + Integer.toString(playerperms.size()) + " more player ranks to transmit, ETA: " + minutes + " minute" + (minutes > 1 ? "s" : "") + ".");
 						return true;
 					}
 					for(OfflinePlayer offlineplayer : allplayers) {
@@ -629,7 +630,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin
 					if(playerperms.size() > 3000) {
 						minutes += minutes * 0.1;
 					}
-					sender.sendMessage(ChatColor.GREEN + Integer.toString(playerperms.size()) + " players have been queued for synching. This should take approximately " + Integer.toString(minutes) + " minutes.");
+					if(minutes == 1) {
+						sender.sendMessage(ChatColor.GREEN + Integer.toString(playerperms.size()) + " players have been queued for synching. This should take approximately " + Integer.toString(minutes) + " minute.");
+					}else {
+						sender.sendMessage(ChatColor.GREEN + Integer.toString(playerperms.size()) + " players have been queued for synching. This should take approximately " + Integer.toString(minutes) + " minutes.");
+					}
 					return true;
 				}else if(args[0].equalsIgnoreCase("savestats")) {
 					if(!sender.hasPermission("enjin.savestats")) {
