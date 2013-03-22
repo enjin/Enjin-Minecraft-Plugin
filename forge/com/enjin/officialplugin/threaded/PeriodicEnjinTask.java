@@ -31,6 +31,7 @@ import com.enjin.officialplugin.packets.Packet12ExecuteCommand;
 import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
 import com.enjin.officialplugin.packets.Packet14NewerVersion;
 import com.enjin.officialplugin.packets.Packet15RemoteConfigUpdate;
+import com.enjin.officialplugin.packets.Packet16MultiUserNotice;
 import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
 import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
 import com.enjin.officialplugin.packets.Packet1ABanPlayers;
@@ -449,6 +450,11 @@ public class PeriodicEnjinTask implements Runnable {
 			case 0x15:
 				plugin.debug("Packet [0x15](Remote Config Update) received.");
 				Packet15RemoteConfigUpdate.handle(bin, plugin);
+				break;
+			case 0x16:
+				plugin.debug("Packet [0x16](Multi-user Notice) received.");
+				Packet16MultiUserNotice.handle(bin, plugin);
+				break;
 			case 0x17:
 				plugin.debug("Packet [0x17](Add Whitelist Players) received.");
 				Packet17AddWhitelistPlayers.handle(bin, plugin);

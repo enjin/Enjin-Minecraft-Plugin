@@ -19,6 +19,7 @@ import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ForgeSubscribe;
 
 import com.enjin.officialplugin.ChatColor;
+import com.enjin.officialplugin.EnjinConsole;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.ReportMakerThread;
@@ -74,19 +75,11 @@ public class CommandListener extends CommandBase {
 					Thread verifierthread = new Thread(plugin.verifier);
 					verifierthread.start();
 				}else {
-					if(sender == null) {
-						MinecraftServer.getServer().logInfo("Please wait until we verify the key before you try again!");
-					}else {
-						sender.sendChatToPlayer(ChatColor.RED + "Please wait until we verify the key before you try again!");
-					}
+					sendMessage(ChatColor.RED + "Please wait until we verify the key before you try again!", sender);
 				}
 				return;
 			}else if(args[0].equalsIgnoreCase("report")) {
-				if(sender == null) {
-					MinecraftServer.getServer().logInfo("Please wait as we generate the report");
-				}else {
-					sender.sendChatToPlayer(ChatColor.GREEN + "Please wait as we generate the report");
-				}
+				sendMessage(ChatColor.GREEN + "Please wait as we generate the report", sender);
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 				Date date = new Date();
 				StringBuilder report = new StringBuilder();
@@ -127,11 +120,7 @@ public class CommandListener extends CommandBase {
 				}else {
 					plugin.debug = true;
 				}
-				if(sender == null) {
-					MinecraftServer.getServer().logInfo("Debugging has been set to " + plugin.debug);
-				}else {
-					sender.sendChatToPlayer(ChatColor.GREEN + "Debugging has been set to " + plugin.debug);
-				}
+				sendMessage(ChatColor.GREEN + "Debugging has been set to " + plugin.debug, sender);
 				return;
 			}/*else if(args[0].equalsIgnoreCase("push")) {
 				OfflinePlayer[] allplayers = getServer().getOfflinePlayers();
@@ -177,20 +166,12 @@ public class CommandListener extends CommandBase {
 				return;
 			}*/else if(args[0].equalsIgnoreCase("inform")) {
 				if(args.length < 3) {
-					if(sender == null) {
-						MinecraftServer.getServer().logInfo("To send a message do: /enjin inform playername message");
-					}else {
-						sender.sendChatToPlayer(ChatColor.RED + "To send a message do: /enjin inform playername message");
-					}
+					sendMessage(ChatColor.RED + "To send a message do: /enjin inform playername message", sender);
 					return;
 				}
 				EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(args[1]);
 				if(player == null) {
-					if(sender == null) {
-						MinecraftServer.getServer().logInfo("That player isn't on the server at the moment.");
-					}else {
-						sender.sendChatToPlayer(ChatColor.RED + "That player isn't on the server at the moment.");
-					}
+					sendMessage(ChatColor.RED + "That player isn't on the server at the moment.", sender);
 					return;
 				}
 				StringBuilder thestring = new StringBuilder();
@@ -200,15 +181,11 @@ public class CommandListener extends CommandBase {
 					}
 					thestring.append(args[i]);
 				}
-				player.sendChatToPlayer(plugin.translateColorCodes(thestring.toString()));
+				player.sendChatToPlayer(EnjinConsole.translateColorCodes(thestring.toString()));
 				return;
 			}else if(args[0].equalsIgnoreCase("broadcast")) {
 				if(args.length < 2) {
-					if(sender == null) {
-						MinecraftServer.getServer().logInfo("To broadcast a message do: /enjin broadcast message");
-					}else {
-						sender.sendChatToPlayer(ChatColor.RED + "To broadcast a message do: /enjin broadcast message");
-					}
+					sendMessage(ChatColor.RED + "To broadcast a message do: /enjin broadcast message", sender);
 				}
 				StringBuilder thestring = new StringBuilder();
 				for(int i = 1; i < args.length; i++) {
@@ -219,26 +196,75 @@ public class CommandListener extends CommandBase {
 				}
 				List<EntityPlayerMP> playerlist = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
 				for(EntityPlayerMP player : playerlist) {
-					player.sendChatToPlayer(plugin.translateColorCodes(thestring.toString()));
+					player.sendChatToPlayer(EnjinConsole.translateColorCodes(thestring.toString()));
 				}
 				return;
 			}else if(args[0].equalsIgnoreCase("lag")) {
 				Runtime runtime = Runtime.getRuntime();
 				long memused = runtime.totalMemory()/(1024*1024);
 				long maxmemory = runtime.maxMemory()/(1024*1024);
-				if(sender == null) {
-					MinecraftServer.getServer().logInfo("Average TPS: " + plugin.tpstask.getTPSAverage());
-					MinecraftServer.getServer().logInfo("Last TPS measurement: " + plugin.tpstask.getLastTPSMeasurement());
-					MinecraftServer.getServer().logInfo("Memory Used: " + memused + "MB/" + maxmemory + "MB");
-				}else {
-					sender.sendChatToPlayer(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + plugin.tpstask.getTPSAverage());
-					sender.sendChatToPlayer(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + plugin.tpstask.getLastTPSMeasurement());
-					sender.sendChatToPlayer(ChatColor.GOLD + "Memory Used: " + ChatColor.GREEN + memused + "MB/" + maxmemory + "MB");
-				}
+				sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + plugin.tpstask.getTPSAverage(), sender);
+				sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + plugin.tpstask.getLastTPSMeasurement(), sender);
+				sendMessage(ChatColor.GOLD + "Memory Used: " + ChatColor.GREEN + memused + "MB/" + maxmemory + "MB", sender);
 				return;
-			}
+			}else {
+				/*
+				 * Display detailed Enjin help in console
+				 */
+				sendMessage(EnjinConsole.header(), sender);
+
+				sendMessage(ChatColor.GOLD + "/enjin key <KEY>: "
+						+ ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.", sender);
+				sendMessage(ChatColor.GOLD + "/enjin broadcast <MESSAGE>: "
+						+ ChatColor.RESET + "Broadcast a message to all players.", sender);
+				sendMessage(ChatColor.GOLD + "/enjin push: "
+						+ ChatColor.RESET + "Sync your website tags with the current ranks.", sender);
+				/*if(sender.hasPermission("enjin.playerstats"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin playerstats <NAME>: "
+                            + ChatColor.RESET + "Display player statistics.");
+                if(sender.hasPermission("enjin.serverstats"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin serverstats: "
+                            + ChatColor.RESET + "Display server statistics.");*/
+				sendMessage(ChatColor.GOLD + "/enjin lag: "
+						+ ChatColor.RESET + "Display TPS average and memory usage.", sender);
+				sendMessage(ChatColor.GOLD + "/enjin debug: "
+						+ ChatColor.RESET + "Enable debug mode and display extra information in console.", sender);
+				sendMessage(ChatColor.GOLD + "/enjin report: "
+						+ ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.", sender);
+
+				/*
+                // Shop buy commands
+                sender.sendMessage(ChatColor.GOLD + "/buy: "
+                        + ChatColor.RESET + "Display items available for purchase.");
+                sender.sendMessage(ChatColor.GOLD + "/buy page <#>: "
+                        + ChatColor.RESET + "View the next page of results.");
+                sender.sendMessage(ChatColor.GOLD + "/buy <ID>: "
+                        + ChatColor.RESET + "Purchase the specified item ID in the server shop.");
+				 */
+				return;
+            }
 		}
 	
 		return;
+	}
+	
+	private void sendMessage(String message, ICommandSender sender) {
+		if(sender == null) {
+			MinecraftServer.getServer().logInfo(EnjinConsole.stripColor(message));
+		}else {
+			sender.sendChatToPlayer(message);
+		}
+	}
+	
+	private void sendMessage(String[] messages, ICommandSender sender) {
+		if(sender == null) {
+			for(String message : messages) {
+				MinecraftServer.getServer().logInfo(EnjinConsole.stripColor(message));
+			}
+		}else {
+			for(String message : messages) {
+				sender.sendChatToPlayer(message);
+			}
+		}
 	}
 }

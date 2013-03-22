@@ -64,9 +64,9 @@ public class NewKeyVerifier implements Runnable {
 		}else {
 			if(key.equals(EnjinMinecraftPlugin.getHash())) {
 				if(sender == null) {
-					MinecraftServer.getServer().logInfo("The speficied key and the existing one are the same!");
+					MinecraftServer.getServer().logInfo("The specified key and the existing one are the same!");
 				}else {
-					sender.sendChatToPlayer(ChatColor.YELLOW + "The speficied key and the existing one are the same!");
+					sender.sendChatToPlayer(ChatColor.YELLOW + "The specified key and the existing one are the same!");
 				}
 				completed = true;
 				return;

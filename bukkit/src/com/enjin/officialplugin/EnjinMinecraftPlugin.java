@@ -12,7 +12,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -76,15 +75,6 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	
-	//Chat color codes.
-	protected static Pattern chatColorPattern = Pattern.compile("(?i)&([0-9A-F])");
-	protected static Pattern chatMagicPattern = Pattern.compile("(?i)&([K])");
-	protected static Pattern chatBoldPattern = Pattern.compile("(?i)&([L])");
-	protected static Pattern chatStrikethroughPattern = Pattern.compile("(?i)&([M])");
-	protected static Pattern chatUnderlinePattern = Pattern.compile("(?i)&([N])");
-	protected static Pattern chatItalicPattern = Pattern.compile("(?i)&([O])");
-	protected static Pattern chatResetPattern = Pattern.compile("(?i)&([R])");
-
 	public FileConfiguration config;
 	public static boolean usingGroupManager = false;
 	File hashFile;
@@ -714,7 +704,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						}
 						thestring.append(args[i]);
 					}
-					player.sendMessage(translateColorCodes(thestring.toString()));
+					player.sendMessage(EnjinConsole.translateColorCodes(thestring.toString()));
 					return true;
 				}else if(args[0].equalsIgnoreCase("broadcast")) {
 					if(!sender.hasPermission("enjin.broadcast")) {
@@ -731,7 +721,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						}
 						thestring.append(args[i]);
 					}
-					getServer().broadcastMessage(translateColorCodes(thestring.toString()));
+					getServer().broadcastMessage(EnjinConsole.translateColorCodes(thestring.toString()));
 					return true;
 				}else if(args[0].equalsIgnoreCase("lag")) {
 					if(!sender.hasPermission("enjin.lag")) {
@@ -746,36 +736,35 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					sender.sendMessage(ChatColor.GOLD + "Memory Used: " + ChatColor.GREEN + memused + "MB/" + maxmemory + "MB");
 					return true;
 				}
-			}
-            else {
+			}else {
                 /*
                  * Display detailed Enjin help in console
                  */
                 sender.sendMessage(EnjinConsole.header());
 
                 if(sender.hasPermission("enjin.setkey"))
-                    sender.sendMessage(ChatColor.GOLD + "/e key <KEY>: "
+                    sender.sendMessage(ChatColor.GOLD + "/enjin key <KEY>: "
                                      + ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
                 if(sender.hasPermission("enjin.broadcast"))
-                    sender.sendMessage(ChatColor.GOLD + "/e broadcast <MESSAGE>: "
+                    sender.sendMessage(ChatColor.GOLD + "/enjin broadcast <MESSAGE>: "
                             + ChatColor.RESET + "Broadcast a message to all players.");
                 if(sender.hasPermission("enjin.push"))
-                    sender.sendMessage(ChatColor.GOLD + "/e push: "
+                    sender.sendMessage(ChatColor.GOLD + "/enjin push: "
                             + ChatColor.RESET + "Sync your website tags with the current ranks.");
                 /*if(sender.hasPermission("enjin.playerstats"))
-                    sender.sendMessage(ChatColor.GOLD + "/e playerstats <NAME>: "
+                    sender.sendMessage(ChatColor.GOLD + "/enjin playerstats <NAME>: "
                             + ChatColor.RESET + "Display player statistics.");
                 if(sender.hasPermission("enjin.serverstats"))
-                    sender.sendMessage(ChatColor.GOLD + "/e serverstats: "
+                    sender.sendMessage(ChatColor.GOLD + "/enjin serverstats: "
                             + ChatColor.RESET + "Display server statistics.");*/
                 if(sender.hasPermission("enjin.lag"))
-                    sender.sendMessage(ChatColor.GOLD + "/e lag: "
+                    sender.sendMessage(ChatColor.GOLD + "/enjin lag: "
                             + ChatColor.RESET + "Display TPS average and memory usage.");
                 if(sender.hasPermission("enjin.debug"))
-                    sender.sendMessage(ChatColor.GOLD + "/e debug: "
-                            + ChatColor.RESET + "Enable debug mode and display extra information.");
+                    sender.sendMessage(ChatColor.GOLD + "/enjin debug: "
+                            + ChatColor.RESET + "Enable debug mode and display extra information in console.");
                 if(sender.hasPermission("enjin.report"))
-                    sender.sendMessage(ChatColor.GOLD + "/e report: "
+                    sender.sendMessage(ChatColor.GOLD + "/enjin report: "
                             + ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.");
 
                 /*
@@ -937,22 +926,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				}
 			}
 		}
-	}
-	
-	public String translateColorCodes(String string) {
-		if (string == null) {
-			return "";
-		}
-
-		String newstring = string;
-		newstring = chatColorPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatMagicPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatBoldPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatStrikethroughPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatUnderlinePattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatItalicPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatResetPattern.matcher(newstring).replaceAll("\u00A7$1");
-		return newstring;
 	}
 
 	public boolean testHTTPSconnection() {

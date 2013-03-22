@@ -66,7 +66,7 @@ import cpw.mods.fml.relauncher.Side;
  * 
  */
 
-@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.1-150")
+@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.2")
 public class EnjinMinecraftPlugin {
 
 	@Instance("EnjinMinecraftPlugin")
@@ -90,7 +90,7 @@ public class EnjinMinecraftPlugin {
 	public int xpversion = 0;
 	
 	//----------------Make sure to change this for every minecraft version!
-	public String mcversion = "1.5.0";
+	public String mcversion = "1.5.1";
 	
 	//Since forge mods can be installed on a client, we want to make sure we only run on a server.
 	public boolean enable = true;
@@ -592,22 +592,6 @@ public class EnjinMinecraftPlugin {
 		}
 	}
 	
-	public String translateColorCodes(String string) {
-		if (string == null) {
-			return "";
-		}
-
-		String newstring = string;
-		newstring = chatColorPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatMagicPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatBoldPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatStrikethroughPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatUnderlinePattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatItalicPattern.matcher(newstring).replaceAll("\u00A7$1");
-		newstring = chatResetPattern.matcher(newstring).replaceAll("\u00A7$1");
-		return newstring;
-	}
-
 	public boolean testHTTPSconnection() {
 		try {
 			URL url = new URL("https://api.enjin.com/ok.html");
@@ -699,6 +683,6 @@ public class EnjinMinecraftPlugin {
 	}
 
 	public String getVersion() {
-		return "2.4.1-forge";
+		return "2.4.2-forge";
 	}
 }
