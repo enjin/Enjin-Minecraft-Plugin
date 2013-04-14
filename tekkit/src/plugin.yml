@@ -1,0 +1,49 @@
+name: Enjin Minecraft Plugin
+main: com.enjin.officialplugin.EnjinMinecraftPlugin
+version: 2.4.2-tekkit
+website: www.enjin.com
+author: www.Enjin.com
+description: A plugin which allows the enjin servers to communicate with your server.
+softdepend: [Vault,Votifier]
+commands:
+  enjinkey:
+    description: Sets the enjin online key to the specified string.
+    usage: Usage /enjinkey pass123
+    aliases: [ek]
+  enjin:
+    description: General enjin commands
+    usage: Usage /enjin report
+    aliases: [e]
+permissions:
+  enjin.setkey:
+    description: Allows the player to set the key for the plugin.
+    default: op
+  enjin.report:
+    description: Allows the player to generate a report for submitting to enjin.
+    default: op
+  enjin.debug:
+    description: Turns debugging on and off for this session.
+    default: op
+  enjin.push:
+    description: Pushes all ranks from server to enjin.
+    default: op
+  enjin.notify.*:
+    default: op
+    description: Enables all notifications.
+    children:
+      enjin.notify.connectionstatus: true
+      enjin.notify.update: true
+      enjin.notify.failedupdate: true
+      enjin.notify.invalidauthkey: true
+  enjin.notify.connectionstatus:
+    description: Let's the player know if the plugin's connection status changes.
+    default: op
+  enjin.notify.update:
+    description: Receive notifications upon login if the plugin has been updated.
+    default: op
+  enjin.notify.failedupdate:
+    description: Receive notifications upon login if the plugin has failed to update.
+    default: op
+  enjin.notify.invalidauthkey:
+    description: Receive notification if the auth key is invalid.
+    default: op
