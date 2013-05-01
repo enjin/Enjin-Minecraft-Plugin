@@ -82,7 +82,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	Server s;
 	Logger logger;
 	public static Permission permission = null;
-	public boolean debug = false;
+	public static boolean debug = false;
 	public boolean collectstats = false;
 	public PermissionsEx permissionsex;
 	public GroupManager groupmanager;
@@ -92,6 +92,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean votifierinstalled = false;
 	public int xpversion = 0;
 	public String mcversion = "";
+	
+	public static String BUY_COMMAND = "buy";
 	
 	/**Key is the config value, value is the type, string, boolean, etc.*/
 	public ConcurrentHashMap<String, ConfigValueTypes> configvalues = new ConcurrentHashMap<String, ConfigValueTypes>();
@@ -152,7 +154,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 	
-	public void debug(String s) {
+	public static void debug(String s) {
 		if(debug) {
 			System.out.println("Enjin Debug: " + s);
 		}
