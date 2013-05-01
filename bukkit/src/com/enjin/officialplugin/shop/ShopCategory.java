@@ -10,8 +10,11 @@ public class ShopCategory extends AbstractShopSuperclass implements ShopItemAdde
 	String name = "";
 	String info = "";
 	ServerShop.Type type = Type.Item;
+	ShopItemAdder parentcategory = null;
 	
 	ArrayList<AbstractShopSuperclass> items = new ArrayList<AbstractShopSuperclass>();
+	
+	ArrayList<ArrayList<String>> pages = null;
 	
 	public ShopCategory(String name, String id) {
 		this.name = name;
@@ -81,6 +84,24 @@ public class ShopCategory extends AbstractShopSuperclass implements ShopItemAdde
 	public void setType(ServerShop.Type type) {
 		this.type = type;
 	}
+
+	@Override
+	public ShopItemAdder getParentCategory() {
+		return parentcategory;
+	}
 	
-	
+	@Override
+	public void setParentCategory(ShopItemAdder cat) {
+		parentcategory = cat;
+	}
+
+	@Override
+	public void setPages(ArrayList<ArrayList<String>> pages) {
+		this.pages = pages;
+	}
+
+	@Override
+	public ArrayList<ArrayList<String>> getPages() {
+		return pages;
+	}
 }

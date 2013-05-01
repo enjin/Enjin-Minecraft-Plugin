@@ -13,5 +13,8 @@ public interface ShopItemAdder {
 	abstract public Type getType();
 	abstract public String getName();
 	abstract public String getInfo();
-	
+	abstract public ShopItemAdder getParentCategory();
+	abstract public void setParentCategory(ShopItemAdder category);
+	abstract public void setPages(ArrayList<ArrayList<String>> pages);
+	abstract public ArrayList<ArrayList<String>> getPages();
 }

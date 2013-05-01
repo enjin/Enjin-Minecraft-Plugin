@@ -32,6 +32,8 @@ public class ServerShop extends AbstractShopSuperclass implements ShopItemAdder 
 
 	ArrayList<AbstractShopSuperclass> items = new ArrayList<AbstractShopSuperclass>();
 	
+	ArrayList<ArrayList<String>> pages = null;
+	
 	public ServerShop(String name) {
 		this.name = name;
 	}
@@ -228,4 +230,23 @@ public class ServerShop extends AbstractShopSuperclass implements ShopItemAdder 
 		this.simplecategories = simplecategories;
 	}
 
+	@Override
+	public ShopItemAdder getParentCategory() {
+		return null;
+	}
+
+	@Override
+	public void setParentCategory(ShopItemAdder category) {
+		//A shop cannot have a parent category. So this is empty.
+	}
+	
+	@Override
+	public void setPages(ArrayList<ArrayList<String>> pages) {
+		this.pages = pages;
+	}
+
+	@Override
+	public ArrayList<ArrayList<String>> getPages() {
+		return pages;
+	}
 }

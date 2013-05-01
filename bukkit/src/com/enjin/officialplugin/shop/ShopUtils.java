@@ -3,12 +3,14 @@ package com.enjin.officialplugin.shop;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.bukkit.ChatColor;
 import org.bukkit.map.MinecraftFont;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.ServerShop.Type;
 
 public class ShopUtils {
@@ -66,6 +68,9 @@ public class ShopUtils {
 		for(Object ocategory : shopcategories) {
 			JSONObject category = (JSONObject) ocategory;
 			ShopCategory scategory = new ShopCategory((String) category.get("name"),(String) category.get("id"));
+			if(!(shop instanceof ServerShop)) {
+				scategory.setParentCategory(shop);
+			}
 			scategory.setInfo((String) category.get("info"));
 			Object items = category.get("items");
 			Object categories = category.get("categories");
@@ -146,7 +151,7 @@ public class ShopUtils {
 		}
 	}
 	
-	public static ArrayList<ArrayList<String>> formatPages(ServerShop shop, ShopItemAdder itemcategory, String parentshops) {
+	public static ArrayList<ArrayList<String>> formatPages(ServerShop shop, ShopItemAdder itemcategory) {
 		//This holds the completed pages
 		ArrayList<ArrayList<String>> pages = new ArrayList<ArrayList<String>>();
 		//This holds the header for each page
@@ -159,7 +164,11 @@ public class ShopUtils {
 		if(shop.getBorder_c() == null && shop.getBorder_h() == null && shop.getBorder_v() == null) {
 			collapsed = true;
 			header.add(" ");
-			header.add(TrimText(FORMATTING_CODE + shop.getColortitle() + parentshops + " - " + itemcategory.getName(), "..."));
+			if(shop.getParentCategory() != null) {
+				header.add(TrimText(FORMATTING_CODE + shop.getColortitle() + shop.getParentCategory().getName() + " - " + itemcategory.getName(), "..."));
+			}else {
+				header.add(TrimText(FORMATTING_CODE + shop.getColortitle() + itemcategory.getName(), "..."));
+			}
 			if(itemcategory.getInfo() != null && !itemcategory.getInfo().trim().equals("")) {
 				String[] info = WrapText(itemcategory.getInfo(), shop.getColortext());
 				for(String sinfo : info) {
@@ -167,11 +176,11 @@ public class ShopUtils {
 				}
 			}
 			if(itemcategory.getType() == Type.Category) {
-				header.add(FORMATTING_CODE + shop.getColortext() + "Prices are in " + shop.getCurrency() + ". Choose a category with " + FORMATTING_CODE + shop.getColorbottom() + "/buy <#>");
+				header.add(FORMATTING_CODE + shop.getColortext() + "Prices are in " + shop.getCurrency() + ". Choose a category with " + FORMATTING_CODE + shop.getColorbottom() + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " <#>");
 			}else if(itemcategory.getType() == Type.Item) {
-				header.add(FORMATTING_CODE + shop.getColortext() + "Prices are in " + shop.getCurrency() + ". Click a link or use " + FORMATTING_CODE + shop.getColorbottom() + "/buy <#>" + FORMATTING_CODE + shop.getColortext() + " to see details.");
+				header.add(FORMATTING_CODE + shop.getColortext() + "Prices are in " + shop.getCurrency() + ". Click a link or use " + FORMATTING_CODE + shop.getColorbottom() + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " <#>" + FORMATTING_CODE + shop.getColortext() + " to see details.");
 			}
-			footer.add(FORMATTING_CODE + shop.getColortext() + "Type /buy to go back, or type /ec to enable chat");
+			footer.add(FORMATTING_CODE + shop.getColortext() + "Type /" + EnjinMinecraftPlugin.BUY_COMMAND + " to go back, or type /ec to enable chat");
 		}else {
 			//Standard shop format
 			StringBuilder topline = new StringBuilder(50);
@@ -179,8 +188,8 @@ public class ShopUtils {
 			for(int i = 0; i < 4; i++) {
 				topline.append(shop.getBorder_h());
 			}
-			if(parentshops != null && !parentshops.equals("")) {
-				topline.append("[ " + FORMATTING_CODE + shop.getColortitle() + parentshops + " - " + itemcategory.getName() + FORMATTING_CODE + shop.getColorborder() + " ]");
+			if(shop.getParentCategory() != null) {
+				topline.append("[ " + FORMATTING_CODE + shop.getColortitle() + shop.getParentCategory().getName() + " - " + itemcategory.getName() + FORMATTING_CODE + shop.getColorborder() + " ]");
 				String toplinetrimmed = TrimText(topline.toString(), "... " + FORMATTING_CODE + shop.getColorborder() + "]");
 				if(!toplinetrimmed.endsWith("... " + FORMATTING_CODE + shop.getColorborder() + "]")) {
 					for(int i = 0; i < 40; i++) {
@@ -191,7 +200,7 @@ public class ShopUtils {
 					header.add(toplinetrimmed);
 				}
 			}else {
-				topline.append(" " + FORMATTING_CODE + shop.getColortitle() + parentshops + " - " + itemcategory.getName());
+				topline.append(" " + FORMATTING_CODE + shop.getColortitle() + itemcategory.getName());
 				String toplinetrimmed = TrimText(topline.toString(), "...");
 				if(!toplinetrimmed.endsWith("...")) {
 					topline.append(FORMATTING_CODE + shop.getColorborder() + " ");
@@ -215,13 +224,13 @@ public class ShopUtils {
 			}
 			//Add help text
 			if(shop.getType() == Type.Category) {
-				header.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Prices are in " + shop.getCurrency() + ". Choose a category with " + FORMATTING_CODE + shop.getColorbottom() + "/buy <#>");
+				header.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Prices are in " + shop.getCurrency() + ". Choose a category with " + FORMATTING_CODE + shop.getColorbottom() + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " <#>");
 			}else if(shop.getType() == Type.Item) {
-				header.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Prices are in " + shop.getCurrency() + ". Click a link or use " + FORMATTING_CODE + shop.getColorbottom() + "/buy <#>" + FORMATTING_CODE + shop.getColortext() + " to see details.");
+				header.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Prices are in " + shop.getCurrency() + ". Click a link or use " + FORMATTING_CODE + shop.getColorbottom() + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " <#>" + FORMATTING_CODE + shop.getColortext() + " to see details.");
 			}
 			header.add(verticalborder);
 			//Set the footer text
-			footer.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Type /buy to go back, or type /ec to enable chat");
+			footer.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Type /" + EnjinMinecraftPlugin.BUY_COMMAND + " to go back, or type /ec to enable chat");
 		}
 		//add together the header size, footer size, and the page line and the blank line.
 		int usedlines = header.size() + footer.size() + 2;
@@ -273,14 +282,14 @@ public class ShopUtils {
 
 			//Add in the page numbers, etc.
 			if(collapsed) {
-				currentpage.add(FORMATTING_CODE + shop.getColorbottom() + "Page " + (i + 1) + " of " + numofpages + ", Type /buy page #");
+				currentpage.add(FORMATTING_CODE + shop.getColorbottom() + "Page " + (i + 1) + " of " + numofpages + ", Type /" + EnjinMinecraftPlugin.BUY_COMMAND + " page #");
 			}else {
 				StringBuilder bottomline = new StringBuilder(50);
 				bottomline.append(FORMATTING_CODE + shop.getColorborder() + shop.getBorder_c());
 				for(int j = 0; j < 4; j++) {
 					bottomline.append(shop.getBorder_h());
 				}
-				bottomline.append(FORMATTING_CODE + shop.getColorbottom() + " Type /buy page # " + FORMATTING_CODE + shop.getColorborder());
+				bottomline.append(FORMATTING_CODE + shop.getColorbottom() + " Type /" + EnjinMinecraftPlugin.BUY_COMMAND + " page # " + FORMATTING_CODE + shop.getColorborder());
 				for(int j = 0; j < 40; j++) {
 					bottomline.append(shop.getBorder_h());
 				}
@@ -292,6 +301,133 @@ public class ShopUtils {
 			
 		}
 		return pages;
+	}
+	
+	public static ArrayList<String> getItemDetailsPage(ServerShop shop, ShopItem item) {
+		ArrayList<String> itempage = new ArrayList<String>();
+		boolean collapsed = false;
+		String verticalborder;
+		if(shop.getBorder_c() == null && shop.getBorder_h() == null && shop.getBorder_v() == null) {
+			collapsed = true;
+			verticalborder = "";
+			itempage.add(" ");
+			itempage.add(TrimText(FORMATTING_CODE + shop.getColortitle() + item.getName(), "..."));
+		}else {
+			verticalborder = FORMATTING_CODE + shop.getColorborder() + shop.getBorder_v();
+			//Standard shop format
+			StringBuilder topline = new StringBuilder(50);
+			topline.append(FORMATTING_CODE + shop.getColorborder() + shop.getBorder_c());
+			for(int i = 0; i < 4; i++) {
+				topline.append(shop.getBorder_h());
+			}
+			topline.append(" " + FORMATTING_CODE + shop.getColortitle() + item.getName() + FORMATTING_CODE + shop.getColorborder() + " ");
+			String toplinetrimmed = TrimText(topline.toString(), "...");
+			if(!toplinetrimmed.endsWith("...")) {
+				topline.append(FORMATTING_CODE + shop.getColorborder() + " ");
+				for(int i = 0; i < 40; i++) {
+					topline.append(shop.getBorder_h());
+				}
+				itempage.add(TrimText(topline.toString(), null));
+			}else {
+				itempage.add(toplinetrimmed);
+			}		
+		}
+		itempage.add(verticalborder + " ");
+		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Price: " + FORMATTING_CODE + shop.getColorprice() + formatPrice(item.getPrice(), shop.getCurrency()));
+		if(item.getOptions().size() > 0) {
+			StringBuilder options = new StringBuilder();
+			options.append(FORMATTING_CODE + shop.getColortext() + "Options: ");
+			for(int i = 0; i < item.getOptions().size(); i++) {
+				if(i > 0) {
+					options.append(", ");
+				}
+				ShopItemOptions option = item.getOption(i);
+				options.append(FORMATTING_CODE + shop.getColorname() + option.getName() + FORMATTING_CODE + shop.getColorbracket() + " (");
+				options.append(FORMATTING_CODE + shop.getColorprice() + formatPrice(option, shop.getCurrency()) + FORMATTING_CODE + shop.getColorbracket() + ")");
+			}
+			ArrayList<String> optionlines = WrapFormattedText(verticalborder, options.toString());
+			for(String optionline : optionlines) {
+				itempage.add(optionline);
+			}
+		}
+		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Info:");
+		String[] infolines;
+		if(collapsed) {
+			infolines = WrapText(item.getInfo(), shop.getColorinfo());
+		}else {
+			infolines = WrapText(item.getInfo(), shop.getBorder_v(), shop.getColorborder(), shop.getColorinfo());
+		}
+		for(String infoline : infolines) {
+			itempage.add(infoline);
+		}
+		//Add whitespace;
+		for(int i = itempage.size(); i < 16; i++) {
+			itempage.add(verticalborder + " ");
+		}
+		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Click the following link to checkout:");
+		itempage.add(verticalborder + FORMATTING_CODE + shop.getColorurl() + shop.getBuyurl() + item.getId());
+		itempage.add(verticalborder + " ");
+		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Type /" + EnjinMinecraftPlugin.BUY_COMMAND + " to go back, or type /ec to enable chat");
+		if(collapsed) {
+			itempage.add(FORMATTING_CODE + shop.getColorbottom() + "Click the item link to purchase");
+		}else {
+			//Standard shop format
+			StringBuilder bottomline = new StringBuilder(50);
+			bottomline.append(FORMATTING_CODE + shop.getColorborder() + shop.getBorder_c());
+			for(int i = 0; i < 4; i++) {
+				bottomline.append(shop.getBorder_h());
+			}
+			bottomline.append(" " + FORMATTING_CODE + shop.getColorbottom() + "Click the item link to purchase" + FORMATTING_CODE + shop.getColorborder() + " ");
+			bottomline.append(FORMATTING_CODE + shop.getColorborder() + " ");
+			for(int i = 0; i < 40; i++) {
+				bottomline.append(shop.getBorder_h());
+			}
+			itempage.add(TrimText(bottomline.toString(), null));
+		}
+		
+		return itempage;
+	}
+	
+	public static ArrayList<String> getShopListing(PlayerShopsInstance shops) {
+		ArrayList<String> shopoutput = new ArrayList<String>();
+		shopoutput.add(ChatColor.WHITE + "=== Choose Shop ===");
+		shopoutput.add(ChatColor.WHITE + "Please type " + ChatColor.YELLOW + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " shop <#>");
+		shopoutput.add(" ");
+		for(int i = 0; i < shops.getServerShops().size() && i < 15; i++) {
+			shopoutput.add(TrimText(ChatColor.YELLOW + String.valueOf(i +1) + ". " + shops.getServerShop(i).getName(), "..."));
+		}
+		shopoutput.add(" ");
+		shopoutput.add(ChatColor.WHITE + "Type /ec to enable chat");
+		return shopoutput;
+	}
+	
+	public static ArrayList<String> WrapFormattedText(String prefix, String text) {
+		ArrayList<String> output = new ArrayList<String>();
+		String fullline = text;
+		if(MinecraftFont.Font.getWidth(prefix + fullline) + ((prefix + fullline).length()) > MINECRAFT_CONSOLE_WIDTH) {
+			int index = 0;
+			while(index < fullline.length() -1) {
+				String line = fullline.substring(index);
+				while(MinecraftFont.Font.getWidth(prefix + line) + ((prefix + line).length()) > MINECRAFT_CONSOLE_WIDTH) {
+					if(line.lastIndexOf(' ') > 0) {
+						line = line.substring(0, line.lastIndexOf(' '));
+					}else {
+						line = line.substring(0, line.length() - 1);
+					}
+				}
+				if(index > 0) {
+					int lastformattingcode = fullline.lastIndexOf(FORMATTING_CODE, index);
+					String textcolor = fullline.substring(lastformattingcode + 1, lastformattingcode + 2);
+					output.add(prefix + FORMATTING_CODE + textcolor + line);
+				}else {
+					output.add(prefix + line);
+				}
+				index += line.length();
+			}
+		}else {
+			output.add(prefix + text);
+		}
+		return output;
 	}
 
 	public static String TrimText(String text, String ellipses) {
@@ -432,6 +568,8 @@ public class ShopUtils {
 					formattedlines.add(FORMATTING_CODE + prefixcolor + prefix + FORMATTING_CODE + textcolor + line);
 					index += line.length();
 				}
+			}else {
+				formattedlines.add(FORMATTING_CODE + prefixcolor + prefix + FORMATTING_CODE + textcolor + fullline);
 			}
 		}
 		return (String[]) formattedlines.toArray();
@@ -456,6 +594,8 @@ public class ShopUtils {
 					formattedlines.add(FORMATTING_CODE + textcolor + line);
 					index += line.length();
 				}
+			}else {
+				formattedlines.add(FORMATTING_CODE + textcolor + fullline);
 			}
 		}
 		return (String[]) formattedlines.toArray();
