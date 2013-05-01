@@ -12,5 +12,6 @@ public interface ShopItemAdder {
 	abstract public void setType(Type type);
 	abstract public Type getType();
 	abstract public String getName();
+	abstract public String getInfo();
 	
 }

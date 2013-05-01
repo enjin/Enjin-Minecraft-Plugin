@@ -28,6 +28,7 @@ public class ServerShop extends AbstractShopSuperclass implements ShopItemAdder 
 	String border_h = "-";
 	String border_c = "+";
 	boolean simpleitems = false;
+	boolean simplecategories = false;
 
 	ArrayList<AbstractShopSuperclass> items = new ArrayList<AbstractShopSuperclass>();
 	
@@ -51,7 +52,7 @@ public class ServerShop extends AbstractShopSuperclass implements ShopItemAdder 
 		simpleitems = value;
 	}
 	
-	public boolean simpleModeDisplay() {
+	public boolean simpleItemModeDisplay() {
 		return simpleitems;
 	}
 	
@@ -217,6 +218,14 @@ public class ServerShop extends AbstractShopSuperclass implements ShopItemAdder 
 
 	public void setBorder_c(String border_c) {
 		this.border_c = border_c;
+	}
+
+	public boolean simpleCategoryModeDisplay()  {
+		return simplecategories;
+	}
+
+	public void setSimplecategories(boolean simplecategories) {
+		this.simplecategories = simplecategories;
 	}
 
 }
