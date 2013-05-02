@@ -46,6 +46,7 @@ import com.enjin.officialplugin.permlisteners.GroupManagerListener;
 import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
 import com.enjin.officialplugin.permlisteners.PexChangeListener;
 import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
+import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
 import com.enjin.officialplugin.stats.WriteStats;
@@ -114,6 +115,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	//static public String apiurl = "://gamers.enjin.ca/api/";
 	//static public String apiurl = "://tuxreminder.info/api/";
 	//static public String apiurl = "://mxm.enjin.com/api/";
+	//static public String apiurl = "://api.0x10cbuilder.com/api/";
 	
 	public boolean autoupdate = true;
 	public String newversion = "";
@@ -153,6 +155,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public EnjinStatsListener esl = null;
 	
 	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+	public ShopListener shoplistener;
 	
 	public static void debug(String s) {
 		if(debug) {
@@ -383,6 +386,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     	if(teststats.equals("")) {
     		createConfig();
     	}
+		teststats = config.getString("buycommand", null);
+    	if(teststats == null) {
+    		createConfig();
+    	}
+    	BUY_COMMAND = config.getString("buycommand", null);
 	}
 	
 	private void createConfig() {
@@ -392,14 +400,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		config.set("autoupdate", autoupdate);
 		config.set("collectstats", collectstats);
 		config.set("sendstatsinterval", statssendinterval);
-		config.set("statscollected.player.travel", true);
-		config.set("statscollected.player.blocksbroken", true);
-		config.set("statscollected.player.blocksplaced", true);
-		config.set("statscollected.player.kills", true);
-		config.set("statscollected.player.deaths", true);
-		config.set("statscollected.player.xp", true);
-		config.set("statscollected.server.creeperexplosions", true);
-		config.set("statscollected.server.playerkicks", true);
+		String teststats = config.getString("statscollected.player.travel", "");
+    	if(teststats.equals("")) {
+    		config.set("statscollected.player.travel", true);
+    		config.set("statscollected.player.blocksbroken", true);
+    		config.set("statscollected.player.blocksplaced", true);
+    		config.set("statscollected.player.kills", true);
+    		config.set("statscollected.player.deaths", true);
+    		config.set("statscollected.player.xp", true);
+    		config.set("statscollected.server.creeperexplosions", true);
+    		config.set("statscollected.server.playerkicks", true);
+    	}
+		teststats = config.getString("buycommand", null);
+    	if(teststats == null) {
+    		config.set("buycommand", BUY_COMMAND);
+    	}
 		saveConfig();
 	}
 
@@ -418,6 +433,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public void registerEvents() {
 		debug("Registering events.");
 		Bukkit.getPluginManager().registerEvents(listener, this);
+		if(BUY_COMMAND != null) {
+			shoplistener = new ShopListener();
+			Bukkit.getPluginManager().registerEvents(shoplistener, this);
+		}
 	}
 	
 	public void stopTask() {

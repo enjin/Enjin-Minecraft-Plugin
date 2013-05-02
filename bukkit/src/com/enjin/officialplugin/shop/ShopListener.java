@@ -31,6 +31,15 @@ public class ShopListener implements Listener {
 			Player player = event.getPlayer();
 			if(activeshops.containsKey(player.getName().toLowerCase())) {
 				PlayerShopsInstance psi = activeshops.get(player.getName().toLowerCase());
+				//If it's been over 10 minutes, re-retrieve it.
+				if(psi.getRetrievalTime() + (1000*60*10) < System.currentTimeMillis()) {
+					player.sendMessage(ChatColor.RED + "Fetching shop information, please wait...");
+					Thread dispatchThread = new Thread(new PlayerShopGetter(this, player));
+		            dispatchThread.start();
+		            event.setCancelled(true);
+		            return;
+				}
+				playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
 				String[] args = event.getMessage().split(" ");
 				//If it's just the /buy parameter, let's just reset to the shop topmost category.
 				if(args.length == 1) {
@@ -104,7 +113,7 @@ public class ShopListener implements Listener {
 						}else {
 							try {
 								ShopItemAdder category = psi.getActiveCategory();
-								int optionnumber = Integer.parseInt(args[2]) -1;
+								int optionnumber = Integer.parseInt(args[1]) -1;
 								if(optionnumber < category.getItems().size() && optionnumber >= 0) {
 									//If it's a category, let's go into the category and list the first page.
 									if(category.getType() == Type.Category) {
@@ -133,8 +142,16 @@ public class ShopListener implements Listener {
 		}else if(event.getMessage().toLowerCase().startsWith("/ec")) {
 			if(playersdisabledchat.containsKey(event.getPlayer().getName().toLowerCase())) {
 				playersdisabledchat.remove(event.getPlayer().getName().toLowerCase());
+				event.getPlayer().sendMessage(ChatColor.GREEN + "Your chat is now enabled.");
+				event.setCancelled(true);
 			}
 		}
+	}
+	
+	public void removePlayer(String player) {
+		player = player.toLowerCase();
+		playersdisabledchat.remove(player);
+		activeshops.remove(player);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -149,9 +166,10 @@ public class ShopListener implements Listener {
 				playersdisabledchat.remove(event.getPlayer().getName().toLowerCase());
 			}else {
 				Set<Player> recipients = event.getRecipients();
-				Enumeration<String> chatdisabledplayers = playersdisabledchat.elements();
-				while(chatdisabledplayers.hasMoreElements()) {
-					recipients.remove(chatdisabledplayers.nextElement());
+				for(Player recipient : recipients) {
+					if(playersdisabledchat.containsKey(recipient.getName().toLowerCase())) {
+						recipients.remove(recipient);
+					}
 				}
 			}
 		}

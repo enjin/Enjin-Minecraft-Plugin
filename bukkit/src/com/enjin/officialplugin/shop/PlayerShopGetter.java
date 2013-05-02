@@ -61,7 +61,9 @@ public class PlayerShopGetter implements Runnable {
 			listener.sendPlayerInitialShopData(player, shops);
 			return;
 		} catch (SocketTimeoutException e) {
+			e.printStackTrace();
 		} catch (Throwable t) {
+			t.printStackTrace();
 		}
 		player.sendMessage(ChatColor.RED + "There was a problem loading the shop, please try again later.");
 	}

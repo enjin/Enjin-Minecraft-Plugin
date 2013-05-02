@@ -15,7 +15,7 @@ import com.enjin.officialplugin.shop.ServerShop.Type;
 
 public class ShopUtils {
 	
-	public static int MINECRAFT_CONSOLE_WIDTH = 648;
+	public static int MINECRAFT_CONSOLE_WIDTH = 310;
 	public static String FORMATTING_CODE = "\u00A7";
 	public static int CONSOLE_HEIGHT = 20;
 	
@@ -44,8 +44,14 @@ public class ShopUtils {
 					newshop.setColorurl((String) shop.get("colorurl"));
 					newshop.setCurrency((String) shop.get("currency"));
 					newshop.setInfo((String) shop.get("info"));
-					newshop.setSimpleItems((Boolean) shop.get("simpleitems"));
-					newshop.setSimplecategories((Boolean) shop.get("simplecategories"));
+					Boolean simpleitems = (Boolean) shop.get("simpleitems");
+					if(simpleitems != null) {
+						newshop.setSimpleItems(simpleitems);
+					}
+					Boolean simplecategories = (Boolean) shop.get("simplecategories");
+					if(simplecategories != null) {
+						newshop.setSimplecategories(simplecategories);
+					}
 					Object items = shop.get("items");
 					Object categories = shop.get("categories");
 					if(items != null && items instanceof JSONArray && ((JSONArray)items).size() > 0) {
@@ -53,7 +59,9 @@ public class ShopUtils {
 					}else if(categories != null && categories instanceof JSONArray && ((JSONArray)categories).size() > 0) {
 						addCategories(newshop, (JSONArray) categories);
 					}
-					psi.addServerShop(newshop);
+					if(newshop.getItems().size() > 0) {
+						psi.addServerShop(newshop);
+					}
 				}
 			}
 		} catch (ParseException e) {
@@ -68,7 +76,7 @@ public class ShopUtils {
 		for(Object ocategory : shopcategories) {
 			JSONObject category = (JSONObject) ocategory;
 			ShopCategory scategory = new ShopCategory((String) category.get("name"),(String) category.get("id"));
-			if(!(shop instanceof ServerShop)) {
+			if(shop instanceof ShopCategory) {
 				scategory.setParentCategory(shop);
 			}
 			scategory.setInfo((String) category.get("info"));
@@ -79,11 +87,14 @@ public class ShopUtils {
 			}else if(categories != null && categories instanceof JSONArray && ((JSONArray)categories).size() > 0) {
 				addCategories(scategory, (JSONArray) categories);
 			}
-			try {
-				shop.addItem(scategory);
-			} catch (ItemTypeNotSupported e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			//Don't list empty categories
+			if(scategory.getItems().size() > 0) {
+				try {
+					shop.addItem(scategory);
+				} catch (ItemTypeNotSupported e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -119,14 +130,14 @@ public class ShopUtils {
 		}
 		if(currency.equalsIgnoreCase("USD")) {
 			if(price.endsWith(".00")) {
-				String[] splitprice = price.split(".");
+				String[] splitprice = price.split("\\.");
 				return "$" + splitprice[0];
 			}else {
 				return "$" + price;
 			}
 		}else {
 			if(price.endsWith(".00")) {
-				String[] splitprice = price.split(".");
+				String[] splitprice = price.split("\\.");
 				return splitprice[0] + " " + currency;
 			}else {
 				return price + " " + currency;
@@ -164,8 +175,8 @@ public class ShopUtils {
 		if(shop.getBorder_c() == null && shop.getBorder_h() == null && shop.getBorder_v() == null) {
 			collapsed = true;
 			header.add(" ");
-			if(shop.getParentCategory() != null) {
-				header.add(TrimText(FORMATTING_CODE + shop.getColortitle() + shop.getParentCategory().getName() + " - " + itemcategory.getName(), "..."));
+			if(itemcategory.getParentCategory() != null) {
+				header.add(TrimText(FORMATTING_CODE + shop.getColortitle() + itemcategory.getParentCategory().getName() + " - " + itemcategory.getName(), "..."));
 			}else {
 				header.add(TrimText(FORMATTING_CODE + shop.getColortitle() + itemcategory.getName(), "..."));
 			}
@@ -188,8 +199,8 @@ public class ShopUtils {
 			for(int i = 0; i < 4; i++) {
 				topline.append(shop.getBorder_h());
 			}
-			if(shop.getParentCategory() != null) {
-				topline.append("[ " + FORMATTING_CODE + shop.getColortitle() + shop.getParentCategory().getName() + " - " + itemcategory.getName() + FORMATTING_CODE + shop.getColorborder() + " ]");
+			if(itemcategory.getParentCategory() != null) {
+				topline.append("[ " + FORMATTING_CODE + shop.getColortitle() + itemcategory.getParentCategory().getName() + " - " + itemcategory.getName() + FORMATTING_CODE + shop.getColorborder() + " ]");
 				String toplinetrimmed = TrimText(topline.toString(), "... " + FORMATTING_CODE + shop.getColorborder() + "]");
 				if(!toplinetrimmed.endsWith("... " + FORMATTING_CODE + shop.getColorborder() + "]")) {
 					for(int i = 0; i < 40; i++) {
@@ -276,6 +287,11 @@ public class ShopUtils {
 					currentpage.add(itemstring[k]);
 				}
 			}
+
+			//Add whitespace;
+			for(int j = currentpage.size(); j < (20 - (footer.size() + 1)); j++) {
+				currentpage.add(verticalborder + " ");
+			}
 			for(int j = 0; j < footer.size(); j++) {
 				currentpage.add(footer.get(j));
 			}
@@ -298,7 +314,7 @@ public class ShopUtils {
 						shop.getBorder_h() + shop.getBorder_h() + shop.getBorder_h() + shop.getBorder_h());
 				currentpage.add(bottomlinetrimmed);					
 			}
-			
+			pages.add(currentpage);
 		}
 		return pages;
 	}
@@ -361,7 +377,7 @@ public class ShopUtils {
 			itempage.add(infoline);
 		}
 		//Add whitespace;
-		for(int i = itempage.size(); i < 16; i++) {
+		for(int i = itempage.size(); i < 15; i++) {
 			itempage.add(verticalborder + " ");
 		}
 		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Click the following link to checkout:");
@@ -404,11 +420,11 @@ public class ShopUtils {
 	public static ArrayList<String> WrapFormattedText(String prefix, String text) {
 		ArrayList<String> output = new ArrayList<String>();
 		String fullline = text;
-		if(MinecraftFont.Font.getWidth(prefix + fullline) + ((prefix + fullline).length()) > MINECRAFT_CONSOLE_WIDTH) {
+		if(getWidth(prefix + fullline) > MINECRAFT_CONSOLE_WIDTH) {
 			int index = 0;
 			while(index < fullline.length() -1) {
 				String line = fullline.substring(index);
-				while(MinecraftFont.Font.getWidth(prefix + line) + ((prefix + line).length()) > MINECRAFT_CONSOLE_WIDTH) {
+				while(getWidth(prefix + line) > MINECRAFT_CONSOLE_WIDTH) {
 					if(line.lastIndexOf(' ') > 0) {
 						line = line.substring(0, line.lastIndexOf(' '));
 					}else {
@@ -429,18 +445,24 @@ public class ShopUtils {
 		}
 		return output;
 	}
+	
+	public static int getWidth(String text) {
+		String cleanedtext = ChatColor.stripColor(text);
+		cleanedtext = cleanedtext.replace(FORMATTING_CODE, "");
+		return MinecraftFont.Font.getWidth(cleanedtext) + (cleanedtext.length()-1);
+	}
 
 	public static String TrimText(String text, String ellipses) {
 		String trimmedtext = text;
-		if(MinecraftFont.Font.getWidth(trimmedtext) + (trimmedtext.length()-1) > MINECRAFT_CONSOLE_WIDTH) {
+		if(getWidth(trimmedtext) > MINECRAFT_CONSOLE_WIDTH) {
 			trimmedtext = trimmedtext.substring(0, trimmedtext.length() - 1);
 			if(ellipses != null) {
-				while(MinecraftFont.Font.getWidth(trimmedtext + ellipses) + (trimmedtext.length() -1)> MINECRAFT_CONSOLE_WIDTH) {
+				while(getWidth(trimmedtext + ellipses) > MINECRAFT_CONSOLE_WIDTH) {
 					trimmedtext = trimmedtext.substring(0, trimmedtext.length() - 1);
 				}
 				return trimmedtext + ellipses;
 			}else {
-				while(MinecraftFont.Font.getWidth(trimmedtext) + (trimmedtext.length()-1) > MINECRAFT_CONSOLE_WIDTH) {
+				while(getWidth(trimmedtext) > MINECRAFT_CONSOLE_WIDTH) {
 					trimmedtext = trimmedtext.substring(0, trimmedtext.length() - 1);
 				}
 				return trimmedtext;
@@ -452,15 +474,15 @@ public class ShopUtils {
 	
 	public static String TrimText(String text, String ellipses, String suffix) {
 		String trimmedtext = text;
-		if(MinecraftFont.Font.getWidth(trimmedtext + suffix) + (trimmedtext.length() + suffix.length() -1) > MINECRAFT_CONSOLE_WIDTH) {
+		if(getWidth(trimmedtext + suffix) > MINECRAFT_CONSOLE_WIDTH) {
 			trimmedtext = trimmedtext.substring(0, trimmedtext.length() - 1);
 			if(ellipses != null) {
-				while(MinecraftFont.Font.getWidth(trimmedtext + ellipses + suffix) + (trimmedtext.length() + suffix.length() -1)> MINECRAFT_CONSOLE_WIDTH) {
+				while(getWidth(trimmedtext + ellipses + suffix)> MINECRAFT_CONSOLE_WIDTH) {
 					trimmedtext = trimmedtext.substring(0, trimmedtext.length() - 1);
 				}
 				return trimmedtext + ellipses + suffix;
 			}else {
-				while(MinecraftFont.Font.getWidth(trimmedtext + suffix) + (trimmedtext.length() + suffix.length() -1) > MINECRAFT_CONSOLE_WIDTH) {
+				while(getWidth(trimmedtext + suffix) > MINECRAFT_CONSOLE_WIDTH) {
 					trimmedtext = trimmedtext.substring(0, trimmedtext.length() - 1);
 				}
 				return trimmedtext + suffix;
@@ -492,8 +514,8 @@ public class ShopUtils {
 		itemstring[0] = TrimText(itemstring[0], "...",  FORMATTING_CODE + shop.getColorbracket() + " (" + FORMATTING_CODE + shop.getColorprice() + formattedprice
 				+ FORMATTING_CODE + shop.getColorbracket() + ")");
 		String description = item.getInfo().split("\n")[0];
-		itemstring[1] = verticalborder + shop.getBuyurl() + item.getId();
-		itemstring[2] = TrimText(verticalborder + description, "...");
+		itemstring[1] = verticalborder + FORMATTING_CODE + shop.getColorurl() + shop.getBuyurl() + item.getId();
+		itemstring[2] = TrimText(verticalborder + FORMATTING_CODE + shop.getColorinfo() + description, "...");
 		itemstring[3] = verticalborder;
 		return itemstring;
 	}
@@ -508,8 +530,8 @@ public class ShopUtils {
 				+ FORMATTING_CODE + shop.getColorname() + item.getName() + FORMATTING_CODE + shop.getColorbracket() + " ]";
 		itemstring[0] = TrimText(itemstring[0], "..." + FORMATTING_CODE + shop.getColorbracket() + " ]");
 		String description = item.getInfo().split("\n")[0];
-		itemstring[2] = TrimText(verticalborder + description, "...");
-		itemstring[3] = verticalborder;
+		itemstring[1] = TrimText(verticalborder + FORMATTING_CODE + shop.getColorinfo() + description, "...");
+		itemstring[2] = verticalborder;
 		return itemstring;
 	}
 	
@@ -554,11 +576,11 @@ public class ShopUtils {
 		ArrayList<String> formattedlines = new ArrayList<String>();
 		for(int i = 0; i < lines.length && formattedlines.size() < 6; i++) {
 			String fullline = lines[i];
-			if(MinecraftFont.Font.getWidth(prefix + fullline) + ((prefix + fullline).length()) > MINECRAFT_CONSOLE_WIDTH) {
+			if(getWidth(prefix + fullline) + ((prefix + fullline).length()) > MINECRAFT_CONSOLE_WIDTH) {
 				int index = 0;
 				while(index < fullline.length() -1 && formattedlines.size() < 6) {
 					String line = fullline.substring(index);
-					while(MinecraftFont.Font.getWidth(prefix + line) + ((prefix + line).length()) > MINECRAFT_CONSOLE_WIDTH) {
+					while(getWidth(prefix + line) > MINECRAFT_CONSOLE_WIDTH) {
 						if(line.lastIndexOf(' ') > 0) {
 							line = line.substring(0, line.lastIndexOf(' '));
 						}else {
@@ -572,7 +594,11 @@ public class ShopUtils {
 				formattedlines.add(FORMATTING_CODE + prefixcolor + prefix + FORMATTING_CODE + textcolor + fullline);
 			}
 		}
-		return (String[]) formattedlines.toArray();
+		String[] returnarray = new String[formattedlines.size()];
+		for(int i = 0; i < returnarray.length; i++) {
+			returnarray[i] = formattedlines.get(i);
+		}
+		return returnarray;
 	}
 	
 	public static String[] WrapText(String text, String textcolor) {
@@ -580,11 +606,11 @@ public class ShopUtils {
 		ArrayList<String> formattedlines = new ArrayList<String>();
 		for(int i = 0; i < lines.length && formattedlines.size() < 6; i++) {
 			String fullline = lines[i];
-			if(MinecraftFont.Font.getWidth(fullline) + (fullline.length()) > MINECRAFT_CONSOLE_WIDTH) {
+			if(getWidth(fullline) > MINECRAFT_CONSOLE_WIDTH) {
 				int index = 0;
 				while(index < fullline.length() -1 && formattedlines.size() < 6) {
 					String line = fullline.substring(index);
-					while(MinecraftFont.Font.getWidth(line) + (line.length()) > MINECRAFT_CONSOLE_WIDTH) {
+					while(getWidth(line) > MINECRAFT_CONSOLE_WIDTH) {
 						if(line.lastIndexOf(' ') > 0) {
 							line = line.substring(0, line.lastIndexOf(' '));
 						}else {
@@ -598,6 +624,10 @@ public class ShopUtils {
 				formattedlines.add(FORMATTING_CODE + textcolor + fullline);
 			}
 		}
-		return (String[]) formattedlines.toArray();
+		String[] returnarray = new String[formattedlines.size()];
+		for(int i = 0; i < returnarray.length; i++) {
+			returnarray[i] = formattedlines.get(i);
+		}
+		return returnarray;
 	}
 }
