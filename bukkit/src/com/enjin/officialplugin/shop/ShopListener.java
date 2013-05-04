@@ -48,7 +48,15 @@ public class ShopListener implements Listener {
 						sendPlayerInitialShopData(player, psi);
 					//Else, if they have, show them the shop main menu again.
 					}else {
-						psi.setActiveCategory(psi.getActiveShop());
+						ServerShop selectedshop = psi.getActiveShop();
+						//We need to see if it only has one category. If so, open that category.
+						if(selectedshop.getType() == Type.Category && selectedshop.getItems().size() == 1) {
+							ShopItemAdder category = (ShopItemAdder) selectedshop.getItem(0);
+							psi.setActiveCategory(category);
+						//If it has items or more than one category show the shop main page.
+						}else {
+							psi.setActiveCategory(selectedshop);
+						}
 						sendPlayerShopData(player, psi, psi.getActiveCategory(), 0);
 					}
 				}else {

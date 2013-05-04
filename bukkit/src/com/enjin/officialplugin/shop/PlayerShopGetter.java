@@ -45,6 +45,7 @@ public class PlayerShopGetter implements Runnable {
 			con.setDoOutput(true);
 			con.setRequestProperty("User-Agent", "Mozilla/4.0");
 			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			
 			//StringBuilder builder = new StringBuilder();
 			builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
 			builder.append("&player=" + encode(player.getName())); //current player
@@ -69,9 +70,12 @@ public class PlayerShopGetter implements Runnable {
 	}
 	
 	public static String parseInput(InputStream in) throws IOException {
+		byte[] buffer = new byte[1024];
+		int bytesRead = in.read(buffer);
 		StringBuilder builder = new StringBuilder();
-		for(int c = in.read(); c != -1 ; c = in.read()) {
-			builder.append(((char)c));
+		while(bytesRead > 0) {
+			builder.append(new String(buffer, 0, bytesRead, "UTF-8"));
+			bytesRead = in.read(buffer);
 		}
 		return builder.toString();
 	}

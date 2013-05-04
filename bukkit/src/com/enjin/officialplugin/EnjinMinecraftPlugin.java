@@ -111,11 +111,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public ConcurrentHashMap<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
 	
 	
-	static public String apiurl = "://api.enjin.com/api/";
+	//static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
 	//static public String apiurl = "://tuxreminder.info/api/";
 	//static public String apiurl = "://mxm.enjin.com/api/";
-	//static public String apiurl = "://api.0x10cbuilder.com/api/";
+	static public String apiurl = "://api.0x10cbuilder.com/api/";
 	
 	public boolean autoupdate = true;
 	public String newversion = "";
@@ -382,6 +382,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     	configvalues.put("statscollected.player.xp", ConfigValueTypes.BOOLEAN);
     	configvalues.put("statscollected.player.creeperexplosions", ConfigValueTypes.BOOLEAN);
     	configvalues.put("statscollected.player.playerkicks", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("buycommand", ConfigValueTypes.STRING);
     	teststats = config.getString("statscollected.player.travel", "");
     	if(teststats.equals("")) {
     		createConfig();
