@@ -337,6 +337,10 @@ public class PeriodicEnjinTask implements Runnable {
 		return "";
 	}
 	private String getPlayerGroups() {
+		//We don't need to go any further if the permissions plugin is broken.
+		if(plugin.permissionsnotworking) {
+			return "";
+		}
 		removedplayerperms.clear();
 		HashMap<String, String> theperms = new HashMap<String, String>();
 		Iterator<Entry<String, String>> es = plugin.playerperms.entrySet().iterator();
@@ -349,65 +353,70 @@ public class PeriodicEnjinTask implements Runnable {
 			//Let's get global groups
 			LinkedList<String> globalperms = new LinkedList<String>();
 			//We don't want to get global groups with plugins that don't support it.
-			if(plugin.supportsglobalgroups) {
-				String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
-				if(perms.length() > 0 && tempperms.length > 0) {
-					perms.append("|");
-				}
-
-				if(tempperms != null && tempperms.length > 0) {
-					perms.append('*' + ":");
-					for(int i = 0, j = 0; i < tempperms.length; i++) {
-						if(j > 0) {
-							perms.append(",");
-						}
-						globalperms.add(tempperms[i]);
-						perms.append(tempperms[i]);
-						j++;
-					}
-				}
-			}
-			//Now let's get groups per world.
-			for(World w: Bukkit.getWorlds()) {
-				String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
-				if(tempperms != null && tempperms.length > 0) {
-					
-					//The below variable is only used for GroupManager since it
-					//likes transmitting all the groups
-					LinkedList<String> skipgroups = new LinkedList<String>();
-					
-					LinkedList<String> worldperms = new LinkedList<String>();
-					for(int i = 0; i < tempperms.length; i++) {
-						//GroupManager has a bug where all lower groups in a hierarchy get
-						//transmitted along with the main group, so we have to catch and
-						//process it differently.
-						if(plugin.groupmanager != null) {
-							List<String> subgroups = plugin.groupmanager.getWorldsHolder().getWorldData(w.getName()).getGroup(tempperms[i]).getInherits();
-							for(String group : subgroups) {
-								//Groups are case insensitive in GM
-								skipgroups.add(group.toLowerCase());
-							}
-						}
-						if(globalperms.contains(tempperms[i]) || (EnjinMinecraftPlugin.usingGroupManager && (tempperms[i].startsWith("g:") || skipgroups.contains(tempperms[i].toLowerCase())))) {
-							continue;
-						}
-						worldperms.add(tempperms[i]);
-					}
-					if(perms.length() > 0 && worldperms.size() > 0) {
+			try {
+				if(plugin.supportsglobalgroups) {
+					String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
+					if(perms.length() > 0 && tempperms.length > 0) {
 						perms.append("|");
 					}
-					if(worldperms.size() > 0) {
-						perms.append(w.getName() + ":");
-						for(int i = 0; i < worldperms.size(); i++) {
-							if(i > 0) {
+
+					if(tempperms != null && tempperms.length > 0) {
+						perms.append('*' + ":");
+						for(int i = 0, j = 0; i < tempperms.length; i++) {
+							if(j > 0) {
 								perms.append(",");
 							}
-							perms.append(worldperms.get(i));
+							globalperms.add(tempperms[i]);
+							perms.append(tempperms[i]);
+							j++;
 						}
 					}
 				}
+				//Now let's get groups per world.
+				for(World w: Bukkit.getWorlds()) {
+					String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
+					if(tempperms != null && tempperms.length > 0) {
+						
+						//The below variable is only used for GroupManager since it
+						//likes transmitting all the groups
+						LinkedList<String> skipgroups = new LinkedList<String>();
+						
+						LinkedList<String> worldperms = new LinkedList<String>();
+						for(int i = 0; i < tempperms.length; i++) {
+							//GroupManager has a bug where all lower groups in a hierarchy get
+							//transmitted along with the main group, so we have to catch and
+							//process it differently.
+							if(plugin.groupmanager != null) {
+								List<String> subgroups = plugin.groupmanager.getWorldsHolder().getWorldData(w.getName()).getGroup(tempperms[i]).getInherits();
+								for(String group : subgroups) {
+									//Groups are case insensitive in GM
+									skipgroups.add(group.toLowerCase());
+								}
+							}
+							if(globalperms.contains(tempperms[i]) || (EnjinMinecraftPlugin.usingGroupManager && (tempperms[i].startsWith("g:") || skipgroups.contains(tempperms[i].toLowerCase())))) {
+								continue;
+							}
+							worldperms.add(tempperms[i]);
+						}
+						if(perms.length() > 0 && worldperms.size() > 0) {
+							perms.append("|");
+						}
+						if(worldperms.size() > 0) {
+							perms.append(w.getName() + ":");
+							for(int i = 0; i < worldperms.size(); i++) {
+								if(i > 0) {
+									perms.append(",");
+								}
+								perms.append(worldperms.get(i));
+							}
+						}
+					}
+				}
+				theperms.put(entry.getKey(), perms.toString());				
+			}catch (Exception e) {
+				EnjinMinecraftPlugin.debug("Unable to get permissions data for player " + entry.getKey());
+				//Assume this plugin does not support offline players;
 			}
-			theperms.put(entry.getKey(), perms.toString());
 			//remove that player from the list.
 			plugin.playerperms.remove(entry.getKey());
 			//If the synch fails we need to put the values back...
@@ -549,25 +558,47 @@ public class PeriodicEnjinTask implements Runnable {
 	}
 	
 	private String getGroups() {
-		StringBuilder builder = new StringBuilder();
-		if(EnjinMinecraftPlugin.usingGroupManager) {
-			for(String group : EnjinMinecraftPlugin.permission.getGroups()) {
-				builder.append(',');
-				builder.append(group);
-			}
-		} else {
-			for(String group : EnjinMinecraftPlugin.permission.getGroups()) {
-				if(group.startsWith("g:")) {
-					continue;
+		try {
+			StringBuilder builder = new StringBuilder();
+			if(EnjinMinecraftPlugin.usingGroupManager) {
+				for(String group : EnjinMinecraftPlugin.permission.getGroups()) {
+					builder.append(',');
+					builder.append(group);
 				}
-				builder.append(',');
-				builder.append(group);
+			} else {
+				for(String group : EnjinMinecraftPlugin.permission.getGroups()) {
+					if(group.startsWith("g:")) {
+						continue;
+					}
+					builder.append(',');
+					builder.append(group);
+				}
 			}
+			if(builder.length() > 2) {
+				builder.deleteCharAt(0);
+			}
+			if(plugin.permissionsnotworking) {
+				Player[] players = plugin.getServer().getOnlinePlayers();
+				for(Player p : players) {
+					if(p.hasPermission("enjin.notify.permissionsnotworking")) {
+						p.sendMessage(ChatColor.DARK_GREEN + "[Enjin Minecraft Plugin] Your permissions plugin is properly configured now.");
+					}
+				}
+				plugin.permissionsnotworking = false;
+			}
+			return builder.toString();
+		}catch(Exception e) {
+			if(!plugin.permissionsnotworking) {
+				Player[] players = plugin.getServer().getOnlinePlayers();
+				for(Player p : players) {
+					if(p.hasPermission("enjin.notify.permissionsnotworking")) {
+						p.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");
+					}
+				}
+			}
+			plugin.permissionsnotworking = true;
 		}
-		if(builder.length() > 2) {
-			builder.deleteCharAt(0);
-		}
-		return builder.toString();
+		return "";
 	}
 	
 	private String getWorlds() {

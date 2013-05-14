@@ -1,6 +1,6 @@
 name: Enjin Minecraft Plugin
 main: com.enjin.officialplugin.EnjinMinecraftPlugin
-version: 2.4.3-beta
+version: 2.4.3
 website: www.enjin.com
 author: www.Enjin.com
 description: A plugin which allows the enjin servers to communicate with your server.
@@ -35,6 +35,7 @@ permissions:
       enjin.notify.update: true
       enjin.notify.failedupdate: true
       enjin.notify.invalidauthkey: true
+      enjin.notify.permissionsnotworking: true
   enjin.notify.connectionstatus:
     description: Let's the player know if the plugin's connection status changes.
     default: op
@@ -46,4 +47,7 @@ permissions:
     default: op
   enjin.notify.invalidauthkey:
     description: Receive notification if the auth key is invalid.
+    default: op
+  enjin.notify.permissionsnotworking:
+    description: Receive notification if the permissions plugin isn't working correctly.
     default: op

@@ -111,11 +111,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public ConcurrentHashMap<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
 	
 	
-	//static public String apiurl = "://api.enjin.com/api/";
+	static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
 	//static public String apiurl = "://tuxreminder.info/api/";
 	//static public String apiurl = "://mxm.enjin.com/api/";
-	static public String apiurl = "://api.0x10cbuilder.com/api/";
+	//static public String apiurl = "://api.0x10cbuilder.com/api/";
 	
 	public boolean autoupdate = true;
 	public String newversion = "";
@@ -124,6 +124,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean updatefailed = false;
 	public boolean authkeyinvalid = false;
 	public boolean unabletocontactenjin = false;
+	public boolean permissionsnotworking = false;
 	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
 	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
 	static public boolean bukkitversion = false;
@@ -580,6 +581,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}
 					if(unabletocontactenjin) {
 						report.append("WARNING: Plugin has been unable to contact Enjin for the past 5 minutes\n");
+					}
+					if(permissionsnotworking) {
+						report.append("WARNING: Permissions plugin is not configured properly and is disabled. Check the server.log for more details.\n");
 					}
 					
 					report.append("\nPlugins: \n");

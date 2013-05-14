@@ -73,7 +73,7 @@ public class ShopUtils {
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return psi;
 	}
@@ -104,7 +104,7 @@ public class ShopUtils {
 					shop.addItem(scategory);
 				} catch (ItemTypeNotSupported e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		}
@@ -136,7 +136,7 @@ public class ShopUtils {
 				shop.addItem(sitem);
 			} catch (ItemTypeNotSupported e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}
