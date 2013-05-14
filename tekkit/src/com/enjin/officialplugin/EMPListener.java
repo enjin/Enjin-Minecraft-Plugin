@@ -41,6 +41,9 @@ public class EMPListener implements Listener {
 			p.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
 			p.sendMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin log");
 		}
+		if(plugin.permissionsnotworking && p.hasPermission("enjin.notify.permissionsnotworking")) {
+			p.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.LOWEST)

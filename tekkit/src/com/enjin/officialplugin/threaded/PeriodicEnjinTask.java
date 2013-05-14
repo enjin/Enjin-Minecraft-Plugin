@@ -35,6 +35,7 @@ import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
 import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
 import com.enjin.officialplugin.packets.Packet1ABanPlayers;
 import com.enjin.officialplugin.packets.Packet1BPardonPlayers;
+import com.enjin.officialplugin.packets.Packet1DPlayerPurchase;
 import com.enjin.officialplugin.packets.PacketUtilities;
 import com.enjin.officialplugin.stats.WriteStats;
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
@@ -79,7 +80,7 @@ public class PeriodicEnjinTask implements Runnable {
 		boolean successful = false;
 		StringBuilder builder = new StringBuilder();
 		try {
-			plugin.debug("Connecting to Enjin...");
+			EnjinMinecraftPlugin.debug("Connecting to Enjin...");
 			URL enjinurl = getUrl();
 			HttpURLConnection con;
 			// Mineshafter creates a socks proxy, so we can safely bypass it
@@ -137,7 +138,7 @@ public class PeriodicEnjinTask implements Runnable {
 				builder.append("&stats=" + encode(getStats()));
 			}
 			con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-			plugin.debug("Sending content: \n" + builder.toString());
+			EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
 			con.getOutputStream().write(builder.toString().getBytes());
 			//System.out.println("Getting input stream...");
 			InputStream in = con.getInputStream();
@@ -217,14 +218,14 @@ public class PeriodicEnjinTask implements Runnable {
 				numoffailedtries = 0;
 				plugin.noEnjinConnectionEvent();
 			}
-			if(plugin.debug) {
+			if(EnjinMinecraftPlugin.debug) {
 				t.printStackTrace();
 			}
 			plugin.lasterror = new EnjinErrorReport(t, "Regular synch. Information sent:\n" + builder.toString());
 			EnjinMinecraftPlugin.enjinlogger.warning(plugin.lasterror.toString());
 		}
 		if(!successful) {
-			plugin.debug("Synch unsuccessful.");
+			EnjinMinecraftPlugin.debug("Synch unsuccessful.");
 			statdelay++;
 			Set<Entry<String, String>> es = removedplayerperms.entrySet();
 			for(Entry<String, String> entry : es) {
@@ -262,7 +263,7 @@ public class PeriodicEnjinTask implements Runnable {
 			firstrun = false;
 			removedbans.clear();
 			removedpardons.clear();
-			plugin.debug("Synch successful.");
+			EnjinMinecraftPlugin.debug("Synch successful.");
 			if(plugin.collectstats && (plugin.statssendinterval - 1) <= statdelay) {
 				statdelay = 0;
 				//Let's remove the old stats...
@@ -277,7 +278,7 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 		if(plugin.collectstats) {
 			new WriteStats(plugin).write("stats.stats");
-			plugin.debug("Stats saved to stats.stats.");
+			EnjinMinecraftPlugin.debug("Stats saved to stats.stats.");
 		}
 	}
 	
@@ -336,6 +337,10 @@ public class PeriodicEnjinTask implements Runnable {
 		return "";
 	}
 	private String getPlayerGroups() {
+		//We don't need to go any further if the permissions plugin is broken.
+		if(plugin.permissionsnotworking) {
+			return "";
+		}
 		removedplayerperms.clear();
 		HashMap<String, String> theperms = new HashMap<String, String>();
 		Iterator<Entry<String, String>> es = plugin.playerperms.entrySet().iterator();
@@ -348,65 +353,70 @@ public class PeriodicEnjinTask implements Runnable {
 			//Let's get global groups
 			LinkedList<String> globalperms = new LinkedList<String>();
 			//We don't want to get global groups with plugins that don't support it.
-			if(plugin.supportsglobalgroups) {
-				String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
-				if(perms.length() > 0 && tempperms.length > 0) {
-					perms.append("|");
-				}
-
-				if(tempperms != null && tempperms.length > 0) {
-					perms.append('*' + ":");
-					for(int i = 0, j = 0; i < tempperms.length; i++) {
-						if(j > 0) {
-							perms.append(",");
-						}
-						globalperms.add(tempperms[i]);
-						perms.append(tempperms[i]);
-						j++;
-					}
-				}
-			}
-			//Now let's get groups per world.
-			for(World w: Bukkit.getWorlds()) {
-				String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
-				if(tempperms != null && tempperms.length > 0) {
-					
-					//The below variable is only used for GroupManager since it
-					//likes transmitting all the groups
-					LinkedList<String> skipgroups = new LinkedList<String>();
-					
-					LinkedList<String> worldperms = new LinkedList<String>();
-					for(int i = 0; i < tempperms.length; i++) {
-						//GroupManager has a bug where all lower groups in a hierarchy get
-						//transmitted along with the main group, so we have to catch and
-						//process it differently.
-						if(plugin.groupmanager != null) {
-							List<String> subgroups = plugin.groupmanager.getWorldsHolder().getWorldData(w.getName()).getGroup(tempperms[i]).getInherits();
-							for(String group : subgroups) {
-								//Groups are case insensitive in GM
-								skipgroups.add(group.toLowerCase());
-							}
-						}
-						if(globalperms.contains(tempperms[i]) || (EnjinMinecraftPlugin.usingGroupManager && (tempperms[i].startsWith("g:") || skipgroups.contains(tempperms[i].toLowerCase())))) {
-							continue;
-						}
-						worldperms.add(tempperms[i]);
-					}
-					if(perms.length() > 0 && worldperms.size() > 0) {
+			try {
+				if(plugin.supportsglobalgroups) {
+					String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
+					if(perms.length() > 0 && tempperms.length > 0) {
 						perms.append("|");
 					}
-					if(worldperms.size() > 0) {
-						perms.append(w.getName() + ":");
-						for(int i = 0; i < worldperms.size(); i++) {
-							if(i > 0) {
+
+					if(tempperms != null && tempperms.length > 0) {
+						perms.append('*' + ":");
+						for(int i = 0, j = 0; i < tempperms.length; i++) {
+							if(j > 0) {
 								perms.append(",");
 							}
-							perms.append(worldperms.get(i));
+							globalperms.add(tempperms[i]);
+							perms.append(tempperms[i]);
+							j++;
 						}
 					}
 				}
+				//Now let's get groups per world.
+				for(World w: Bukkit.getWorlds()) {
+					String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
+					if(tempperms != null && tempperms.length > 0) {
+						
+						//The below variable is only used for GroupManager since it
+						//likes transmitting all the groups
+						LinkedList<String> skipgroups = new LinkedList<String>();
+						
+						LinkedList<String> worldperms = new LinkedList<String>();
+						for(int i = 0; i < tempperms.length; i++) {
+							//GroupManager has a bug where all lower groups in a hierarchy get
+							//transmitted along with the main group, so we have to catch and
+							//process it differently.
+							if(plugin.groupmanager != null) {
+								List<String> subgroups = plugin.groupmanager.getWorldsHolder().getWorldData(w.getName()).getGroup(tempperms[i]).getInherits();
+								for(String group : subgroups) {
+									//Groups are case insensitive in GM
+									skipgroups.add(group.toLowerCase());
+								}
+							}
+							if(globalperms.contains(tempperms[i]) || (EnjinMinecraftPlugin.usingGroupManager && (tempperms[i].startsWith("g:") || skipgroups.contains(tempperms[i].toLowerCase())))) {
+								continue;
+							}
+							worldperms.add(tempperms[i]);
+						}
+						if(perms.length() > 0 && worldperms.size() > 0) {
+							perms.append("|");
+						}
+						if(worldperms.size() > 0) {
+							perms.append(w.getName() + ":");
+							for(int i = 0; i < worldperms.size(); i++) {
+								if(i > 0) {
+									perms.append(",");
+								}
+								perms.append(worldperms.get(i));
+							}
+						}
+					}
+				}
+				theperms.put(entry.getKey(), perms.toString());				
+			}catch (Exception e) {
+				EnjinMinecraftPlugin.debug("Unable to get permissions data for player " + entry.getKey());
+				//Assume this plugin does not support offline players;
 			}
-			theperms.put(entry.getKey(), perms.toString());
 			//remove that player from the list.
 			plugin.playerperms.remove(entry.getKey());
 			//If the synch fails we need to put the values back...
@@ -435,85 +445,89 @@ public class PeriodicEnjinTask implements Runnable {
 			int code = bin.read();
 			switch(code) {
 			case -1:
-				plugin.debug("No more packets. End of stream. Update ended.");
+				EnjinMinecraftPlugin.debug("No more packets. End of stream. Update ended.");
 				bin.reset();
 				StringBuilder input = new StringBuilder();
 				while((code = bin.read()) != -1) {
 					input.append((char)code);
 				}
-				plugin.debug("Raw data received:\n" + input.toString());
+				EnjinMinecraftPlugin.debug("Raw data received:\n" + input.toString());
 				return tresult; //end of stream reached
 			case 0x10:
-				plugin.debug("Packet [0x10](Add Player Group) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x10](Add Player Group) received.");
 				Packet10AddPlayerGroup.handle(bin, plugin);
 				break;
 			case 0x11:
-				plugin.debug("Packet [0x11](Remove Player Group) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x11](Remove Player Group) received.");
 				Packet11RemovePlayerGroup.handle(bin, plugin);
 				break;
 			case 0x12:
-				plugin.debug("Packet [0x12](Execute Command) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x12](Execute Command) received.");
 				Packet12ExecuteCommand.handle(bin, plugin);
 				break;
 			case 0x13:
-				plugin.debug("Packet [0x13](Execute command as Player) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x13](Execute command as Player) received.");
 				Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
 				break;
 			case 0x0A:
-				plugin.debug("Packet [0x0A](New Line) received, ignoring...");
+				EnjinMinecraftPlugin.debug("Packet [0x0A](New Line) received, ignoring...");
 				break;
 			case 0x0D:
-				plugin.debug("Packet [0x0D](Carriage Return) received, ignoring...");
+				EnjinMinecraftPlugin.debug("Packet [0x0D](Carriage Return) received, ignoring...");
 				break;
 			case 0x14:
-				plugin.debug("Packet [0x14](Newer Version) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x14](Newer Version) received.");
 				Packet14NewerVersion.handle(bin, plugin);
 				break;
 			case 0x15:
-				plugin.debug("Packet [0x15](Remote Config Update) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x15](Remote Config Update) received.");
 				Packet15RemoteConfigUpdate.handle(bin, plugin);
 				break;
 			case 0x16:
-				plugin.debug("Packet [0x16](Multi-user Notice) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x16](Multi-user Notice) received.");
 				Packet16MultiUserNotice.handle(bin, plugin);
 				break;
 			case 0x17:
-				plugin.debug("Packet [0x17](Add Whitelist Players) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x17](Add Whitelist Players) received.");
 				Packet17AddWhitelistPlayers.handle(bin, plugin);
 				break;
 			case 0x18:
-				plugin.debug("Packet [0x18](Remove Players From Whitelist) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x18](Remove Players From Whitelist) received.");
 				Packet18RemovePlayersFromWhitelist.handle(bin, plugin);
 				break;
 			case 0x19:
-				plugin.debug("Packet [0x19](Enjin Status) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x19](Enjin Status) received.");
 				tresult = PacketUtilities.readString(bin);
 				break;
 			case 0x1A:
-				plugin.debug("Packet [0x1A](Ban Player) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x1A](Ban Player) received.");
 				Packet1ABanPlayers.handle(bin, plugin);
 				break;
 			case 0x1B:
-				plugin.debug("Packet [0x1B](Pardon Player) received.");
+				EnjinMinecraftPlugin.debug("Packet [0x1B](Pardon Player) received.");
 				Packet1BPardonPlayers.handle(bin, plugin);
 				break;
+			case 0x1D:
+				EnjinMinecraftPlugin.debug("Packet [0x1D](Player Purchase) received.");
+				Packet1DPlayerPurchase.handle(bin, plugin);
+				break;
 			case 0x3C:
-				plugin.debug("Packet [0x3C](Enjin Maintenance Page) received. Aborting sync.");
+				EnjinMinecraftPlugin.debug("Packet [0x3C](Enjin Maintenance Page) received. Aborting sync.");
 				bin.reset();
 				StringBuilder input1 = new StringBuilder();
 				while((code = bin.read()) != -1) {
 					input1.append((char)code);
 				}
-				plugin.debug("Raw data received:\n" + input1.toString());
+				EnjinMinecraftPlugin.debug("Raw data received:\n" + input1.toString());
 				return "retry_later";
 			default :
-				plugin.debug("[Enjin] Received an invalid opcode: " + code);
+				EnjinMinecraftPlugin.debug("[Enjin] Received an invalid opcode: " + code);
 				bin.reset();
 				StringBuilder input2 = new StringBuilder();
 				while((code = bin.read()) != -1) {
 					input2.append((char)code);
 				}
-				plugin.debug("Raw data received:\n" + input2.toString());
+				EnjinMinecraftPlugin.debug("Raw data received:\n" + input2.toString());
 				return "invalid_op\nRaw data received:\n" + input2.toString();
 			}
 		}
@@ -544,25 +558,47 @@ public class PeriodicEnjinTask implements Runnable {
 	}
 	
 	private String getGroups() {
-		StringBuilder builder = new StringBuilder();
-		if(EnjinMinecraftPlugin.usingGroupManager) {
-			for(String group : EnjinMinecraftPlugin.permission.getGroups()) {
-				builder.append(',');
-				builder.append(group);
-			}
-		} else {
-			for(String group : EnjinMinecraftPlugin.permission.getGroups()) {
-				if(group.startsWith("g:")) {
-					continue;
+		try {
+			StringBuilder builder = new StringBuilder();
+			if(EnjinMinecraftPlugin.usingGroupManager) {
+				for(String group : EnjinMinecraftPlugin.permission.getGroups()) {
+					builder.append(',');
+					builder.append(group);
 				}
-				builder.append(',');
-				builder.append(group);
+			} else {
+				for(String group : EnjinMinecraftPlugin.permission.getGroups()) {
+					if(group.startsWith("g:")) {
+						continue;
+					}
+					builder.append(',');
+					builder.append(group);
+				}
 			}
+			if(builder.length() > 2) {
+				builder.deleteCharAt(0);
+			}
+			if(plugin.permissionsnotworking) {
+				Player[] players = plugin.getServer().getOnlinePlayers();
+				for(Player p : players) {
+					if(p.hasPermission("enjin.notify.permissionsnotworking")) {
+						p.sendMessage(ChatColor.DARK_GREEN + "[Enjin Minecraft Plugin] Your permissions plugin is properly configured now.");
+					}
+				}
+				plugin.permissionsnotworking = false;
+			}
+			return builder.toString();
+		}catch(Exception e) {
+			if(!plugin.permissionsnotworking) {
+				Player[] players = plugin.getServer().getOnlinePlayers();
+				for(Player p : players) {
+					if(p.hasPermission("enjin.notify.permissionsnotworking")) {
+						p.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");
+					}
+				}
+			}
+			plugin.permissionsnotworking = true;
 		}
-		if(builder.length() > 2) {
-			builder.deleteCharAt(0);
-		}
-		return builder.toString();
+		return "";
 	}
 	
 	private String getWorlds() {

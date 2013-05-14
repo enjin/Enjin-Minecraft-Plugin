@@ -46,6 +46,7 @@ import com.enjin.officialplugin.permlisteners.GroupManagerListener;
 import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
 import com.enjin.officialplugin.permlisteners.PexChangeListener;
 import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
+import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
 import com.enjin.officialplugin.stats.WriteStats;
@@ -81,7 +82,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	Server s;
 	Logger logger;
 	public static Permission permission = null;
-	public boolean debug = false;
+	public static boolean debug = false;
 	public boolean collectstats = false;
 	public PermissionsEx permissionsex;
 	public GroupManager groupmanager;
@@ -91,6 +92,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean votifierinstalled = false;
 	public int xpversion = 0;
 	public String mcversion = "";
+	
+	public static String BUY_COMMAND = "buy";
 	
 	/**Key is the config value, value is the type, string, boolean, etc.*/
 	public ConcurrentHashMap<String, ConfigValueTypes> configvalues = new ConcurrentHashMap<String, ConfigValueTypes>();
@@ -119,6 +122,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean updatefailed = false;
 	public boolean authkeyinvalid = false;
 	public boolean unabletocontactenjin = false;
+	public boolean permissionsnotworking = false;
 	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
 	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
 	static public boolean bukkitversion = false;
@@ -149,8 +153,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public EnjinStatsListener esl = null;
 	
 	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+	public ShopListener shoplistener;
 	
-	public void debug(String s) {
+	public static void debug(String s) {
 		if(debug) {
 			System.out.println("Enjin Debug: " + s);
 		}
@@ -372,10 +377,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     	configvalues.put("statscollected.player.xp", ConfigValueTypes.BOOLEAN);
     	configvalues.put("statscollected.player.creeperexplosions", ConfigValueTypes.BOOLEAN);
     	configvalues.put("statscollected.player.playerkicks", ConfigValueTypes.BOOLEAN);
+    	configvalues.put("buycommand", ConfigValueTypes.STRING);
     	teststats = config.getString("statscollected.player.travel", "");
     	if(teststats.equals("")) {
     		createConfig();
     	}
+		teststats = config.getString("buycommand", null);
+    	if(teststats == null) {
+    		createConfig();
+    	}
+    	BUY_COMMAND = config.getString("buycommand", null);
 	}
 	
 	private void createConfig() {
@@ -410,6 +421,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public void registerEvents() {
 		debug("Registering events.");
 		Bukkit.getPluginManager().registerEvents(listener, this);
+		if(BUY_COMMAND != null) {
+			shoplistener = new ShopListener();
+			Bukkit.getPluginManager().registerEvents(shoplistener, this);
+		}
 	}
 	
 	public void stopTask() {
@@ -552,6 +567,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}
 					if(unabletocontactenjin) {
 						report.append("WARNING: Plugin has been unable to contact Enjin for the past 5 minutes\n");
+					}
+					if(permissionsnotworking) {
+						report.append("WARNING: Permissions plugin is not configured properly and is disabled. Check the server.log for more details.\n");
 					}
 					
 					report.append("\nPlugins: \n");
