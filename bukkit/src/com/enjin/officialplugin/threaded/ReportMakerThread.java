@@ -68,7 +68,7 @@ public class ReportMakerThread implements Runnable {
 			}
 			rfr.close();
 		} catch (Exception e) {
-			if(plugin.debug) {
+			if(EnjinMinecraftPlugin.debug) {
 				e.printStackTrace();
 			}
 		}
@@ -88,7 +88,7 @@ public class ReportMakerThread implements Runnable {
             	if(ymlbukkit.getBoolean("settings.plugin-profiling", false)) {
             		plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), "timings merged");
             		try {
-            			plugin.debug("Waiting for timings file to be totally written...");
+            			EnjinMinecraftPlugin.debug("Waiting for timings file to be totally written...");
             			//Make sure the timings file is written before we continue!
             			wait(2000);
             		}
@@ -97,7 +97,7 @@ public class ReportMakerThread implements Runnable {
             		}
             		boolean foundtimings = false;
             		File timingsfile;
-        			plugin.debug("Searching for timings file");
+        			EnjinMinecraftPlugin.debug("Searching for timings file");
             		//If the server owner has over 99 timings files, I don't know what to say...
                 	for(int i = 99; i >= 0 && !foundtimings; i--) {
                 		if(i == 0) {
@@ -106,7 +106,7 @@ public class ReportMakerThread implements Runnable {
                     		timingsfile = new File(serverloglocation + File.separator + "timings" + File.separator + "timings" + i + ".txt");
                 		}
                 		if(timingsfile.exists()) {
-                			plugin.debug("Found timings file at: " + timingsfile.getAbsolutePath());
+                			EnjinMinecraftPlugin.debug("Found timings file at: " + timingsfile.getAbsolutePath());
                 			foundtimings = true;
                 			builder.append("\nTimings file output:\n");
                 			FileInputStream fstream = new FileInputStream(timingsfile);

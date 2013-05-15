@@ -337,7 +337,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
-	private void initFiles() {
+	public void initFiles() {
 		//let's read in the old hash file if there is one and convert it to the new format.
 		if(hashFile.exists()) {
 			try {

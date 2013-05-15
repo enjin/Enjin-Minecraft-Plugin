@@ -28,7 +28,7 @@ public class BanLister implements Runnable {
 			}
 			firstrun = false;
 		}else {
-			plugin.debug("Scanning banned player list");
+			EnjinMinecraftPlugin.debug("Scanning banned player list");
 			Set<OfflinePlayer> bannedplayerlist = Bukkit.getServer().getBannedPlayers();
 			HashMap<String,String> lowercasebans = new HashMap<String,String>();
 			//Checking for bans being added by console or plugin
@@ -37,7 +37,7 @@ public class BanLister implements Runnable {
 				if(!currentbannedplayers.containsKey(player.getName().toLowerCase())) {
 					currentbannedplayers.put(player.getName().toLowerCase(), "");
 					plugin.bannedplayers.put(player.getName().toLowerCase(), "");
-					plugin.debug("Adding banned player " + player.getName());
+					EnjinMinecraftPlugin.debug("Adding banned player " + player.getName());
 				}
 			}
 			//checking for pardons being done by console or plugin
@@ -46,7 +46,7 @@ public class BanLister implements Runnable {
 				if(!lowercasebans.containsKey(player)) {
 					currentbannedplayers.remove(player);
 					plugin.pardonedplayers.put(player, "");
-					plugin.debug(player + " was pardoned. Adding to pardoned list.");
+					EnjinMinecraftPlugin.debug(player + " was pardoned. Adding to pardoned list.");
 				}
 			}
 		}

@@ -52,7 +52,7 @@ public class NewKeyVerifier implements Runnable {
 			int validation = keyValid(false, key);
 			if(validation == 1) {
 				plugin.authkeyinvalid = false;
-				plugin.debug("Key valid.");
+				EnjinMinecraftPlugin.debug("Key valid.");
 				plugin.startTask();
 				plugin.registerEvents();
 			} else if(validation == 0){
@@ -93,7 +93,7 @@ public class NewKeyVerifier implements Runnable {
 			}
 			plugin.authkeyinvalid = false;
 			EnjinMinecraftPlugin.setHash(key);
-			plugin.debug("Writing hash to file.");
+			EnjinMinecraftPlugin.debug("Writing hash to file.");
 			plugin.config.set("authkey", key);
 			plugin.saveConfig();
 			if(player == null || player.isOnline()) {

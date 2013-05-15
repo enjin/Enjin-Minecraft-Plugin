@@ -1,7 +1,6 @@
 package com.enjin.officialplugin.shop;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -40,7 +40,7 @@ public class ConfigSender implements Runnable {
 				}
 				StringBuilder builder = new StringBuilder();
 				try {
-					plugin.debug("Connecting to Enjin to send config...");
+					EnjinMinecraftPlugin.debug("Connecting to Enjin to send config...");
 					URL enjinurl = getUrl();
 					HttpURLConnection con;
 					// Mineshafter creates a socks proxy, so we can safely bypass it
@@ -75,7 +75,7 @@ public class ConfigSender implements Runnable {
 						}
 					}
 					con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-					plugin.debug("Sending content: \n" + builder.toString());
+					EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
 					con.getOutputStream().write(builder.toString().getBytes());
 					//System.out.println("Getting input stream...");
 					InputStream in = con.getInputStream();

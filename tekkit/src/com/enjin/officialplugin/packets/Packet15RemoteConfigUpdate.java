@@ -77,6 +77,7 @@ public class Packet15RemoteConfigUpdate {
 					plugin.getLogger().warning("Enjin tried setting the value " + split[0] + " to " + split[1] + " but it doesn't exist!");
 				}
 			}
+			plugin.initFiles();
 			//Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PacketUtilities.readString(in));
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("Failed to set config variables via 0x15, " + t.getMessage());

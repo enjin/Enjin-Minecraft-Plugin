@@ -23,7 +23,7 @@ public class Packet15RemoteConfigUpdate {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String values = PacketUtilities.readString(in);
-			plugin.debug("Changing these values in the config: \"" + values);
+			EnjinMinecraftPlugin.debug("Changing these values in the config: \"" + values);
 			String[] splitvalues = values.split(",");
 			for(String value : splitvalues) {
 				String[] split = value.split(":");
@@ -77,6 +77,7 @@ public class Packet15RemoteConfigUpdate {
 					plugin.getLogger().warning("Enjin tried setting the value " + split[0] + " to " + split[1] + " but it doesn't exist!");
 				}
 			}
+			plugin.initFiles();
 			//Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PacketUtilities.readString(in));
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("Failed to set config variables via 0x15, " + t.getMessage());

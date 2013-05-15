@@ -55,7 +55,7 @@ public class PeriodicVoteTask implements Runnable {
 			boolean successful = false;
 			StringBuilder builder = new StringBuilder();
 			try {
-				plugin.debug("Connecting to Enjin to send votes...");
+				EnjinMinecraftPlugin.debug("Connecting to Enjin to send votes...");
 				URL enjinurl = getUrl();
 				HttpURLConnection con;
 				// Mineshafter creates a socks proxy, so we can safely bypass it
@@ -77,7 +77,7 @@ public class PeriodicVoteTask implements Runnable {
 				builder.append("&votifier=" + encode(getVotes()));
 				builder.append("&accepts-packets=true");
 				con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-				plugin.debug("Sending content: \n" + builder.toString());
+				EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
 				con.getOutputStream().write(builder.toString().getBytes());
 				//System.out.println("Getting input stream...");
 				InputStream in = con.getInputStream();
@@ -136,14 +136,14 @@ public class PeriodicVoteTask implements Runnable {
 			} catch (SocketTimeoutException e) {
 				plugin.lasterror = new EnjinErrorReport(e, "Vote synch. Information sent:\n" + builder.toString());
 			} catch (Throwable t) {
-				if(plugin.debug) {
+				if(EnjinMinecraftPlugin.debug) {
 					t.printStackTrace();
 				}
 				plugin.lasterror = new EnjinErrorReport(t, "Votifier sync. Information sent:\n" + builder.toString());
 				EnjinMinecraftPlugin.enjinlogger.warning(plugin.lasterror.toString());
 			}
 			if(!successful) {
-				plugin.debug("Vote sync unsuccessful.");
+				EnjinMinecraftPlugin.debug("Vote sync unsuccessful.");
 				
 				Set<Entry<String, String>> voteset = removedplayervotes.entrySet();
 				for(Entry<String, String> entry : voteset) {
@@ -158,7 +158,7 @@ public class PeriodicVoteTask implements Runnable {
 					removedplayervotes.remove(entry.getKey());
 				}
 			}else {
-				plugin.debug("Vote sync successful.");
+				EnjinMinecraftPlugin.debug("Vote sync successful.");
 				firstrun = false;
 			}
 		}
