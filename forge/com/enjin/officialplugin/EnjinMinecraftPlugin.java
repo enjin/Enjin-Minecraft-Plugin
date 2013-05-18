@@ -32,6 +32,7 @@ import com.enjin.officialplugin.listeners.CommandListener;
 import com.enjin.officialplugin.listeners.NewPlayerChatListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.scheduler.TaskScheduler;
+import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.threaded.BanLister;
 import com.enjin.officialplugin.threaded.ConfigSender;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
@@ -66,7 +67,7 @@ import cpw.mods.fml.relauncher.Side;
  * 
  */
 
-@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.2")
+@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.3")
 public class EnjinMinecraftPlugin {
 
 	@Instance("EnjinMinecraftPlugin")
@@ -83,7 +84,7 @@ public class EnjinMinecraftPlugin {
 
 	public static String hash = "";
 	MinecraftServer s;
-	public boolean debug = false;
+	public static boolean debug = false;
 	public boolean collectstats = false;
 	public boolean supportsglobalgroups = true;
 	public boolean votifierinstalled = false;
@@ -92,6 +93,7 @@ public class EnjinMinecraftPlugin {
 	//----------------Make sure to change this for every minecraft version!
 	public String mcversion = "1.5.1";
 	
+	public ShopListener shoplistener = new ShopListener();
 	//Since forge mods can be installed on a client, we want to make sure we only run on a server.
 	public boolean enable = true;
 	
@@ -116,6 +118,8 @@ public class EnjinMinecraftPlugin {
 	
 	public boolean autoupdate = true;
 	public String newversion = "";
+	
+	public static String BUY_COMMAND = "buy";
 	
 	public boolean hasupdate = false;
 	public boolean updatefailed = false;
@@ -157,7 +161,7 @@ public class EnjinMinecraftPlugin {
 
 	public EnjinConfig config;
 	
-	public void debug(String s) {
+	public static void debug(String s) {
 		if(debug) {
 			System.out.println("Enjin Debug: " + s);
 		}
@@ -237,6 +241,7 @@ public class EnjinMinecraftPlugin {
 		if(s.getCommandManager() instanceof ServerCommandManager) {
 			ServerCommandManager scm = (ServerCommandManager)s.getCommandManager();
 			scm.registerCommand(new CommandListener(this));
+			scm.registerCommand(shoplistener);
 		}
 	}
 	
@@ -327,7 +332,7 @@ public class EnjinMinecraftPlugin {
 		}
 	}
 	
-	private void initFiles() {
+	public void initFiles() {
 		config = getConfig();
 		File configfile = new File(getDataFolder().toString() + File.separator + "config.properties");
     	if(config.getString("debug", "").equals("")) {
@@ -346,6 +351,13 @@ public class EnjinMinecraftPlugin {
     	collectstats = config.getBoolean("collectstats", collectstats);
     	configvalues.put("sendstatsinterval", ConfigValueTypes.INT);
     	statssendinterval = config.getInt("sendstatsinterval", 5);
+    	configvalues.put("buycommand", ConfigValueTypes.STRING);
+    	String buy = config.getString("buycommand");
+    	if(buy == null) {
+    		createConfig();
+    	}
+    	BUY_COMMAND = config.getString("buycommand", "");
+    	
 	}
 	
 	/**
@@ -363,6 +375,7 @@ public class EnjinMinecraftPlugin {
 		config.set("autoupdate", autoupdate);
 		config.set("collectstats", collectstats);
 		config.set("sendstatsinterval", statssendinterval);
+		config.set("buycommand", BUY_COMMAND);
 		config.save();
 	}
 
@@ -683,6 +696,6 @@ public class EnjinMinecraftPlugin {
 	}
 
 	public String getVersion() {
-		return "2.4.2-forge";
+		return "2.4.3-forge";
 	}
 }

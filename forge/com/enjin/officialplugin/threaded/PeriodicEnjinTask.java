@@ -36,6 +36,7 @@ import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
 import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
 import com.enjin.officialplugin.packets.Packet1ABanPlayers;
 import com.enjin.officialplugin.packets.Packet1BPardonPlayers;
+import com.enjin.officialplugin.packets.Packet1DPlayerPurchase;
 import com.enjin.officialplugin.packets.PacketUtilities;
 
 import cpw.mods.fml.common.Loader;
@@ -156,15 +157,20 @@ public class PeriodicEnjinTask implements Runnable {
 				successful = false;
 			}else if(success.equalsIgnoreCase("bad_data")) {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
-				MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+				plugin.lasterror = new EnjinErrorReport("Enjin reported bad data", "Regular synch. Information sent:\n" + builder.toString());
+				//MinecraftServer.getServer().logWarning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
 				successful = false;
 			}else if(success.equalsIgnoreCase("retry_later")) {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
-				MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
+				//MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
 				successful = false;
 			}else if(success.equalsIgnoreCase("connect_error")) {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
-				MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+				plugin.lasterror = new EnjinErrorReport("Enjin said there's a connection error somewhere.", "Regular synch. Information sent:\n" + builder.toString());
+				//MinecraftServer.getServer().logInfo("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+				successful = false;
+			}else if(success.startsWith("invalid_op")) {
+				plugin.lasterror = new EnjinErrorReport(success, "Regular synch. Information sent:\n" + builder.toString());
 				successful = false;
 			}else {
 				EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
@@ -475,9 +481,28 @@ public class PeriodicEnjinTask implements Runnable {
 				plugin.debug("Packet [0x1B](Pardon Player) received.");
 				Packet1BPardonPlayers.handle(bin, plugin);
 				break;
+			case 0x1D:
+				EnjinMinecraftPlugin.debug("Packet [0x1D](Player Purchase) received.");
+				Packet1DPlayerPurchase.handle(bin, plugin);
+				break;
+			case 0x3C:
+				plugin.debug("Packet [0x3C](Enjin Maintenance Page) received. Aborting sync.");
+				bin.reset();
+				StringBuilder input1 = new StringBuilder();
+				while((code = bin.read()) != -1) {
+					input1.append((char)code);
+				}
+				plugin.debug("Raw data received:\n" + input1.toString());
+				return "retry_later";
 			default :
-				MinecraftServer.getServer().logWarning("[Enjin] Received an invalid opcode: " + code);
-				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin] Received an invalid opcode: " + code);
+				plugin.debug("[Enjin] Received an invalid opcode: " + code);
+				bin.reset();
+				StringBuilder input2 = new StringBuilder();
+				while((code = bin.read()) != -1) {
+					input2.append((char)code);
+				}
+				plugin.debug("Raw data received:\n" + input2.toString());
+				return "invalid_op\nRaw data received:\n" + input2.toString();
 			}
 		}
 	}
