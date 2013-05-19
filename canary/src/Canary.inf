@@ -1,0 +1,4 @@
+main-class = com.enjin.officialplugin.EnjinMinecraftPlugin
+isLibrary = false
+version = 2.4.3-canary
+author = www.Enjin.com (Ported by Tux2)
