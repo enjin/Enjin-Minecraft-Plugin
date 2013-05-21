@@ -67,7 +67,7 @@ import cpw.mods.fml.relauncher.Side;
  * 
  */
 
-@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.3")
+@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.4")
 public class EnjinMinecraftPlugin {
 
 	@Instance("EnjinMinecraftPlugin")
@@ -696,6 +696,6 @@ public class EnjinMinecraftPlugin {
 	}
 
 	public String getVersion() {
-		return "2.4.3-forge";
+		return "2.4.4-forge";
 	}
 }
