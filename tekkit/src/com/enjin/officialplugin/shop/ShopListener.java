@@ -26,7 +26,8 @@ public class ShopListener implements Listener {
 		if(event.isCancelled()) {
 			return;
 		}
-		if(event.getMessage().toLowerCase().startsWith("/" + EnjinMinecraftPlugin.BUY_COMMAND)) {
+		String[] args = event.getMessage().split(" ");
+		if(args[0].equalsIgnoreCase("/" + EnjinMinecraftPlugin.BUY_COMMAND)) {
 			Player player = event.getPlayer();
 			if(activeshops.containsKey(player.getName().toLowerCase())) {
 				PlayerShopsInstance psi = activeshops.get(player.getName().toLowerCase());
@@ -39,7 +40,6 @@ public class ShopListener implements Listener {
 		            return;
 				}
 				playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
-				String[] args = event.getMessage().split(" ");
 				//If it's just the /buy parameter, let's just reset to the shop topmost category.
 				if(args.length == 1) {
 					//If they haven't selected a shop yet, show them the shop selection screen again.
@@ -146,7 +146,7 @@ public class ShopListener implements Listener {
 	            dispatchThread.start();
 			}
 			event.setCancelled(true);
-		}else if(event.getMessage().toLowerCase().startsWith("/ec")) {
+		}else if(args[0].equalsIgnoreCase("/ec")) {
 			if(playersdisabledchat.containsKey(event.getPlayer().getName().toLowerCase())) {
 				playersdisabledchat.remove(event.getPlayer().getName().toLowerCase());
 				event.getPlayer().sendMessage(ChatColor.GREEN + "Your chat is now enabled.");
