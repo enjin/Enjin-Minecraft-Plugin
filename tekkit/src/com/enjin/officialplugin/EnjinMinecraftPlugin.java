@@ -50,6 +50,7 @@ import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
 import com.enjin.officialplugin.stats.WriteStats;
+import com.enjin.officialplugin.threaded.CommandExecuter;
 import com.enjin.officialplugin.threaded.ConfigSender;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
@@ -101,6 +102,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public int statssendinterval = 5;
 	
 	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
+	
+	public CommandExecuter commandqueue = new CommandExecuter();
 	
 	public StatsServer serverstats = new StatsServer(this);
 	public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();

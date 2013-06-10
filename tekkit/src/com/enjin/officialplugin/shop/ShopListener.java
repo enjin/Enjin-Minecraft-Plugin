@@ -29,6 +29,21 @@ public class ShopListener implements Listener {
 		String[] args = event.getMessage().split(" ");
 		if(args[0].equalsIgnoreCase("/" + EnjinMinecraftPlugin.BUY_COMMAND)) {
 			Player player = event.getPlayer();
+			if(args[1].equalsIgnoreCase("history")) {
+				if(args.length > 2 && player.hasPermission("enjin.history")) {
+					player.sendMessage(ChatColor.RED + "Fetching shop history information for " + args[2] + ", please wait...");
+					Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, args[2]));
+		            dispatchThread.start();
+		            event.setCancelled(true);
+		            return;
+				}else {
+					player.sendMessage(ChatColor.RED + "Fetching your shop history information, please wait...");
+					Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, player.getName()));
+		            dispatchThread.start();
+		            event.setCancelled(true);
+		            return;
+				}
+			}
 			if(activeshops.containsKey(player.getName().toLowerCase())) {
 				PlayerShopsInstance psi = activeshops.get(player.getName().toLowerCase());
 				//If it's been over 10 minutes, re-retrieve it.
@@ -173,10 +188,15 @@ public class ShopListener implements Listener {
 				playersdisabledchat.remove(event.getPlayer().getName().toLowerCase());
 			}else {
 				Set<Player> recipients = event.getRecipients();
-				for(Player recipient : recipients) {
-					if(playersdisabledchat.containsKey(recipient.getName().toLowerCase())) {
-						recipients.remove(recipient);
+				//Make sure we aren't throwing huge errors on spigot!
+				try {
+					for(Player recipient : recipients) {
+						if(playersdisabledchat.containsKey(recipient.getName().toLowerCase())) {
+							recipients.remove(recipient);
+						}
 					}
+				}catch(Exception e) {
+					//Don't do anything... bugged bukkit implementation.
 				}
 			}
 		}

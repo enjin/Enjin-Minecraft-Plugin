@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.threaded.CommandExecuter;
 
 /**
  * 
@@ -25,11 +24,12 @@ public class Packet13ExecuteCommandAsPlayer {
 			Player p = Bukkit.getPlayerExact(name);
 			//TODO: Add offline player support here
 			if(p == null) {
-				plugin.debug("Failed executing command \"" + command + "\" as player " + name + ". Player isn't online.");
+				EnjinMinecraftPlugin.debug("Failed executing command \"" + command + "\" as player " + name + ". Player isn't online.");
 				return;
 			}
-			plugin.debug("Executing command \"" + command + "\" as player " + name + ".");
-			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(p, command));
+			EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + ".");
+			plugin.commandqueue.addCommand(p, command);
+			//Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(p, command));
 			//Bukkit.getServer().dispatchCommand(p, command);
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("Failed to dispatch command via 0x13, " + t.getMessage());

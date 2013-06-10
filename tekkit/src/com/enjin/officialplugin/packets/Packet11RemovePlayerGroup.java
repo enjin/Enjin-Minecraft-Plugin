@@ -8,7 +8,6 @@ import org.bukkit.World;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.RemovePlayerGroupEvent;
-import com.enjin.officialplugin.threaded.CommandExecuter;
 
 /**
  * 
@@ -23,7 +22,7 @@ public class Packet11RemovePlayerGroup {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String instring = PacketUtilities.readString(in);
-			plugin.debug("Read string: " + instring);
+			EnjinMinecraftPlugin.debug("Read string: " + instring);
 			String[] msg = instring.split(",");
 			if((msg.length == 2) || (msg.length == 3)) {
 				String playername = msg[0];
@@ -32,10 +31,11 @@ public class Packet11RemovePlayerGroup {
 				if("*".equals(world)) {
 					world = null;
 				}
-				plugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
+				EnjinMinecraftPlugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
 				if(plugin.permissionsbukkit != null) {
-					plugin.debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
-					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname));
+					EnjinMinecraftPlugin.debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
+					plugin.commandqueue.addCommand(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname);
+					//Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname));
 				}else {
 					//We need some support if they want the group removed from all worlds if the plugin doesn't support global groups
 					if((world != null) || (world == null && plugin.supportsglobalgroups)) {

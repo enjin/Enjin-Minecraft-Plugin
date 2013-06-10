@@ -8,7 +8,6 @@ import org.bukkit.World;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.AddPlayerGroupEvent;
-import com.enjin.officialplugin.threaded.CommandExecuter;
 
 /**
  * 
@@ -30,11 +29,12 @@ public class Packet10AddPlayerGroup {
 				if("*".equals(world)) {
 					world = null;
 				}
-				plugin.debug("Adding player " + playername + " from group " + groupname + " in world " + world + " world");
+				EnjinMinecraftPlugin.debug("Adding player " + playername + " from group " + groupname + " in world " + world + " world");
 				//Check to see if we have PermissionsBukkit. If we do we have to do something special
 				if(plugin.permissionsbukkit != null) {
-					plugin.debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);
-					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname));
+					EnjinMinecraftPlugin.debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);
+					plugin.commandqueue.addCommand(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname);
+					//Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname));
 				}else {
 					//We need some support if they want the group added to all worlds if the plugin doesn't support global groups
 					if((world != null) || (world == null && plugin.supportsglobalgroups)) {

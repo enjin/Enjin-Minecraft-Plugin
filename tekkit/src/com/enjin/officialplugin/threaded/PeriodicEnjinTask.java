@@ -144,6 +144,8 @@ public class PeriodicEnjinTask implements Runnable {
 			InputStream in = con.getInputStream();
 			//System.out.println("Handling input stream...");
 			String success = handleInput(in);
+			//Schedule commands to execute regardless of success.
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, plugin.commandqueue);
 			if(success.equalsIgnoreCase("ok")) {
 				successful = true;
 				if(plugin.unabletocontactenjin) {

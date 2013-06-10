@@ -34,6 +34,7 @@ import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.scheduler.TaskScheduler;
 import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.threaded.BanLister;
+import com.enjin.officialplugin.threaded.CommandExecuter;
 import com.enjin.officialplugin.threaded.ConfigSender;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
@@ -67,7 +68,7 @@ import cpw.mods.fml.relauncher.Side;
  * 
  */
 
-@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.4")
+@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.5-152")
 public class EnjinMinecraftPlugin {
 
 	@Instance("EnjinMinecraftPlugin")
@@ -91,7 +92,7 @@ public class EnjinMinecraftPlugin {
 	public int xpversion = 0;
 	
 	//----------------Make sure to change this for every minecraft version!
-	public String mcversion = "1.5.1";
+	public String mcversion = "1.5.2";
 	
 	public ShopListener shoplistener = new ShopListener();
 	//Since forge mods can be installed on a client, we want to make sure we only run on a server.
@@ -103,6 +104,8 @@ public class EnjinMinecraftPlugin {
 	public int statssendinterval = 5;
 	
 	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
+	
+	public CommandExecuter commandqueue = new CommandExecuter();
 	
 	//public StatsServer serverstats = new StatsServer(this);
 	//public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
@@ -696,6 +699,6 @@ public class EnjinMinecraftPlugin {
 	}
 
 	public String getVersion() {
-		return "2.4.4-forge";
+		return "2.4.5-forge";
 	}
 }

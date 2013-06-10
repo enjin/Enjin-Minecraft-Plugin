@@ -20,6 +20,51 @@ public class ShopUtils {
 
 	public static byte[] glyphWidth = null;
 	
+	public static ArrayList<String> parseHistoryJSON(String json, String playername) {
+		ArrayList<String> lines = new ArrayList<String>();
+		String topline = ChatColor.GRAY + "+++ " + ChatColor.WHITE + "Purchase history for " + playername +
+				ChatColor.GRAY + " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
+		lines.add(TrimText(topline, null));
+		lines.add(ChatColor.GRAY + "+   ");
+		JSONParser parser = new JSONParser();
+		try {
+			JSONArray array = (JSONArray) parser.parse(json);
+			if(array.size() > 0) {
+				lines.add(ChatColor.GRAY + "+   " + ChatColor.WHITE + "Showing recent purchases:");
+				lines.add(ChatColor.GRAY + "+   ");
+				int i = 1;
+				for(Object oitem : array) {
+					if(oitem instanceof JSONObject) {
+						JSONObject item = (JSONObject) oitem;
+						String itemname = (String) item.get("item_name");
+						String purchasedate = (String) item.get("purchase_date");
+						String expires = (String) item.get("expires");
+						String itemline = "";
+						if(expires.equals("")) {
+							itemline = i + ". " + itemname + " (purchased on " + purchasedate + ")";
+						}else {
+							itemline = i + ". " + itemname + " (purchased on " + purchasedate + ") - " + expires;
+						}
+						String[] itemlines = WrapText(itemline, "+   ", "7", "f", 3);
+						for(String line : itemlines) {
+							lines.add(line);
+						}
+						i++;
+					}
+				}
+			}else {
+				lines.add(ChatColor.GRAY + "+   " + ChatColor.WHITE + "There are no recent purchases to display.");
+			}
+
+			lines.add(ChatColor.GRAY + "+   ");
+			lines.add(TrimText(ChatColor.GRAY + "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", null));
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return lines;
+	}
+	
 	public static PlayerShopsInstance parseShopsJSON(String json) {
 		PlayerShopsInstance psi = new PlayerShopsInstance();
 		JSONParser parser = new JSONParser();

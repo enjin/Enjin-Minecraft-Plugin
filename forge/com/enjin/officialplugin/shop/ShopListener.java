@@ -115,6 +115,21 @@ public class ShopListener extends CommandBase {
 			return;
 		}
 		
+		//The new history command
+		if(args[1].equalsIgnoreCase("history")) {
+			if(args.length > 2 && isPlayerOp(player)) {
+				player.sendChatToPlayer(ChatColor.RED + "Fetching shop history information for " + args[2] + ", please wait...");
+				Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, args[2]));
+	            dispatchThread.start();
+	            return;
+			}else {
+				player.sendChatToPlayer(ChatColor.RED + "Fetching your shop history information, please wait...");
+				Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, player.username));
+	            dispatchThread.start();
+	            return;
+			}
+		}
+		
 		if(activeshops.containsKey(player.username.toLowerCase())) {
 			PlayerShopsInstance psi = activeshops.get(player.username.toLowerCase());
 			//If it's been over 10 minutes, re-retrieve it.
@@ -230,5 +245,9 @@ public class ShopListener extends CommandBase {
 			Thread dispatchThread = new Thread(new PlayerShopGetter(this, player));
 			dispatchThread.start();
 		}
+	}
+	
+	boolean isPlayerOp(EntityPlayerMP player) {
+		return MinecraftServer.getServer().getConfigurationManager().getOps().contains(player.getCommandSenderName().toLowerCase());
 	}
 }

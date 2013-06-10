@@ -129,6 +129,7 @@ public class PeriodicEnjinTask implements Runnable {
 			InputStream in = con.getInputStream();
 			//System.out.println("Handling input stream...");
 			String success = handleInput(in);
+			plugin.scheduler.scheduleSyncDelayedTask(plugin.commandqueue);
 			if(success.equalsIgnoreCase("ok")) {
 				successful = true;
 				if(plugin.unabletocontactenjin) {

@@ -51,6 +51,7 @@ import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
 import com.enjin.officialplugin.stats.WriteStats;
 import com.enjin.officialplugin.threaded.BanLister;
+import com.enjin.officialplugin.threaded.CommandExecuter;
 import com.enjin.officialplugin.threaded.ConfigSender;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
@@ -103,6 +104,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
 	
+	public CommandExecuter commandqueue = new CommandExecuter();
+	
 	public StatsServer serverstats = new StatsServer(this);
 	public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
 	/**Key is banned player, value is admin that banned the player or blank if the console banned*/
@@ -115,7 +118,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	//static public String apiurl = "://gamers.enjin.ca/api/";
 	//static public String apiurl = "://tuxreminder.info/api/";
 	//static public String apiurl = "://mxm.enjin.com/api/";
-	//static public String apiurl = "://api.0x10cbuilder.com/api/";
+	//static public String apiurl = "://api.enjin.ca/api/";
 	
 	public boolean autoupdate = true;
 	public String newversion = "";
