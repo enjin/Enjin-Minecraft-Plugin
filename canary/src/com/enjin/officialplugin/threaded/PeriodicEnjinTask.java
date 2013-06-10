@@ -19,6 +19,7 @@ import net.canarymod.api.entity.living.humanoid.Player;
 import net.canarymod.api.world.DimensionType;
 import net.canarymod.api.world.World;
 import net.canarymod.chat.Colors;
+import net.canarymod.tasks.ServerTaskManager;
 import net.canarymod.user.Group;
 
 import com.enjin.officialplugin.EnjinErrorReport;
@@ -140,6 +141,9 @@ public class PeriodicEnjinTask implements Runnable {
 			InputStream in = con.getInputStream();
 			//System.out.println("Handling input stream...");
 			String success = handleInput(in);
+			
+			//Let's execute commands regardless of success status
+			ServerTaskManager.addTask(plugin.commandqueue);
 			if(success.equalsIgnoreCase("ok")) {
 				successful = true;
 				if(plugin.unabletocontactenjin) {

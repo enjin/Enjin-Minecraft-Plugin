@@ -2,10 +2,7 @@ package com.enjin.officialplugin.packets;
 
 import java.io.BufferedInputStream;
 
-import net.canarymod.tasks.ServerTaskManager;
-
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.threaded.CommandExecuter;
 
 /**
  * 
@@ -21,8 +18,8 @@ public class Packet12ExecuteCommand {
 		try {
 			String command = PacketUtilities.readString(in);
 			EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as console.");
-			ServerTaskManager.addTask(new CommandExecuter(null, command, plugin));
-			//Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PacketUtilities.readString(in));
+			plugin.commandqueue.addCommand(null, command);
+			//ServerTaskManager.addTask(new CommandExecuter(null, command, plugin));
 		} catch (Throwable t) {
 			EnjinMinecraftPlugin.logger.warning("Failed to dispatch command via 0x12, " + t.getMessage());
 			t.printStackTrace();

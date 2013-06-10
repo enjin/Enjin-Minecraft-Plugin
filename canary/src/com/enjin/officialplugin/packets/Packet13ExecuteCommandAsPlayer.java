@@ -4,10 +4,8 @@ import java.io.BufferedInputStream;
 
 import net.canarymod.Canary;
 import net.canarymod.api.entity.living.humanoid.Player;
-import net.canarymod.tasks.ServerTaskManager;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.threaded.CommandExecuter;
 
 /**
  * 
@@ -30,8 +28,7 @@ public class Packet13ExecuteCommandAsPlayer {
 				return;
 			}
 			EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + ".");
-			ServerTaskManager.addTask(new CommandExecuter(p, command, plugin));
-			//Bukkit.getServer().dispatchCommand(p, command);
+			plugin.commandqueue.addCommand(p, command);
 		} catch (Throwable t) {
 			EnjinMinecraftPlugin.logger.warning("Failed to dispatch command via 0x13, " + t.getMessage());
 			t.printStackTrace();

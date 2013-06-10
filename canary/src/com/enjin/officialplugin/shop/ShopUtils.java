@@ -22,6 +22,51 @@ public class ShopUtils {
 
 	public static byte[] glyphWidth = null;
 	
+	public static ArrayList<String> parseHistoryJSON(String json, String playername) {
+		ArrayList<String> lines = new ArrayList<String>();
+		String topline = Colors.LIGHT_GRAY + "+++ " + Colors.WHITE + "Purchase history for " + playername +
+				Colors.LIGHT_GRAY + " +++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
+		lines.add(TrimText(topline, null));
+		lines.add(Colors.LIGHT_GRAY + "+   ");
+		JSONParser parser = new JSONParser();
+		try {
+			JSONArray array = (JSONArray) parser.parse(json);
+			if(array.size() > 0) {
+				lines.add(Colors.LIGHT_GRAY + "+   " + Colors.WHITE + "Showing recent purchases:");
+				lines.add(Colors.LIGHT_GRAY + "+   ");
+				int i = 1;
+				for(Object oitem : array) {
+					if(oitem instanceof JSONObject) {
+						JSONObject item = (JSONObject) oitem;
+						String itemname = (String) item.get("item_name");
+						String purchasedate = (String) item.get("purchase_date");
+						String expires = (String) item.get("expires");
+						String itemline = "";
+						if(expires.equals("")) {
+							itemline = i + ". " + itemname + " (purchased on " + purchasedate + ")";
+						}else {
+							itemline = i + ". " + itemname + " (purchased on " + purchasedate + ") - " + expires;
+						}
+						String[] itemlines = WrapText(itemline, "+   ", "7", "f", 3);
+						for(String line : itemlines) {
+							lines.add(line);
+						}
+						i++;
+					}
+				}
+			}else {
+				lines.add(Colors.LIGHT_GRAY + "+   " + Colors.WHITE + "There are no recent purchases to display.");
+			}
+
+			lines.add(Colors.LIGHT_GRAY + "+   ");
+			lines.add(TrimText(Colors.LIGHT_GRAY + "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", null));
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return lines;
+	}
+	
 	public static PlayerShopsInstance parseShopsJSON(String json) {
 		PlayerShopsInstance psi = new PlayerShopsInstance();
 		JSONParser parser = new JSONParser();
@@ -209,8 +254,7 @@ public class ShopUtils {
 			}
 			if (itemcategory.getInfo() != null
 					&& !itemcategory.getInfo().trim().equals("")) {
-				String[] info = WrapText(itemcategory.getInfo(),
-						shop.getColortext());
+				String[] info = WrapText(itemcategory.getInfo(), shop.getColortext(), 6);
 				for (String sinfo : info) {
 					header.add(sinfo);
 				}
@@ -281,7 +325,7 @@ public class ShopUtils {
 					&& !itemcategory.getInfo().trim().equals("")) {
 				String[] info = WrapText(itemcategory.getInfo(),
 						shop.getBorder_v(), shop.getColorborder(),
-						shop.getColortext());
+						shop.getColortext(), 6);
 				for (String sinfo : info) {
 					header.add(sinfo);
 				}
@@ -460,10 +504,10 @@ public class ShopUtils {
 				+ "Info:");
 		String[] infolines;
 		if (collapsed) {
-			infolines = WrapText(item.getInfo(), shop.getColorinfo());
+			infolines = WrapText(item.getInfo(), shop.getColorinfo(), 10);
 		} else {
 			infolines = WrapText(item.getInfo(), shop.getBorder_v(),
-					shop.getColorborder(), shop.getColorinfo());
+					shop.getColorborder(), shop.getColorinfo(), 10);
 		}
 		for (String infoline : infolines) {
 			itempage.add(infoline);
@@ -715,21 +759,32 @@ public class ShopUtils {
 	}
 
 	public static String[] WrapText(String text, String prefix,
-			String prefixcolor, String textcolor) {
+			String prefixcolor, String textcolor, int numlines) {
 		String[] lines = text.split("\n");
 		ArrayList<String> formattedlines = new ArrayList<String>();
-		for (int i = 0; i < lines.length && formattedlines.size() < 6; i++) {
+		for (int i = 0; i < lines.length && formattedlines.size() < numlines; i++) {
 			String fullline = lines[i];
 			if (getWidth(prefix + fullline) + ((prefix + fullline).length()) > MINECRAFT_CONSOLE_WIDTH) {
 				int index = 0;
 				while (index < fullline.length() - 1
 						&& formattedlines.size() < 6) {
 					String line = fullline.substring(index);
-					while (getWidth(prefix + line) > MINECRAFT_CONSOLE_WIDTH) {
-						if (line.lastIndexOf(' ') > 0) {
-							line = line.substring(0, line.lastIndexOf(' '));
-						} else {
-							line = line.substring(0, line.length() - 1);
+					if(formattedlines.size() == numlines -1 && i < lines.length -1) {
+						while (getWidth(prefix + line + "...") > MINECRAFT_CONSOLE_WIDTH) {
+							if (line.lastIndexOf(' ') > 0) {
+								line = line.substring(0, line.lastIndexOf(' '));
+							} else {
+								line = line.substring(0, line.length() - 1);
+							}
+						}
+						line = line + "...";
+					}else {
+						while (getWidth(prefix + line) > MINECRAFT_CONSOLE_WIDTH) {
+							if (line.lastIndexOf(' ') > 0) {
+								line = line.substring(0, line.lastIndexOf(' '));
+							} else {
+								line = line.substring(0, line.length() - 1);
+							}
 						}
 					}
 					formattedlines.add(FORMATTING_CODE + prefixcolor + prefix
@@ -748,7 +803,7 @@ public class ShopUtils {
 		return returnarray;
 	}
 
-	public static String[] WrapText(String text, String textcolor) {
+	public static String[] WrapText(String text, String textcolor, int numlines) {
 		String[] lines = text.split("\n");
 		ArrayList<String> formattedlines = new ArrayList<String>();
 		for (int i = 0; i < lines.length && formattedlines.size() < 6; i++) {
@@ -756,13 +811,24 @@ public class ShopUtils {
 			if (getWidth(fullline) > MINECRAFT_CONSOLE_WIDTH) {
 				int index = 0;
 				while (index < fullline.length() - 1
-						&& formattedlines.size() < 6) {
+						&& formattedlines.size() < numlines) {
 					String line = fullline.substring(index);
-					while (getWidth(line) > MINECRAFT_CONSOLE_WIDTH) {
-						if (line.lastIndexOf(' ') > 0) {
-							line = line.substring(0, line.lastIndexOf(' '));
-						} else {
-							line = line.substring(0, line.length() - 1);
+					if(formattedlines.size() == numlines -1 && i < lines.length -1) {
+						while (getWidth(line + "...") > MINECRAFT_CONSOLE_WIDTH) {
+							if (line.lastIndexOf(' ') > 0) {
+								line = line.substring(0, line.lastIndexOf(' '));
+							} else {
+								line = line.substring(0, line.length() - 1);
+							}
+						}
+						line = line + "...";
+					}else {
+						while (getWidth(line) > MINECRAFT_CONSOLE_WIDTH) {
+							if (line.lastIndexOf(' ') > 0) {
+								line = line.substring(0, line.lastIndexOf(' '));
+							} else {
+								line = line.substring(0, line.length() - 1);
+							}
 						}
 					}
 					formattedlines.add(FORMATTING_CODE + textcolor + line);

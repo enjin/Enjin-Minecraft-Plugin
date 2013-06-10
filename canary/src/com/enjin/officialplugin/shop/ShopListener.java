@@ -28,6 +28,24 @@ public class ShopListener implements PluginListener {
 		String[] args = event.getCommand();
 		if(args[0].equalsIgnoreCase("/" + EnjinMinecraftPlugin.BUY_COMMAND)) {
 			Player player = event.getPlayer();
+			
+			//Player history
+			if(args[1].equalsIgnoreCase("history")) {
+				if(args.length > 2 && player.hasPermission("enjin.history")) {
+					player.sendMessage(Colors.LIGHT_RED + "Fetching shop history information for " + args[2] + ", please wait...");
+					Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, args[2]));
+		            dispatchThread.start();
+		            event.setCanceled();
+		            return;
+				}else {
+					player.sendMessage(Colors.LIGHT_RED + "Fetching your shop history information, please wait...");
+					Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, player.getName()));
+		            dispatchThread.start();
+		            event.setCanceled();
+		            return;
+				}
+			}
+			
 			if(activeshops.containsKey(player.getName().toLowerCase())) {
 				PlayerShopsInstance psi = activeshops.get(player.getName().toLowerCase());
 				//If it's been over 10 minutes, re-retrieve it.
