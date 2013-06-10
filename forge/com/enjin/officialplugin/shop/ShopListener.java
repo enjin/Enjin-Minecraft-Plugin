@@ -116,10 +116,10 @@ public class ShopListener extends CommandBase {
 		}
 		
 		//The new history command
-		if(args[1].equalsIgnoreCase("history")) {
-			if(args.length > 2 && isPlayerOp(player)) {
-				player.sendChatToPlayer(ChatColor.RED + "Fetching shop history information for " + args[2] + ", please wait...");
-				Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, args[2]));
+		if(args.length > 0 && args[1].equalsIgnoreCase("history")) {
+			if(args.length > 1 && isPlayerOp(player)) {
+				player.sendChatToPlayer(ChatColor.RED + "Fetching shop history information for " + args[1] + ", please wait...");
+				Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, args[1]));
 	            dispatchThread.start();
 	            return;
 			}else {
