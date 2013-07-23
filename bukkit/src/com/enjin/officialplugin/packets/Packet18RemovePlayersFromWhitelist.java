@@ -21,7 +21,7 @@ public class Packet18RemovePlayersFromWhitelist {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String players = PacketUtilities.readString(in);
-			plugin.debug("Removing these players from the whitelist: " + players);
+			EnjinMinecraftPlugin.debug("Removing these players from the whitelist: " + players);
 			String[] msg = players.split(",");
 			plugin.getServer().getPluginManager().callEvent(new RemoveWhitelistPlayersEvent(msg));
 			if((msg.length > 0)) {

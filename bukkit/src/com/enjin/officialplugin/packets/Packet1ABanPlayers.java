@@ -21,7 +21,7 @@ public class Packet1ABanPlayers {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String players = PacketUtilities.readString(in);
-			plugin.debug("Adding these players to the banlist: " + players);
+			EnjinMinecraftPlugin.debug("Adding these players to the banlist: " + players);
 			String[] msg = players.split(",");
 			EnjinBanPlayerEvent event = new EnjinBanPlayerEvent(msg);
 			plugin.getServer().getPluginManager().callEvent(event);

@@ -1,16 +1,23 @@
 package com.enjin.officialplugin.listeners;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.officialplugin.heads.HeadData;
+import com.enjin.officialplugin.heads.HeadLocation;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 public class VotifierListener implements Listener {
 	
 	EnjinMinecraftPlugin plugin;
+	SimpleDateFormat date = new SimpleDateFormat("dd MMM yyyy");
+	SimpleDateFormat time = new SimpleDateFormat("h:mm:ss a z");
 	
 	public VotifierListener(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
@@ -35,6 +42,19 @@ public class VotifierListener implements Listener {
 		}else {
 			lists = vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 		}
+		//We need to convert from Unix time stamp to a date stamp we can work with.
+		long realvotetime = System.currentTimeMillis();
+		Date votedate = new Date(realvotetime);
+		String voteday = date.format(votedate);
+		String svotetime = time.format(votedate);
+	
+		try {}catch(NumberFormatException e) {
+			
+		}
+		
+		String[] signdata = plugin.cachedItems.getSignData(username, voteday, HeadLocation.Type.RecentVoter, 0, svotetime);
+		HeadData hd = new HeadData(username, signdata, HeadLocation.Type.RecentVoter, 0);
+		plugin.headdata.addToHead(hd, true);
 		plugin.playervotes.put(username, lists);
 	}
 

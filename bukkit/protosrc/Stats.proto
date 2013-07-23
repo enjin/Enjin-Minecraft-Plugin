@@ -16,6 +16,7 @@ message Server {
       optional double boat = 2;
       optional double pig = 3;
       optional double minecart = 4;
+      optional double horse = 5;
     }
     
     optional Distance distance = 5;

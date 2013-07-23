@@ -34,7 +34,7 @@ public class PexChangeListener implements Listener {
 				if(p == null) {
 					return;
 				}
-				plugin.debug(p.getName() + " just got a rank change... processing...");
+				EnjinMinecraftPlugin.debug(p.getName() + " just got a rank change... processing...");
 				plugin.listener.updatePlayerRanks(p);
 			}
 		}
@@ -59,13 +59,13 @@ public class PexChangeListener implements Listener {
 						for(int i = 0; i < players.length; i++) {
 							String ep = players[i];
 							//We need to make sure the command executes before we actually grab the data.
-							plugin.debug(ep + " just got a rank change... processing...");
+							EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
 							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 						}
 					}else {
 						String ep = args[5];
 						//We need to make sure the command executes before we actually grab the data.
-						plugin.debug(ep + " just got a rank change... processing...");
+						EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 					}
 				}
@@ -76,7 +76,7 @@ public class PexChangeListener implements Listener {
 				if(args[3].equalsIgnoreCase("group") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
 					String ep = args[2];
 					//We need to make sure the command executes before we actually grab the data.
-					plugin.debug(ep + " just got a rank change... processing...");
+					EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
 					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 				}
 			}

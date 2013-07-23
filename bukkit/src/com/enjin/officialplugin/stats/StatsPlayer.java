@@ -290,7 +290,11 @@ public class StatsPlayer {
     	    		setMinecart(getRealDistance(minecartdistance)).build()).setBlocks(blocks.setBroken(brokenblocks).setPlaced(placedblocks));
     	stats.setPvekills(pvekills).setPvpkills(pvpkills).setXp(totalxp).setXplevel(xplevel);
     	for(Entry<EntityType, Integer> ent : creaturekills.entrySet()) {
-    		stats.addPveentitykills(EnjinStats.Server.Player.PveKills.newBuilder().setMob(ent.getKey().getName()).setKills(ent.getValue()).build());
+    		try {
+        		stats.addPveentitykills(EnjinStats.Server.Player.PveKills.newBuilder().setMob(ent.getKey().getName()).setKills(ent.getValue()).build());
+    		}catch (Exception e) {
+    			//Somehow we are getting an NPE sometimes? Ignore it.
+    		}
     	}
     	stats.setChatlines(chats);
     	return stats.build();

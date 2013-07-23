@@ -21,7 +21,7 @@ public class Packet17AddWhitelistPlayers {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String players = PacketUtilities.readString(in);
-			plugin.debug("Adding these players to the whitelist: " + players);
+			EnjinMinecraftPlugin.debug("Adding these players to the whitelist: " + players);
 			String[] msg = players.split(",");
 			plugin.getServer().getPluginManager().callEvent(new AddWhitelistPlayersEvent(msg));
 			if((msg.length > 0)) {

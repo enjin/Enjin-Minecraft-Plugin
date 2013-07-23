@@ -66,6 +66,49 @@ public class ShopUtils {
 		return lines;
 	}
 
+	public static void loadItemData(ShopItems si, String json) {
+		JSONParser parser = new JSONParser();
+		try {
+			JSONArray array = (JSONArray) parser.parse(json);
+			si.clearShopItems();
+			for (Object oshop : array) {
+				if (oshop instanceof JSONObject) {
+					JSONObject shop = (JSONObject) oshop;
+					Object items = shop.get("items");
+					if (items != null && items instanceof JSONArray
+							&& ((JSONArray) items).size() > 0) {
+						for (Object oitem : (JSONArray)items) {
+							JSONObject item = (JSONObject) oitem;
+							ShopItem sitem = new ShopItem((String) item.get("name"),
+									(String) item.get("id"), getPriceString(item.get("price")),
+									(String) item.get("info"));
+							Object options = item.get("variables");
+							if (options != null && options instanceof JSONArray
+									&& ((JSONArray) options).size() > 0) {
+								JSONArray joptions = (JSONArray) options;
+								@SuppressWarnings("rawtypes")
+								Iterator optionsiterator = joptions.iterator();
+								while (optionsiterator.hasNext()) {
+									JSONObject option = (JSONObject) optionsiterator.next();
+									ShopItemOptions soptions = new ShopItemOptions(
+											(String) option.get("name"),
+											getPriceString(option.get("pricemin")),
+											getPriceString(option.get("pricemax")));
+									sitem.addOption(soptions);
+								}
+							}
+							si.addShopItem(sitem);
+						}
+					}
+				}
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+
+	}
+
 	public static PlayerShopsInstance parseShopsJSON(String json) {
 		PlayerShopsInstance psi = new PlayerShopsInstance();
 		JSONParser parser = new JSONParser();
@@ -160,7 +203,7 @@ public class ShopUtils {
 		for (Object oitem : shopitems) {
 			JSONObject item = (JSONObject) oitem;
 			ShopItem sitem = new ShopItem((String) item.get("name"),
-					(String) item.get("id"), (String) item.get("price"),
+					(String) item.get("id"), getPriceString(item.get("price")),
 					(String) item.get("info"));
 			Object options = item.get("variables");
 			if (options != null && options instanceof JSONArray
@@ -172,8 +215,8 @@ public class ShopUtils {
 					JSONObject option = (JSONObject) optionsiterator.next();
 					ShopItemOptions soptions = new ShopItemOptions(
 							(String) option.get("name"),
-							(String) option.get("pricemin"),
-							(String) option.get("pricemax"));
+							getPriceString(option.get("pricemin")),
+							getPriceString(option.get("pricemax")));
 					sitem.addOption(soptions);
 				}
 			}
@@ -184,6 +227,43 @@ public class ShopUtils {
 				//e.printStackTrace();
 			}
 		}
+	}
+
+	public static String getPriceString(Object object) {
+		String price = "";
+		if(object instanceof String) {
+			price = (String) object;
+		}else if(object instanceof Double || object instanceof Float) {
+			if(object instanceof Double) {
+				price = Double.toString((Double) object);
+			}else {
+				price = Float.toString((Float) object);
+			}
+			if(price.indexOf(".") > -1) {
+				String[] split = price.split("\\.");
+				if(split.length > 1) {
+					if(split[0].equals("")) {
+						price = "0.";
+					}else {
+						price = split[0] + ".";
+					}
+					if(split[1].length() > 2) {
+						price = price + split[1].substring(0, 2);
+					}else if(split[1].length() == 2) {
+						price = price + split[1];
+					}else if(split[1].length() == 1) {
+						price = price + split[1] + "0";
+					}else if(split[1].length() == 0) {
+						price = split[0] + ".00";
+					}
+				}else {
+					price = split[0] + ".00";
+				}
+			}
+		}else if(object instanceof Integer) {
+			price = Integer.toString((Integer)object) + ".00";
+		}
+		return price;
 	}
 
 	public static String formatPrice(String price, String currency) {

@@ -27,10 +27,20 @@ public class Packet13ExecuteCommandAsPlayer {
 				EnjinMinecraftPlugin.debug("Failed executing command \"" + command + "\" as player " + name + ". Player isn't online.");
 				return;
 			}
-			EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + ".");
-			plugin.commandqueue.addCommand(p, command);
-			//Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(p, command));
-			//Bukkit.getServer().dispatchCommand(p, command);
+			String[] commandsplit = command.split("\0x00");
+			if(commandsplit.length > 1) {
+				try {
+					long time = System.currentTimeMillis() + (Long.getLong(commandsplit[1]) * 1000);
+					EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + " in " + commandsplit[1] + " seconds.");
+					plugin.commexecuter.addCommand(p, commandsplit[0], time);
+				}catch (NumberFormatException e) {
+					EnjinMinecraftPlugin.debug("Failed to get the time on a timed command, adding as a regular command");
+					plugin.commandqueue.addCommand(p, commandsplit[0]);
+				}
+			}else {
+				EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + ".");
+				plugin.commandqueue.addCommand(p, command);
+			}
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("Failed to dispatch command via 0x13, " + t.getMessage());
 			t.printStackTrace();

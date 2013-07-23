@@ -31,7 +31,7 @@ public class PermissionsBukkitChangeListener implements Listener {
 			if(args[1].equalsIgnoreCase("setrank") || args[1].equalsIgnoreCase("rank")) {
 				if(args.length >= 4 && p.hasPermission("permissions.setrank." + args[3])) {
 					String ep = args[2];
-					plugin.debug(ep + " just got a rank change... processing...");
+					EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
 					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 				}
 			}else if(args[1].equalsIgnoreCase("player")) {
@@ -41,7 +41,7 @@ public class PermissionsBukkitChangeListener implements Listener {
 							(args[2].equalsIgnoreCase("removegroup") && p.hasPermission("permissions.player.removegroup"))) {
 						String ep = args[3];
 						//We need to make sure the command executes before we actually grab the data.
-						plugin.debug(ep + " just got a rank change... processing...");
+						EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 					}
 				}
