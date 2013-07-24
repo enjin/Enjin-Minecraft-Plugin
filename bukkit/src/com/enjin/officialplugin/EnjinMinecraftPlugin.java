@@ -860,6 +860,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                 if(sender.hasPermission("enjin.report"))
                     sender.sendMessage(ChatColor.GOLD + "/enjin report: "
                             + ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.");
+                if(sender.hasPermission("enjin.sign.set"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin heads: "
+                            + ChatColor.RESET + "Shows in game help for the heads and sign stats part of the plugin.");
 
                 // Shop buy commands
                 sender.sendMessage(ChatColor.GOLD + "/buy: "
