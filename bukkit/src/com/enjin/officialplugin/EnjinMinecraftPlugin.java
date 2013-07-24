@@ -805,6 +805,30 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					long maxmemory = runtime.maxMemory()/(1024*1024);
 					sender.sendMessage(ChatColor.GOLD + "Memory Used: " + ChatColor.GREEN + memused + "MB/" + maxmemory + "MB");
 					return true;
+				}else if(args[0].equalsIgnoreCase("head") || args[0].equalsIgnoreCase("heads")) {
+					if(!sender.hasPermission("enjin.sign.set")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.sign.set\" permission or OP to run that command!");
+						return true;
+					}
+	                /*
+	                 * Display detailed Enjin help for heads in console
+	                 */
+	                sender.sendMessage(EnjinConsole.header());
+	                
+	                sender.sendMessage(ChatColor.AQUA + "To set a sign with a head, just place the head, then place the sign either above or below it.");
+	                sender.sendMessage(ChatColor.AQUA + "To create a sign of a specific type just put the code on the first line. # denotes the number.");
+	                sender.sendMessage(ChatColor.AQUA + " Example: [donation2] would show the second most recent donation.");
+	                sender.sendMessage(ChatColor.AQUA + "If there are sub-types, those go on the second line of the sign.");
+	                sender.sendMessage(ChatColor.GOLD + "[donation#] " + ChatColor.RESET + " - Most recent donation.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " Place the package ID on the second line to only get donations for that package.");
+	                sender.sendMessage(ChatColor.GOLD + "[topvoter#] " + ChatColor.RESET + " - Top voter of the month.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes it to the top voter of the day/week/month.");
+	                sender.sendMessage(ChatColor.GOLD + "[voter#] " + ChatColor.RESET + " - Most recent voter.");
+	                sender.sendMessage(ChatColor.GOLD + "[topplayer#] " + ChatColor.RESET + " - Top player (gets data from module on website).");
+	                sender.sendMessage(ChatColor.GOLD + "[topposter#] " + ChatColor.RESET + " - Top poster on the forum.");
+	                sender.sendMessage(ChatColor.GOLD + "[toplikes#] " + ChatColor.RESET + " - Top forum likes.");
+	                sender.sendMessage(ChatColor.GOLD + "[latestmember#] " + ChatColor.RESET + " - Latest player to sign up on the website.");
+					return true;
 				}
 			}else {
                 /*

@@ -27,10 +27,10 @@ public class Packet13ExecuteCommandAsPlayer {
 				EnjinMinecraftPlugin.debug("Failed executing command \"" + command + "\" as player " + name + ". Player isn't online.");
 				return;
 			}
-			String[] commandsplit = command.split("\0x00");
+			String[] commandsplit = command.split("\0");
 			if(commandsplit.length > 1) {
 				try {
-					long time = System.currentTimeMillis() + (Long.getLong(commandsplit[1]) * 1000);
+					long time = System.currentTimeMillis() + (Long.parseLong(commandsplit[1]) * 1000);
 					EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + " in " + commandsplit[1] + " seconds.");
 					plugin.commexecuter.addCommand(p, commandsplit[0], time);
 				}catch (NumberFormatException e) {

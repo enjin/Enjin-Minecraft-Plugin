@@ -86,7 +86,7 @@ public class DelayedCommandExecuter implements Runnable {
 			BufferedReader buffReader = new BufferedReader(fileReader);
 			String currentLine = "";
 			while (((currentLine = buffReader.readLine()) != null)) {
-				String[] commandsplit = currentLine.split("\0x00");
+				String[] commandsplit = currentLine.split("\0");
 				if(commandsplit.length > 1) {
 					addCommand(sender, commandsplit[0], Long.getLong(commandsplit[1]));
 				}else {

@@ -19,10 +19,10 @@ public class Packet12ExecuteCommand {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String command = PacketUtilities.readString(in);
-			String[] commandsplit = command.split("\0x00");
+			String[] commandsplit = command.split("\0");
 			if(commandsplit.length > 1) {
 				try {
-					long time = System.currentTimeMillis() + (Long.getLong(commandsplit[1]) * 1000);
+					long time = System.currentTimeMillis() + (Long.parseLong(commandsplit[1]) * 1000);
 					EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as console in " + commandsplit[1] + " seconds.");
 					plugin.commexecuter.addCommand(Bukkit.getConsoleSender(), commandsplit[0], time);
 				}catch (NumberFormatException e) {

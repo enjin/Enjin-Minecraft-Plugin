@@ -54,7 +54,7 @@ public class CommandWrapper implements Comparable<CommandWrapper> {
 
 	@Override
 	public String toString() {
-		return command + "\0x00" + delay;
+		return command + "\0" + delay;
 	}
 	
 }
