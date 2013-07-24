@@ -820,7 +820,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	                sender.sendMessage(ChatColor.AQUA + " Example: [donation2] would show the second most recent donation.");
 	                sender.sendMessage(ChatColor.AQUA + "If there are sub-types, those go on the second line of the sign.");
 	                sender.sendMessage(ChatColor.GOLD + "[donation#] " + ChatColor.RESET + " - Most recent donation.");
-	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " Place the package ID on the second line to only get donations for that package.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " Place the item id on the second line to only get donations for that package.");
 	                sender.sendMessage(ChatColor.GOLD + "[topvoter#] " + ChatColor.RESET + " - Top voter of the month.");
 	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes it to the top voter of the day/week/month.");
 	                sender.sendMessage(ChatColor.GOLD + "[voter#] " + ChatColor.RESET + " - Most recent voter.");
