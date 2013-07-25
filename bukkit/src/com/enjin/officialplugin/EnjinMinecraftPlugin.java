@@ -827,7 +827,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	                sender.sendMessage(ChatColor.GOLD + "[topplayer#] " + ChatColor.RESET + " - Top player (gets data from module on website).");
 	                sender.sendMessage(ChatColor.GOLD + "[topposter#] " + ChatColor.RESET + " - Top poster on the forum.");
 	                sender.sendMessage(ChatColor.GOLD + "[toplikes#] " + ChatColor.RESET + " - Top forum likes.");
-	                sender.sendMessage(ChatColor.GOLD + "[latestmember#] " + ChatColor.RESET + " - Latest player to sign up on the website.");
+	                sender.sendMessage(ChatColor.GOLD + "[newmember#] " + ChatColor.RESET + " - Latest player to sign up on the website.");
 					return true;
 				}
 			}else {

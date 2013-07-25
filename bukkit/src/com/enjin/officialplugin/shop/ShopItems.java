@@ -6,13 +6,13 @@ import com.enjin.officialplugin.heads.HeadLocation;
 
 public class ShopItems {
 	
-	private static String latestpurchase = "New Purchase #";
-	private static String latestitempurchase = "Item Purchase ";
-	private static String latestvoter = "Latest Voter #";
-	private static String topplayer = "Top Player #";
-	private static String topposter = "Top Poster #";
-	private static String toplikes = "Top Likes #";
-	private static String latestmembers = "Latest Member ";
+	private static String latestpurchase = "New Purchase ";
+	private static String latestitempurchase = "Purchase ";
+	private static String latestvoter = "Latest Voter ";
+	private static String topplayer = "Top Player ";
+	private static String topposter = "Top Poster ";
+	private static String toplikes = "Top Likes ";
+	private static String latestmembers = "New Member ";
 	
 	ConcurrentHashMap<String, ShopItem> shopitems = new ConcurrentHashMap<String, ShopItem>();
 	

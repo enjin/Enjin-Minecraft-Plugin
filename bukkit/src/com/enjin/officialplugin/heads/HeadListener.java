@@ -22,13 +22,13 @@ import com.enjin.officialplugin.heads.HeadLocation.Type;
 public class HeadListener implements Listener {
 	
 	EnjinMinecraftPlugin plugin;
-	Pattern recentitempattern = Pattern.compile("\\[donation([1-9])\\]");
-	Pattern topvoterpattern = Pattern.compile("\\[topvoter([1-9])\\]");
-	Pattern recentvoterspattern = Pattern.compile("\\[voter([1-9])\\]");
-	Pattern topplayerpattern = Pattern.compile("\\[topplayer([1-9])\\]");
-	Pattern topposterpattern = Pattern.compile("\\[topposter([1-9])\\]");
-	Pattern toplikespattern = Pattern.compile("\\[toplikes([1-9])\\]");
-	Pattern latestmemberpattern = Pattern.compile("\\[latestmember([1-9])\\]");
+	Pattern recentitempattern = Pattern.compile("\\[donation([1-9]|10)\\]");
+	Pattern topvoterpattern = Pattern.compile("\\[topvoter([1-9]|10)\\]");
+	Pattern recentvoterspattern = Pattern.compile("\\[voter([1-9]|10)\\]");
+	Pattern topplayerpattern = Pattern.compile("\\[topplayer([1-9]|10)\\]");
+	Pattern topposterpattern = Pattern.compile("\\[topposter([1-9]|10)\\]");
+	Pattern toplikespattern = Pattern.compile("\\[toplikes([1-9]|10)\\]");
+	Pattern latestmemberpattern = Pattern.compile("\\[newmember([1-9]|10)\\]");
 	BlockFace[] blockfaces = {BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
 	
 	public HeadListener(EnjinMinecraftPlugin plugin) {
