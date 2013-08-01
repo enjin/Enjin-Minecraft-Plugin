@@ -3,6 +3,11 @@ package com.enjin.officialplugin.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * This gets called whenever a player is removed from the whitelist by Enjin.
+ * @author Tux2
+ *
+ */
 public class RemoveWhitelistPlayersEvent extends Event {
 	
 	// Custom Event Requirements

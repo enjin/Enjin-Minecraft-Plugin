@@ -19,6 +19,13 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.HeadsUpdatedEvent;
 import com.enjin.officialplugin.heads.HeadLocation.Type;
 
+/**
+ * This is the listener that listens for all the events necessary to create new signs,
+ * as well as update existing signs with new data. Plugins using the API should not
+ * directly call this class. Instead, fire an event if you updated head stats.
+ * @author Tux2
+ *
+ */
 public class HeadListener implements Listener {
 	
 	EnjinMinecraftPlugin plugin;
@@ -29,6 +36,9 @@ public class HeadListener implements Listener {
 	Pattern topposterpattern = Pattern.compile("\\[topposter([1-9]|10)\\]");
 	Pattern toplikespattern = Pattern.compile("\\[toplikes([1-9]|10)\\]");
 	Pattern latestmemberpattern = Pattern.compile("\\[newmember([1-9]|10)\\]");
+	Pattern toppointspattern = Pattern.compile("\\[toppoints([1-9]|10)\\]");
+	Pattern topdonatorpointspattern = Pattern.compile("\\[pointsspent([1-9]|10)\\]");
+	Pattern topdonatormoneypattern = Pattern.compile("\\[moneyspent([1-9]|10)\\]");
 	BlockFace[] blockfaces = {BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
 	
 	public HeadListener(EnjinMinecraftPlugin plugin) {
@@ -91,6 +101,9 @@ public class HeadListener implements Listener {
 		Matcher toppostermatcher = topposterpattern.matcher(signlines[0]);
 		Matcher toplikesmatcher = toplikespattern.matcher(signlines[0]);
 		Matcher latestmembermatcher = latestmemberpattern.matcher(signlines[0]);
+		Matcher toppointsmatcher = toppointspattern.matcher(signlines[0]);
+		Matcher topdonatormoneymatcher = topdonatormoneypattern.matcher(signlines[0]);
+		Matcher topdonatorpointsmatcher = topdonatorpointspattern.matcher(signlines[0]);
 		HeadLocation hl = null;
 		if(recentitemmatcher.find()) {
 			int position = Integer.parseInt(recentitemmatcher.group(1)) - 1;
@@ -194,6 +207,66 @@ public class HeadListener implements Listener {
 			Location signlocation = event.getBlock().getLocation();
 			Location headlocation = findHead(signlocation);
 			Type type = HeadLocation.Type.LatestMembers;
+			if(headlocation != null) {
+				hl = new HeadLocation(signlocation.getWorld().getName(), headlocation.getBlockX(), 
+						headlocation.getBlockY(), headlocation.getBlockZ(), signlocation.getBlockX(),
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+			}else {
+				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
+					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+			}
+		}else if(toppointsmatcher.find()) {
+			int position = Integer.parseInt(toppointsmatcher.group(1)) - 1;
+			Location signlocation = event.getBlock().getLocation();
+			Location headlocation = findHead(signlocation);
+			Type type = HeadLocation.Type.TopPoints;
+			if(signlines[1].trim().toLowerCase().startsWith("m")) {
+				type = HeadLocation.Type.TopPointsMonth;
+			}else if(signlines[1].trim().toLowerCase().startsWith("w")) {
+				type = HeadLocation.Type.TopPointsWeek;
+			}else if(signlines[1].trim().toLowerCase().startsWith("d")) {
+				type = HeadLocation.Type.TopPointsDay;
+			}
+			if(headlocation != null) {
+				hl = new HeadLocation(signlocation.getWorld().getName(), headlocation.getBlockX(), 
+						headlocation.getBlockY(), headlocation.getBlockZ(), signlocation.getBlockX(),
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+			}else {
+				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
+					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+			}
+		}else if(topdonatorpointsmatcher.find()) {
+			int position = Integer.parseInt(topdonatorpointsmatcher.group(1)) - 1;
+			Location signlocation = event.getBlock().getLocation();
+			Location headlocation = findHead(signlocation);
+			Type type = HeadLocation.Type.TopPointsDonators;
+			if(signlines[1].trim().toLowerCase().startsWith("m")) {
+				type = HeadLocation.Type.TopPointsDonatorsMonth;
+			}else if(signlines[1].trim().toLowerCase().startsWith("w")) {
+				type = HeadLocation.Type.TopPointsDonatorsWeek;
+			}else if(signlines[1].trim().toLowerCase().startsWith("d")) {
+				type = HeadLocation.Type.TopPointsDonatorsDay;
+			}
+			if(headlocation != null) {
+				hl = new HeadLocation(signlocation.getWorld().getName(), headlocation.getBlockX(), 
+						headlocation.getBlockY(), headlocation.getBlockZ(), signlocation.getBlockX(),
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+			}else {
+				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
+					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+			}
+		}else if(topdonatormoneymatcher.find()) {
+			int position = Integer.parseInt(topdonatormoneymatcher.group(1)) - 1;
+			Location signlocation = event.getBlock().getLocation();
+			Location headlocation = findHead(signlocation);
+			Type type = HeadLocation.Type.TopDonators;
+			if(signlines[1].trim().toLowerCase().startsWith("m")) {
+				type = HeadLocation.Type.TopDonatorsMonth;
+			}else if(signlines[1].trim().toLowerCase().startsWith("w")) {
+				type = HeadLocation.Type.TopDonatorsWeek;
+			}else if(signlines[1].trim().toLowerCase().startsWith("d")) {
+				type = HeadLocation.Type.TopDonatorsDay;
+			}
 			if(headlocation != null) {
 				hl = new HeadLocation(signlocation.getWorld().getName(), headlocation.getBlockX(), 
 						headlocation.getBlockY(), headlocation.getBlockZ(), signlocation.getBlockX(),

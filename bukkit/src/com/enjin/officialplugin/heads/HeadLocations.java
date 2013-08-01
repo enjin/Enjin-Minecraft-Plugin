@@ -14,11 +14,21 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+/**
+ * This stores a map of all the head locations and where they are.
+ * @author Tux2
+ *
+ */
 public class HeadLocations {
 	
 	ConcurrentHashMap<HeadLocation.Type, ArrayList<HeadLocation>> headlist = new ConcurrentHashMap<HeadLocation.Type, ArrayList<HeadLocation>>();
 	ConcurrentHashMap<String, HeadLocation> locheadlist = new ConcurrentHashMap<String, HeadLocation>();
 	
+	/**
+	 * Adds a new location. Please note that this does not save the heads.
+	 * Make sure to call the method {@link #saveHeads()} after adding a head.
+	 * @param head The head location to add.
+	 */
 	public void addHead(HeadLocation head) {
 		ArrayList<HeadLocation> heads = headlist.get(head.getType());
 		if(heads == null) {
@@ -32,6 +42,12 @@ public class HeadLocations {
 		}
 	}
 	
+	/**
+	 * Removes the {@link HeadLocation} associated with that location.
+	 * Please note that this does not save the heads.
+	 * Make sure to call the method {@link #saveHeads()} after adding a head.
+	 * @param loc
+	 */
 	public void removeHead(Location loc) {
 		HeadLocation head = locheadlist.get(locationToString(loc));
 		if(head != null) {
@@ -46,6 +62,11 @@ public class HeadLocations {
 		}
 	}
 	
+	/**
+	 * Gets an array of all locations for a specific head type.
+	 * @param type The type of head to return.
+	 * @return A list of heads.
+	 */
 	public ArrayList<HeadLocation> getHeads(HeadLocation.Type type) {
 		ArrayList<HeadLocation> heads = headlist.get(type);
 		if(heads == null) {
@@ -55,10 +76,20 @@ public class HeadLocations {
 		}
 	}
 	
+	/**
+	 * Does this location already contain a head sign/head?
+	 * @param loc The location to check.
+	 * @return True if this position is a registered head/sign, false otherwise.
+	 */
 	public boolean hasHeadHere(Location loc) {
 		return locheadlist.containsKey(locationToString(loc));
 	}
 	
+	/**
+	 * This returns a location as a string representation.
+	 * @param loc
+	 * @return
+	 */
 	public String locationToString(Location loc) {
 		return loc.getWorld().getName() + "." + loc.getBlockX() + "." + loc.getBlockY() + "." + loc.getBlockZ();
 	}
@@ -71,6 +102,9 @@ public class HeadLocations {
 		return sign.getWorld() + "." + sign.getSignx() + "." + sign.getSigny() + "." + sign.getSignz();
 	}
 	
+	/**
+	 * Loads all the heads from the disk.
+	 */
 	public void loadHeads() {
 		headlist.clear();
 		locheadlist.clear();
@@ -123,6 +157,9 @@ public class HeadLocations {
 		}
 	}
 	
+	/**
+	 * Saves all the heads to the disk.
+	 */
 	public void saveHeads() {
 		File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("Enjin Minecraft Plugin").getDataFolder();
 		File headsfile = new File(dataFolder, "heads.yml");

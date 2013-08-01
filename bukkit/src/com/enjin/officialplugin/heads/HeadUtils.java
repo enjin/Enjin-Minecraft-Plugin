@@ -7,8 +7,20 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 
+/**
+ * This class is full of utility methods for updating heads and signs.
+ * @author Tux2
+ *
+ */
 public class HeadUtils {
 	
+	
+	/**
+	 * This method will update a specific head location with the specified head data.
+	 * @param head The location of the head/sign.
+	 * @param data The data to put on the head/sign.
+	 * @return False if the head/sign no longer exist, true if it was successful.
+	 */
 	public static boolean updateHead(HeadLocation head, HeadData data) {
 		if(head.hasHead()) {
 			return updateHead(head.getSignLocation(), head.getHeadLocation(), data.getPlayername(), data.getSigndata());
@@ -22,10 +34,7 @@ public class HeadUtils {
 	 * @param signloc The location of the sign.
 	 * @param headloc The location of the head.
 	 * @param playername The name of the player to set the head to.
-	 * @param signline1 Line 1 of the sign.
-	 * @param signline2 Line 2 of the sign.
-	 * @param signline3 Line 3 of the sign.
-	 * @param signline4 Line 4 of the sign.
+	 * @param signlines All 4 lines of the sign. Passing less than 4 will throw an exception.
 	 * @return True if the update was successful. False if the head or sign is missing.
 	 */
 	public static boolean updateHead(Location signloc, Location headloc, String playername, String[] signlines) {
@@ -40,6 +49,11 @@ public class HeadUtils {
 		return updateSign(signloc, signlines);
 	}
 	
+	/**
+	 * A convienience method to get the Specific owner of a head.
+	 * @param headlocation The location of the head.
+	 * @return The name of the owner, otherwise null if there is no owner or it isn't a head block.
+	 */
 	public static String getHeadName(Location headlocation) {
 		Block headblock = headlocation.getBlock();
 		if(headblock.getState() instanceof Skull) {
@@ -50,6 +64,11 @@ public class HeadUtils {
 		}
 	}
 	
+	/**
+	 * Gets the lines on a sign at a specific location.
+	 * @param signloc The location of the sign.
+	 * @return A String array with 4 elements for the 4 lines of the sign, otherwise null if it isn't a sign.
+	 */
 	public static String[] getSignData(Location signloc) {
 		BlockState sign = signloc.getBlock().getState();
 		if(sign instanceof Sign) {
@@ -62,10 +81,7 @@ public class HeadUtils {
 	/**
 	 * Updates the sign with the data.
 	 * @param signloc The location of the sign.
-	 * @param signline1 Line 1 of the sign.
-	 * @param signline2 Line 2 of the sign.
-	 * @param signline3 Line 3 of the sign.
-	 * @param signline4 Line 4 of the sign.
+	 * @param lines All 4 lines of the sign. (If you pass less than 4 it will throw an exception)
 	 * @return True if the update was successful. False if the head or sign is missing.
 	 */
 	public static boolean updateSign(Location signloc, String... lines) {

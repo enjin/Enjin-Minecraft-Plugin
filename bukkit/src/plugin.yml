@@ -1,6 +1,6 @@
 name: Enjin Minecraft Plugin
 main: com.enjin.officialplugin.EnjinMinecraftPlugin
-version: 2.4.7
+version: 2.4.9-bukkit
 website: www.enjin.com
 author: www.Enjin.com
 description: A plugin which allows the enjin servers to communicate with your server.
@@ -66,3 +66,18 @@ permissions:
   enjin.notify.permissionsnotworking:
     description: Receive notification if the permissions plugin isn't working correctly.
     default: op
+  enjin.points.add:
+    description: Add points to a player.
+    default: op
+  enjin.points.remove:
+    description: Remove points to a player.
+    default: op
+  enjin.points.set:
+    description: Set points on a player.
+    default: op
+  enjin.points.getothers:
+    description: Allows the player to see the points value of other players.
+    default: op
+  enjin.points.getself:
+    description: Allows the player to see how many points they have.
+    default: true

@@ -13,11 +13,14 @@ public class ShopItems {
 	private static String topposter = "Top Poster ";
 	private static String toplikes = "Top Likes ";
 	private static String latestmembers = "New Member ";
+	private static String toppoints = "Top Points ";
+	private static String topdonatorsmoney = "Top Donator ";
+	private static String topdonatorspoints = "Top Points";
 	
 	ConcurrentHashMap<String, ShopItem> shopitems = new ConcurrentHashMap<String, ShopItem>();
 	
 	public ShopItems() {
-		shopitems.put("multiple items", new ShopItem("Multiple Items", "Multiple Items", "", ""));
+		shopitems.put("multiple items", new ShopItem("Multiple Items", "Multiple Items", "", "", ""));
 	}
 	
 	public void addShopItem(ShopItem item) {
@@ -31,7 +34,7 @@ public class ShopItems {
 	public void clearShopItems() {
 		shopitems.clear();
 		//Always have the multiple items shop item in the list.
-		shopitems.put("multiple items", new ShopItem("Multiple Items", "Multiple Items", "", ""));
+		shopitems.put("multiple items", new ShopItem("Multiple Items", "Multiple Items", "", "", ""));
 	}
 	
 	public String[] getSignData(String player, String itemid, HeadLocation.Type type, int position, String amount) {
@@ -115,6 +118,78 @@ public class ShopItems {
 			signdata[2] = itemid;
 			signdata[3] = amount;
 			break;
+		case TopPoints:
+			signdata[0] = toppoints + (position + 1);
+			signdata[1] = player;
+			signdata[2] = "";
+			signdata[3] = amount + " Points";
+			break;
+		case TopPointsMonth:
+			signdata[0] = toppoints + (position + 1);
+			signdata[1] = "for the Month";
+			signdata[2] = player;
+			signdata[3] = amount + " Points";
+			break;
+		case TopPointsWeek:
+			signdata[0] = toppoints + (position + 1);
+			signdata[1] = "for the Week";
+			signdata[2] = player;
+			signdata[3] = amount + " Points";
+			break;
+		case TopPointsDay:
+			signdata[0] = toppoints + (position + 1);
+			signdata[1] = "for the Day";
+			signdata[2] = player;
+			signdata[3] = amount + " Points";
+			break;
+		case TopDonators:
+			signdata[0] = topdonatorsmoney + (position + 1);
+			signdata[1] = "";
+			signdata[2] = player;
+			signdata[3] = amount;
+			break;
+		case TopDonatorsDay:
+			signdata[0] = topdonatorsmoney + (position + 1);
+			signdata[1] = "for the Day";
+			signdata[2] = player;
+			signdata[3] = amount;
+			break;
+		case TopDonatorsWeek:
+			signdata[0] = topdonatorsmoney + (position + 1);
+			signdata[1] = "for the Week";
+			signdata[2] = player;
+			signdata[3] = amount;
+			break;
+		case TopDonatorsMonth:
+			signdata[0] = topdonatorsmoney + (position + 1);
+			signdata[1] = "for the Month";
+			signdata[2] = player;
+			signdata[3] = amount;
+			break;
+		case TopPointsDonators:
+			signdata[0] = topdonatorspoints;
+			signdata[1] = "Donator " + (position + 1);
+			signdata[2] = player;
+			signdata[3] = amount + " Points";
+			break;
+		case TopPointsDonatorsDay:
+			signdata[0] = topdonatorspoints;
+			signdata[1] = "Spent Today #" + (position + 1);
+			signdata[2] = player;
+			signdata[3] = amount + " Points";
+			break;
+		case TopPointsDonatorsWeek:
+			signdata[0] = topdonatorspoints;
+			signdata[1] = "Spent|Week " + (position + 1);
+			signdata[2] = player;
+			signdata[3] = amount + " Points";
+			break;
+		case TopPointsDonatorsMonth:
+			signdata[0] = topdonatorspoints;
+			signdata[1] = "Spent|Month " + (position + 1);
+			signdata[2] = player;
+			signdata[3] = amount + " Points";
+			break;
 		}
 		return signdata;
 	}
@@ -153,6 +228,32 @@ public class ShopItems {
 			break;
 		case LatestMembers:
 			signdata[0] = latestmembers + (position + 1);
+			break;
+		//We only need to change the top line for any of these
+		//and it's the same line, so no need to duplicate code.
+		case TopPoints:
+		case TopPointsWeek:
+		case TopPointsDay:
+		case TopPointsMonth:
+			signdata[0] = toppoints + (position + 1);
+			break;
+		case TopDonators:
+		case TopDonatorsDay:
+		case TopDonatorsWeek:
+		case TopDonatorsMonth:
+			signdata[0] = topdonatorsmoney + (position + 1);
+			break;
+		case TopPointsDonators:
+			signdata[1] = "Donator " + (position + 1);
+			break;
+		case TopPointsDonatorsDay:
+			signdata[1] = "Spent Today #" + (position + 1);
+			break;
+		case TopPointsDonatorsWeek:
+			signdata[1] = "Spent|Week " + (position + 1);
+			break;
+		case TopPointsDonatorsMonth:
+			signdata[1] = "Spent|Month " + (position + 1);
 			break;
 		}
 		return signdata;

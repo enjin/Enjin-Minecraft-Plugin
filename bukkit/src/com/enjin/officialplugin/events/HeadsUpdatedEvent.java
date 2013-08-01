@@ -6,6 +6,13 @@ import org.bukkit.event.HandlerList;
 import com.enjin.officialplugin.heads.HeadLocation;
 import com.enjin.officialplugin.heads.HeadLocation.Type;
 
+/**
+ * This gets called whenever a head stat has gotten updated.
+ * Custom plugins can use this to update their database of stats
+ * for players.
+ * @author Tux2
+ *
+ */
 public class HeadsUpdatedEvent extends Event {
 	
 	// Custom Event Requirements

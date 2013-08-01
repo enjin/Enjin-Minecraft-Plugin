@@ -89,7 +89,7 @@ public class UpdateHeadsThread implements Runnable {
 					JSONObject item = (JSONObject) oitem;
 					ShopItem sitem = new ShopItem((String) item.get("name"),
 							(String) item.get("id"), ShopUtils.getPriceString(item.get("price")),
-							(String) item.get("info"));
+							(String) item.get("info"), ShopUtils.getPointsString(item.get("points")));
 					Object options = item.get("variables");
 					if (options != null && options instanceof JSONArray
 							&& ((JSONArray) options).size() > 0) {
@@ -101,7 +101,9 @@ public class UpdateHeadsThread implements Runnable {
 							ShopItemOptions soptions = new ShopItemOptions(
 									(String) option.get("name"),
 									ShopUtils.getPriceString(option.get("pricemin")),
-									ShopUtils.getPriceString(option.get("pricemax")));
+									ShopUtils.getPriceString(option.get("pricemax")),
+									ShopUtils.getPointsString(option.get("pointsmin")),
+									ShopUtils.getPointsString(option.get("pointsmax")));
 							sitem.addOption(soptions);
 						}
 					}
@@ -404,6 +406,270 @@ public class UpdateHeadsThread implements Runnable {
 							}
 						}
 						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.LatestMembers));
+					}
+				}
+				if(array.get("top_points") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_points");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopPoints;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String points = tvoter.get("points").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, points);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_points_month") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_points_month");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopPointsMonth;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String points = tvoter.get("points").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, points);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_points_week") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_points_week");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopPointsWeek;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String points = tvoter.get("points").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, points);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_points_day") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_points_day");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopPointsDay;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String points = tvoter.get("points").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, points);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_donators_money") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_donators_money");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopDonators;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String price = tvoter.get("price").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, price);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_donators_money_day") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_donators_money_day");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopDonatorsDay;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String price = tvoter.get("price").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, price);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_donators_money_week") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_donators_money_week");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopDonatorsWeek;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String price = tvoter.get("price").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, price);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_donators_money_month") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_donators_money_month");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopDonatorsMonth;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String price = tvoter.get("price").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, price);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_donators_points") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_donators_points");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopPointsDonators;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String price = tvoter.get("points").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, price);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_donators_points_day") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_donators_points_day");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopPointsDonatorsDay;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String price = tvoter.get("points").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, price);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_donators_points_week") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_donators_points_week");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopPointsDonatorsWeek;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String price = tvoter.get("points").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, price);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+					}
+				}
+				if(array.get("top_donators_points_month") instanceof JSONArray) {
+					JSONArray recentvoters = (JSONArray)array.get("top_donators_points_month");
+					if(recentvoters != null) {
+						HeadLocation.Type type = HeadLocation.Type.TopPointsDonatorsMonth;
+						plugin.headdata.clearHeadData(type);
+						int i = 0;
+						for (Object voter : recentvoters) {
+							if (voter instanceof JSONObject) {
+								JSONObject tvoter = (JSONObject) voter;
+								String playername = (String) tvoter.get("player_name");
+								//We need to convert from Unix time stamp to a date stamp we can work with.
+								String price = tvoter.get("points").toString();
+								
+								String[] signdata = plugin.cachedItems.getSignData(playername, "", type, i, price);
+								HeadData hd = new HeadData(playername, signdata, type, i);
+								plugin.headdata.setHead(hd, false);
+								i++;
+							}
+						}
+						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(sender != null) {

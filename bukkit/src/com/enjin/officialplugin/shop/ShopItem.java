@@ -8,14 +8,16 @@ public class ShopItem extends AbstractShopSuperclass {
 	String name = "";
 	String price = "";
 	String info = "";
+	String points = "";
 	
 	ArrayList<ShopItemOptions> options = new ArrayList<ShopItemOptions>();
 	
-	public ShopItem(String name, String id, String price, String info) {
+	public ShopItem(String name, String id, String price, String info, String points) {
 		this.name = name;
 		this.id = id;
 		this.price = price;
 		this.info = info;
+		this.points = points;
 	}
 
 	public String getId() {
@@ -32,6 +34,10 @@ public class ShopItem extends AbstractShopSuperclass {
 
 	public String getInfo() {
 		return info;
+	}
+
+	public String getPoints() {
+		return points;
 	}
 	
 	public void addOption(ShopItemOptions option) {

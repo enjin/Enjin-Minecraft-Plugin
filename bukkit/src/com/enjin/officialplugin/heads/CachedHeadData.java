@@ -8,6 +8,13 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.HeadsUpdatedEvent;
 import com.enjin.officialplugin.heads.HeadLocation.Type;
 
+/**
+ * This class stores all of the cached stats data for all the types of heads.
+ * Please remember that the ranks start from 0, not 1 in the code, so if you want to get the
+ * 5th stat, you will need to pass a 4.
+ * @author Tux2
+ *
+ */
 public class CachedHeadData {
 	
 	EnjinMinecraftPlugin plugin;
@@ -138,6 +145,13 @@ public class CachedHeadData {
 		Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
 	}
 	
+	/**
+	 * This gets a certain head a certain type.
+	 * @param type The type of head to get.
+	 * @param rank The rank of the head to get (The list starts from 0, not 1, so if you wanted the 5th rank, you would pass "4")
+	 * @param itemId This can either be null or blank, unless you are getting a RecentItemDonator, then you need to specify the itemID
+	 * @return The HeadData or null if the data does not exist for that head.
+	 */
 	public HeadData getHead(HeadLocation.Type type, int rank, String itemId) {
 		if(type == Type.RecentItemDonator) {
 			ConcurrentHashMap<Integer, HeadData> typelist = itemheaddata.get(itemId.toLowerCase());
@@ -154,11 +168,23 @@ public class CachedHeadData {
 		}
 	}
 	
+	/**
+	 * This clears all the cached head data for all of the head types.
+	 */
 	public void clearHeadData() {
 		headdata.clear();
+		itemheaddata.clear();
 	}
 	
+	/**
+	 * Only clears the head data for a specific type of head.
+	 * @param type The head type to clear.
+	 */
 	public void clearHeadData(HeadLocation.Type type) {
-		headdata.remove(type);
+		if(type == Type.RecentItemDonator) {
+			itemheaddata.clear();
+		}else {
+			headdata.remove(type);
+		}
 	}
 }

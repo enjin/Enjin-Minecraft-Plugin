@@ -49,6 +49,9 @@ import com.enjin.officialplugin.permlisteners.GroupManagerListener;
 import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
 import com.enjin.officialplugin.permlisteners.PexChangeListener;
 import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
+import com.enjin.officialplugin.points.EnjinPointsSyncClass;
+import com.enjin.officialplugin.points.PointsAPI;
+import com.enjin.officialplugin.points.RetrievePointsSyncClass;
 import com.enjin.officialplugin.shop.ShopItems;
 import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.stats.StatsPlayer;
@@ -100,6 +103,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean votifierinstalled = false;
 	public int xpversion = 0;
 	public String mcversion = "";
+	
+	int signupdateinterval = 10;
 	
 	public HeadLocations headlocation = new HeadLocations();
 	public CachedHeadData headdata = new CachedHeadData(this);
@@ -449,7 +454,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		commexecuter.loadCommands(Bukkit.getConsoleSender());
 		//We want to wait an entire minute before running this to make sure all the worlds have had the time
 		//to load before we go and start updating heads.
-		headsupdateid = scheduler.runTaskTimerAsynchronously(this, new UpdateHeadsThread(this), 120L, 20*60*30).getTaskId();
+		headsupdateid = scheduler.runTaskTimerAsynchronously(this, new UpdateHeadsThread(this), 120L, 20*60*signupdateinterval).getTaskId();
 		//Only start the vote task if votifier is installed.
 		if(votifierinstalled) {
 			debug("Starting votifier task.");
@@ -805,6 +810,96 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					long maxmemory = runtime.maxMemory()/(1024*1024);
 					sender.sendMessage(ChatColor.GOLD + "Memory Used: " + ChatColor.GREEN + memused + "MB/" + maxmemory + "MB");
 					return true;
+				}else if(args[0].equalsIgnoreCase("addpoints")) {
+					if(!sender.hasPermission("enjin.points.add")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.points.add\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 2) {
+						String playername = args[1].trim();
+						int pointsamount = 1;
+						try {
+							pointsamount = Integer.parseInt(args[2].trim());
+						}catch(NumberFormatException e) {
+							sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin addpoints [player] [amount]");
+							return true;
+						}
+						if(pointsamount < 1) {
+							sender.sendMessage(ChatColor.DARK_RED + "You cannot add less than 1 point to a user. You might want to try /enjin removepoints!");
+							return true;
+						}
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we add the " + pointsamount + " points to " + playername + "...");
+						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.AddPoints);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin addpoints [player] [amount]");
+					}
+					return true;
+				}else if(args[0].equalsIgnoreCase("removepoints")) {
+					if(!sender.hasPermission("enjin.points.remove")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.points.remove\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 2) {
+						String playername = args[1].trim();
+						int pointsamount = 1;
+						try {
+							pointsamount = Integer.parseInt(args[2].trim());
+						}catch(NumberFormatException e) {
+							sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin removepoints [player] [amount]");
+							return true;
+						}
+						if(pointsamount < 1) {
+							sender.sendMessage(ChatColor.DARK_RED + "You cannot remove less than 1 point to a user.");
+							return true;
+						}
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we remove the " + pointsamount + " points from " + playername + "...");
+						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.RemovePoints);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin removepoints [player] [amount]");
+					}
+					return true;
+				}else if(args[0].equalsIgnoreCase("setpoints")) {
+					if(!sender.hasPermission("enjin.points.set")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.points.set\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 2) {
+						String playername = args[1].trim();
+						int pointsamount = 1;
+						try {
+							pointsamount = Integer.parseInt(args[2].trim());
+						}catch(NumberFormatException e) {
+							sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin setpoints [player] [amount]");
+							return true;
+						}
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we set the points to " + pointsamount + " points for " + playername + "...");
+						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.SetPoints);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin setpoints [player] [amount]");
+					}
+					return true;
+				}else if(args[0].equalsIgnoreCase("points")) {
+					if(args.length > 1 && sender.hasPermission("enjin.points.getothers")) {
+						String playername = args[1].trim();
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we retrieve the points balance for " + playername + "...");
+						RetrievePointsSyncClass mthread = new RetrievePointsSyncClass(sender, playername, false);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else if(sender.hasPermission("enjin.points.getself")){
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we retrieve your points balance...");
+						RetrievePointsSyncClass mthread = new RetrievePointsSyncClass(sender, sender.getName(), true);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "I'm sorry, you don't have permission to check points!");
+					}
+					return true;
 				}else if(args[0].equalsIgnoreCase("head") || args[0].equalsIgnoreCase("heads")) {
 					if(!sender.hasPermission("enjin.sign.set")) {
 						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.sign.set\" permission or OP to run that command!");
@@ -828,6 +923,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	                sender.sendMessage(ChatColor.GOLD + "[topposter#] " + ChatColor.RESET + " - Top poster on the forum.");
 	                sender.sendMessage(ChatColor.GOLD + "[toplikes#] " + ChatColor.RESET + " - Top forum likes.");
 	                sender.sendMessage(ChatColor.GOLD + "[newmember#] " + ChatColor.RESET + " - Latest player to sign up on the website.");
+	                sender.sendMessage(ChatColor.GOLD + "[toppoints#] " + ChatColor.RESET + " - Which player has the most unspent points.");
+	                sender.sendMessage(ChatColor.GOLD + "[pointsspent#] " + ChatColor.RESET + " - Player which has spent the most points overall.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
+	                sender.sendMessage(ChatColor.GOLD + "[moneyspent#] " + ChatColor.RESET + " - Player which has spent the most money on the server overall.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
 					return true;
 				}
 			}else {
