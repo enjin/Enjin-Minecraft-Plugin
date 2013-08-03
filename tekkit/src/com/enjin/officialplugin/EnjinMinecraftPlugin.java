@@ -39,23 +39,33 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.enjin.officialplugin.heads.CachedHeadData;
+import com.enjin.officialplugin.heads.HeadListener;
+import com.enjin.officialplugin.heads.HeadLocations;
 import com.enjin.officialplugin.listeners.EnjinStatsListener;
 import com.enjin.officialplugin.listeners.NewPlayerChatListener;
+import com.enjin.officialplugin.listeners.TekkitPlayerChatListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.permlisteners.GroupManagerListener;
 import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
 import com.enjin.officialplugin.permlisteners.PexChangeListener;
 import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
+import com.enjin.officialplugin.points.EnjinPointsSyncClass;
+import com.enjin.officialplugin.points.PointsAPI;
+import com.enjin.officialplugin.points.RetrievePointsSyncClass;
+import com.enjin.officialplugin.shop.ShopItems;
 import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
 import com.enjin.officialplugin.stats.WriteStats;
 import com.enjin.officialplugin.threaded.CommandExecuter;
 import com.enjin.officialplugin.threaded.ConfigSender;
+import com.enjin.officialplugin.threaded.DelayedCommandExecuter;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
 import com.enjin.officialplugin.threaded.ReportMakerThread;
+import com.enjin.officialplugin.threaded.UpdateHeadsThread;
 import com.enjin.officialplugin.tpsmeter.MonitorTPS;
 import com.enjin.officialplugin.EnjinConsole;
 import com.enjin.proto.stats.EnjinStats;
@@ -94,6 +104,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public int xpversion = 0;
 	public String mcversion = "";
 	
+	int signupdateinterval = 10;
+	
+	public HeadLocations headlocation = new HeadLocations();
+	public CachedHeadData headdata = new CachedHeadData(this);
+	
 	public static String BUY_COMMAND = "buy";
 	
 	/**Key is the config value, value is the type, string, boolean, etc.*/
@@ -112,11 +127,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	/**Key is banned player, value is admin that pardoned the player or blank if the console pardoned*/
 	public ConcurrentHashMap<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
 	
+	public ShopItems cachedItems = new ShopItems();
+	
 	
 	static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
 	//static public String apiurl = "://tuxreminder.info/api/";
 	//static public String apiurl = "://mxm.enjin.com/api/";
+	//static public String apiurl = "://api.enjin.ca/api/";
 	
 	public boolean autoupdate = true;
 	public String newversion = "";
@@ -135,13 +153,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	//------------Threaded tasks---------------
 	final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
 	final PeriodicVoteTask votetask = new PeriodicVoteTask(this);
+	public DelayedCommandExecuter commexecuter = new DelayedCommandExecuter(this);
 	//Initialize in the onEnable
 	public MonitorTPS tpstask;
 	//-------------Thread IDS-------------------
 	int synctaskid = -1;
 	int votetaskid = -1;
-	int banlisttask = -1;
 	int tpstaskid = -1;
+	int commandexecutertask = -1;
+	int headsupdateid = -1;
 	
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	public static String minecraftport;
@@ -185,6 +205,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Init vars done.");
 			debug("Init Files");
 			initFiles();
+			headlocation.loadHeads();
 			debug("Init files done.");
 			initPlugins();
 			debug("Init plugins done.");
@@ -245,8 +266,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				}
 		        //XP handling and chat event handling changed at 1.3, so we can use the same variable. :D
 		        if(xpversion < 1) {
-		        	//We only keep this around for backwards compatibility with tekkit as it is still on 1.2.5
-		        	getLogger().severe("This version of the Enjin Minecraft Plugin does not support Tekkit Classic! Please downgrade to version 2.4.0.");
+		        	Bukkit.getPluginManager().registerEvents(new TekkitPlayerChatListener(this), this);
 		        }else {
 		        	Bukkit.getPluginManager().registerEvents(new NewPlayerChatListener(this), this);
 		        }
@@ -363,6 +383,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     	usingSSL = config.getBoolean("https", true);
     	configvalues.put("autoupdate", ConfigValueTypes.BOOLEAN);
     	autoupdate = config.getBoolean("autoupdate", true);
+    	apiurl = config.getString("apiurl", apiurl);
     	//Test to see if we need to update the config file.
     	String teststats = config.getString("collectstats", "");
     	if(teststats.equals("")) {
@@ -399,14 +420,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		config.set("autoupdate", autoupdate);
 		config.set("collectstats", collectstats);
 		config.set("sendstatsinterval", statssendinterval);
-		config.set("statscollected.player.travel", true);
-		config.set("statscollected.player.blocksbroken", true);
-		config.set("statscollected.player.blocksplaced", true);
-		config.set("statscollected.player.kills", true);
-		config.set("statscollected.player.deaths", true);
-		config.set("statscollected.player.xp", true);
-		config.set("statscollected.server.creeperexplosions", true);
-		config.set("statscollected.server.playerkicks", true);
+		String teststats = config.getString("statscollected.player.travel", "");
+    	if(teststats.equals("")) {
+    		config.set("statscollected.player.travel", true);
+    		config.set("statscollected.player.blocksbroken", true);
+    		config.set("statscollected.player.blocksplaced", true);
+    		config.set("statscollected.player.kills", true);
+    		config.set("statscollected.player.deaths", true);
+    		config.set("statscollected.player.xp", true);
+    		config.set("statscollected.server.creeperexplosions", true);
+    		config.set("statscollected.server.playerkicks", true);
+    	}
+		teststats = config.getString("buycommand", null);
+    	if(teststats == null) {
+    		config.set("buycommand", BUY_COMMAND);
+    	}
 		saveConfig();
 	}
 
@@ -414,6 +442,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		debug("Starting tasks.");
 		BukkitScheduler scheduler = Bukkit.getScheduler();
 		synctaskid = scheduler.scheduleAsyncRepeatingTask(this, task, 1200L, 1200L);
+		//execute the command executer task every 10 ticks, which should vary between .5 and 1 second on servers.
+		commandexecutertask = scheduler.scheduleSyncRepeatingTask(this, commexecuter,20L, 10L);
+		commexecuter.loadCommands(Bukkit.getConsoleSender());
+		//We want to wait an entire minute before running this to make sure all the worlds have had the time
+		//to load before we go and start updating heads.
+		headsupdateid = scheduler.scheduleAsyncRepeatingTask(this, new UpdateHeadsThread(this), 120L, 20*60*signupdateinterval);
 		//Only start the vote task if votifier is installed.
 		if(votifierinstalled) {
 			debug("Starting votifier task.");
@@ -424,6 +458,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public void registerEvents() {
 		debug("Registering events.");
 		Bukkit.getPluginManager().registerEvents(listener, this);
+		//Listen for all the heads events.
+		Bukkit.getPluginManager().registerEvents(new HeadListener(this), this);
 		if(BUY_COMMAND != null) {
 			shoplistener = new ShopListener();
 			Bukkit.getPluginManager().registerEvents(shoplistener, this);
@@ -435,11 +471,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		if(synctaskid != -1) {
 			Bukkit.getScheduler().cancelTask(synctaskid);
 		}
+		if(commandexecutertask != -1) {
+			Bukkit.getScheduler().cancelTask(commandexecutertask);
+			commexecuter.saveCommands();
+		}
 		if(votetaskid != -1) {
 			Bukkit.getScheduler().cancelTask(votetaskid);
 		}
-		if(banlisttask != -1) {
-			Bukkit.getScheduler().cancelTask(banlisttask);
+		if(headsupdateid != -1) {
+			Bukkit.getScheduler().cancelTask(headsupdateid);
 		}
 		//Bukkit.getScheduler().cancelTasks(this);
 	}
@@ -599,6 +639,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}
 					sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + debug);
 					return true;
+				}else if(args[0].equalsIgnoreCase("updateheads") || args[0].equalsIgnoreCase("syncheads")) {
+					if(!sender.hasPermission("enjin.updateheads")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.updateheads\" permission or OP to run that command!");
+						return true;
+					}
+					UpdateHeadsThread uhthread = new UpdateHeadsThread(this, sender);
+					Thread dispatchThread = new Thread(uhthread);
+					dispatchThread.start();
+					sender.sendMessage(ChatColor.GREEN + "Head update queued, please wait...");
+					return true;
 				}else if(args[0].equalsIgnoreCase("push")) {
 					if(!sender.hasPermission("enjin.push")) {
 						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.push\" permission or OP to run that command!");
@@ -746,9 +796,128 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + tpstask.getTPSAverage());
 					sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + tpstask.getLastTPSMeasurement());
 					Runtime runtime = Runtime.getRuntime();
-					long memused = runtime.totalMemory()/(1024*1024);
+					long memused = (runtime.maxMemory()-runtime.freeMemory())/(1024*1024);
 					long maxmemory = runtime.maxMemory()/(1024*1024);
 					sender.sendMessage(ChatColor.GOLD + "Memory Used: " + ChatColor.GREEN + memused + "MB/" + maxmemory + "MB");
+					return true;
+				}else if(args[0].equalsIgnoreCase("addpoints")) {
+					if(!sender.hasPermission("enjin.points.add")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.points.add\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 2) {
+						String playername = args[1].trim();
+						int pointsamount = 1;
+						try {
+							pointsamount = Integer.parseInt(args[2].trim());
+						}catch(NumberFormatException e) {
+							sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin addpoints [player] [amount]");
+							return true;
+						}
+						if(pointsamount < 1) {
+							sender.sendMessage(ChatColor.DARK_RED + "You cannot add less than 1 point to a user. You might want to try /enjin removepoints!");
+							return true;
+						}
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we add the " + pointsamount + " points to " + playername + "...");
+						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.AddPoints);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin addpoints [player] [amount]");
+					}
+					return true;
+				}else if(args[0].equalsIgnoreCase("removepoints")) {
+					if(!sender.hasPermission("enjin.points.remove")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.points.remove\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 2) {
+						String playername = args[1].trim();
+						int pointsamount = 1;
+						try {
+							pointsamount = Integer.parseInt(args[2].trim());
+						}catch(NumberFormatException e) {
+							sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin removepoints [player] [amount]");
+							return true;
+						}
+						if(pointsamount < 1) {
+							sender.sendMessage(ChatColor.DARK_RED + "You cannot remove less than 1 point to a user.");
+							return true;
+						}
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we remove the " + pointsamount + " points from " + playername + "...");
+						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.RemovePoints);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin removepoints [player] [amount]");
+					}
+					return true;
+				}else if(args[0].equalsIgnoreCase("setpoints")) {
+					if(!sender.hasPermission("enjin.points.set")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.points.set\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 2) {
+						String playername = args[1].trim();
+						int pointsamount = 1;
+						try {
+							pointsamount = Integer.parseInt(args[2].trim());
+						}catch(NumberFormatException e) {
+							sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin setpoints [player] [amount]");
+							return true;
+						}
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we set the points to " + pointsamount + " points for " + playername + "...");
+						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.SetPoints);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin setpoints [player] [amount]");
+					}
+					return true;
+				}else if(args[0].equalsIgnoreCase("points")) {
+					if(args.length > 1 && sender.hasPermission("enjin.points.getothers")) {
+						String playername = args[1].trim();
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we retrieve the points balance for " + playername + "...");
+						RetrievePointsSyncClass mthread = new RetrievePointsSyncClass(sender, playername, false);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else if(sender.hasPermission("enjin.points.getself")){
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we retrieve your points balance...");
+						RetrievePointsSyncClass mthread = new RetrievePointsSyncClass(sender, sender.getName(), true);
+						Thread dispatchThread = new Thread(mthread);
+				        dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "I'm sorry, you don't have permission to check points!");
+					}
+					return true;
+				}else if(args[0].equalsIgnoreCase("head") || args[0].equalsIgnoreCase("heads")) {
+					if(!sender.hasPermission("enjin.sign.set")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.sign.set\" permission or OP to run that command!");
+						return true;
+					}
+	                /*
+	                 * Display detailed Enjin help for heads in console
+	                 */
+	                sender.sendMessage(EnjinConsole.header());
+	                
+	                sender.sendMessage(ChatColor.AQUA + "To set a sign with a head, just place the head, then place the sign either above or below it.");
+	                sender.sendMessage(ChatColor.AQUA + "To create a sign of a specific type just put the code on the first line. # denotes the number.");
+	                sender.sendMessage(ChatColor.AQUA + " Example: [donation2] would show the second most recent donation.");
+	                sender.sendMessage(ChatColor.AQUA + "If there are sub-types, those go on the second line of the sign.");
+	                sender.sendMessage(ChatColor.GOLD + "[donation#] " + ChatColor.RESET + " - Most recent donation.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " Place the item id on the second line to only get donations for that package.");
+	                sender.sendMessage(ChatColor.GOLD + "[topvoter#] " + ChatColor.RESET + " - Top voter of the month.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes it to the top voter of the day/week/month.");
+	                sender.sendMessage(ChatColor.GOLD + "[voter#] " + ChatColor.RESET + " - Most recent voter.");
+	                sender.sendMessage(ChatColor.GOLD + "[topplayer#] " + ChatColor.RESET + " - Top player (gets data from module on website).");
+	                sender.sendMessage(ChatColor.GOLD + "[topposter#] " + ChatColor.RESET + " - Top poster on the forum.");
+	                sender.sendMessage(ChatColor.GOLD + "[toplikes#] " + ChatColor.RESET + " - Top forum likes.");
+	                sender.sendMessage(ChatColor.GOLD + "[newmember#] " + ChatColor.RESET + " - Latest player to sign up on the website.");
+	                sender.sendMessage(ChatColor.GOLD + "[toppoints#] " + ChatColor.RESET + " - Which player has the most unspent points.");
+	                sender.sendMessage(ChatColor.GOLD + "[pointsspent#] " + ChatColor.RESET + " - Player which has spent the most points overall.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
+	                sender.sendMessage(ChatColor.GOLD + "[moneyspent#] " + ChatColor.RESET + " - Player which has spent the most money on the server overall.");
+	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
 					return true;
 				}
 			}else {
@@ -781,8 +950,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                 if(sender.hasPermission("enjin.report"))
                     sender.sendMessage(ChatColor.GOLD + "/enjin report: "
                             + ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.");
+                if(sender.hasPermission("enjin.sign.set"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin heads: "
+                            + ChatColor.RESET + "Shows in game help for the heads and sign stats part of the plugin.");
 
-                /*
                 // Shop buy commands
                 sender.sendMessage(ChatColor.GOLD + "/buy: "
                         + ChatColor.RESET + "Display items available for purchase.");
@@ -790,11 +961,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         + ChatColor.RESET + "View the next page of results.");
                 sender.sendMessage(ChatColor.GOLD + "/buy <ID>: "
                         + ChatColor.RESET + "Purchase the specified item ID in the server shop.");
-                */
                 return true;
             }
 		}
 		return false;
+	}
+	
+	public void forceHeadUpdate() {
+		UpdateHeadsThread uhthread = new UpdateHeadsThread(this, null);
+		Thread dispatchThread = new Thread(uhthread);
+		dispatchThread.start();
 	}
 	
 	/**

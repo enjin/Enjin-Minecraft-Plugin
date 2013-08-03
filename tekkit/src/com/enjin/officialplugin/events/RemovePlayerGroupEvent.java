@@ -3,6 +3,11 @@ package com.enjin.officialplugin.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * This gets called whenever a group is removed by Enjin.
+ * @author Tux2
+ *
+ */
 public class RemovePlayerGroupEvent extends Event {
 	
 	// Custom Event Requirements

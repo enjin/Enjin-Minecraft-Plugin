@@ -23,7 +23,7 @@ public class GroupManagerListener implements Listener {
 				action == Action.USER_REMOVED) {
 			String player = event.getUser().getName();
 			if(player != null) {
-				plugin.debug(event.getUserName() + " just got a rank change... processing...");
+				EnjinMinecraftPlugin.debug(event.getUserName() + " just got a rank change... processing...");
 				plugin.listener.updatePlayerRanks(player);
 			}
 		}

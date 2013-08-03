@@ -22,8 +22,8 @@ public class Packet16MultiUserNotice {
 		try {
 			String players = PacketUtilities.readString(in);
 			String message = PacketUtilities.readString(in);
-			plugin.debug("Sending the following message to these users: " + players);
-			plugin.debug(message);
+			EnjinMinecraftPlugin.debug("Sending the following message to these users: " + players);
+			EnjinMinecraftPlugin.debug(message);
 			message = EnjinConsole.translateColorCodes(message);
 			String[] splitvalues = players.split(",");
 			for(String playerstring : splitvalues) {

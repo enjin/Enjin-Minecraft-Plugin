@@ -35,7 +35,7 @@ public class DownloadPluginThread implements Runnable {
 				versionnumber = versionsplit[0];
 				website = new URL(EnjinMinecraftPlugin.bukkitupdatejar + versionsplit[1]);
 			}else {
-				plugin.debug("Connecting to url " + EnjinMinecraftPlugin.updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
+				EnjinMinecraftPlugin.debug("Connecting to url " + EnjinMinecraftPlugin.updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
 				website = new URL(EnjinMinecraftPlugin.updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
 			}
 		    ReadableByteChannel rbc = Channels.newChannel(website.openStream());

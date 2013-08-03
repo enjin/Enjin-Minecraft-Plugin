@@ -1,7 +1,7 @@
 package com.enjin.officialplugin.listeners;
 
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
@@ -13,7 +13,7 @@ public class NewPlayerChatListener implements Listener {
 		this.plugin = plugin;
 	}
 	
-	public void playerChatEvent(PlayerChatEvent event) {
+	public void playerChatEvent(AsyncPlayerChatEvent event) {
 		if(event.isCancelled()) {
 			return;
 		}

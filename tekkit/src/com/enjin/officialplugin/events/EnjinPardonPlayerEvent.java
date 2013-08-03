@@ -4,6 +4,11 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * This gets called whenever a player is pardoned/unbanned by Enjin and can be canceled.
+ * @author Tux2
+ *
+ */
 public class EnjinPardonPlayerEvent extends Event implements Cancellable {
 	
 	// Custom Event Requirements

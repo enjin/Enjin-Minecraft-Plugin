@@ -21,7 +21,7 @@ public class Packet1BPardonPlayers {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String players = PacketUtilities.readString(in);
-			plugin.debug("Removing these players from the banlist: " + players);
+			EnjinMinecraftPlugin.debug("Removing these players from the banlist: " + players);
 			String[] msg = players.split(",");
 			EnjinPardonPlayerEvent event = new EnjinPardonPlayerEvent(msg);
 			plugin.getServer().getPluginManager().callEvent(event);

@@ -29,7 +29,7 @@ public class ShopListener implements Listener {
 		String[] args = event.getMessage().split(" ");
 		if(args[0].equalsIgnoreCase("/" + EnjinMinecraftPlugin.BUY_COMMAND)) {
 			Player player = event.getPlayer();
-			if(args[1].equalsIgnoreCase("history")) {
+			if(args.length > 1 && args[1].equalsIgnoreCase("history")) {
 				if(args.length > 2 && player.hasPermission("enjin.history")) {
 					player.sendMessage(ChatColor.RED + "Fetching shop history information for " + args[2] + ", please wait...");
 					Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, args[2]));

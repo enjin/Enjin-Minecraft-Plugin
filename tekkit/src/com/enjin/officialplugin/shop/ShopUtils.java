@@ -66,6 +66,51 @@ public class ShopUtils {
 		return lines;
 	}
 
+	public static void loadItemData(ShopItems si, String json) {
+		JSONParser parser = new JSONParser();
+		try {
+			JSONArray array = (JSONArray) parser.parse(json);
+			si.clearShopItems();
+			for (Object oshop : array) {
+				if (oshop instanceof JSONObject) {
+					JSONObject shop = (JSONObject) oshop;
+					Object items = shop.get("items");
+					if (items != null && items instanceof JSONArray
+							&& ((JSONArray) items).size() > 0) {
+						for (Object oitem : (JSONArray)items) {
+							JSONObject item = (JSONObject) oitem;
+							ShopItem sitem = new ShopItem((String) item.get("name"),
+									(String) item.get("id"), getPriceString(item.get("price")),
+									(String) item.get("info"), getPointsString(item.get("points")));
+							Object options = item.get("variables");
+							if (options != null && options instanceof JSONArray
+									&& ((JSONArray) options).size() > 0) {
+								JSONArray joptions = (JSONArray) options;
+								@SuppressWarnings("rawtypes")
+								Iterator optionsiterator = joptions.iterator();
+								while (optionsiterator.hasNext()) {
+									JSONObject option = (JSONObject) optionsiterator.next();
+									ShopItemOptions soptions = new ShopItemOptions(
+											(String) option.get("name"),
+											getPriceString(option.get("pricemin")),
+											getPriceString(option.get("pricemax")),
+											getPointsString(option.get("pointsmin")),
+											getPointsString(option.get("pointsmax")));
+									sitem.addOption(soptions);
+								}
+							}
+							si.addShopItem(sitem);
+						}
+					}
+				}
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+
+	}
+
 	public static PlayerShopsInstance parseShopsJSON(String json) {
 		PlayerShopsInstance psi = new PlayerShopsInstance();
 		JSONParser parser = new JSONParser();
@@ -160,8 +205,8 @@ public class ShopUtils {
 		for (Object oitem : shopitems) {
 			JSONObject item = (JSONObject) oitem;
 			ShopItem sitem = new ShopItem((String) item.get("name"),
-					(String) item.get("id"), (String) item.get("price"),
-					(String) item.get("info"));
+					(String) item.get("id"), getPriceString(item.get("price")),
+					(String) item.get("info"), getPointsString(item.get("points")));
 			Object options = item.get("variables");
 			if (options != null && options instanceof JSONArray
 					&& ((JSONArray) options).size() > 0) {
@@ -172,8 +217,10 @@ public class ShopUtils {
 					JSONObject option = (JSONObject) optionsiterator.next();
 					ShopItemOptions soptions = new ShopItemOptions(
 							(String) option.get("name"),
-							(String) option.get("pricemin"),
-							(String) option.get("pricemax"));
+							getPriceString(option.get("pricemin")),
+							getPriceString(option.get("pricemax")),
+							getPointsString(option.get("pointsmin")),
+							getPointsString(option.get("pointsmax")));
 					sitem.addOption(soptions);
 				}
 			}
@@ -186,8 +233,121 @@ public class ShopUtils {
 		}
 	}
 
+	public static String getPriceString(Object object) {
+		String price = "";
+		if(object == null) {
+			return price;
+		}
+		if(object instanceof String) {
+			price = (String) object;
+		}else if(object instanceof Double || object instanceof Float) {
+			if(object instanceof Double) {
+				price = Double.toString((Double) object);
+			}else {
+				price = Float.toString((Float) object);
+			}
+			if(price.indexOf(".") > -1) {
+				String[] split = price.split("\\.");
+				if(split.length > 1) {
+					if(split[0].equals("")) {
+						price = "0.";
+					}else {
+						price = split[0] + ".";
+					}
+					if(split[1].length() > 2) {
+						price = price + split[1].substring(0, 2);
+					}else if(split[1].length() == 2) {
+						price = price + split[1];
+					}else if(split[1].length() == 1) {
+						price = price + split[1] + "0";
+					}else if(split[1].length() == 0) {
+						price = split[0] + ".00";
+					}
+				}else {
+					price = split[0] + ".00";
+				}
+			}
+		}else if(object instanceof Integer) {
+			price = Integer.toString((Integer)object) + ".00";
+		}
+		return price;
+	}
+	
+	public static String getPointsString(Object object) {
+		String points = "";
+		if(object == null) {
+			return points;
+		}
+		if(object instanceof String) {
+			points = (String) object;
+		}else if(object instanceof Double || object instanceof Float) {
+			if(object instanceof Double) {
+				points = Double.toString((Double) object);
+			}else {
+				points = Float.toString((Float) object);
+			}
+			if(points.indexOf(".") > -1) {
+				String[] split = points.split("\\.");
+				if(split.length > 1) {
+					if(split[0].equals("")) {
+						points = "0.";
+					}else {
+						points = split[0] + ".";
+					}
+					if(split[1].length() > 2) {
+						points = points + split[1].substring(0, 2);
+					}else if(split[1].length() == 2) {
+						points = points + split[1];
+					}else if(split[1].length() == 1) {
+						points = points + split[1] + "0";
+					}else if(split[1].length() == 0) {
+						points = split[0] + ".00";
+					}
+				}else {
+					points = split[0] + ".00";
+				}
+			}
+		}else if(object instanceof Integer) {
+			points = Integer.toString((Integer)object) + ".00";
+		}
+		return points;
+	}
+
+	public static String formatPoints(String points, boolean pointsstring) {
+		String formattedpoints = "";
+		//TODO: correct the usd display
+		if(points.equals("")) {
+			formattedpoints = "";
+		}else if (points.equals("0.00") || points.equals("0")) {
+			formattedpoints = "FREE";
+		}else if (points.endsWith(".00")) {
+			String[] splitprice = points.split("\\.");
+			formattedpoints = splitprice[0];
+		} else {
+			formattedpoints = points;
+		}
+		if(pointsstring) {
+			try {
+				double dpoints = Double.parseDouble(points);
+				if(dpoints == 1) {
+					formattedpoints = formattedpoints + " point";
+				}else {
+					formattedpoints = formattedpoints + " points";
+				}
+			}catch(NumberFormatException e) {
+				if(formattedpoints.equals("FREE")) {
+					formattedpoints = "0 points";
+				}
+			}
+		}
+		return formattedpoints;
+	}
+
 	public static String formatPrice(String price, String currency) {
-		if (price.equals("0.00")) {
+		if(price.equals("")) {
+			return "";
+		}
+		if (price.equals("0.00") || price.equals("0")) {
 			return "FREE";
 		}
 		if (currency.equalsIgnoreCase("USD")) {
@@ -204,6 +364,26 @@ public class ShopUtils {
 			} else {
 				return price + " " + currency;
 			}
+		}
+	}
+
+	public static String formatPoints(ShopItemOptions item) {
+
+		if (item.getMinPoints().equals("0.00") || item.getMinPoints().equals("0")) {
+			if (item.getMaxPoints().equals("0.00")
+					|| item.getMaxPoints().equals("0")) {
+				return "FREE";
+			} else {
+				return "FREE - " + formatPoints(item.getMaxPoints(), true);
+			}
+		} else if (item.getMinPoints() == null || item.getMinPoints().equals("")) {
+			return formatPoints(item.getMaxPoints(), true);
+		} else if (item.getMaxPoints().equals("0.00")
+				|| item.getMaxPoints().equals("0")) {
+			return "FREE";
+		} else {
+			return formatPoints(item.getMinPoints(), false) + " - "
+					+ formatPoints(item.getMaxPoints(), true);
 		}
 	}
 
@@ -476,9 +656,18 @@ public class ShopUtils {
 			}
 		}
 		itempage.add(verticalborder + " ");
-		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext()
-				+ "Price: " + FORMATTING_CODE + shop.getColorprice()
-				+ formatPrice(item.getPrice(), shop.getCurrency()));
+		String formattedprice = formatPrice(item.getPrice(), shop.getCurrency());
+		if(!formattedprice.equals("")) {
+			itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext()
+					+ "Price: " + FORMATTING_CODE + shop.getColorprice()
+					+ formattedprice);
+		}
+		String formattedpoints = formatPoints(item.getPoints(), false);
+		if(!formattedpoints.equals("")) {
+			itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext()
+					+ "Points: " + FORMATTING_CODE + shop.getColorprice()
+					+ formattedpoints);
+		}
 		if (item.getOptions().size() > 0) {
 			StringBuilder options = new StringBuilder();
 			options.append(FORMATTING_CODE + shop.getColortext() + "Options: ");
@@ -490,9 +679,20 @@ public class ShopUtils {
 				options.append(FORMATTING_CODE + shop.getColorname()
 						+ option.getName() + FORMATTING_CODE
 						+ shop.getColorbracket() + " (");
-				options.append(FORMATTING_CODE + shop.getColorprice()
-						+ formatPrice(option, shop.getCurrency())
-						+ FORMATTING_CODE + shop.getColorbracket() + ")");
+				String optionprice = formatPrice(option, shop.getCurrency());
+				String optionpoints = formatPoints(option);
+				if(!optionprice.equals("") && !optionpoints.equals("")) {
+					options.append(FORMATTING_CODE + shop.getColorprice()
+							+ optionprice + " or " + optionpoints
+							+ FORMATTING_CODE + shop.getColorbracket() + ")");
+				}else if(!optionpoints.equals("")) {
+						options.append(FORMATTING_CODE + shop.getColorprice()
+								+ optionpoints
+								+ FORMATTING_CODE + shop.getColorbracket() + ")");
+				}else {
+					options.append(FORMATTING_CODE + shop.getColorprice()
+							+ optionprice + FORMATTING_CODE + shop.getColorbracket() + ")");
+				}
 			}
 			ArrayList<String> optionlines = WrapFormattedText(verticalborder,
 					options.toString());
@@ -632,10 +832,6 @@ public class ShopUtils {
 
 	public static String TrimText(String text, String ellipses, String suffix) {
 		String trimmedtext = text;
-		EnjinMinecraftPlugin.debug("Trimming Text.");
-		EnjinMinecraftPlugin.debug("Text length: " + getWidth(text));
-		EnjinMinecraftPlugin.debug("Ellipses length: " + getWidth(ellipses));
-		EnjinMinecraftPlugin.debug("Suffix length: " + getWidth(suffix));
 		if (getWidth(trimmedtext + suffix) > MINECRAFT_CONSOLE_WIDTH) {
 			trimmedtext = trimmedtext.substring(0, trimmedtext.length() - 1);
 			if (ellipses != null) {
@@ -675,16 +871,35 @@ public class ShopUtils {
 		}
 		String[] itemstring = new String[4];
 		String formattedprice = formatPrice(item.getPrice(), shop.getCurrency());
+		String formattedpoints = formatPoints(item.getPoints(), true);
 		itemstring[0] = verticalborder + FORMATTING_CODE + shop.getColorid()
 				+ (itemnumber + 1) + ". " + FORMATTING_CODE
 				+ shop.getColorname() + item.getName();
-		itemstring[0] = TrimText(
-				itemstring[0],
-				"...",
-				FORMATTING_CODE + shop.getColorbracket() + " ("
-						+ FORMATTING_CODE + shop.getColorprice()
-						+ formattedprice + FORMATTING_CODE
-						+ shop.getColorbracket() + ")");
+		if(!formattedprice.equals("") && !formattedpoints.equals("")) {
+			itemstring[0] = TrimText(
+					itemstring[0],
+					"...",
+					FORMATTING_CODE + shop.getColorbracket() + " ("
+							+ FORMATTING_CODE + shop.getColorprice()
+							+ formattedprice + " or " + formattedpoints + FORMATTING_CODE
+							+ shop.getColorbracket() + ")");
+		}else if(!formattedpoints.equals("")) {
+			itemstring[0] = TrimText(
+					itemstring[0],
+					"...",
+					FORMATTING_CODE + shop.getColorbracket() + " ("
+							+ FORMATTING_CODE + shop.getColorprice()
+							+ formattedpoints + FORMATTING_CODE
+							+ shop.getColorbracket() + ")");
+		}else {
+			itemstring[0] = TrimText(
+					itemstring[0],
+					"...",
+					FORMATTING_CODE + shop.getColorbracket() + " ("
+							+ FORMATTING_CODE + shop.getColorprice()
+							+ formattedprice + FORMATTING_CODE
+							+ shop.getColorbracket() + ")");
+		}
 		String[] fulldescription = item.getInfo().split("\n");
 		String description = fulldescription[0];
 		itemstring[1] = verticalborder + FORMATTING_CODE + shop.getColorurl()
@@ -745,10 +960,19 @@ public class ShopUtils {
 		}
 		String[] itemstring = new String[1];
 		String formattedprice = formatPrice(item.getPrice(), shop.getCurrency());
+		String formattedpoints = formatPoints(item.getPoints(), true);
 		itemstring[0] = verticalborder + FORMATTING_CODE + shop.getColorid()
 				+ (itemnumber + 1) + ". " + FORMATTING_CODE + shop.getColorname() + item.getName();
-		itemstring[0] = TrimText(itemstring[0], "...", FORMATTING_CODE + shop.getColorbracket() + " ("
-				+ FORMATTING_CODE + shop.getColorprice() + formattedprice + FORMATTING_CODE + shop.getColorbracket() + ")");
+		if(!formattedprice.equals("") && !formattedpoints.equals("")) {
+			itemstring[0] = TrimText(itemstring[0], "...", FORMATTING_CODE + shop.getColorbracket() + " ("
+					+ FORMATTING_CODE + shop.getColorprice() + formattedprice + " or " + formattedpoints + FORMATTING_CODE + shop.getColorbracket() + ")");
+		}else if(!formattedpoints.equals("")) {
+			itemstring[0] = TrimText(itemstring[0], "...", FORMATTING_CODE + shop.getColorbracket() + " ("
+					+ FORMATTING_CODE + shop.getColorprice() + formattedpoints + FORMATTING_CODE + shop.getColorbracket() + ")");
+		}else {
+			itemstring[0] = TrimText(itemstring[0], "...", FORMATTING_CODE + shop.getColorbracket() + " ("
+					+ FORMATTING_CODE + shop.getColorprice() + formattedprice + FORMATTING_CODE + shop.getColorbracket() + ")");
+		}
 		return itemstring;
 	}
 

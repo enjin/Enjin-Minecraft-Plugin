@@ -23,7 +23,7 @@ public class Packet15RemoteConfigUpdate {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String values = PacketUtilities.readString(in);
-			plugin.debug("Changing these values in the config: \"" + values);
+			EnjinMinecraftPlugin.debug("Changing these values in the config: \"" + values);
 			String[] splitvalues = values.split(",");
 			for(String value : splitvalues) {
 				String[] split = value.split(":");

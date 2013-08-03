@@ -39,7 +39,7 @@ public class bPermsChangeListener implements Listener {
 					if(usereditingwhatplayer.containsKey(p.getName())) {
 						String ep = usereditingwhatplayer.get(p.getName());
 						//We need to make sure the command executes before we actually grab the data.
-						plugin.debug(ep + " just got a rank change... processing...");
+						EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
 					}
 				}else {

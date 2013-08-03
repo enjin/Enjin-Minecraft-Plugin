@@ -27,7 +27,7 @@ public class MonitorTPS implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
-	public void run() {
+	public synchronized void run() {
 		long currenttime = System.currentTimeMillis();
 		double timespent = ((double)currenttime - (double)lasttime)/1000f;
 		double tps = (double)tickmeasurementinterval/timespent;
@@ -39,7 +39,7 @@ public class MonitorTPS implements Runnable {
 		lasttime = currenttime;
 	}
 	
-	public double getTPSAverage() {
+	public synchronized double getTPSAverage() {
 		if(tpslist.size() > 0) {
 			double alltps = 0;
 			for(Double tps : tpslist) {
@@ -50,14 +50,14 @@ public class MonitorTPS implements Runnable {
 		 return -1;
 	}
 	
-	public double getLastTPSMeasurement() {
+	public synchronized double getLastTPSMeasurement() {
 		if(tpslist.size() > 0) {
 			return tpslist.getLast();
 		}
 		return -1;
 	}
 	
-	public void clearTPS() {
+	public synchronized void clearTPS() {
 		double lastmeasurement = getLastTPSMeasurement();
 		tpslist.clear();
 		tpslist.add(lastmeasurement);
