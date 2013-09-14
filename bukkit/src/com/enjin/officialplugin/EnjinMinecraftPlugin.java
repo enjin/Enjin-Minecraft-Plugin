@@ -57,6 +57,7 @@ import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
 import com.enjin.officialplugin.stats.WriteStats;
+import com.enjin.officialplugin.threaded.AsyncToSyncEventThrower;
 import com.enjin.officialplugin.threaded.BanLister;
 import com.enjin.officialplugin.threaded.CommandExecuter;
 import com.enjin.officialplugin.threaded.ConfigSender;
@@ -147,6 +148,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
 	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
 	static public boolean bukkitversion = false;
+	
+	public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
 	
 	public final EMPListener listener = new EMPListener(this);
 	

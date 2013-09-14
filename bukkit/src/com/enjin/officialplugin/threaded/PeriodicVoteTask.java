@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -84,6 +85,8 @@ public class PeriodicVoteTask implements Runnable {
 				//Let's just use the other method we already have so that there is
 				//only one place to maintain.
 				String success = plugin.getTask().handleInput(in);
+				//Oops! Forgot to schedule a command queue to execute!
+				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, plugin.commandqueue);
 				//System.out.println("Handling input stream...");
 				if(success.equalsIgnoreCase("ok")) {
 					successful = true;

@@ -202,7 +202,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.RecentDonator));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.RecentDonator));
 					}
 				}
 				if(array.get("item_purchases") instanceof JSONObject) {
@@ -227,7 +227,7 @@ public class UpdateHeadsThread implements Runnable {
 										i++;
 									}
 								}
-								Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.RecentItemDonator, itemid));
+								plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.RecentItemDonator, itemid));
 							}
 						}
 					}
@@ -248,7 +248,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopDailyVoter));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopDailyVoter));
 					}
 				}
 				if(array.get("top_voters_week") instanceof JSONArray) {
@@ -267,7 +267,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopWeeklyVoter));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopWeeklyVoter));
 					}
 				}
 				if(array.get("top_voters_month") instanceof JSONArray) {
@@ -286,7 +286,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopMonthlyVoter));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopMonthlyVoter));
 					}
 				}
 				if(array.get("recent_voters") instanceof JSONArray) {
@@ -317,7 +317,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.RecentVoter));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.RecentVoter));
 					}
 				}
 				if(array.get("top_players") instanceof JSONArray) {
@@ -336,7 +336,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopPlayer));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopPlayer));
 					}
 				}
 				if(array.get("top_posters") instanceof JSONArray) {
@@ -355,7 +355,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopPoster));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopPoster));
 					}
 				}
 				if(array.get("top_forum_likes") instanceof JSONArray) {
@@ -374,7 +374,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopLikes));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.TopLikes));
 					}
 				}
 				if(array.get("latest_members") instanceof JSONArray) {
@@ -405,7 +405,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(HeadLocation.Type.LatestMembers));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(HeadLocation.Type.LatestMembers));
 					}
 				}
 				if(array.get("top_points") instanceof JSONArray) {
@@ -427,7 +427,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_points_month") instanceof JSONArray) {
@@ -449,7 +449,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_points_week") instanceof JSONArray) {
@@ -471,7 +471,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_points_day") instanceof JSONArray) {
@@ -493,7 +493,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_donators_money") instanceof JSONArray) {
@@ -515,7 +515,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_donators_money_day") instanceof JSONArray) {
@@ -537,7 +537,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_donators_money_week") instanceof JSONArray) {
@@ -559,7 +559,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_donators_money_month") instanceof JSONArray) {
@@ -581,7 +581,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_donators_points") instanceof JSONArray) {
@@ -603,7 +603,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_donators_points_day") instanceof JSONArray) {
@@ -625,7 +625,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_donators_points_week") instanceof JSONArray) {
@@ -647,7 +647,7 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
 				if(array.get("top_donators_points_month") instanceof JSONArray) {
@@ -669,9 +669,10 @@ public class UpdateHeadsThread implements Runnable {
 								i++;
 							}
 						}
-						Bukkit.getServer().getPluginManager().callEvent(new HeadsUpdatedEvent(type));
+						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
+				plugin.getServer().getScheduler().runTask(plugin, plugin.eventthrower);
 				if(sender != null) {
 					sender.sendMessage(ChatColor.GREEN + "Player head data successfully synched!");
 				}

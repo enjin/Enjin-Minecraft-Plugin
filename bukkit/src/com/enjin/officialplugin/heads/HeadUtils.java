@@ -38,6 +38,13 @@ public class HeadUtils {
 	 * @return True if the update was successful. False if the head or sign is missing.
 	 */
 	public static boolean updateHead(Location signloc, Location headloc, String playername, String[] signlines) {
+		try {
+			if(headloc == null || headloc.getBlock() == null) {
+				return false;
+			}
+		}catch(Exception e) {
+			return false;
+		}
 		Block headblock = headloc.getBlock();
 		if(headblock.getType() == Material.SKULL) {
 			Skull skullblock = (Skull) headblock.getState();
@@ -70,6 +77,9 @@ public class HeadUtils {
 	 * @return A String array with 4 elements for the 4 lines of the sign, otherwise null if it isn't a sign.
 	 */
 	public static String[] getSignData(Location signloc) {
+		if(signloc == null || signloc.getBlock() == null) {
+			return null;
+		}
 		BlockState sign = signloc.getBlock().getState();
 		if(sign instanceof Sign) {
 			Sign signtype = (Sign) sign;
@@ -85,6 +95,9 @@ public class HeadUtils {
 	 * @return True if the update was successful. False if the head or sign is missing.
 	 */
 	public static boolean updateSign(Location signloc, String... lines) {
+		if(signloc == null || signloc.getBlock() == null) {
+			return false;
+		}
 		BlockState sign = signloc.getBlock().getState();
 		if(sign instanceof Sign) {
 			Sign signtype = (Sign) sign;
