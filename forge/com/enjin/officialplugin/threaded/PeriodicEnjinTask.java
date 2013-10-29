@@ -129,7 +129,7 @@ public class PeriodicEnjinTask implements Runnable {
 			InputStream in = con.getInputStream();
 			//System.out.println("Handling input stream...");
 			String success = handleInput(in);
-			plugin.scheduler.scheduleSyncDelayedTask(plugin.commandqueue);
+			//plugin.scheduler.scheduleSyncDelayedTask(plugin.commandqueue, 1);
 			if(success.equalsIgnoreCase("ok")) {
 				successful = true;
 				if(plugin.unabletocontactenjin) {
@@ -580,7 +580,7 @@ public class PeriodicEnjinTask implements Runnable {
 			//Make sure it's a normal envrionment, as the end and the
 			//nether don't have any weather.
 			WorldInfo worldinfo = w.getWorldInfo();
-			if(w.getWorldInfo().getDimension() == 0 && !worlds.contains(worldinfo.getWorldName())) {
+			if(w.getWorldInfo().getVanillaDimension() == 0 && !worlds.contains(worldinfo.getWorldName())) {
 				if(builder.length() > 0) {
 					builder.append(";");
 				}

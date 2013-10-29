@@ -53,13 +53,17 @@ public class TaskScheduler implements ITickHandler {
 	public String getLabel() {
 		return "EnjinTaskScheduler";
 	}
+	
+	int nextTaskID() {
+		return ++nexttaskid;
+	}
 
 	public int runTaskTimerAsynchronously(Runnable task, int tickstostart, int ticksToWait) {
 		ScheduledTask st = new ScheduledTask(task, tickstostart, ticksToWait);
-		Integer taskid = new Integer(nexttaskid);
-		tasks.put(taskid, st);
-		nexttaskid++;
-		return taskid;
+		
+		int taskID = nextTaskID();
+		tasks.put(taskID, st);
+		return taskID;
 	}
 
 	public boolean cancelTask(int synctaskid) {
@@ -82,8 +86,21 @@ public class TaskScheduler implements ITickHandler {
 		thetasks.clear();
 	}
 
-	public void scheduleSyncDelayedTask(Runnable task) {
+	public int scheduleSyncDelayedTask(Runnable task) {
 		ScheduledTask st = new ScheduledTask(task, 0);
 		st.setAsync(false);
+		
+		int taskID = nextTaskID();
+		tasks.put(taskID, st);
+		return taskID;
+	}
+
+	public int scheduleSyncDelayedTask(Runnable task, int delay) {
+		ScheduledTask st = new ScheduledTask(task, delay);
+		st.setAsync(false);
+		
+		int taskID = nextTaskID();
+		tasks.put(taskID, st);
+		return taskID;
 	}
 }

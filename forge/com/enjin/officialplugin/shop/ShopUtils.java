@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 
 import com.enjin.officialplugin.ChatColor;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.officialplugin.heads.Location;
 import com.enjin.officialplugin.shop.ServerShop.Type;
 
 public class ShopUtils {
@@ -70,9 +71,11 @@ public class ShopUtils {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONArray array = (JSONArray) parser.parse(json);
+			EnjinMinecraftPlugin.debug(array.toString());////
 			for (Object oshop : array) {
 				if (oshop instanceof JSONObject) {
 					JSONObject shop = (JSONObject) oshop;
+					EnjinMinecraftPlugin.debug(shop.toString());////
 					ServerShop newshop = new ServerShop(
 							(String) shop.get("name"));
 					newshop.setBorder_c((String) shop.get("border_c"));
@@ -159,8 +162,8 @@ public class ShopUtils {
 		for (Object oitem : shopitems) {
 			JSONObject item = (JSONObject) oitem;
 			ShopItem sitem = new ShopItem((String) item.get("name"),
-					(String) item.get("id"), (String) item.get("price"),
-					(String) item.get("info"));
+					(String) item.get("id"), getPriceString(item.get("price")),
+					(String) item.get("info"), getPointsString(item.get("points")));
 			Object options = item.get("variables");
 			if (options != null && options instanceof JSONArray
 					&& ((JSONArray) options).size() > 0) {
@@ -171,8 +174,10 @@ public class ShopUtils {
 					JSONObject option = (JSONObject) optionsiterator.next();
 					ShopItemOptions soptions = new ShopItemOptions(
 							(String) option.get("name"),
-							(String) option.get("pricemin"),
-							(String) option.get("pricemax"));
+							getPriceString(option.get("pricemin")),
+							getPriceString(option.get("pricemax")),
+							getPointsString(option.get("pointsmin")),
+							getPointsString(option.get("pointsmax")));
 					sitem.addOption(soptions);
 				}
 			}
@@ -874,5 +879,87 @@ public class ShopUtils {
 		for(int j = 0; j < separatedglyphs4.length; j++, i++) {
 			glyphWidth[i] = Byte.parseByte(separatedglyphs4[j].trim());
 		}
+	}
+	
+	// From trunk
+	
+	public static String getPriceString(Object object) {
+		String price = "";
+		if(object == null) {
+			return price;
+		}
+		if(object instanceof String) {
+			price = (String) object;
+		}else if(object instanceof Double || object instanceof Float) {
+			if(object instanceof Double) {
+				price = Double.toString((Double) object);
+			}else {
+				price = Float.toString((Float) object);
+			}
+			if(price.indexOf(".") > -1) {
+				String[] split = price.split("\\.");
+				if(split.length > 1) {
+					if(split[0].equals("")) {
+						price = "0.";
+					}else {
+						price = split[0] + ".";
+					}
+					if(split[1].length() > 2) {
+						price = price + split[1].substring(0, 2);
+					}else if(split[1].length() == 2) {
+						price = price + split[1];
+					}else if(split[1].length() == 1) {
+						price = price + split[1] + "0";
+					}else if(split[1].length() == 0) {
+						price = split[0] + ".00";
+					}
+				}else {
+					price = split[0] + ".00";
+				}
+			}
+		}else if(object instanceof Integer) {
+			price = Integer.toString((Integer)object) + ".00";
+		}
+		return price;
+	}
+	
+	public static String getPointsString(Object object) {
+		String points = "";
+		if(object == null) {
+			return points;
+		}
+		if(object instanceof String) {
+			points = (String) object;
+		}else if(object instanceof Double || object instanceof Float) {
+			if(object instanceof Double) {
+				points = Double.toString((Double) object);
+			}else {
+				points = Float.toString((Float) object);
+			}
+			if(points.indexOf(".") > -1) {
+				String[] split = points.split("\\.");
+				if(split.length > 1) {
+					if(split[0].equals("")) {
+						points = "0.";
+					}else {
+						points = split[0] + ".";
+					}
+					if(split[1].length() > 2) {
+						points = points + split[1].substring(0, 2);
+					}else if(split[1].length() == 2) {
+						points = points + split[1];
+					}else if(split[1].length() == 1) {
+						points = points + split[1] + "0";
+					}else if(split[1].length() == 0) {
+						points = split[0] + ".00";
+					}
+				}else {
+					points = split[0] + ".00";
+				}
+			}
+		}else if(object instanceof Integer) {
+			points = Integer.toString((Integer)object) + ".00";
+		}
+		return points;
 	}
 }

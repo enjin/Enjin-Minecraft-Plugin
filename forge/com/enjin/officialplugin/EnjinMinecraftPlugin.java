@@ -27,12 +27,18 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.enjin.officialplugin.heads.CachedHeadData;
+import com.enjin.officialplugin.heads.HeadListener;
+import com.enjin.officialplugin.heads.HeadLocations;
 //import com.enjin.officialplugin.listeners.EnjinStatsListener;
 import com.enjin.officialplugin.listeners.CommandListener;
 import com.enjin.officialplugin.listeners.NewPlayerChatListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.scheduler.TaskScheduler;
+import com.enjin.officialplugin.shop.ShopEnableChat;
+import com.enjin.officialplugin.shop.ShopItems;
 import com.enjin.officialplugin.shop.ShopListener;
+import com.enjin.officialplugin.threaded.AsyncToSyncEventThrower;
 import com.enjin.officialplugin.threaded.BanLister;
 import com.enjin.officialplugin.threaded.CommandExecuter;
 import com.enjin.officialplugin.threaded.ConfigSender;
@@ -40,10 +46,12 @@ import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
 import com.enjin.officialplugin.threaded.ReportMakerThread;
+import com.enjin.officialplugin.threaded.UpdateHeadsThread;
 import com.enjin.officialplugin.tpsmeter.MonitorTPS;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PostInit;
@@ -68,7 +76,7 @@ import cpw.mods.fml.relauncher.Side;
  * 
  */
 
-@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.5-152")
+@Mod(modid="EnjinMinecraftPlugin", name="EnjinMinecraftPlugin", version="2.4.9-162")
 public class EnjinMinecraftPlugin {
 
 	@Instance("EnjinMinecraftPlugin")
@@ -91,10 +99,18 @@ public class EnjinMinecraftPlugin {
 	public boolean votifierinstalled = false;
 	public int xpversion = 0;
 	
+	public HeadLocations headlocation = new HeadLocations();
+	public CachedHeadData headdata = new CachedHeadData(this);
+	
+	public ShopItems cachedItems = new ShopItems();
+	
 	//----------------Make sure to change this for every minecraft version!
-	public String mcversion = "1.5.2";
+	public String mcversion = "1.6.2";
+	
+	int signupdateinterval = 10;
 	
 	public ShopListener shoplistener = new ShopListener();
+	public ShopEnableChat shopEClistener = new ShopEnableChat(shoplistener);
 	//Since forge mods can be installed on a client, we want to make sure we only run on a server.
 	public boolean enable = true;
 	
@@ -105,7 +121,7 @@ public class EnjinMinecraftPlugin {
 	
 	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
 	
-	public CommandExecuter commandqueue = new CommandExecuter();
+	public CommandExecuter commandqueue = new CommandExecuter(this);
 	
 	//public StatsServer serverstats = new StatsServer(this);
 	//public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
@@ -129,9 +145,12 @@ public class EnjinMinecraftPlugin {
 	public boolean authkeyinvalid = false;
 	public boolean unabletocontactenjin = false;
 	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
-	File datafolder = new File("config" + File.separator + "EnjinMinecraftPlugin");
+	public static File datafolder = new File("config" + File.separator + "EnjinMinecraftPlugin");
+	
+	public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
 	
 	public final EMPListener listener = new EMPListener(this);
+	public final HeadListener headListener = new HeadListener(this);
 	public VotifierListener votelistener;
 	
 	//------------Threaded tasks---------------
@@ -142,13 +161,15 @@ public class EnjinMinecraftPlugin {
 	public MonitorTPS tpstask;
 	//-------------Thread IDS-------------------
 	int synctaskid = -1;
+	int commandexectuerthread = -1;
 	int votetaskid = -1;
 	int banlisttask = -1;
 	int tpstaskid = -1;
+	int headsupdateid = -1;
 	
 	public TaskScheduler scheduler = new TaskScheduler();
 	
-	static final ExecutorService exec = Executors.newCachedThreadPool();
+	public static final ExecutorService exec = Executors.newCachedThreadPool();
 	public static String minecraftport;
 	public static boolean usingSSL = true;
 	public NewKeyVerifier verifier = null;
@@ -171,13 +192,14 @@ public class EnjinMinecraftPlugin {
 		enjinlogger.fine(s);
 	}
 	
-	@PreInit
+	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		if(event.getSide() == Side.CLIENT) {
 			enable = false;
 		}else {
 			debug("Begin init");
 			initFiles();
+			headlocation.loadHeads();
 			debug("Init files done.");
 			try {
 				initVariables();
@@ -207,7 +229,7 @@ public class EnjinMinecraftPlugin {
 		}
 	}
 	
-	@Init
+	@EventHandler
 	public void onEnable(FMLInitializationEvent event) {
 		if(!enable) {
 			return;
@@ -238,17 +260,18 @@ public class EnjinMinecraftPlugin {
 
 
 
-	@ServerStarting
+	@EventHandler
 	public void serverStarting(FMLServerStartingEvent ev) {
 		s = ev.getServer();
 		if(s.getCommandManager() instanceof ServerCommandManager) {
 			ServerCommandManager scm = (ServerCommandManager)s.getCommandManager();
 			scm.registerCommand(new CommandListener(this));
 			scm.registerCommand(shoplistener);
+			scm.registerCommand(shopEClistener);
 		}
 	}
 	
-	@ServerStarted
+	@EventHandler
 	public void serverStarted(FMLServerStartedEvent event) {
 		debug("Enabling Ban lister.");
 		banlistertask = new BanLister(this);
@@ -287,7 +310,7 @@ public class EnjinMinecraftPlugin {
 		}
 	}
 	
-	@ServerStopping
+	@EventHandler
 	public void serverStopped(FMLServerStoppingEvent event) {
 		stopTask();
 		scheduler.cancelAllTasks();
@@ -304,7 +327,7 @@ public class EnjinMinecraftPlugin {
 		return datafolder;
 	}
 
-	@PostInit
+	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		
 	}
@@ -359,7 +382,7 @@ public class EnjinMinecraftPlugin {
     	if(buy == null) {
     		createConfig();
     	}
-    	BUY_COMMAND = config.getString("buycommand", "");
+    	BUY_COMMAND = config.getString("buycommand", null);
     	
 	}
 	
@@ -385,7 +408,12 @@ public class EnjinMinecraftPlugin {
 	public void startTask() {
 		debug("Starting tasks.");
 		synctaskid = scheduler.runTaskTimerAsynchronously(task, 1200, 1200);
-		banlisttask = scheduler.runTaskTimerAsynchronously(banlistertask, 1800, 1800);
+		//Start the command executer a little after the task timer.
+		commandexectuerthread = scheduler.runTaskTimerAsynchronously(commandqueue, 1300, 1200);
+		banlisttask = scheduler.runTaskTimerAsynchronously(banlistertask, 40, 1800);
+		//We want to wait an entire minute before running this to make sure all the worlds have had the time
+		//to load before we go and start updating heads.
+		headsupdateid = scheduler.runTaskTimerAsynchronously(new UpdateHeadsThread(this), 120, 20*60*signupdateinterval);
 		//Only start the vote task if votifier is installed.
 		if(votifierinstalled) {
 			debug("Starting votifier task.");
@@ -396,12 +424,16 @@ public class EnjinMinecraftPlugin {
 	public void registerEvents() {
 		debug("Registering events.");
 		MinecraftForge.EVENT_BUS.register(listener);
+		MinecraftForge.EVENT_BUS.register(headListener);
 		if(Loader.instance().isModLoaded("Votifier")) {
 			if(votelistener == null) {
 				votelistener = new VotifierListener(this);
 			}
 			MinecraftForge.EVENT_BUS.register(votelistener);
 			votifierinstalled = true;
+		}
+		if (BUY_COMMAND != null) {
+			MinecraftForge.EVENT_BUS.register(shoplistener);
 		}
 	}
 	
@@ -410,11 +442,17 @@ public class EnjinMinecraftPlugin {
 		if(synctaskid != -1) {
 			scheduler.cancelTask(synctaskid);
 		}
+		if(commandexectuerthread != -1) {
+			scheduler.cancelTask(commandexectuerthread);
+		}
 		if(votetaskid != -1) {
 			scheduler.cancelTask(votetaskid);
 		}
 		if(banlisttask != -1) {
 			scheduler.cancelTask(banlisttask);
+		}
+		if(headsupdateid != -1) {
+			scheduler.cancelTask(headsupdateid);
 		}
 		//Bukkit.getScheduler().cancelTasks(this);
 	}
@@ -423,6 +461,7 @@ public class EnjinMinecraftPlugin {
 		debug("Unregistering events.");
 		try {
 			MinecraftForge.EVENT_BUS.unregister(listener);
+			MinecraftForge.EVENT_BUS.unregister(headListener);
 			if(votelistener != null) {
 				MinecraftForge.EVENT_BUS.unregister(votelistener);
 			}
@@ -601,8 +640,8 @@ public class EnjinMinecraftPlugin {
 			List<EntityPlayerMP> players = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
 			for(EntityPlayerMP player : players) {
 				if(ops.contains(player.getEntityName().toLowerCase())) {
-					player.sendChatToPlayer(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
-					player.sendChatToPlayer(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin log");
+					player.addChatMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
+					player.addChatMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin log");
 				}
 			}
 		}
@@ -699,6 +738,10 @@ public class EnjinMinecraftPlugin {
 	}
 
 	public String getVersion() {
-		return "2.4.5-forge";
+		return "2.4.9-forge";
+	}
+
+	public void forceHeadUpdate() {
+		exec.execute(new UpdateHeadsThread(this));
 	}
 }

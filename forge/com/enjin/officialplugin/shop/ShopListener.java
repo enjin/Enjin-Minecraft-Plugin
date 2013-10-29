@@ -22,15 +22,14 @@ import com.enjin.officialplugin.shop.ServerShop.Type;
 public class ShopListener extends CommandBase {
 
 	ConcurrentHashMap<String, PlayerShopsInstance> activeshops = new ConcurrentHashMap<String, PlayerShopsInstance>();
-	//ConcurrentHashMap<String, String> playersdisabledchat = new ConcurrentHashMap<String, String>();
+	ConcurrentHashMap<String, String> playersdisabledchat = new ConcurrentHashMap<String, String>();
 
 	public void removePlayer(String player) {
 		player = player.toLowerCase();
-		//playersdisabledchat.remove(player);
+		playersdisabledchat.remove(player);
 		activeshops.remove(player);
 	}
 	
-	/*
 	@ForgeSubscribe(priority=EventPriority.LOWEST)
 	public void playerChatEvent(ServerChatEvent event) {
 		if(event.isCanceled()) {
@@ -46,7 +45,7 @@ public class ShopListener extends CommandBase {
 			for(EntityPlayerMP recipient : playerlist) {
 				//Only send the message to players that are not contained in the list.
 				if(!playersdisabledchat.containsKey(recipient.username.toLowerCase())) {
-					recipient.sendChatToPlayer(event.line);
+					recipient.sendChatToPlayer(event.component);
 				}
 			}
 		}
@@ -58,7 +57,7 @@ public class ShopListener extends CommandBase {
 		String player = event.entityPlayer.username.toLowerCase();
 		playersdisabledchat.remove(player);
 		activeshops.remove(player);
-	}*/
+	}
 
 	public void sendPlayerInitialShopData(EntityPlayerMP player, PlayerShopsInstance shops) {
 		if(shops.getServerShopCount() == 1) {
@@ -82,7 +81,7 @@ public class ShopListener extends CommandBase {
 
 	public static void sendPlayerPage(EntityPlayerMP player, ArrayList<String> page) {
 		for(String line : page) {
-			player.sendChatToPlayer(line);
+			player.addChatMessage(line);
 		}
 	}
 
@@ -118,28 +117,27 @@ public class ShopListener extends CommandBase {
 		//The new history command
 		if(args.length > 0 && args[0].equalsIgnoreCase("history")) {
 			if(args.length > 1 && isPlayerOp(player)) {
-				player.sendChatToPlayer(ChatColor.RED + "Fetching shop history information for " + args[1] + ", please wait...");
+				player.addChatMessage(ChatColor.RED + "Fetching shop history information for " + args[1] + ", please wait...");
 				Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, args[1]));
 	            dispatchThread.start();
-	            return;
 			}else {
-				player.sendChatToPlayer(ChatColor.RED + "Fetching your shop history information, please wait...");
+				player.addChatMessage(ChatColor.RED + "Fetching your shop history information, please wait...");
 				Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, player.username));
 	            dispatchThread.start();
-	            return;
 			}
+			return;
 		}
 		
 		if(activeshops.containsKey(player.username.toLowerCase())) {
 			PlayerShopsInstance psi = activeshops.get(player.username.toLowerCase());
 			//If it's been over 10 minutes, re-retrieve it.
 			if(psi.getRetrievalTime() + (1000*60*10) < System.currentTimeMillis()) {
-				player.sendChatToPlayer(ChatColor.RED + "Fetching shop information, please wait...");
+				player.addChatMessage(ChatColor.RED + "Fetching shop information, please wait...");
 				Thread dispatchThread = new Thread(new PlayerShopGetter(this, player));
 				dispatchThread.start();
 				return;
 			}
-			//playersdisabledchat.put(player.username.toLowerCase(), player.username);
+			playersdisabledchat.put(player.username.toLowerCase(), player.username);
 			//If it's just the /buy parameter, let's just reset to the shop topmost category.
 			if(args.length == 0) {
 				//If they haven't selected a shop yet, show them the shop selection screen again.
@@ -179,10 +177,10 @@ public class ShopListener extends CommandBase {
 									sendPlayerShopData(player, psi, selectedshop, 0);
 								}
 							}else {
-								player.sendChatToPlayer(ChatColor.RED + "Invalid page number.");
+								player.addChatMessage(ChatColor.RED + "Invalid page number.");
 							}
 						}catch (NumberFormatException e) {
-							player.sendChatToPlayer(ChatColor.RED + "Invalid page number.");
+							player.addChatMessage(ChatColor.RED + "Invalid page number.");
 						}
 					}else {
 						//If they didn't specify a shop, let's show the initial shop data again.
@@ -205,18 +203,18 @@ public class ShopListener extends CommandBase {
 								if(pagenumber < pages.size() && pagenumber >= 0) {
 									sendPlayerPage(player, pages.get(pagenumber));
 								}else {
-									player.sendChatToPlayer(ChatColor.RED + "Invalid page number.");
+									player.addChatMessage(ChatColor.RED + "Invalid page number.");
 								}
 							}catch(NumberFormatException e) {
-								player.sendChatToPlayer(ChatColor.RED + "Invalid page number.");
+								player.addChatMessage(ChatColor.RED + "Invalid page number.");
 							}
 						}
 					}else {
-						player.sendChatToPlayer(ChatColor.RED + "Please specify a page number.");
+						player.addChatMessage(ChatColor.RED + "Please specify a page number.");
 					}
 				}else if(args.length > 0){
 					if(psi.getActiveShop() == null) {
-						player.sendChatToPlayer(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.BUY_COMMAND + " to see the shops list.");
+						player.addChatMessage(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.BUY_COMMAND + " to see the shops list.");
 					}else {
 						try {
 							ShopItemAdder category = psi.getActiveCategory();
@@ -232,16 +230,16 @@ public class ShopListener extends CommandBase {
 									sendPlayerPage(player, ShopUtils.getItemDetailsPage(psi.getActiveShop(), (ShopItem) category.getItem(optionnumber)));
 								}
 							}else {
-								player.sendChatToPlayer(ChatColor.RED + "Invalid page number.");
+								player.addChatMessage(ChatColor.RED + "Invalid page number.");
 							}
 						}catch(NumberFormatException e) {
-							player.sendChatToPlayer(ChatColor.RED + "Invalid page number.");
+							player.addChatMessage(ChatColor.RED + "Invalid page number.");
 						}
 					}
 				}
 			}
 		}else {
-			player.sendChatToPlayer(ChatColor.RED + "Fetching shop information, please wait...");
+			player.addChatMessage(ChatColor.RED + "Fetching shop information, please wait...");
 			Thread dispatchThread = new Thread(new PlayerShopGetter(this, player));
 			dispatchThread.start();
 		}
@@ -249,5 +247,10 @@ public class ShopListener extends CommandBase {
 	
 	boolean isPlayerOp(EntityPlayerMP player) {
 		return MinecraftServer.getServer().getConfigurationManager().getOps().contains(player.getCommandSenderName().toLowerCase());
+	}
+
+	@Override
+	public String getCommandUsage(ICommandSender icommandsender) {
+		return "/" + EnjinMinecraftPlugin.BUY_COMMAND;
 	}
 }

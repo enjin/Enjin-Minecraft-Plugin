@@ -52,13 +52,17 @@ public class PlayerShopGetter implements Runnable {
 			con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
 			EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
 			con.getOutputStream().write(builder.toString().getBytes());
-			//System.out.println("Getting input stream...");
+			
+			EnjinMinecraftPlugin.debug("Getting input stream..."); ////
+			
 			InputStream in = con.getInputStream();
-			//System.out.println("Handling input stream...");
+			
+			EnjinMinecraftPlugin.debug("Handling input stream..."); ////
+			
 			String json = parseInput(in);
 			PlayerShopsInstance shops = ShopUtils.parseShopsJSON(json);
 			listener.activeshops.put(player.username.toLowerCase(), shops);
-			//listener.playersdisabledchat.put(player.username.toLowerCase(), player.username);
+			listener.playersdisabledchat.put(player.username.toLowerCase(), player.username);
 			listener.sendPlayerInitialShopData(player, shops);
 			return;
 		} catch (SocketTimeoutException e) {
@@ -66,7 +70,7 @@ public class PlayerShopGetter implements Runnable {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-		player.sendChatToPlayer(ChatColor.RED + "There was a problem loading the shop, please try again later.");
+		player.addChatMessage(ChatColor.RED + "There was a problem loading the shop, please try again later.");
 	}
 	
 	public static String parseInput(InputStream in) throws IOException {
@@ -82,6 +86,7 @@ public class PlayerShopGetter implements Runnable {
 
 	private URL getUrl() throws Throwable {
 		return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-shop");
+		//return new URL("http://localhost:8081/minecraft-shop");
 	}
 
 	private String encode(String in) throws UnsupportedEncodingException {

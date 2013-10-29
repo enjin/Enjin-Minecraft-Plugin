@@ -3,6 +3,7 @@ package com.enjin.officialplugin;
 import cpw.mods.fml.common.IPlayerTracker;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.event.ForgeSubscribe;
 
 /**
@@ -66,17 +67,17 @@ public class EMPListener implements IPlayerTracker {
 			return;
 		}
 		if(!plugin.newversion.equals("")) {
-			p.sendChatToPlayer("Enjin Minecraft plugin was updated to version " + plugin.newversion + ". Please restart your server.");
+			p.addChatMessage("Enjin Minecraft plugin was updated to version " + plugin.newversion + ". Please restart your server.");
 		}
 		if(plugin.updatefailed) {
-			p.sendChatToPlayer(ChatColor.DARK_RED + "Enjin Minecraft plugin failed to update to the newest version. Please download it manually.");
+			p.addChatMessage(ChatColor.DARK_RED + "Enjin Minecraft plugin failed to update to the newest version. Please download it manually.");
 		}
 		if(plugin.authkeyinvalid) {
-			p.sendChatToPlayer(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Auth key is invalid. Please generate a new one.");
+			p.addChatMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Auth key is invalid. Please generate a new one.");
 		}
 		if(plugin.unabletocontactenjin) {
-			p.sendChatToPlayer(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
-			p.sendChatToPlayer(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin report");
+			p.addChatMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
+			p.addChatMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin report");
 		}
 	}
 

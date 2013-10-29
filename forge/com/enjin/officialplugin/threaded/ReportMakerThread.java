@@ -15,6 +15,7 @@ import java.util.LinkedList;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatMessageComponent;
 
 import com.enjin.officialplugin.ChatColor;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
@@ -97,7 +98,7 @@ public class ReportMakerThread implements Runnable {
 			if(sender == null) {
 				MinecraftServer.getServer().logInfo("Enjin debug report created in " + serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt successfully!");
 			}else {
-				sender.sendChatToPlayer(ChatColor.GOLD + "Enjin debug report created in " + serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt successfully!");
+				sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.GOLD + "Enjin debug report created in " + serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt successfully!"));
 			}
 		} catch (IOException e) {
 			if(outChannel != null) {
@@ -109,7 +110,7 @@ public class ReportMakerThread implements Runnable {
 			if(sender == null) {
 				MinecraftServer.getServer().logInfo("Unable to write enjin debug report!");
 			}else {
-				sender.sendChatToPlayer(ChatColor.DARK_RED + "Unable to write enjin debug report!");
+				sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.DARK_RED + "Unable to write enjin debug report!"));
 			}
 			e.printStackTrace();
 		}

@@ -62,7 +62,7 @@ public class PlayerHistoryGetter implements Runnable {
 			EnjinMinecraftPlugin.debug("Output of history:\n" + json);
 			ArrayList<String> page = ShopUtils.parseHistoryJSON(json, historyplayer);
 			if(page == null) {
-				player.sendChatToPlayer(ChatColor.RED + "There was a problem loading the player history, please try again later.");
+				player.addChatMessage(ChatColor.RED + "There was a problem loading the player history, please try again later.");
 				return;
 			}
 			ShopListener.sendPlayerPage(player, page);
@@ -72,7 +72,7 @@ public class PlayerHistoryGetter implements Runnable {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-		player.sendChatToPlayer(ChatColor.RED + "There was a problem loading the player history, please try again later.");
+		player.addChatMessage(ChatColor.RED + "There was a problem loading the player history, please try again later.");
 	}
 	
 	public static String parseInput(InputStream in) throws IOException {

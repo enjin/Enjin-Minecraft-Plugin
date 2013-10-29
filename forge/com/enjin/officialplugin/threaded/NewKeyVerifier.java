@@ -2,6 +2,7 @@ package com.enjin.officialplugin.threaded;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.enjin.officialplugin.ChatColor;
@@ -66,7 +67,7 @@ public class NewKeyVerifier implements Runnable {
 				if(sender == null) {
 					MinecraftServer.getServer().logInfo("The specified key and the existing one are the same!");
 				}else {
-					sender.sendChatToPlayer(ChatColor.YELLOW + "The specified key and the existing one are the same!");
+					sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.YELLOW + "The specified key and the existing one are the same!"));
 				}
 				completed = true;
 				return;
@@ -76,7 +77,7 @@ public class NewKeyVerifier implements Runnable {
 				if(sender == null) {
 					MinecraftServer.getServer().logInfo("That key is invalid! Make sure you've entered it properly!");
 				}else {
-					sender.sendChatToPlayer(ChatColor.RED + "That key is invalid! Make sure you've entered it properly!");
+					sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.RED + "That key is invalid! Make sure you've entered it properly!"));
 				}
 				plugin.stopTask();
 				plugin.unregisterEvents();
@@ -86,7 +87,7 @@ public class NewKeyVerifier implements Runnable {
 				if(sender == null) {
 					MinecraftServer.getServer().logInfo("There was a problem connecting to Enjin, please try again in a few minutes. (If you continue to see this message, please type \"/enjin report\" and send the enjinreport_xxx.txt file to Enjin Support for further assistance.)");
 				}else {
-					sender.sendChatToPlayer(ChatColor.RED + "There was a problem connecting to Enjin, please try again in a few minutes. (If you continue to see this message, please type \"/enjin report\" and send the enjinreport_xxx.txt file to Enjin Support for further assistance.)");
+					sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.RED + "There was a problem connecting to Enjin, please try again in a few minutes. (If you continue to see this message, please type \"/enjin report\" and send the enjinreport_xxx.txt file to Enjin Support for further assistance.)"));
 				}
 				plugin.stopTask();
 				plugin.unregisterEvents();
@@ -101,7 +102,7 @@ public class NewKeyVerifier implements Runnable {
 			if(sender == null) {
 				MinecraftServer.getServer().logInfo("Set the enjin key to " + key);
 			}else {
-				sender.sendChatToPlayer(ChatColor.GREEN + "Set the enjin key to " + key);
+				sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.GREEN + "Set the enjin key to " + key));
 			}
 			plugin.stopTask();
 			plugin.unregisterEvents();

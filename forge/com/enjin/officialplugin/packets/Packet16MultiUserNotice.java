@@ -30,7 +30,7 @@ public class Packet16MultiUserNotice {
 			for(String playerstring : splitvalues) {
 				EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(playerstring);
 				if(player != null) {
-					player.sendChatToPlayer(message);
+					player.addChatMessage(message);
 				}
 				
 			}
