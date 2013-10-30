@@ -132,7 +132,6 @@ public class UpdateHeadsThread implements Runnable {
 				if(sender != null) {
 					sender.sendMessage(ChatColor.DARK_RED + "There was an error parsing the shop data, donations won't show package information.");
 				}
-				e.printStackTrace();
 			}
 		} catch (SocketTimeoutException e) {
 			if(sender != null) {
@@ -142,7 +141,6 @@ public class UpdateHeadsThread implements Runnable {
 			if(sender != null) {
 				sender.sendMessage(ChatColor.DARK_RED + "There was an error syncing the shop's packages, please fill out a support ticket at http://enjin.com/support and include the results of your /enjin report");
 			}
-			t.printStackTrace();
 		}
 		//Let's retrieve all the heads!
 		try {
@@ -710,7 +708,6 @@ public class UpdateHeadsThread implements Runnable {
 			if(sender != null) {
 				sender.sendMessage(ChatColor.DARK_RED + "There was an error syncing the heads, please fill out a support ticket at http://enjin.com/support and include the results of your /enjin report");
 			}
-			t.printStackTrace();
 		}
 	}
 

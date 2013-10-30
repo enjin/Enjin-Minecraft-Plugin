@@ -1,5 +1,7 @@
 package com.enjin.officialplugin.shop;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +22,7 @@ public class ShopListener implements Listener {
 
 	ConcurrentHashMap<String, PlayerShopsInstance> activeshops = new ConcurrentHashMap<String, PlayerShopsInstance>();
 	ConcurrentHashMap<String, String> playersdisabledchat = new ConcurrentHashMap<String, String>();
-	ConcurrentHashMap<String, ShopItem> playersbuying = new ConcurrentHashMap<String, ShopItem>();
+	ConcurrentHashMap<String, ShopItemBuyer> playersbuying = new ConcurrentHashMap<String, ShopItemBuyer>();
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void preCommandListener(PlayerCommandPreprocessEvent event) {
@@ -145,7 +147,15 @@ public class ShopListener implements Listener {
 										}else {
 											//It must be an item, let's send the item details page.
 											ShopItem item = (ShopItem) category.getItem(optionnumber);
-											
+											//Make sure you can purchase the item with points.
+											if(item.points != "") {
+												ShopItemBuyer buyer = new ShopItemBuyer(item);
+												playersbuying.put(player.getName(), buyer);
+												sendPlayerInitialBuyData(player, buyer);
+											}else {
+												//Show the player the message to go to the website to purchase.
+												player.sendMessage(ChatColor.RED + "Sorry, that item cannot be purchased with points, please go to the website to buy it.");
+											}
 										}
 									}else {
 										player.sendMessage(ChatColor.RED + "Invalid page number.");
@@ -156,6 +166,14 @@ public class ShopListener implements Listener {
 							}
 						}else {
 							player.sendMessage(ChatColor.RED + "Please specify a page number.");
+						}
+					}else if(args[1].equals("confirm")) {
+						if(playersbuying.containsKey(event.getPlayer().getName())) {
+							ShopItemBuyer buying = playersbuying.get(event.getPlayer().getName());
+							//They can only confirm buying of an item after they've actually gone through the purchase part.
+							if(buying.getCurrentItemOption() == null) {
+								
+							}
 						}
 					}else if(args.length > 1){
 						if(psi.getActiveShop() == null) {
@@ -198,6 +216,54 @@ public class ShopListener implements Listener {
 		}
 	}
 
+	private void sendPlayerInitialBuyData(Player player, ShopItemBuyer buyer) {
+		if(buyer.getCurrentItemOption() != null) {
+			ShopItemOptions itemoption = buyer.getCurrentItemOption();
+			sendShopItemOptionsForm(player, itemoption);
+		}else {
+			//There are no options, so let's let them confirm the purchase.
+			player.sendMessage(ChatColor.GREEN + "You're about to purchase item \"" + buyer.getItem().getName() + "\" for " + ShopUtils.formatPoints(buyer.getItem().getPoints(), true));
+			player.sendMessage(ChatColor.GREEN + "If you are sure do " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm" + ChatColor.GREEN + " to confirm your purchase.");
+		}
+	}
+
+	private void sendShopItemOptionsForm(Player player, ShopItemOptions itemoption) {
+		com.enjin.officialplugin.shop.ShopItemOptions.Type type = itemoption.getType();
+		ArrayList<ShopOptionOptions> options;
+		switch (type) {
+		case AllText:
+		case AllTextNoQuotes:
+		case Alphabetical:
+		case Alphanumeric:
+		case Numeric:
+		case Undefined:
+			player.sendMessage(ChatColor.GOLD + itemoption.getName());
+			player.sendMessage(ChatColor.GREEN.toString() + ChatColor.ITALIC + "Just type in the answer in chat");
+			break;
+		case MultipleCheckboxes:
+			player.sendMessage(ChatColor.GOLD + itemoption.getName());
+			options = itemoption.getOptions();
+			for(int i = 0; i < options.size(); i++) {
+				player.sendMessage(ChatColor.GOLD.toString() + (i+1) + ". " + ChatColor.AQUA + options.get(i).getValue() + " (" + ShopUtils.formatPoints(options.get(i).getPoints(), true) + ")");
+			}
+			player.sendMessage(ChatColor.GREEN.toString() + ChatColor.ITALIC + "To select more than 1 option just put in commas between the numbers, like this: 1,4,5");
+			break;
+		case MultipleChoice:
+			player.sendMessage(ChatColor.GOLD + itemoption.getName());
+			options = itemoption.getOptions();
+			for(int i = 0; i < options.size(); i++) {
+				player.sendMessage(ChatColor.GOLD.toString() + (i+1) + ". " + ChatColor.AQUA + options.get(i).getValue() + " (" + ShopUtils.formatPoints(options.get(i).getPoints(), true) + ")");
+			}
+			player.sendMessage(ChatColor.GREEN.toString() + ChatColor.ITALIC + "To select an option just type it's number into chat.");
+			break;
+		default:
+			break;
+		}
+		if(!itemoption.isRequired()) {
+			player.sendMessage("This option is optional, if you would like to skip it just do /" + EnjinMinecraftPlugin.BUY_COMMAND + " skip");
+		}
+	}
+
 	public void removePlayer(String player) {
 		player = player.toLowerCase();
 		playersdisabledchat.remove(player);
@@ -208,6 +274,93 @@ public class ShopListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if(event.isCancelled()) {
 			return;
+		}
+		if(!playersbuying.isEmpty()) {
+			if(playersbuying.containsKey(event.getPlayer().getName())) {
+				ShopItemBuyer buyitem = playersbuying.get(event.getPlayer().getName());
+				if(buyitem.getCurrentItemOption() != null) {
+					ShopItemOptions option = buyitem.getCurrentItemOption();
+					com.enjin.officialplugin.shop.ShopItemOptions.Type type = option.getType();
+					boolean cont = false;
+					switch (type) {
+					case AllText:
+					case Alphabetical:
+					case Alphanumeric:
+					case AllTextNoQuotes:
+					//We don't know what it is, so maybe, just maybe we can get it right?
+					case Undefined:
+						if(option.getMinLength() <= event.getMessage().length() && option.getMaxLength() >= event.getMessage().length()) {
+							if(ShopUtils.isInputValid(option, event.getMessage())) {
+								String formattedtext = "item_variables[" + option.getID() + "]=" + encode(event.getMessage());
+								buyitem.addOption(formattedtext);
+								cont = true;
+							}else {
+								event.getPlayer().sendMessage(ChatColor.RED + "I'm sorry, you added invalid characters, please try again.");
+							}
+						}else {
+							event.getPlayer().sendMessage(ChatColor.RED + "Whoops! That wasn't the correct length! Make sure your text is in between " + option.getMinLength() + " - " + option.getMaxLength() + " characters long");
+						}
+						break;
+					case Numeric:
+						if(ShopUtils.isInputValid(option, event.getMessage())) {
+							String formattedtext = "item_variables[" + option.getID() + "]=" + encode(event.getMessage().trim());
+							buyitem.addOption(formattedtext);
+							cont = true;
+						}else {
+							event.getPlayer().sendMessage(ChatColor.RED + "I'm sorry, that number is outside the allowed value, please try again.");
+						}
+						break;
+					case MultipleCheckboxes:
+						if(event.getMessage().length() > 0) {
+							String[] split = event.getMessage().split(",");
+							StringBuilder tstring = new StringBuilder();
+							int points = 0;
+							try {
+								for(int i = 0; i < split.length; i++) {
+									int newnumber = Integer.parseInt(split[i].trim()) -1;
+									if(i > 0) {
+										tstring.append("&");
+									}
+									points += ShopUtils.getPointsInt(option.getOptions().get(newnumber).getPoints());
+									tstring.append("item_variables[" + option.getID() + "][]=" + option.getOptions().get(newnumber).getId());
+								}
+								buyitem.addOption(tstring.toString());
+								buyitem.addPoints(points);
+								cont = true;
+							}catch(Exception e) {
+								event.getPlayer().sendMessage(ChatColor.RED + "I'm sorry, those options are invalid, please try again.");
+							}
+						}
+						break;
+					case MultipleChoice:
+						if(event.getMessage().length() > 0) {
+							try {
+								int newnumber = Integer.parseInt(event.getMessage().trim()) -1;
+								buyitem.addOption("item_variables[" + option.getID() + "]=" + option.getOptions().get(newnumber).getId());
+								buyitem.addPoints(option.getOptions().get(newnumber).getPoints());
+								cont = true;
+							}catch(Exception e) {
+								event.getPlayer().sendMessage(ChatColor.RED + "I'm sorry, that option is invalid, please try again.");
+							}
+						}
+						break;
+					default:
+						break;
+					}
+					if(cont) {
+						ShopItemOptions nextoption = buyitem.getNextItemOption();
+						if(nextoption != null) {
+							sendShopItemOptionsForm(event.getPlayer(), nextoption);
+						}else {
+							buyitem.addPoints(buyitem.getItem().getPoints());
+							event.getPlayer().sendMessage(ChatColor.GREEN + "The total purchase price is: " + ChatColor.GOLD + ShopUtils.formatPoints(String.valueOf(buyitem.totalpoints), true));
+							event.getPlayer().sendMessage(ChatColor.GREEN.toString() + "If you are sure you want to purchase this item do: /" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm");
+						}
+					}
+					event.setCancelled(true);
+					return;
+				}
+			}
 		}
 		//We don't need to do anything if our list is empty.
 		if(!playersdisabledchat.isEmpty()) {
@@ -277,5 +430,16 @@ public class ShopListener implements Listener {
 
 	public void sendPlayerItemData(Player player, PlayerShopsInstance shops, ShopItem item) {
 		sendPlayerPage(player, ShopUtils.getItemDetailsPage(shops.getActiveShop(), item));
+	}
+
+	private String encode(String in) {
+		try {
+			return URLEncoder.encode(in, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+		//return in;
 	}
 }

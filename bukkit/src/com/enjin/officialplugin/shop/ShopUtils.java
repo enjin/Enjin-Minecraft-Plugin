@@ -223,7 +223,7 @@ public class ShopUtils {
 		return psi;
 	}
 
-	private static boolean getBoolean(Object obj) {
+	public static boolean getBoolean(Object obj) {
 		if(obj instanceof Boolean) {
 			return ((Boolean) obj).booleanValue();
 		}else if(obj instanceof String) {
@@ -482,6 +482,23 @@ public class ShopUtils {
 			length = ((Integer)object);
 		}
 		return length;
+	}
+	
+	public static int getPointsInt(String points) {
+		int tot = 0;
+		try {
+			if(points.contains(".")) {
+				String[] split = points.split(".");
+				int ipoints = Integer.parseInt(split[0]);
+				tot = ipoints;
+			}else {
+				int ipoints = Integer.parseInt(points.trim());
+				tot = ipoints;
+			}
+		}catch(NumberFormatException e) {
+			
+		}
+		return tot;
 	}
 
 	public static String formatPoints(String points, boolean pointsstring) {
