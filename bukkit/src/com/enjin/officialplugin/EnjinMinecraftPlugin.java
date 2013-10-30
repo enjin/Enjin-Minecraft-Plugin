@@ -199,6 +199,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(!logsfolder.exists()) {
 				logsfolder.mkdirs();
 			}
+			File logsfile = new File(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log");
+			if(logsfile.exists()) {
+				//Max file size of the enjin log should be less than 5MB.
+				if(logsfile.length() > 1024*1024*5) {
+					logsfile.delete();
+				}
+			}
 			FileHandler fileTxt = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
 			EnjinLogFormatter formatterTxt = new EnjinLogFormatter();
 		    fileTxt.setFormatter(formatterTxt);

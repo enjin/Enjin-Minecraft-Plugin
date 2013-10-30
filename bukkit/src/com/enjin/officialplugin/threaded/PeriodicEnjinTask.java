@@ -63,6 +63,7 @@ public class PeriodicEnjinTask implements Runnable {
 	public PeriodicEnjinTask(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
 	}
+	
 	private URL getUrl() throws Throwable {
 		return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-sync");
 	}

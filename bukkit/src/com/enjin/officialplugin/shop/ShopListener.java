@@ -17,9 +17,10 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.ServerShop.Type;
 
 public class ShopListener implements Listener {
-	
+
 	ConcurrentHashMap<String, PlayerShopsInstance> activeshops = new ConcurrentHashMap<String, PlayerShopsInstance>();
 	ConcurrentHashMap<String, String> playersdisabledchat = new ConcurrentHashMap<String, String>();
+	ConcurrentHashMap<String, ShopItem> playersbuying = new ConcurrentHashMap<String, ShopItem>();
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void preCommandListener(PlayerCommandPreprocessEvent event) {
@@ -33,15 +34,15 @@ public class ShopListener implements Listener {
 				if(args.length > 2 && player.hasPermission("enjin.history")) {
 					player.sendMessage(ChatColor.RED + "Fetching shop history information for " + args[2] + ", please wait...");
 					Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, args[2]));
-		            dispatchThread.start();
-		            event.setCancelled(true);
-		            return;
+					dispatchThread.start();
+					event.setCancelled(true);
+					return;
 				}else {
 					player.sendMessage(ChatColor.RED + "Fetching your shop history information, please wait...");
 					Thread dispatchThread = new Thread(new PlayerHistoryGetter(this, player, player.getName()));
-		            dispatchThread.start();
-		            event.setCancelled(true);
-		            return;
+					dispatchThread.start();
+					event.setCancelled(true);
+					return;
 				}
 			}
 			if(activeshops.containsKey(player.getName().toLowerCase())) {
@@ -50,9 +51,9 @@ public class ShopListener implements Listener {
 				if(psi.getRetrievalTime() + (1000*60*10) < System.currentTimeMillis()) {
 					player.sendMessage(ChatColor.RED + "Fetching shop information, please wait...");
 					Thread dispatchThread = new Thread(new PlayerShopGetter(this, player));
-		            dispatchThread.start();
-		            event.setCancelled(true);
-		            return;
+					dispatchThread.start();
+					event.setCancelled(true);
+					return;
 				}
 				playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
 				//If it's just the /buy parameter, let's just reset to the shop topmost category.
@@ -60,14 +61,14 @@ public class ShopListener implements Listener {
 					//If they haven't selected a shop yet, show them the shop selection screen again.
 					if(psi.getActiveShop() == null) {
 						sendPlayerInitialShopData(player, psi);
-					//Else, if they have, show them the shop main menu again.
+						//Else, if they have, show them the shop main menu again.
 					}else {
 						ServerShop selectedshop = psi.getActiveShop();
 						//We need to see if it only has one category. If so, open that category.
 						if(selectedshop.getType() == Type.Category && selectedshop.getItems().size() == 1) {
 							ShopItemAdder category = (ShopItemAdder) selectedshop.getItem(0);
 							psi.setActiveCategory(category);
-						//If it has items or more than one category show the shop main page.
+							//If it has items or more than one category show the shop main page.
 						}else {
 							psi.setActiveCategory(selectedshop);
 						}
@@ -87,7 +88,7 @@ public class ShopListener implements Listener {
 										psi.setActiveShop(selectedshop);
 										psi.setActiveCategory(category);
 										sendPlayerShopData(player, psi, category, 0);
-									//If it has items or more than one category show the shop main page.
+										//If it has items or more than one category show the shop main page.
 									}else {
 										psi.setActiveShop(selectedshop);
 										psi.setActiveCategory(selectedshop);
@@ -129,6 +130,33 @@ public class ShopListener implements Listener {
 						}else {
 							player.sendMessage(ChatColor.RED + "Please specify a page number.");
 						}
+					}else if(args[1].equals("item")) {
+						if(args.length > 2) {
+							if(psi.getActiveShop() == null) {
+								player.sendMessage(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.BUY_COMMAND + " to see the shops list.");
+							}else {
+								try {
+									ShopItemAdder category = psi.getActiveCategory();
+									int optionnumber = Integer.parseInt(args[2]) -1;
+									if(optionnumber < category.getItems().size() && optionnumber >= 0) {
+										//If it's a category, let's go into the category and list the first page.
+										if(category.getType() == Type.Category) {
+											player.sendMessage(ChatColor.RED + "You need to select a category first!");
+										}else {
+											//It must be an item, let's send the item details page.
+											ShopItem item = (ShopItem) category.getItem(optionnumber);
+											
+										}
+									}else {
+										player.sendMessage(ChatColor.RED + "Invalid page number.");
+									}
+								}catch(NumberFormatException e) {
+									player.sendMessage(ChatColor.RED + "Invalid page number.");
+								}
+							}
+						}else {
+							player.sendMessage(ChatColor.RED + "Please specify a page number.");
+						}
 					}else if(args.length > 1){
 						if(psi.getActiveShop() == null) {
 							player.sendMessage(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.BUY_COMMAND + " to see the shops list.");
@@ -158,7 +186,7 @@ public class ShopListener implements Listener {
 			}else {
 				player.sendMessage(ChatColor.RED + "Fetching shop information, please wait...");
 				Thread dispatchThread = new Thread(new PlayerShopGetter(this, player));
-	            dispatchThread.start();
+				dispatchThread.start();
 			}
 			event.setCancelled(true);
 		}else if(args[0].equalsIgnoreCase("/ec")) {
@@ -169,13 +197,13 @@ public class ShopListener implements Listener {
 			}
 		}
 	}
-	
+
 	public void removePlayer(String player) {
 		player = player.toLowerCase();
 		playersdisabledchat.remove(player);
 		activeshops.remove(player);
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if(event.isCancelled()) {
@@ -201,7 +229,7 @@ public class ShopListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDisconnect(PlayerQuitEvent event) {
 		//If a player quits, let's reset the shop data and remove them from the list.
@@ -209,7 +237,7 @@ public class ShopListener implements Listener {
 		playersdisabledchat.remove(player);
 		activeshops.remove(player);
 	}
-	
+
 	public void sendPlayerInitialShopData(Player player, PlayerShopsInstance shops) {
 		if(shops.getServerShopCount() == 1) {
 			ServerShop selectedshop = shops.getServerShop(0);
@@ -220,7 +248,7 @@ public class ShopListener implements Listener {
 				ShopItemAdder category = (ShopItemAdder) selectedshop.getItem(0);
 				shops.setActiveCategory(category);
 				sendPlayerShopData(player, shops, category, 0);
-			//If it has items or more than one category show the shop main page.
+				//If it has items or more than one category show the shop main page.
 			}else {
 				sendPlayerShopData(player, shops, selectedshop, 0);
 			}
@@ -229,13 +257,13 @@ public class ShopListener implements Listener {
 			sendPlayerPage(player, ShopUtils.getShopListing(shops));
 		}
 	}
-	
+
 	public static void sendPlayerPage(Player player, ArrayList<String> page) {
 		for(String line : page) {
 			player.sendMessage(line);
 		}
 	}
-	
+
 	public void sendPlayerShopData(Player player, PlayerShopsInstance shops, ShopItemAdder category, int page) {
 		ArrayList<ArrayList<String>> pages;
 		if(category.getPages() == null) {
@@ -246,7 +274,7 @@ public class ShopListener implements Listener {
 		}
 		sendPlayerPage(player, pages.get(page));
 	}
-	
+
 	public void sendPlayerItemData(Player player, PlayerShopsInstance shops, ShopItem item) {
 		sendPlayerPage(player, ShopUtils.getItemDetailsPage(shops.getActiveShop(), item));
 	}

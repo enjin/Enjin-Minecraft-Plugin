@@ -2,6 +2,10 @@ package com.enjin.officialplugin.shop;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.map.MinecraftFont;
@@ -20,6 +24,11 @@ public class ShopUtils {
 	public static int CONSOLE_HEIGHT = 20;
 
 	public static byte[] glyphWidth = null;
+	
+	static Pattern allTextNoQuotes = Pattern.compile("[^\\\"\\\']*");
+	static Pattern alphabetical = Pattern.compile("[a-zA-Z]*");
+	static Pattern alphanumeric = Pattern.compile("[a-zA-Z0-9]*");
+	static Pattern numeric = Pattern.compile("\\d*");
 
 	public static ArrayList<String> parseHistoryJSON(String json, String playername) {
 		ArrayList<String> lines = new ArrayList<String>();
@@ -91,11 +100,57 @@ public class ShopUtils {
 								while (optionsiterator.hasNext()) {
 									JSONObject option = (JSONObject) optionsiterator.next();
 									ShopItemOptions soptions = new ShopItemOptions(
-											(String) option.get("name"),
+											(String) option.get("name"), "",
 											getPriceString(option.get("pricemin")),
 											getPriceString(option.get("pricemax")),
 											getPointsString(option.get("pointsmin")),
 											getPointsString(option.get("pointsmax")));
+									soptions.setRequired(getBoolean(option.get("required")));
+									if(option.get("type") != null && option.get("type") instanceof String) {
+										soptions.setType(getOptionType((String)option.get("type")));
+									}
+									sitem.addOption(soptions);
+								}
+							}else if (options != null && options instanceof JSONObject
+									&& ((JSONObject) options).size() > 0) {
+								JSONObject joptions = (JSONObject) options;
+								Set<Map.Entry> optionsset = joptions.entrySet();
+								
+								Iterator<Entry> optionsiterator = optionsset.iterator();
+								while (optionsiterator.hasNext()) {
+									Entry entry = optionsiterator.next();
+									JSONObject option = (JSONObject) entry.getValue();
+									ShopItemOptions soptions = new ShopItemOptions(
+											(String) option.get("name"),
+											(String) entry.getKey(),
+											getPriceString(option.get("pricemin")),
+											getPriceString(option.get("pricemax")),
+											getPointsString(option.get("pointsmin")),
+											getPointsString(option.get("pointsmax")));
+									soptions.setRequired(getBoolean(option.get("required")));
+									if(option.get("type") != null && option.get("type") instanceof String) {
+										soptions.setType(getOptionType((String)option.get("type")));
+									}
+									if(soptions.getType() == ShopItemOptions.Type.MultipleCheckboxes ||
+											soptions.getType() == ShopItemOptions.Type.MultipleChoice) {
+										Object optionOptions = item.get("options");
+										if(optionOptions != null || optionOptions instanceof JSONObject) {
+											JSONObject joptionOptions = (JSONObject) optionOptions;
+											Set<Map.Entry> joptionsset = joptionOptions.entrySet();
+											Iterator<Entry> joptionsiterator = joptionsset.iterator();
+											while(joptionsiterator.hasNext()) {
+												Entry jentry = optionsiterator.next();
+												JSONObject jjentry = (JSONObject) jentry.getValue();
+												ShopOptionOptions ssoptions = new ShopOptionOptions(
+														(String) jentry.getKey(),
+														(String) jjentry.get("name"), 
+														(String) jjentry.get("value"), 
+														getPriceString(jjentry.get("price")),
+														getPointsString(jjentry.get("points")));
+												soptions.addOption(ssoptions);
+											}
+										}
+									}
 									sitem.addOption(soptions);
 								}
 							}
@@ -168,6 +223,17 @@ public class ShopUtils {
 		return psi;
 	}
 
+	private static boolean getBoolean(Object obj) {
+		if(obj instanceof Boolean) {
+			return ((Boolean) obj).booleanValue();
+		}else if(obj instanceof String) {
+			return(((String) obj).equalsIgnoreCase("true") || obj.equals("1"));
+		}else if(obj instanceof Integer) {
+			return (((Integer)obj) == 1);
+		}
+		return false;
+	}
+	
 	private static void addCategories(ShopItemAdder shop,
 			JSONArray shopcategories) {
 		shop.setType(ServerShop.Type.Category);
@@ -216,11 +282,38 @@ public class ShopUtils {
 				while (optionsiterator.hasNext()) {
 					JSONObject option = (JSONObject) optionsiterator.next();
 					ShopItemOptions soptions = new ShopItemOptions(
-							(String) option.get("name"),
+							(String) option.get("name"), "",
 							getPriceString(option.get("pricemin")),
 							getPriceString(option.get("pricemax")),
 							getPointsString(option.get("pointsmin")),
 							getPointsString(option.get("pointsmax")));
+					sitem.addOption(soptions);
+				}
+			}else if (options != null && options instanceof JSONObject
+					&& ((JSONObject) options).size() > 0) {
+				JSONObject joptions = (JSONObject) options;
+				Set<Map.Entry> optionsset = joptions.entrySet();
+				Iterator<Entry> optionsiterator = optionsset.iterator();
+				while (optionsiterator.hasNext()) {
+					Entry entry = optionsiterator.next();
+					JSONObject option = (JSONObject) entry.getValue();
+					ShopItemOptions soptions = new ShopItemOptions(
+							(String) option.get("name"),
+							(String) entry.getKey(),
+							getPriceString(option.get("pricemin")),
+							getPriceString(option.get("pricemax")),
+							getPointsString(option.get("pointsmin")),
+							getPointsString(option.get("pointsmax")));
+					if(option.get("type") != null && option.get("type") instanceof String) {
+						soptions.setType(getOptionType((String)option.get("type")));
+					}
+					soptions.setMinLength(getLengthInt(option.get("min_length")));
+					soptions.setMaxLength(getLengthInt(option.get("max_length")));
+					if(option.get("required") != null && option.get("required") instanceof Boolean) {
+						soptions.setRequired((Boolean)option.get("required"));
+					}
+					soptions.setMaxValue(getLengthInt(option.get("max_value")));
+					soptions.setMinValue(getLengthInt(option.get("min_value")));
 					sitem.addOption(soptions);
 				}
 			}
@@ -230,6 +323,26 @@ public class ShopUtils {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
 			}
+		}
+	}
+	
+	public static ShopItemOptions.Type getOptionType(String type) {
+		if(type.equalsIgnoreCase("Multiple choice")) {
+			return ShopItemOptions.Type.MultipleChoice;
+		}else if(type.equalsIgnoreCase("All text")) {
+			return ShopItemOptions.Type.AllText;
+		}else if(type.equalsIgnoreCase("All text except quotations")) {
+			return ShopItemOptions.Type.AllTextNoQuotes;
+		}else if(type.equalsIgnoreCase("Alphanumeric")) {
+			return ShopItemOptions.Type.Alphanumeric;
+		}else if(type.equalsIgnoreCase("Alphabetical")) {
+			return ShopItemOptions.Type.Alphabetical;
+		}else if(type.equalsIgnoreCase("Numeric")) {
+			return ShopItemOptions.Type.Numeric;
+		}else if(type.equalsIgnoreCase("Multiple checkboxes")) {
+			return ShopItemOptions.Type.MultipleCheckboxes;
+		}else {
+			return ShopItemOptions.Type.Undefined;
 		}
 	}
 
@@ -273,6 +386,41 @@ public class ShopUtils {
 		return price;
 	}
 	
+	public static boolean isInputValid(ShopItemOptions option, String input) {
+		switch (option.getType()) {
+		case Undefined:
+		case AllText:
+			return true;
+		case AllTextNoQuotes:
+			return allTextNoQuotes.matcher(input).matches();
+		case Alphabetical:
+			return alphabetical.matcher(input).matches();
+		case Alphanumeric:
+			return alphanumeric.matcher(input).matches();
+		case Numeric:
+			if(numeric.matcher(input).matches()) {
+				if(option.getMaxValue() > -1) {
+					try {
+						int tempint = Integer.parseInt(input.trim());
+						return option.getMinValue() <= tempint && option.getMaxValue() >= tempint;
+					}catch (NumberFormatException e) {
+						return false;
+					}
+				}else {
+					return true;
+				}
+			}
+		case MultipleChoice:
+			//TODO: Put in validator against options
+			return numeric.matcher(input).matches();
+		case MultipleCheckboxes:
+			//TODO: Put in validator against options
+			return true;
+		default:
+			return true;
+		}
+	}
+	
 	public static String getPointsString(Object object) {
 		String points = "";
 		if(object == null) {
@@ -311,6 +459,29 @@ public class ShopUtils {
 			points = Integer.toString((Integer)object) + ".00";
 		}
 		return points;
+	}
+	
+	public static int getLengthInt(Object object) {
+		int length = -1;
+		if(object == null) {
+			return length;
+		}
+		if(object instanceof String) {
+			try {
+				length = Integer.parseInt((String) object);
+			}catch (NumberFormatException e) {
+				
+			}
+		}else if(object instanceof Double || object instanceof Float) {
+			if(object instanceof Double) {
+				length = ((Double) object).intValue();
+			}else {
+				length = ((Float) object).intValue();
+			}
+		}else if(object instanceof Integer) {
+			length = ((Integer)object);
+		}
+		return length;
 	}
 
 	public static String formatPoints(String points, boolean pointsstring) {

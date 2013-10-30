@@ -12,7 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -99,7 +101,24 @@ public class UpdateHeadsThread implements Runnable {
 						while (optionsiterator.hasNext()) {
 							JSONObject option = (JSONObject) optionsiterator.next();
 							ShopItemOptions soptions = new ShopItemOptions(
+									(String) option.get("name"), "",
+									ShopUtils.getPriceString(option.get("pricemin")),
+									ShopUtils.getPriceString(option.get("pricemax")),
+									ShopUtils.getPointsString(option.get("pointsmin")),
+									ShopUtils.getPointsString(option.get("pointsmax")));
+							sitem.addOption(soptions);
+						}
+					}else if (options != null && options instanceof JSONObject
+							&& ((JSONObject) options).size() > 0) {
+						JSONObject joptions = (JSONObject) options;
+						Set<Map.Entry> optionsset = joptions.entrySet();
+						Iterator<Entry> optionsiterator = optionsset.iterator();
+						while (optionsiterator.hasNext()) {
+							Entry entry = optionsiterator.next();
+							JSONObject option = (JSONObject) entry.getValue();
+							ShopItemOptions soptions = new ShopItemOptions(
 									(String) option.get("name"),
+									(String) entry.getKey(),
 									ShopUtils.getPriceString(option.get("pricemin")),
 									ShopUtils.getPriceString(option.get("pricemax")),
 									ShopUtils.getPointsString(option.get("pointsmin")),
@@ -672,7 +691,8 @@ public class UpdateHeadsThread implements Runnable {
 						plugin.eventthrower.addEvent(new HeadsUpdatedEvent(type));
 					}
 				}
-				plugin.getServer().getScheduler().runTask(plugin, plugin.eventthrower);
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, plugin.eventthrower);
+				//plugin.getServer().getScheduler().runTask(plugin, plugin.eventthrower);
 				if(sender != null) {
 					sender.sendMessage(ChatColor.GREEN + "Player head data successfully synched!");
 				}

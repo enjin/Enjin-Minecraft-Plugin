@@ -91,7 +91,11 @@ public class HeadLocations {
 	 * @return
 	 */
 	public String locationToString(Location loc) {
-		return loc.getWorld().getName() + "." + loc.getBlockX() + "." + loc.getBlockY() + "." + loc.getBlockZ();
+		try {
+			return loc.getWorld().getName() + "." + loc.getBlockX() + "." + loc.getBlockY() + "." + loc.getBlockZ();
+		}catch(NullPointerException e) {
+			return "";
+		}
 	}
 	
 	public String headLocationToString(HeadLocation head) {

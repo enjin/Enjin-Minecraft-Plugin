@@ -56,6 +56,7 @@ public class PlayerShopGetter implements Runnable {
 			InputStream in = con.getInputStream();
 			//System.out.println("Handling input stream...");
 			String json = parseInput(in);
+			EnjinMinecraftPlugin.debug("Shop output:\n" + json);
 			PlayerShopsInstance shops = ShopUtils.parseShopsJSON(json);
 			listener.activeshops.put(player.getName().toLowerCase(), shops);
 			listener.playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
