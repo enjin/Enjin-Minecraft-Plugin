@@ -35,6 +35,7 @@ public class ShopItemOptions {
 		maxprice = pricemax;
 		this.minpoints = minpoints;
 		this.maxpoints = maxpoints;
+		this.id = id;
 	}
 	
 	public void addOption(ShopOptionOptions option) {

@@ -67,6 +67,7 @@ import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
 import com.enjin.officialplugin.threaded.ReportMakerThread;
 import com.enjin.officialplugin.threaded.UpdateHeadsThread;
+import com.enjin.officialplugin.threaded.Updater;
 import com.enjin.officialplugin.tpsmeter.MonitorTPS;
 import com.enjin.officialplugin.EnjinConsole;
 import com.enjin.proto.stats.EnjinStats;
@@ -145,8 +146,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean authkeyinvalid = false;
 	public boolean unabletocontactenjin = false;
 	public boolean permissionsnotworking = false;
-	static public final String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
-	static public final String bukkitupdatejar = "http://dev.bukkit.org/media/files/";
 	static public boolean bukkitversion = false;
 	
 	public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
@@ -167,6 +166,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	int tpstaskid = -1;
 	int commandexecutertask = -1;
 	int headsupdateid = -1;
+	int updatethread = -1;
 	
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	public static String minecraftport;
@@ -470,6 +470,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Starting votifier task.");
 			votetaskid = scheduler.runTaskTimerAsynchronously(this, votetask, 80L, 80L).getTaskId();
 		}
+		if(autoupdate && bukkitversion) {
+			updatethread = scheduler.runTaskTimerAsynchronously(this, new Updater(this, 44560, this.getFile(), Updater.UpdateType.DEFAULT, true), 20*60*5, 20*60*5).getTaskId();
+		}
 	}
 	
 	public void registerEvents() {
@@ -478,7 +481,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		//Listen for all the heads events.
 		Bukkit.getPluginManager().registerEvents(new HeadListener(this), this);
 		if(BUY_COMMAND != null) {
-			shoplistener = new ShopListener();
+			shoplistener = new ShopListener(this);
 			Bukkit.getPluginManager().registerEvents(shoplistener, this);
 		}
 	}
@@ -500,6 +503,18 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 		if(headsupdateid != -1) {
 			Bukkit.getScheduler().cancelTask(headsupdateid);
+		}
+		if(updatethread != -1) {
+			Bukkit.getScheduler().cancelTask(updatethread);
+		}
+		//Bukkit.getScheduler().cancelTasks(this);
+	}
+	
+	public void stopUpdateTask() {
+		debug("Stopping update task.");
+		if(updatethread != -1) {
+			Bukkit.getScheduler().cancelTask(updatethread);
+			updatethread = -1;
 		}
 		//Bukkit.getScheduler().cancelTasks(this);
 	}

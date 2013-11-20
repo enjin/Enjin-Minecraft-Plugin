@@ -17,6 +17,7 @@ public class DownloadPluginThread implements Runnable {
 	File destination;
 	EnjinMinecraftPlugin plugin;
 	String versionnumber;
+	String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
 	
 	public DownloadPluginThread(String downloadlocation, String versionnumber, File destination, EnjinMinecraftPlugin plugin) {
 		this.downloadlocation = downloadlocation;
@@ -30,14 +31,10 @@ public class DownloadPluginThread implements Runnable {
 		File tempfile = new File(downloadlocation + File.separator + "EnjinMinecraftPlugin.jar.part");
 		try {
 			URL website;
-			if(EnjinMinecraftPlugin.bukkitversion) {
-				String[] versionsplit = versionnumber.split(",");
-				versionnumber = versionsplit[0];
-				website = new URL(EnjinMinecraftPlugin.bukkitupdatejar + versionsplit[1]);
-			}else {
-				EnjinMinecraftPlugin.debug("Connecting to url " + EnjinMinecraftPlugin.updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
-				website = new URL(EnjinMinecraftPlugin.updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
-			}
+			
+			EnjinMinecraftPlugin.debug("Connecting to url " + updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
+			website = new URL(updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
+			
 		    ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 		    FileOutputStream fos = new FileOutputStream(tempfile);
 		    fos.getChannel().transferFrom(rbc, 0, 1 << 24);

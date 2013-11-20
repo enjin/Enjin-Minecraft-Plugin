@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,12 +18,19 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.ServerShop.Type;
+import com.enjin.officialplugin.threaded.SendItemPurchaseToEnjin;
 
 public class ShopListener implements Listener {
 
 	ConcurrentHashMap<String, PlayerShopsInstance> activeshops = new ConcurrentHashMap<String, PlayerShopsInstance>();
 	ConcurrentHashMap<String, String> playersdisabledchat = new ConcurrentHashMap<String, String>();
 	ConcurrentHashMap<String, ShopItemBuyer> playersbuying = new ConcurrentHashMap<String, ShopItemBuyer>();
+	
+	EnjinMinecraftPlugin plugin;
+	
+	public ShopListener(EnjinMinecraftPlugin plugin) {
+		this.plugin = plugin;
+	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void preCommandListener(PlayerCommandPreprocessEvent event) {
@@ -167,14 +175,56 @@ public class ShopListener implements Listener {
 						}else {
 							player.sendMessage(ChatColor.RED + "Please specify a page number.");
 						}
+						event.setCancelled(true);
+						return;
 					}else if(args[1].equals("confirm")) {
 						if(playersbuying.containsKey(event.getPlayer().getName())) {
 							ShopItemBuyer buying = playersbuying.get(event.getPlayer().getName());
 							//They can only confirm buying of an item after they've actually gone through the purchase part.
 							if(buying.getCurrentItemOption() == null) {
-								
+								playersbuying.remove(event.getPlayer().getName());
+								player.sendMessage(ChatColor.GOLD + "Please wait as we verify your purchase...");
+								Thread buythread = new Thread(new SendItemPurchaseToEnjin(plugin, buying, player));
+								buythread.start();
+							}else {
+								player.sendMessage(ChatColor.RED + "You haven't filled out all the options yet! If you want you can cancel your purchase by doing /" + EnjinMinecraftPlugin.BUY_COMMAND + " cancel");
 							}
+							event.setCancelled(true);
+							return;
 						}
+					}else if(args[1].equals("cancel")) {
+						if(playersbuying.containsKey(event.getPlayer().getName())) {
+							player.sendMessage(ChatColor.GREEN + "Purchase canceled.");
+							playersbuying.remove(event.getPlayer().getName());
+							
+						}
+						event.setCancelled(true);
+						return;
+					}else if(args[1].equals("skip")) {
+						if(playersbuying.containsKey(event.getPlayer().getName())) {
+							ShopItemBuyer buyitem = playersbuying.get(event.getPlayer().getName());
+							//They can only confirm buying of an item after they've actually gone through the purchase part.
+							if(buyitem.getCurrentItemOption() != null) {
+								if(buyitem.getCurrentItemOption().isRequired()) {
+									player.sendMessage(ChatColor.RED + "This field is required. If you want to cancel your purchase do /" + EnjinMinecraftPlugin.BUY_COMMAND + " cancel");
+									event.setCancelled(true);
+									return;
+								}
+								ShopItemOptions nextoption = buyitem.getNextItemOption();
+								if(nextoption != null) {
+									sendShopItemOptionsForm(event.getPlayer(), nextoption);
+								}else {
+									buyitem.addPoints(buyitem.getItem().getPoints());
+									event.getPlayer().sendMessage(ChatColor.GREEN + "The total purchase price is: " + ChatColor.GOLD + ShopUtils.formatPoints(String.valueOf(buyitem.totalpoints), true));
+									event.getPlayer().sendMessage(ChatColor.GREEN.toString() + "If you are sure you want to purchase this item do: /" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm");
+								}
+							}else {
+								player.sendMessage(ChatColor.RED + "Nothing can be skipped! If you want to purchase the item do /" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm");
+							}
+							player.sendMessage(ChatColor.GREEN + "Purchase canceled.");
+						}
+						event.setCancelled(true);
+						return;
 					}else if(args.length > 1){
 						if(psi.getActiveShop() == null) {
 							player.sendMessage(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.BUY_COMMAND + " to see the shops list.");
@@ -287,13 +337,15 @@ public class ShopListener implements Listener {
 					case Alphabetical:
 					case Alphanumeric:
 					case AllTextNoQuotes:
-					//We don't know what it is, so maybe, just maybe we can get it right?
+						//We don't know what it is, so maybe, just maybe we can get it right?
 					case Undefined:
+						EnjinMinecraftPlugin.debug("Testing string...");
 						if(option.getMinLength() <= event.getMessage().length() && option.getMaxLength() >= event.getMessage().length()) {
 							if(ShopUtils.isInputValid(option, event.getMessage())) {
 								String formattedtext = "item_variables[" + option.getID() + "]=" + encode(event.getMessage());
 								buyitem.addOption(formattedtext);
 								cont = true;
+								EnjinMinecraftPlugin.debug("String passed!...");
 							}else {
 								event.getPlayer().sendMessage(ChatColor.RED + "I'm sorry, you added invalid characters, please try again.");
 							}
@@ -302,10 +354,13 @@ public class ShopListener implements Listener {
 						}
 						break;
 					case Numeric:
+						EnjinMinecraftPlugin.debug("Testing number...");
 						if(ShopUtils.isInputValid(option, event.getMessage())) {
 							String formattedtext = "item_variables[" + option.getID() + "]=" + encode(event.getMessage().trim());
 							buyitem.addOption(formattedtext);
 							cont = true;
+
+							EnjinMinecraftPlugin.debug("Number passed!...");
 						}else {
 							event.getPlayer().sendMessage(ChatColor.RED + "I'm sorry, that number is outside the allowed value, please try again.");
 						}

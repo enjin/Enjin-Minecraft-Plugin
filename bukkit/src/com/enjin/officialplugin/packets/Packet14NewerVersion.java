@@ -13,7 +13,6 @@ public class Packet14NewerVersion {
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String newversion = PacketUtilities.readString(in);
-			EnjinMinecraftPlugin.debug("Got version string: " + newversion);
 			if(plugin.autoupdate && !plugin.hasupdate) {
 				if(plugin.updatefailed) {
 					return;

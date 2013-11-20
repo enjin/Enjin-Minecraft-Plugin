@@ -28,6 +28,7 @@ import com.enjin.officialplugin.packets.Packet10AddPlayerGroup;
 import com.enjin.officialplugin.packets.Packet11RemovePlayerGroup;
 import com.enjin.officialplugin.packets.Packet12ExecuteCommand;
 import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
+import com.enjin.officialplugin.packets.Packet14DummyHandler;
 import com.enjin.officialplugin.packets.Packet14NewerVersion;
 import com.enjin.officialplugin.packets.Packet15RemoteConfigUpdate;
 import com.enjin.officialplugin.packets.Packet16MultiUserNotice;
@@ -480,7 +481,11 @@ public class PeriodicEnjinTask implements Runnable {
 				break;
 			case 0x14:
 				EnjinMinecraftPlugin.debug("Packet [0x14](Newer Version) received.");
-				Packet14NewerVersion.handle(bin, plugin);
+				if(EnjinMinecraftPlugin.bukkitversion) {
+					Packet14DummyHandler.handle(bin, plugin);
+				}else {
+					Packet14NewerVersion.handle(bin, plugin);
+				}
 				break;
 			case 0x15:
 				EnjinMinecraftPlugin.debug("Packet [0x15](Remote Config Update) received.");

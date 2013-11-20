@@ -29,7 +29,9 @@ public class AsyncToSyncEventThrower implements Runnable {
 	public void run() {
 		while(!event.isEmpty()) {
 			Event ev = event.poll();
-			Bukkit.getServer().getPluginManager().callEvent(ev);
+			if(ev != null) {
+				Bukkit.getServer().getPluginManager().callEvent(ev);
+			}
 		}
 	}
 	

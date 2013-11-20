@@ -31,7 +31,7 @@ public class EMPListener implements Listener {
 		Player p = e.getPlayer();
 		updatePlayerRanks(p);
 		if(!plugin.newversion.equals("") && p.hasPermission("enjin.notify.update")) {
-			p.sendMessage("Enjin Minecraft plugin was updated to version " + plugin.newversion + ". Please restart your server.");
+			p.sendMessage(ChatColor.GREEN + "Enjin Minecraft plugin was updated to version " + plugin.newversion + ". Please restart your server.");
 		}
 		if(plugin.updatefailed && p.hasPermission("enjin.notify.failedupdate")) {
 			p.sendMessage(ChatColor.DARK_RED + "Enjin Minecraft plugin failed to update to the newest version. Please download it manually.");

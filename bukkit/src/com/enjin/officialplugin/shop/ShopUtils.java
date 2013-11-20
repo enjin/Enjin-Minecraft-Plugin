@@ -92,26 +92,7 @@ public class ShopUtils {
 									(String) item.get("id"), getPriceString(item.get("price")),
 									(String) item.get("info"), getPointsString(item.get("points")));
 							Object options = item.get("variables");
-							if (options != null && options instanceof JSONArray
-									&& ((JSONArray) options).size() > 0) {
-								JSONArray joptions = (JSONArray) options;
-								@SuppressWarnings("rawtypes")
-								Iterator optionsiterator = joptions.iterator();
-								while (optionsiterator.hasNext()) {
-									JSONObject option = (JSONObject) optionsiterator.next();
-									ShopItemOptions soptions = new ShopItemOptions(
-											(String) option.get("name"), "",
-											getPriceString(option.get("pricemin")),
-											getPriceString(option.get("pricemax")),
-											getPointsString(option.get("pointsmin")),
-											getPointsString(option.get("pointsmax")));
-									soptions.setRequired(getBoolean(option.get("required")));
-									if(option.get("type") != null && option.get("type") instanceof String) {
-										soptions.setType(getOptionType((String)option.get("type")));
-									}
-									sitem.addOption(soptions);
-								}
-							}else if (options != null && options instanceof JSONObject
+							if (options != null && options instanceof JSONObject
 									&& ((JSONObject) options).size() > 0) {
 								JSONObject joptions = (JSONObject) options;
 								Set<Map.Entry> optionsset = joptions.entrySet();
@@ -134,12 +115,12 @@ public class ShopUtils {
 									if(soptions.getType() == ShopItemOptions.Type.MultipleCheckboxes ||
 											soptions.getType() == ShopItemOptions.Type.MultipleChoice) {
 										Object optionOptions = item.get("options");
-										if(optionOptions != null || optionOptions instanceof JSONObject) {
+										if(optionOptions != null && optionOptions instanceof JSONObject) {
 											JSONObject joptionOptions = (JSONObject) optionOptions;
 											Set<Map.Entry> joptionsset = joptionOptions.entrySet();
 											Iterator<Entry> joptionsiterator = joptionsset.iterator();
 											while(joptionsiterator.hasNext()) {
-												Entry jentry = optionsiterator.next();
+												Entry jentry = joptionsiterator.next();
 												JSONObject jjentry = (JSONObject) jentry.getValue();
 												ShopOptionOptions ssoptions = new ShopOptionOptions(
 														(String) jentry.getKey(),
@@ -160,8 +141,9 @@ public class ShopUtils {
 				}
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			if(EnjinMinecraftPlugin.debug) {
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -217,7 +199,6 @@ public class ShopUtils {
 				}
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 		return psi;
@@ -259,13 +240,14 @@ public class ShopUtils {
 				try {
 					shop.addItem(scategory);
 				} catch (ItemTypeNotSupported e) {
-					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				}
 			}
 		}
 	}
 
+	
+	//Real one used to populate stuff, other one is used for other things.
 	private static void addItems(ShopItemAdder shop, JSONArray shopitems) {
 		shop.setType(ServerShop.Type.Item);
 		for (Object oitem : shopitems) {
@@ -274,22 +256,7 @@ public class ShopUtils {
 					(String) item.get("id"), getPriceString(item.get("price")),
 					(String) item.get("info"), getPointsString(item.get("points")));
 			Object options = item.get("variables");
-			if (options != null && options instanceof JSONArray
-					&& ((JSONArray) options).size() > 0) {
-				JSONArray joptions = (JSONArray) options;
-				@SuppressWarnings("rawtypes")
-				Iterator optionsiterator = joptions.iterator();
-				while (optionsiterator.hasNext()) {
-					JSONObject option = (JSONObject) optionsiterator.next();
-					ShopItemOptions soptions = new ShopItemOptions(
-							(String) option.get("name"), "",
-							getPriceString(option.get("pricemin")),
-							getPriceString(option.get("pricemax")),
-							getPointsString(option.get("pointsmin")),
-							getPointsString(option.get("pointsmax")));
-					sitem.addOption(soptions);
-				}
-			}else if (options != null && options instanceof JSONObject
+			if (options != null && options instanceof JSONObject
 					&& ((JSONObject) options).size() > 0) {
 				JSONObject joptions = (JSONObject) options;
 				Set<Map.Entry> optionsset = joptions.entrySet();
@@ -314,13 +281,35 @@ public class ShopUtils {
 					}
 					soptions.setMaxValue(getLengthInt(option.get("max_value")));
 					soptions.setMinValue(getLengthInt(option.get("min_value")));
+					if(option.get("type") != null && option.get("type") instanceof String) {
+						soptions.setType(getOptionType((String)option.get("type")));
+					}
+					if(soptions.getType() == ShopItemOptions.Type.MultipleCheckboxes ||
+							soptions.getType() == ShopItemOptions.Type.MultipleChoice) {
+						Object optionOptions = option.get("options");
+						if(optionOptions != null && optionOptions instanceof JSONObject) {
+							JSONObject joptionOptions = (JSONObject) optionOptions;
+							Set<Map.Entry> joptionsset = joptionOptions.entrySet();
+							Iterator<Entry> joptionsiterator = joptionsset.iterator();
+							while(joptionsiterator.hasNext()) {
+								Entry jentry = joptionsiterator.next();
+								JSONObject jjentry = (JSONObject) jentry.getValue();
+								ShopOptionOptions ssoptions = new ShopOptionOptions(
+										(String) jentry.getKey(),
+										(String) jjentry.get("name"), 
+										(String) jjentry.get("value"), 
+										getPriceString(jjentry.get("price")),
+										getPointsString(jjentry.get("points")));
+								soptions.addOption(ssoptions);
+							}
+						}
+					}
 					sitem.addOption(soptions);
 				}
 			}
 			try {
 				shop.addItem(sitem);
 			} catch (ItemTypeNotSupported e) {
-				// TODO Auto-generated catch block
 				//e.printStackTrace();
 			}
 		}
