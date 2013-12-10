@@ -899,12 +899,24 @@ public class ShopUtils {
 		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext()	+ "Type /" + EnjinMinecraftPlugin.BUY_COMMAND
 				+ " to go back, or type /ec to enable chat");
 		if (collapsed) {
-			itempage.add(FORMATTING_CODE + shop.getColorbottom() + "Click the item link to purchase");
+			if (optionpoints.equals("")) {
+				itempage.add(FORMATTING_CODE + shop.getColorbottom() + "Click the item link to purchase");
+			}
+			else {
+				itempage.add(FORMATTING_CODE + shop.getColorbottom() + "Click the item link or type /buy item");
+			}
 		} else {
 			// Standard shop format
 			StringBuilder bottomline = new StringBuilder(50);
 			bottomline.append(FORMATTING_CODE + shop.getColorborder() + first4chars);
-			bottomline.append(" " + FORMATTING_CODE + shop.getColorbottom()	+ "Click the item link to purchase" + FORMATTING_CODE + shop.getColorborder() + " ");
+			
+			if (optionpoints.equals("")) {
+				bottomline.append(" " + FORMATTING_CODE + shop.getColorbottom()	+ "Click the item link to purchase" + FORMATTING_CODE + shop.getColorborder() + " ");
+			}
+			else {
+				bottomline.append(" " + FORMATTING_CODE + shop.getColorbottom()	+ "Click the item link or type /buy item" + FORMATTING_CODE + shop.getColorborder() + " ");
+			}			
+			
 			bottomline.append(FORMATTING_CODE + shop.getColorborder() + " ");
 			for (int i = 0; i < 40; i++) {
 				bottomline.append(shop.getBorder_h());
