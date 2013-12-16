@@ -371,7 +371,7 @@ public class CommandListener extends CommandBase {
 		if(sender == null || !(sender instanceof EntityPlayerMP)) {
 			MinecraftServer.getServer().logInfo(EnjinConsole.stripColor(message));
 		}else {
-			sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(message));
+			sender.sendChatToPlayer(ChatMessageComponent.createFromText(message));
 		}
 	}
 	
@@ -382,7 +382,7 @@ public class CommandListener extends CommandBase {
 			}
 		}else {
 			for(String message : messages) {
-				sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(message));
+				sender.sendChatToPlayer(ChatMessageComponent.createFromText(message));
 			}
 		}
 	}

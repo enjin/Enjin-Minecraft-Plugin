@@ -113,17 +113,17 @@ public class UpdateHeadsThread implements Runnable {
 				}
 			} catch (ParseException e) {
 				if(sender != null) {
-					sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.DARK_RED + "There was an error parsing the shop data, donations won't show package information."));
+					sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.DARK_RED + "There was an error parsing the shop data, donations won't show package information."));
 				}
 				e.printStackTrace();
 			}
 		} catch (SocketTimeoutException e) {
 			if(sender != null) {
-				sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.DARK_RED + "There was an error connecting to enjin, please try again later."));
+				sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.DARK_RED + "There was an error connecting to enjin, please try again later."));
 			}
 		} catch (Throwable t) {
 			if(sender != null) {
-				sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.DARK_RED + "There was an error syncing the shop's packages, please fill out a support ticket at http://enjin.com/support and include the results of your /enjin report"));
+				sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.DARK_RED + "There was an error syncing the shop's packages, please fill out a support ticket at http://enjin.com/support and include the results of your /enjin report"));
 			}
 			t.printStackTrace();
 		}
@@ -676,21 +676,21 @@ public class UpdateHeadsThread implements Runnable {
 				}
 				plugin.scheduler.scheduleSyncDelayedTask(plugin.eventthrower);
 				if(sender != null) {
-					sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.GREEN + "Player head data successfully synched!"));
+					sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.GREEN + "Player head data successfully synched!"));
 				}
 			} catch (ParseException e) {
 				if(sender != null) {
-					sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.DARK_RED + "There was an error parsing the head data."));
+					sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.DARK_RED + "There was an error parsing the head data."));
 				}
 				e.printStackTrace();
 			}
 		} catch (SocketTimeoutException e) {
 			if(sender != null) {
-				sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.DARK_RED + "There was an error connecting to enjin, please try again later."));
+				sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.DARK_RED + "There was an error connecting to enjin, please try again later."));
 			}
 		} catch (Throwable t) {
 			if(sender != null) {
-				sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.DARK_RED + "There was an error syncing the heads, please fill out a support ticket at http://enjin.com/support and include the results of your /enjin report"));
+				sender.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.DARK_RED + "There was an error syncing the heads, please fill out a support ticket at http://enjin.com/support and include the results of your /enjin report"));
 			}
 			t.printStackTrace();
 		}
