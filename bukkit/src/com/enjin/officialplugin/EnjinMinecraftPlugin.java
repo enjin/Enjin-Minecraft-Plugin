@@ -87,7 +87,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class EnjinMinecraftPlugin extends JavaPlugin {
 
-	
+
 	public FileConfiguration config;
 	public static boolean usingGroupManager = false;
 	File hashFile;
@@ -105,53 +105,53 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean votifierinstalled = false;
 	public int xpversion = 0;
 	public String mcversion = "";
-	
+
 	int signupdateinterval = 10;
-	
+
 	public HeadLocations headlocation = new HeadLocations();
 	public CachedHeadData headdata = new CachedHeadData(this);
-	
+
 	public static String BUY_COMMAND = "buy";
-	
+
 	/**Key is the config value, value is the type, string, boolean, etc.*/
 	public ConcurrentHashMap<String, ConfigValueTypes> configvalues = new ConcurrentHashMap<String, ConfigValueTypes>();
-	
+
 	public int statssendinterval = 5;
-	
+
 	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
-	
+
 	public CommandExecuter commandqueue = new CommandExecuter();
-	
+
 	public StatsServer serverstats = new StatsServer(this);
 	public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
 	/**Key is banned player, value is admin that banned the player or blank if the console banned*/
 	public ConcurrentHashMap<String, String> bannedplayers = new ConcurrentHashMap<String, String>();
 	/**Key is banned player, value is admin that pardoned the player or blank if the console pardoned*/
 	public ConcurrentHashMap<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
-	
+
 	public ShopItems cachedItems = new ShopItems();
-	
-	
+
+
 	static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
 	//static public String apiurl = "://tuxreminder.info/api/";
 	//static public String apiurl = "://mxm.enjin.com/api/";
 	//static public String apiurl = "://api.enjin.ca/api/";
-	
+
 	public boolean autoupdate = true;
 	public String newversion = "";
-	
+
 	public boolean hasupdate = false;
 	public boolean updatefailed = false;
 	public boolean authkeyinvalid = false;
 	public boolean unabletocontactenjin = false;
 	public boolean permissionsnotworking = false;
 	static public boolean bukkitversion = false;
-	
+
 	public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
-	
+
 	public final EMPListener listener = new EMPListener(this);
-	
+
 	//------------Threaded tasks---------------
 	final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
 	final PeriodicVoteTask votetask = new PeriodicVoteTask(this);
@@ -167,7 +167,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	int commandexecutertask = -1;
 	int headsupdateid = -1;
 	int updatethread = -1;
-	
+
 	static final ExecutorService exec = Executors.newCachedThreadPool();
 	public static String minecraftport;
 	public static boolean usingSSL = true;
@@ -175,21 +175,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public ConcurrentHashMap<String, String> playerperms = new ConcurrentHashMap<String, String>();
 	//Player, lists voted on.
 	public ConcurrentHashMap<String, String> playervotes = new ConcurrentHashMap<String, String>();
-	
+
 	public EnjinErrorReport lasterror = null;
-	
+
 	public EnjinStatsListener esl = null;
-	
+
 	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 	public ShopListener shoplistener;
-	
+
 	public static void debug(String s) {
 		if(debug) {
 			System.out.println("Enjin Debug: " + s);
 		}
 		enjinlogger.fine(s);
 	}
-	
+
 	@Override
 	public void onEnable() {
 		try {
@@ -208,10 +208,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			}
 			FileHandler fileTxt = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
 			EnjinLogFormatter formatterTxt = new EnjinLogFormatter();
-		    fileTxt.setFormatter(formatterTxt);
-		    enjinlogger.addHandler(fileTxt);
-		    enjinlogger.setUseParentHandlers(false);
-		    debug("Logger initialized.");
+			fileTxt.setFormatter(formatterTxt);
+			enjinlogger.addHandler(fileTxt);
+			enjinlogger.setUseParentHandlers(false);
+			debug("Logger initialized.");
 			debug("Begin init");
 			initVariables();
 			debug("Init vars done.");
@@ -228,44 +228,44 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Setup permissions integration");
 			setupVotifierListener();
 			debug("Setup Votifier integration");
-			
+
 			//------We should do TPS even if we have an invalid auth key
 			Bukkit.getScheduler().runTaskTimerAsynchronously(this, tpstask = new MonitorTPS(this), 40, 40);
-			
+
 			Thread configthread = new Thread(new ConfigSender(this));
 			configthread.start();
-			
+
 			//Let's get the minecraft version.
 			String[] cbversionstring = getServer().getVersion().split(":");
-	        String[] versionstring = cbversionstring[1].split("\\.");
-	        try{
-	        	int majorversion = Integer.parseInt(versionstring[0].trim());
-	        	int minorversion = Integer.parseInt(versionstring[1].trim().substring(0, 1));
-	        	int buildnumber = 0;
-	        	if(versionstring.length > 2) {
-	        		try {
-		        		buildnumber = Integer.parseInt(versionstring[2].substring(0, 1));
-	        		}catch(NumberFormatException e) {
-	        			
-	        		}
-	        	}
-	        	mcversion = majorversion + "." + minorversion + "." + buildnumber;
-	        	if(majorversion == 1) {
-	        		if(minorversion > 2) {
-	        			xpversion = 1;
-	        			logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
-	        		}else {
-	        			logger.info("[Enjin Minecraft Plugin] MC 1.2 or below found, enabling version 1 XP handling.");
-	        		}
-	        	}else if(majorversion > 1) {
-	        		xpversion = 1;
-	    			logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
-	        	}
-	        }catch (Exception e) {
-	        	logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP handling may occurr!");
-	        	logger.severe("[Enjin Minecraft Plugin] Server Version String: " + getServer().getVersion());
-	        }
-			
+			String[] versionstring = cbversionstring[1].split("\\.");
+			try{
+				int majorversion = Integer.parseInt(versionstring[0].trim());
+				int minorversion = Integer.parseInt(versionstring[1].trim().substring(0, 1));
+				int buildnumber = 0;
+				if(versionstring.length > 2) {
+					try {
+						buildnumber = Integer.parseInt(versionstring[2].substring(0, 1));
+					}catch(NumberFormatException e) {
+
+					}
+				}
+				mcversion = majorversion + "." + minorversion + "." + buildnumber;
+				if(majorversion == 1) {
+					if(minorversion > 2) {
+						xpversion = 1;
+						logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
+					}else {
+						logger.info("[Enjin Minecraft Plugin] MC 1.2 or below found, enabling version 1 XP handling.");
+					}
+				}else if(majorversion > 1) {
+					xpversion = 1;
+					logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
+				}
+			}catch (Exception e) {
+				logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP handling may occurr!");
+				logger.severe("[Enjin Minecraft Plugin] Server Version String: " + getServer().getVersion());
+			}
+
 			if(collectstats) {
 				startStatsCollecting();
 				File stats = new File("stats.stats");
@@ -279,13 +279,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						playerstats.put(player.getName().toLowerCase(), new StatsPlayer(player));
 					}
 				}
-		        //XP handling and chat event handling changed at 1.3, so we can use the same variable. :D
-		        if(xpversion < 1) {
-		        	//We only keep this around for backwards compatibility with tekkit as it is still on 1.2.5
-		        	getLogger().severe("This version of the Enjin Minecraft Plugin does not support Tekkit Classic! Please downgrade to version 2.4.0.");
-		        }else {
-		        	Bukkit.getPluginManager().registerEvents(new NewPlayerChatListener(this), this);
-		        }
+				//XP handling and chat event handling changed at 1.3, so we can use the same variable. :D
+				if(xpversion < 1) {
+					//We only keep this around for backwards compatibility with tekkit as it is still on 1.2.5
+					getLogger().severe("This version of the Enjin Minecraft Plugin does not support Tekkit Classic! Please downgrade to version 2.4.0.");
+				}else {
+					Bukkit.getPluginManager().registerEvents(new NewPlayerChatListener(this), this);
+				}
 			}
 			usingGroupManager = (permission instanceof Permission_GroupManager);
 			//debug("Checking key valid.");
@@ -306,11 +306,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			this.setEnabled(false);
 		}
 	}
-	
+
 	public void stopStatsCollecting() {
-		 HandlerList.unregisterAll(esl);
+		HandlerList.unregisterAll(esl);
 	}
-	
+
 	public void startStatsCollecting() {
 		if(esl == null) {
 			esl = new EnjinStatsListener(this);
@@ -352,7 +352,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Stats saved to stats.stats.");
 		}
 	}
-	
+
 	private void initVariables() throws Throwable {
 		hashFile = new File(this.getDataFolder(), "HASH.txt");
 		s = Bukkit.getServer();
@@ -369,7 +369,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			throw new Exception("[Enjin Minecraft Plugin] Couldn't find a localhost ip! Please report this problem!");
 		}
 	}
-	
+
 	public void initFiles() {
 		//let's read in the old hash file if there is one and convert it to the new format.
 		if(hashFile.exists()) {
@@ -387,48 +387,48 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 		config = getConfig();
 		File configfile = new File(getDataFolder().toString() + "/config.yml");
-    	if(!configfile.exists()) {
-    		createConfig();
-    	}
-    	configvalues.put("debug", ConfigValueTypes.BOOLEAN);
-    	debug = config.getBoolean("debug", false);
-    	configvalues.put("authkey", ConfigValueTypes.FORBIDDEN);
-    	hash = config.getString("authkey", "");
-    	debug("Key value retrieved: " + hash);
-    	configvalues.put("https", ConfigValueTypes.BOOLEAN);
-    	usingSSL = config.getBoolean("https", true);
-    	configvalues.put("autoupdate", ConfigValueTypes.BOOLEAN);
-    	autoupdate = config.getBoolean("autoupdate", true);
-    	apiurl = config.getString("apiurl", apiurl);
-    	//Test to see if we need to update the config file.
-    	String teststats = config.getString("collectstats", "");
-    	if(teststats.equals("")) {
-    		createConfig();
-    	}
-    	configvalues.put("collectstats", ConfigValueTypes.BOOLEAN);
-    	collectstats = config.getBoolean("collectstats", collectstats);
-    	configvalues.put("sendstatsinterval", ConfigValueTypes.INT);
-    	statssendinterval = config.getInt("sendstatsinterval", 5);
-    	configvalues.put("statscollected.player.travel", ConfigValueTypes.BOOLEAN);
-    	configvalues.put("statscollected.player.blocksbroken", ConfigValueTypes.BOOLEAN);
-    	configvalues.put("statscollected.player.blocksplaced", ConfigValueTypes.BOOLEAN);
-    	configvalues.put("statscollected.player.kills", ConfigValueTypes.BOOLEAN);
-    	configvalues.put("statscollected.player.deaths", ConfigValueTypes.BOOLEAN);
-    	configvalues.put("statscollected.player.xp", ConfigValueTypes.BOOLEAN);
-    	configvalues.put("statscollected.player.creeperexplosions", ConfigValueTypes.BOOLEAN);
-    	configvalues.put("statscollected.player.playerkicks", ConfigValueTypes.BOOLEAN);
-    	configvalues.put("buycommand", ConfigValueTypes.STRING);
-    	teststats = config.getString("statscollected.player.travel", "");
-    	if(teststats.equals("")) {
-    		createConfig();
-    	}
+		if(!configfile.exists()) {
+			createConfig();
+		}
+		configvalues.put("debug", ConfigValueTypes.BOOLEAN);
+		debug = config.getBoolean("debug", false);
+		configvalues.put("authkey", ConfigValueTypes.FORBIDDEN);
+		hash = config.getString("authkey", "");
+		debug("Key value retrieved: " + hash);
+		configvalues.put("https", ConfigValueTypes.BOOLEAN);
+		usingSSL = config.getBoolean("https", true);
+		configvalues.put("autoupdate", ConfigValueTypes.BOOLEAN);
+		autoupdate = config.getBoolean("autoupdate", true);
+		apiurl = config.getString("apiurl", apiurl);
+		//Test to see if we need to update the config file.
+		String teststats = config.getString("collectstats", "");
+		if(teststats.equals("")) {
+			createConfig();
+		}
+		configvalues.put("collectstats", ConfigValueTypes.BOOLEAN);
+		collectstats = config.getBoolean("collectstats", collectstats);
+		configvalues.put("sendstatsinterval", ConfigValueTypes.INT);
+		statssendinterval = config.getInt("sendstatsinterval", 5);
+		configvalues.put("statscollected.player.travel", ConfigValueTypes.BOOLEAN);
+		configvalues.put("statscollected.player.blocksbroken", ConfigValueTypes.BOOLEAN);
+		configvalues.put("statscollected.player.blocksplaced", ConfigValueTypes.BOOLEAN);
+		configvalues.put("statscollected.player.kills", ConfigValueTypes.BOOLEAN);
+		configvalues.put("statscollected.player.deaths", ConfigValueTypes.BOOLEAN);
+		configvalues.put("statscollected.player.xp", ConfigValueTypes.BOOLEAN);
+		configvalues.put("statscollected.player.creeperexplosions", ConfigValueTypes.BOOLEAN);
+		configvalues.put("statscollected.player.playerkicks", ConfigValueTypes.BOOLEAN);
+		configvalues.put("buycommand", ConfigValueTypes.STRING);
+		teststats = config.getString("statscollected.player.travel", "");
+		if(teststats.equals("")) {
+			createConfig();
+		}
 		teststats = config.getString("buycommand", null);
-    	if(teststats == null) {
-    		createConfig();
-    	}
-    	BUY_COMMAND = config.getString("buycommand", null);
+		if(teststats == null) {
+			createConfig();
+		}
+		BUY_COMMAND = config.getString("buycommand", null);
 	}
-	
+
 	private void createConfig() {
 		config.set("debug", debug);
 		config.set("authkey", hash);
@@ -437,20 +437,20 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		config.set("collectstats", collectstats);
 		config.set("sendstatsinterval", statssendinterval);
 		String teststats = config.getString("statscollected.player.travel", "");
-    	if(teststats.equals("")) {
-    		config.set("statscollected.player.travel", true);
-    		config.set("statscollected.player.blocksbroken", true);
-    		config.set("statscollected.player.blocksplaced", true);
-    		config.set("statscollected.player.kills", true);
-    		config.set("statscollected.player.deaths", true);
-    		config.set("statscollected.player.xp", true);
-    		config.set("statscollected.server.creeperexplosions", true);
-    		config.set("statscollected.server.playerkicks", true);
-    	}
+		if(teststats.equals("")) {
+			config.set("statscollected.player.travel", true);
+			config.set("statscollected.player.blocksbroken", true);
+			config.set("statscollected.player.blocksplaced", true);
+			config.set("statscollected.player.kills", true);
+			config.set("statscollected.player.deaths", true);
+			config.set("statscollected.player.xp", true);
+			config.set("statscollected.server.creeperexplosions", true);
+			config.set("statscollected.server.playerkicks", true);
+		}
 		teststats = config.getString("buycommand", null);
-    	if(teststats == null) {
-    		config.set("buycommand", BUY_COMMAND);
-    	}
+		if(teststats == null) {
+			config.set("buycommand", BUY_COMMAND);
+		}
 		saveConfig();
 	}
 
@@ -474,7 +474,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			updatethread = scheduler.runTaskTimerAsynchronously(this, new Updater(this, 44560, this.getFile(), Updater.UpdateType.DEFAULT, true), 20*60*5, 20*60*5).getTaskId();
 		}
 	}
-	
+
 	public void registerEvents() {
 		debug("Registering events.");
 		Bukkit.getPluginManager().registerEvents(listener, this);
@@ -485,7 +485,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			Bukkit.getPluginManager().registerEvents(shoplistener, this);
 		}
 	}
-	
+
 	public void stopTask() {
 		debug("Stopping tasks.");
 		if(synctaskid != -1) {
@@ -509,7 +509,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 		//Bukkit.getScheduler().cancelTasks(this);
 	}
-	
+
 	public void stopUpdateTask() {
 		debug("Stopping update task.");
 		if(updatethread != -1) {
@@ -518,12 +518,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 		//Bukkit.getScheduler().cancelTasks(this);
 	}
-	
+
 	public void unregisterEvents() {
 		debug("Unregistering events.");
 		HandlerList.unregisterAll(listener);
 	}
-	
+
 	private void setupVotifierListener() {
 		if(Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
 			System.out.println("[Enjin Minecraft Plugin] Votifier plugin found, enabling Votifier support.");
@@ -532,7 +532,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			votifierinstalled = true;
 		}
 	}
-	
+
 	private void initPlugins() throws Throwable {
 		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			enjinlogger.warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/server-mods/vault/!");
@@ -542,7 +542,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		debug("Initializing permissions.");
 		initPermissions();
 	}
-	
+
 	private void initPermissions() throws Throwable {
 		RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
 		if(provider == null) {
@@ -557,7 +557,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			return;
 		}
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		//This command is now depreciated in favor of /enjin key
@@ -639,7 +639,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					report.append("Bukkit version: " + getServer().getVersion() + "\n");
 					report.append("Java version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n");
 					report.append("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") + "\n");
-					
+
 					if(authkeyinvalid) {
 						report.append("ERROR: Authkey reported by plugin as invalid!\n");
 					}
@@ -649,7 +649,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					if(permissionsnotworking) {
 						report.append("WARNING: Permissions plugin is not configured properly and is disabled. Check the server.log for more details.\n");
 					}
-					
+
 					report.append("\nPlugins: \n");
 					for(Plugin p : Bukkit.getPluginManager().getPlugins()) {
 						report.append(p.getName() + " version " + p.getDescription().getVersion() + "\n");
@@ -660,8 +660,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}
 					ReportMakerThread rmthread = new ReportMakerThread(this, report, sender);
 					Thread dispatchThread = new Thread(rmthread);
-		            dispatchThread.start();
-		            return true;
+					dispatchThread.start();
+					return true;
 				}else if(args[0].equalsIgnoreCase("debug")) {
 					if(!sender.hasPermission("enjin.debug")) {
 						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.debug\" permission or OP to run that command!");
@@ -708,7 +708,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					for(OfflinePlayer offlineplayer : allplayers) {
 						playerperms.put(offlineplayer.getName(), "");
 					}
-					
+
 					//Calculate how many minutes approximately it's going to take.
 					int minutes = playerperms.size()/3000;
 					//Make sure to tack on an extra minute for the leftover players.
@@ -856,7 +856,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						sender.sendMessage(ChatColor.GOLD + "Please wait as we add the " + pointsamount + " points to " + playername + "...");
 						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.AddPoints);
 						Thread dispatchThread = new Thread(mthread);
-				        dispatchThread.start();
+						dispatchThread.start();
 					}else {
 						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin addpoints [player] [amount]");
 					}
@@ -882,7 +882,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						sender.sendMessage(ChatColor.GOLD + "Please wait as we remove the " + pointsamount + " points from " + playername + "...");
 						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.RemovePoints);
 						Thread dispatchThread = new Thread(mthread);
-				        dispatchThread.start();
+						dispatchThread.start();
 					}else {
 						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin removepoints [player] [amount]");
 					}
@@ -904,7 +904,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						sender.sendMessage(ChatColor.GOLD + "Please wait as we set the points to " + pointsamount + " points for " + playername + "...");
 						EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.SetPoints);
 						Thread dispatchThread = new Thread(mthread);
-				        dispatchThread.start();
+						dispatchThread.start();
 					}else {
 						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin setpoints [player] [amount]");
 					}
@@ -915,12 +915,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						sender.sendMessage(ChatColor.GOLD + "Please wait as we retrieve the points balance for " + playername + "...");
 						RetrievePointsSyncClass mthread = new RetrievePointsSyncClass(sender, playername, false);
 						Thread dispatchThread = new Thread(mthread);
-				        dispatchThread.start();
+						dispatchThread.start();
 					}else if(sender.hasPermission("enjin.points.getself")){
 						sender.sendMessage(ChatColor.GOLD + "Please wait as we retrieve your points balance...");
 						RetrievePointsSyncClass mthread = new RetrievePointsSyncClass(sender, sender.getName(), true);
 						Thread dispatchThread = new Thread(mthread);
-				        dispatchThread.start();
+						dispatchThread.start();
 					}else {
 						sender.sendMessage(ChatColor.DARK_RED + "I'm sorry, you don't have permission to check points!");
 					}
@@ -930,29 +930,29 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.sign.set\" permission or OP to run that command!");
 						return true;
 					}
-	                /*
-	                 * Display detailed Enjin help for heads in console
-	                 */
-	                sender.sendMessage(EnjinConsole.header());
-	                
-	                sender.sendMessage(ChatColor.AQUA + "To set a sign with a head, just place the head, then place the sign either above or below it.");
-	                sender.sendMessage(ChatColor.AQUA + "To create a sign of a specific type just put the code on the first line. # denotes the number.");
-	                sender.sendMessage(ChatColor.AQUA + " Example: [donation2] would show the second most recent donation.");
-	                sender.sendMessage(ChatColor.AQUA + "If there are sub-types, those go on the second line of the sign.");
-	                sender.sendMessage(ChatColor.GOLD + "[donation#] " + ChatColor.RESET + " - Most recent donation.");
-	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " Place the item id on the second line to only get donations for that package.");
-	                sender.sendMessage(ChatColor.GOLD + "[topvoter#] " + ChatColor.RESET + " - Top voter of the month.");
-	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes it to the top voter of the day/week/month.");
-	                sender.sendMessage(ChatColor.GOLD + "[voter#] " + ChatColor.RESET + " - Most recent voter.");
-	                sender.sendMessage(ChatColor.GOLD + "[topplayer#] " + ChatColor.RESET + " - Top player (gets data from module on website).");
-	                sender.sendMessage(ChatColor.GOLD + "[topposter#] " + ChatColor.RESET + " - Top poster on the forum.");
-	                sender.sendMessage(ChatColor.GOLD + "[toplikes#] " + ChatColor.RESET + " - Top forum likes.");
-	                sender.sendMessage(ChatColor.GOLD + "[newmember#] " + ChatColor.RESET + " - Latest player to sign up on the website.");
-	                sender.sendMessage(ChatColor.GOLD + "[toppoints#] " + ChatColor.RESET + " - Which player has the most unspent points.");
-	                sender.sendMessage(ChatColor.GOLD + "[pointsspent#] " + ChatColor.RESET + " - Player which has spent the most points overall.");
-	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
-	                sender.sendMessage(ChatColor.GOLD + "[moneyspent#] " + ChatColor.RESET + " - Player which has spent the most money on the server overall.");
-	                sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
+					/*
+					 * Display detailed Enjin help for heads in console
+					 */
+					sender.sendMessage(EnjinConsole.header());
+
+					sender.sendMessage(ChatColor.AQUA + "To set a sign with a head, just place the head, then place the sign either above or below it.");
+					sender.sendMessage(ChatColor.AQUA + "To create a sign of a specific type just put the code on the first line. # denotes the number.");
+					sender.sendMessage(ChatColor.AQUA + " Example: [donation2] would show the second most recent donation.");
+					sender.sendMessage(ChatColor.AQUA + "If there are sub-types, those go on the second line of the sign.");
+					sender.sendMessage(ChatColor.GOLD + "[donation#] " + ChatColor.RESET + " - Most recent donation.");
+					sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " Place the item id on the second line to only get donations for that package.");
+					sender.sendMessage(ChatColor.GOLD + "[topvoter#] " + ChatColor.RESET + " - Top voter of the month.");
+					sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes it to the top voter of the day/week/month.");
+					sender.sendMessage(ChatColor.GOLD + "[voter#] " + ChatColor.RESET + " - Most recent voter.");
+					sender.sendMessage(ChatColor.GOLD + "[topplayer#] " + ChatColor.RESET + " - Top player (gets data from module on website).");
+					sender.sendMessage(ChatColor.GOLD + "[topposter#] " + ChatColor.RESET + " - Top poster on the forum.");
+					sender.sendMessage(ChatColor.GOLD + "[toplikes#] " + ChatColor.RESET + " - Top forum likes.");
+					sender.sendMessage(ChatColor.GOLD + "[newmember#] " + ChatColor.RESET + " - Latest player to sign up on the website.");
+					sender.sendMessage(ChatColor.GOLD + "[toppoints#] " + ChatColor.RESET + " - Which player has the most unspent points.");
+					sender.sendMessage(ChatColor.GOLD + "[pointsspent#] " + ChatColor.RESET + " - Player which has spent the most points overall.");
+					sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
+					sender.sendMessage(ChatColor.GOLD + "[moneyspent#] " + ChatColor.RESET + " - Player which has spent the most money on the server overall.");
+					sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
 					return true;
 				}
 			}else {
@@ -963,19 +963,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 				if(sender.hasPermission("enjin.setkey"))
 					sender.sendMessage(ChatColor.GOLD + "/enjin key <KEY>: "
-									 + ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
+							+ ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
 				if(sender.hasPermission("enjin.broadcast"))
 					sender.sendMessage(ChatColor.GOLD + "/enjin broadcast <MESSAGE>: "
 							+ ChatColor.RESET + "Broadcast a message to all players.");
 				if(sender.hasPermission("enjin.push"))
 					sender.sendMessage(ChatColor.GOLD + "/enjin push: "
 							+ ChatColor.RESET + "Sync your website tags with the current ranks.");
-				/*if(sender.hasPermission("enjin.playerstats"))
-					sender.sendMessage(ChatColor.GOLD + "/enjin playerstats <NAME>: "
-							+ ChatColor.RESET + "Display player statistics.");
-				if(sender.hasPermission("enjin.serverstats"))
-					sender.sendMessage(ChatColor.GOLD + "/enjin serverstats: "
-							+ ChatColor.RESET + "Display server statistics.");*/
 				if(sender.hasPermission("enjin.lag"))
 					sender.sendMessage(ChatColor.GOLD + "/enjin lag: "
 							+ ChatColor.RESET + "Display TPS average and memory usage.");
@@ -998,7 +992,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 							+ ChatColor.RESET + "Shows another player's current website points.");
 				if(sender.hasPermission("enjin.points.add"))
 					sender.sendMessage(ChatColor.GOLD + "/enjin addpoints <NAME> <AMOUNT>: "
-							+ ChatColor.RESET + "Remove points from a player.");
+							+ ChatColor.RESET + "Add points to a player.");
 				if(sender.hasPermission("enjin.points.remove"))
 					sender.sendMessage(ChatColor.GOLD + "/enjin removepoints <NAME> <AMOUNT>: "
 							+ ChatColor.RESET + "Remove points from a player.");
@@ -1018,13 +1012,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 		return false;
 	}
-	
+
 	public void forceHeadUpdate() {
 		UpdateHeadsThread uhthread = new UpdateHeadsThread(this, null);
 		Thread dispatchThread = new Thread(uhthread);
 		dispatchThread.start();
 	}
-	
+
 	/**
 	 * 
 	 * @param urls
@@ -1071,49 +1065,49 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			return 2;
 		}
 	}
-	
+
 	public static synchronized void setHash(String hash) {
 		EnjinMinecraftPlugin.hash = hash;
 	}
-	
+
 	public static synchronized String getHash() {
 		return EnjinMinecraftPlugin.hash;
 	}
-	
+
 	private void setupPermissions() {
-    	Plugin pex = this.getServer().getPluginManager().getPlugin("PermissionsEx");
-        if (pex != null) {
-            permissionsex = (PermissionsEx)pex;
-            debug("PermissionsEx found, hooking custom events.");
-            Bukkit.getPluginManager().registerEvents(new PexChangeListener(this), this);
-            return;
-        }
-        Plugin bperm = this.getServer().getPluginManager().getPlugin("bPermissions");
-        if(bperm != null) {
-        	bpermissions = (Permissions)bperm;
-            debug("bPermissions found, hooking custom events.");
-            supportsglobalgroups = false;
-        	Bukkit.getPluginManager().registerEvents(new bPermsChangeListener(this), this);
-        	return;
-        }
-        Plugin groupmanager = this.getServer().getPluginManager().getPlugin("GroupManager");
-        if(groupmanager != null) {
-        	this.groupmanager = (GroupManager)groupmanager;
-            debug("GroupManager found, hooking custom events.");
-            supportsglobalgroups = false;
-        	Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
-        	return;
-        }
-        Plugin bukkitperms = this.getServer().getPluginManager().getPlugin("PermissionsBukkit");
-        if(bukkitperms != null) {
-        	this.permissionsbukkit = (PermissionsPlugin)bukkitperms;
-            debug("PermissionsBukkit found, hooking custom events.");
-        	Bukkit.getPluginManager().registerEvents(new PermissionsBukkitChangeListener(this), this);
-        	return;
-        }
-        debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
-        debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
-        
+		Plugin pex = this.getServer().getPluginManager().getPlugin("PermissionsEx");
+		if (pex != null) {
+			permissionsex = (PermissionsEx)pex;
+			debug("PermissionsEx found, hooking custom events.");
+			Bukkit.getPluginManager().registerEvents(new PexChangeListener(this), this);
+			return;
+		}
+		Plugin bperm = this.getServer().getPluginManager().getPlugin("bPermissions");
+		if(bperm != null) {
+			bpermissions = (Permissions)bperm;
+			debug("bPermissions found, hooking custom events.");
+			supportsglobalgroups = false;
+			Bukkit.getPluginManager().registerEvents(new bPermsChangeListener(this), this);
+			return;
+		}
+		Plugin groupmanager = this.getServer().getPluginManager().getPlugin("GroupManager");
+		if(groupmanager != null) {
+			this.groupmanager = (GroupManager)groupmanager;
+			debug("GroupManager found, hooking custom events.");
+			supportsglobalgroups = false;
+			Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
+			return;
+		}
+		Plugin bukkitperms = this.getServer().getPluginManager().getPlugin("PermissionsBukkit");
+		if(bukkitperms != null) {
+			this.permissionsbukkit = (PermissionsPlugin)bukkitperms;
+			debug("PermissionsBukkit found, hooking custom events.");
+			Bukkit.getPluginManager().registerEvents(new PermissionsBukkitChangeListener(this), this);
+			return;
+		}
+		debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
+		debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
+
 	}
 
 	public int getTotalXP(int level, float xp) {
@@ -1132,23 +1126,23 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			//We only have 2 versions at the moment
 		}else {
 			xpneededforlevel = 7;
-	    	boolean odd = true;
-	    	while(atlevel < level) {
-	    		atlevel++;
-	    		totalxp += xpneededforlevel;
-	    		if(odd) {
-	    			xpneededforlevel += 3;
-	    			odd = false;
-	    		}else {
-	    			xpneededforlevel += 4;
-	    			odd = true;
-	    		}
-	    	}
+			boolean odd = true;
+			while(atlevel < level) {
+				atlevel++;
+				totalxp += xpneededforlevel;
+				if(odd) {
+					xpneededforlevel += 3;
+					odd = false;
+				}else {
+					xpneededforlevel += 4;
+					odd = true;
+				}
+			}
 		}
 		totalxp = (int) (totalxp + (xp*xpneededforlevel));
 		return totalxp;
 	}
-	
+
 	public StatsPlayer GetPlayerStats(String name) {
 		StatsPlayer stats = playerstats.get(name.toLowerCase());
 		if(stats == null) {
@@ -1176,8 +1170,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			URL url = new URL("https://api.enjin.com/ok.html");
 			URLConnection con = url.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	        String inputLine = in.readLine();
-	        in.close();
+			String inputLine = in.readLine();
+			in.close();
 			if(inputLine != null && inputLine.startsWith("OK")) {
 				return true;
 			}
@@ -1205,8 +1199,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			URL url = new URL("http://google.com");
 			URLConnection con = url.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	        String inputLine = in.readLine();
-	        in.close();
+			String inputLine = in.readLine();
+			in.close();
 			if(inputLine != null) {
 				return true;
 			}
@@ -1229,8 +1223,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			URL url = new URL("http://api.enjin.com/ok.html");
 			URLConnection con = url.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	        String inputLine = in.readLine();
-	        in.close();
+			String inputLine = in.readLine();
+			in.close();
 			if(inputLine != null && inputLine.startsWith("OK")) {
 				return true;
 			}
@@ -1249,14 +1243,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	}
 
 	public static boolean isMineshafterPresent() {
-	    try {
-	        Class.forName("mineshafter.MineServer");
-	        return true;
-	    } catch (Exception e) {
-	        return false;
-	    }
+		try {
+			Class.forName("mineshafter.MineServer");
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
-	
+
 	public PeriodicEnjinTask getTask() {
 		return task;
 	}

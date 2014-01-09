@@ -7,6 +7,7 @@ public class PlayerShopsInstance {
 	ArrayList<ServerShop> servershops = new ArrayList<ServerShop>();
 	ServerShop selectedshop = null;
 	ShopItemAdder selectedcategory = null;
+	ShopItem selecteditem = null;
 	long retrievaltime;
 	
 	public PlayerShopsInstance() {
@@ -47,6 +48,14 @@ public class PlayerShopsInstance {
 	
 	public ShopItemAdder getActiveCategory() {
 		return selectedcategory;
+	}
+	
+	public ShopItem getActiveItem() {
+		return selecteditem;
+	}
+	
+	public void setActiveItem(ShopItem item) {
+		selecteditem = item;
 	}
 	
 	public long getRetrievalTime() {

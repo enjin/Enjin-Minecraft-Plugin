@@ -1,6 +1,6 @@
 name: Enjin Minecraft Plugin
 main: com.enjin.officialplugin.EnjinMinecraftPlugin
-version: 2.4.9
+version: 2.5.0
 website: www.enjin.com
 author: www.Enjin.com
 description: A plugin which allows the enjin servers to communicate with your server.

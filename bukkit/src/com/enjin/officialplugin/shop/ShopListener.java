@@ -78,9 +78,11 @@ public class ShopListener implements Listener {
 						if(selectedshop.getType() == Type.Category && selectedshop.getItems().size() == 1) {
 							ShopItemAdder category = (ShopItemAdder) selectedshop.getItem(0);
 							psi.setActiveCategory(category);
+							psi.setActiveItem(null);
 							//If it has items or more than one category show the shop main page.
 						}else {
 							psi.setActiveCategory(selectedshop);
+							psi.setActiveItem(null);
 						}
 						sendPlayerShopData(player, psi, psi.getActiveCategory(), 0);
 					}
@@ -97,11 +99,13 @@ public class ShopListener implements Listener {
 										ShopItemAdder category = (ShopItemAdder) selectedshop.getItem(0);
 										psi.setActiveShop(selectedshop);
 										psi.setActiveCategory(category);
+										psi.setActiveItem(null);
 										sendPlayerShopData(player, psi, category, 0);
 										//If it has items or more than one category show the shop main page.
 									}else {
 										psi.setActiveShop(selectedshop);
 										psi.setActiveCategory(selectedshop);
+										psi.setActiveItem(null);
 										sendPlayerShopData(player, psi, selectedshop, 0);
 									}
 								}else {
@@ -114,11 +118,13 @@ public class ShopListener implements Listener {
 							//If they didn't specify a shop, let's show the initial shop data again.
 							psi.setActiveCategory(null);
 							psi.setActiveShop(null);
+							psi.setActiveItem(null);
 							sendPlayerInitialShopData(player, psi);
 						}
 					}else if(args[1].equals("page")) {
 						if(args.length > 2) {
 							if(psi.getActiveCategory() != null) {
+								psi.setActiveItem(null);
 								ShopItemAdder category = psi.getActiveCategory();
 								ArrayList<ArrayList<String>> pages;
 								//This should never be null, but just in case.
@@ -153,7 +159,6 @@ public class ShopListener implements Listener {
 										if(category.getType() == Type.Category) {
 											player.sendMessage(ChatColor.RED + "You need to select a category first!");
 										}else {
-											//It must be an item, let's send the item details page.
 											ShopItem item = (ShopItem) category.getItem(optionnumber);
 											//Make sure you can purchase the item with points.
 											if(item.points != "") {
@@ -166,14 +171,28 @@ public class ShopListener implements Listener {
 											}
 										}
 									}else {
-										player.sendMessage(ChatColor.RED + "Invalid page number.");
+										player.sendMessage(ChatColor.RED + "Invalid item number.");
 									}
 								}catch(NumberFormatException e) {
-									player.sendMessage(ChatColor.RED + "Invalid page number.");
+									player.sendMessage(ChatColor.RED + "Invalid item number.");
 								}
 							}
 						}else {
-							player.sendMessage(ChatColor.RED + "Please specify a page number.");
+							if(psi.getActiveItem() != null) {
+								ShopItem item = psi.getActiveItem();
+								if(item.points != "") {
+									ShopItemBuyer buyer = new ShopItemBuyer(item);
+									playersbuying.put(player.getName(), buyer);
+									sendPlayerInitialBuyData(player, buyer);
+									return;
+								}else {
+									//Show the player the message to go to the website to purchase.
+									player.sendMessage(ChatColor.RED + "Sorry, that item cannot be purchased with points, please go to the website to buy it.");
+									return;
+								}
+							}else {
+								player.sendMessage(ChatColor.RED + "Please specify an item number.");
+							}
 						}
 						event.setCancelled(true);
 						return;
@@ -237,9 +256,11 @@ public class ShopListener implements Listener {
 									if(category.getType() == Type.Category) {
 										ShopItemAdder newcategory = (ShopItemAdder) category.getItem(optionnumber);
 										psi.setActiveCategory(newcategory);
+										psi.setActiveItem(null);
 										sendPlayerShopData(player, psi, newcategory, 0);
 									}else {
 										//It must be an item, let's send the item details page.
+										psi.setActiveItem((ShopItem) category.getItem(optionnumber));
 										sendPlayerPage(player, ShopUtils.getItemDetailsPage(psi.getActiveShop(), (ShopItem) category.getItem(optionnumber)));
 									}
 								}else {
@@ -268,12 +289,17 @@ public class ShopListener implements Listener {
 
 	private void sendPlayerInitialBuyData(Player player, ShopItemBuyer buyer) {
 		if(buyer.getCurrentItemOption() != null) {
+			player.sendMessage(ChatColor.GREEN + "You chose item \"" + buyer.getItem().getName() + "\". Please answer the questions below to complete your purchase.");
+			player.sendMessage(ChatColor.GREEN + "You can do " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " cancel " + ChatColor.GREEN + "at any time to cancel.");
+			
 			ShopItemOptions itemoption = buyer.getCurrentItemOption();
 			sendShopItemOptionsForm(player, itemoption);
 		}else {
 			//There are no options, so let's let them confirm the purchase.
 			player.sendMessage(ChatColor.GREEN + "You're about to purchase item \"" + buyer.getItem().getName() + "\" for " + ShopUtils.formatPoints(buyer.getItem().getPoints(), true));
 			player.sendMessage(ChatColor.GREEN + "If you are sure do " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm" + ChatColor.GREEN + " to confirm your purchase.");
+			player.sendMessage(ChatColor.GREEN + "or " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " cancel " + ChatColor.GREEN + "to cancel.");
+			
 		}
 	}
 

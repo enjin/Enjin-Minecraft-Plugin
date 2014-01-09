@@ -69,6 +69,7 @@ public class SendItemPurchaseToEnjin implements Runnable {
 			InputStream in = con.getInputStream();
 			//Let's get all the input, then parse it.
 			String json = parseInput(in);
+			EnjinMinecraftPlugin.debug("Returned content for purchase:\n" + json);
 			//Let's parse the json
 			JSONParser parser = new JSONParser();
 			try {
