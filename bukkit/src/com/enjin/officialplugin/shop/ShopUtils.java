@@ -276,8 +276,8 @@ public class ShopUtils {
 					}
 					soptions.setMinLength(getLengthInt(option.get("min_length")));
 					soptions.setMaxLength(getLengthInt(option.get("max_length")));
-					if(option.get("required") != null && option.get("required") instanceof Boolean) {
-						soptions.setRequired((Boolean)option.get("required"));
+					if(option.get("required") != null) {
+						soptions.setRequired(getBoolean(option.get("required")));
 					}
 					soptions.setMaxValue(getLengthInt(option.get("max_value")));
 					soptions.setMinValue(getLengthInt(option.get("min_value")));
@@ -492,7 +492,6 @@ public class ShopUtils {
 
 	public static String formatPoints(String points, boolean pointsstring) {
 		String formattedpoints = "";
-		//TODO: correct the usd display
 		if(points.equals("")) {
 			formattedpoints = "";
 		}else if (points.equals("0.00") || points.equals("0")) {

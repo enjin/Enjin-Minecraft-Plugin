@@ -1,10 +1,17 @@
 package com.enjin.officialplugin;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +29,10 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -41,10 +51,12 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import com.enjin.officialplugin.heads.CachedHeadData;
 import com.enjin.officialplugin.heads.HeadListener;
+import com.enjin.officialplugin.heads.HeadLocation;
 import com.enjin.officialplugin.heads.HeadLocations;
 import com.enjin.officialplugin.listeners.EnjinStatsListener;
 import com.enjin.officialplugin.listeners.NewPlayerChatListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
+import com.enjin.officialplugin.packets.PacketUtilities;
 import com.enjin.officialplugin.permlisteners.GroupManagerListener;
 import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
 import com.enjin.officialplugin.permlisteners.PexChangeListener;
@@ -176,6 +188,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	//Player, lists voted on.
 	public ConcurrentHashMap<String, String> playervotes = new ConcurrentHashMap<String, String>();
 
+	private ConcurrentHashMap<String, String> commandids = new ConcurrentHashMap<String, String>();
+
 	public EnjinErrorReport lasterror = null;
 
 	public EnjinStatsListener esl = null;
@@ -221,6 +235,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Init Files");
 			initFiles();
 			headlocation.loadHeads();
+			loadCommandIDs();
 			debug("Init files done.");
 			initPlugins();
 			debug("Init plugins done.");
@@ -1043,9 +1058,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(queryValues.length > 0) {
 				query.deleteCharAt(0); //remove first &
 			}
+			
 			con.setRequestProperty("Content-length", String.valueOf(query.length()));
 			con.getOutputStream().write(query.toString().getBytes());
-			if(con.getInputStream().read() == '1') {
+			String read = PacketUtilities.readString(new BufferedInputStream(con.getInputStream()));
+			debug("Reply from enjin on Enjin Key for url " + url.toString() + " and query " + query.toString() + ": " + read);
+			if(read.charAt(0) == '1') {
 				return 1;
 			}
 			return 0;
@@ -1253,5 +1271,72 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public PeriodicEnjinTask getTask() {
 		return task;
+	}
+
+	public void addCommandID(String id, String command) {
+		if(id.equals("")) {
+			return;
+		}
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] digest = md.digest(command.getBytes("UTF-8"));
+
+			BigInteger bigInt = new BigInteger(1,digest);
+			String hashtext = bigInt.toString(16);
+			
+			while ( hashtext.length() < 32 ){
+				hashtext = "0" + hashtext;
+			}
+
+			commandids.put(id, hashtext);
+
+		}catch(NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}catch(UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public ConcurrentHashMap<String, String> getCommandIDs() {
+		return commandids;
+	}
+
+	public void removeCommandID(String id) {
+		commandids.remove(id);
+	}
+	
+	public void saveCommandIDs() {
+		File dataFolder = getDataFolder();
+		File headsfile = new File(dataFolder, "executedcommands.yml");
+		YamlConfiguration headsconfig = new YamlConfiguration();
+		Iterator<Entry<String, String>> thecodes = commandids.entrySet().iterator();
+		while(thecodes.hasNext()) {
+			Entry<String, String> code = thecodes.next();
+			headsconfig.set(code.getKey(), code.getValue());
+		}
+		try {
+			headsconfig.save(headsfile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadCommandIDs() {
+		commandids.clear();
+		File dataFolder = getDataFolder();
+		File headsfile = new File(dataFolder, "executedcommands.yml");
+		YamlConfiguration commandconfig = new YamlConfiguration();
+		try {
+			commandconfig.load(headsfile);
+			Set<String> keys = commandconfig.getValues(false).keySet();
+			for(String key : keys) {
+				String value = commandconfig.getString(key);
+				commandids.put(key, value);
+			}
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		} catch (InvalidConfigurationException e) {
+		}
 	}
 }

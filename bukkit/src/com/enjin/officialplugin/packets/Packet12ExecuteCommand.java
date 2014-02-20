@@ -1,6 +1,8 @@
 package com.enjin.officialplugin.packets;
 
 import java.io.BufferedInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 
@@ -15,10 +17,19 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
  */
 
 public class Packet12ExecuteCommand {
+	
+	static Pattern idregex = Pattern.compile("^(\\d+):(.+)");
 
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String command = PacketUtilities.readString(in);
+			Matcher commandmatcher = idregex.matcher(command);
+			String commandid = "";
+			if(commandmatcher.matches()) {
+				commandid = commandmatcher.group(1);
+				command = commandmatcher.group(2);
+			}
+			
 			String[] commandsplit = command.split("\0");
 			if(commandsplit.length > 1) {
 				try {
@@ -33,8 +44,8 @@ public class Packet12ExecuteCommand {
 				EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as console.");
 				plugin.commandqueue.addCommand(Bukkit.getConsoleSender(), command);
 			}
-			//Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), command));
-			//Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PacketUtilities.readString(in));
+			
+			plugin.addCommandID(commandid, command);
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("Failed to dispatch command via 0x12, " + t.getMessage());
 			t.printStackTrace();

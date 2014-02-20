@@ -1,6 +1,8 @@
 package com.enjin.officialplugin.packets;
 
 import java.io.BufferedInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -16,12 +18,22 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
  */
 
 public class Packet13ExecuteCommandAsPlayer {
+
+	static Pattern idregex = Pattern.compile("^(\\d+):(.+)");
 	
 	public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
 		try {
 			String name = PacketUtilities.readString(in);
 			String command = PacketUtilities.readString(in);
 			Player p = Bukkit.getPlayerExact(name);
+			
+			Matcher commandmatcher = idregex.matcher(command);
+			String commandid = "";
+			if(commandmatcher.matches()) {
+				commandid = commandmatcher.group(1);
+				command = commandmatcher.group(2);
+			}
+			
 			//TODO: Add offline player support here
 			if(p == null) {
 				EnjinMinecraftPlugin.debug("Failed executing command \"" + command + "\" as player " + name + ". Player isn't online.");
@@ -41,6 +53,8 @@ public class Packet13ExecuteCommandAsPlayer {
 				EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + ".");
 				plugin.commandqueue.addCommand(p, command);
 			}
+			
+			plugin.addCommandID(commandid, command);
 		} catch (Throwable t) {
 			Bukkit.getLogger().warning("Failed to dispatch command via 0x13, " + t.getMessage());
 			t.printStackTrace();

@@ -37,6 +37,7 @@ import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
 import com.enjin.officialplugin.packets.Packet1ABanPlayers;
 import com.enjin.officialplugin.packets.Packet1BPardonPlayers;
 import com.enjin.officialplugin.packets.Packet1DPlayerPurchase;
+import com.enjin.officialplugin.packets.Packet1ECommandsReceived;
 import com.enjin.officialplugin.packets.PacketUtilities;
 import com.enjin.officialplugin.stats.WriteStats;
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
@@ -108,6 +109,9 @@ public class PeriodicEnjinTask implements Runnable {
 			builder.append("&players=" + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))); //current players
 			builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null || EnjinMinecraftPlugin.permission.getName().equalsIgnoreCase("SuperPerms")) ? "FALSE" : "TRUE")));
 			builder.append("&pluginversion=" + encode(plugin.getDescription().getVersion()));
+			if(plugin.getCommandIDs().size() > 0) {
+				builder.append("&executed_commands=" + encode(getExecutedCommands()));
+			}
 			//We only want to send the list of plugins every hour
 			if(plugindelay++ >= 59) {
 				builder.append("&plugins=" + encode(getPlugins()));
@@ -286,6 +290,20 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 	}
 	
+	private String getExecutedCommands() {
+		StringBuilder sb = new StringBuilder();
+		Iterator<Entry<String, String>> es = plugin.getCommandIDs().entrySet().iterator();
+		while(es.hasNext() && sb.length() < 40*1024) {
+			Entry<String, String> element = es.next();
+			if(sb.length() > 0) {
+				sb.append(",");
+			}
+			sb.append(element.getKey() + ":" + element.getValue());
+		}
+		return sb.toString();
+		
+	}
+
 	private String getTPS() {
 		return String.valueOf(plugin.tpstask.getTPSAverage());
 	}
@@ -346,12 +364,12 @@ public class PeriodicEnjinTask implements Runnable {
 			return "";
 		}
 		removedplayerperms.clear();
-		HashMap<String, String> theperms = new HashMap<String, String>();
 		Iterator<Entry<String, String>> es = plugin.playerperms.entrySet().iterator();
 		
 		//With the push command, we need to limit how many ranks we send
 		//with each synch.
-		for(int k = 0; es.hasNext() && k < 3000; k++) {
+		StringBuilder allperms = new StringBuilder();
+		for(int k = 0; es.hasNext() && k < 3000 && allperms.length() < 30*1024; k++) {
 			Entry<String, String> entry = es.next();
 			StringBuilder perms = new StringBuilder();
 			//Let's get global groups
@@ -416,7 +434,10 @@ public class PeriodicEnjinTask implements Runnable {
 						}
 					}
 				}
-				theperms.put(entry.getKey(), perms.toString());				
+				if(allperms.length() > 0) {
+					allperms.append("\n");
+				}
+				allperms.append(entry.getKey() + ";" + perms.toString());
 			}catch (Exception e) {
 				EnjinMinecraftPlugin.debug("Unable to get permissions data for player " + entry.getKey());
 				//Assume this plugin does not support offline players;
@@ -425,14 +446,6 @@ public class PeriodicEnjinTask implements Runnable {
 			plugin.playerperms.remove(entry.getKey());
 			//If the synch fails we need to put the values back...
 			removedplayerperms.put(entry.getKey(), entry.getValue());
-		}
-		StringBuilder allperms = new StringBuilder();
-		Set<Entry<String, String>> ns = theperms.entrySet();
-		for(Entry<String, String> entry : ns) {
-			if(allperms.length() > 0) {
-				allperms.append("\n");
-			}
-			allperms.append(entry.getKey() + ";" + entry.getValue());
 		}
 		return allperms.toString();
 	}
@@ -445,6 +458,7 @@ public class PeriodicEnjinTask implements Runnable {
 		String tresult = "Unknown Error";
 		BufferedInputStream bin = new BufferedInputStream(in);
 		bin.mark(Integer.MAX_VALUE);
+		boolean commandsrecieved = false;
 		for(;;) {
 			int code = bin.read();
 			switch(code) {
@@ -456,6 +470,9 @@ public class PeriodicEnjinTask implements Runnable {
 					input.append((char)code);
 				}
 				EnjinMinecraftPlugin.debug("Raw data received:\n" + input.toString());
+				if(commandsrecieved) {
+					plugin.saveCommandIDs();
+				}
 				return tresult; //end of stream reached
 			case 0x10:
 				EnjinMinecraftPlugin.debug("Packet [0x10](Add Player Group) received.");
@@ -467,10 +484,12 @@ public class PeriodicEnjinTask implements Runnable {
 				break;
 			case 0x12:
 				EnjinMinecraftPlugin.debug("Packet [0x12](Execute Command) received.");
+				commandsrecieved = true;
 				Packet12ExecuteCommand.handle(bin, plugin);
 				break;
 			case 0x13:
 				EnjinMinecraftPlugin.debug("Packet [0x13](Execute command as Player) received.");
+				commandsrecieved = true;
 				Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
 				break;
 			case 0x0A:
@@ -518,6 +537,11 @@ public class PeriodicEnjinTask implements Runnable {
 			case 0x1D:
 				EnjinMinecraftPlugin.debug("Packet [0x1D](Player Purchase) received.");
 				Packet1DPlayerPurchase.handle(bin, plugin);
+				break;
+			case 0x1E:
+				EnjinMinecraftPlugin.debug("Packet [0x1E] (Commands Received) received.");
+				Packet1ECommandsReceived.handle(bin, plugin);
+				commandsrecieved = true;
 				break;
 			case 0x3C:
 				EnjinMinecraftPlugin.debug("Packet [0x3C](Enjin Maintenance Page) received. Aborting sync.");

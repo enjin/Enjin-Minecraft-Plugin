@@ -46,7 +46,7 @@ public class HeadUtils {
 			return false;
 		}
 		Block headblock = headloc.getBlock();
-		if(headblock.getType() == Material.SKULL) {
+		if(headblock != null && headblock.getType() == Material.SKULL && headblock.getState() != null) {
 			Skull skullblock = (Skull) headblock.getState();
 			skullblock.setOwner(playername);
 			skullblock.update();
@@ -95,18 +95,22 @@ public class HeadUtils {
 	 * @return True if the update was successful. False if the head or sign is missing.
 	 */
 	public static boolean updateSign(Location signloc, String... lines) {
-		if(signloc == null || signloc.getBlock() == null) {
+		try {
+			if(signloc == null || signloc.getBlock() == null) {
+				return false;
+			}
+			BlockState sign = signloc.getBlock().getState();
+			if(sign instanceof Sign) {
+				Sign signtype = (Sign) sign;
+				signtype.setLine(0, lines[0]);
+				signtype.setLine(1, lines[1]);
+				signtype.setLine(2, lines[2]);
+				signtype.setLine(3, lines[3]);
+				signtype.update();
+				return true;
+			}
+		}catch (Exception e) {
 			return false;
-		}
-		BlockState sign = signloc.getBlock().getState();
-		if(sign instanceof Sign) {
-			Sign signtype = (Sign) sign;
-			signtype.setLine(0, lines[0]);
-			signtype.setLine(1, lines[1]);
-			signtype.setLine(2, lines[2]);
-			signtype.setLine(3, lines[3]);
-			signtype.update();
-			return true;
 		}
 		return false;
 	}

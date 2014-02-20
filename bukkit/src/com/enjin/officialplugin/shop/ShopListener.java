@@ -320,7 +320,7 @@ public class ShopListener implements Listener {
 			player.sendMessage(ChatColor.GOLD + itemoption.getName());
 			options = itemoption.getOptions();
 			for(int i = 0; i < options.size(); i++) {
-				player.sendMessage(ChatColor.GOLD.toString() + (i+1) + ". " + ChatColor.AQUA + options.get(i).getValue() + " (" + ShopUtils.formatPoints(options.get(i).getPoints(), true) + ")");
+				player.sendMessage(ChatColor.GOLD.toString() + (i+1) + ". " + ChatColor.AQUA + options.get(i).getName() + " (" + ShopUtils.formatPoints(options.get(i).getPoints(), true) + ")");
 			}
 			player.sendMessage(ChatColor.GREEN.toString() + ChatColor.ITALIC + "To select more than 1 option just put in commas between the numbers, like this: 1,4,5");
 			break;
@@ -328,7 +328,7 @@ public class ShopListener implements Listener {
 			player.sendMessage(ChatColor.GOLD + itemoption.getName());
 			options = itemoption.getOptions();
 			for(int i = 0; i < options.size(); i++) {
-				player.sendMessage(ChatColor.GOLD.toString() + (i+1) + ". " + ChatColor.AQUA + options.get(i).getValue() + " (" + ShopUtils.formatPoints(options.get(i).getPoints(), true) + ")");
+				player.sendMessage(ChatColor.GOLD.toString() + (i+1) + ". " + ChatColor.AQUA + options.get(i).getName() + " (" + ShopUtils.formatPoints(options.get(i).getPoints(), true) + ")");
 			}
 			player.sendMessage(ChatColor.GREEN.toString() + ChatColor.ITALIC + "To select an option just type it's number into chat.");
 			break;
@@ -403,7 +403,7 @@ public class ShopListener implements Listener {
 										tstring.append("&");
 									}
 									points += ShopUtils.getPointsInt(option.getOptions().get(newnumber).getPoints());
-									tstring.append("item_variables[" + option.getID() + "][]=" + option.getOptions().get(newnumber).getId());
+									tstring.append("item_variables[" + option.getID() + "][]=" + encode(option.getOptions().get(newnumber).getValue()));
 								}
 								buyitem.addOption(tstring.toString());
 								buyitem.addPoints(points);
@@ -417,7 +417,7 @@ public class ShopListener implements Listener {
 						if(event.getMessage().length() > 0) {
 							try {
 								int newnumber = Integer.parseInt(event.getMessage().trim()) -1;
-								buyitem.addOption("item_variables[" + option.getID() + "]=" + option.getOptions().get(newnumber).getId());
+								buyitem.addOption("item_variables[" + option.getID() + "]=" + encode(option.getOptions().get(newnumber).getValue()));
 								buyitem.addPoints(option.getOptions().get(newnumber).getPoints());
 								cont = true;
 							}catch(Exception e) {
