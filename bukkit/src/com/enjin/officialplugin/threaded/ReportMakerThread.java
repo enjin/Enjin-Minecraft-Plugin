@@ -38,7 +38,12 @@ public class ReportMakerThread implements Runnable {
 		builder.append("\nLast Severe error message: \n");
 		File serverloglocation = plugin.getDataFolder().getAbsoluteFile().getParentFile().getParentFile();
 		try {
-			ReverseFileReader rfr = new ReverseFileReader(serverloglocation.getAbsolutePath() + File.separator + "server.log");
+			//Test to see if we are using the new logs location in 1.7.2
+			File logfile = new File(serverloglocation.getAbsolutePath() + File.separator + "logs" + File.separator + "latest.log");
+			if(!logfile.exists()) {
+				logfile = new File(serverloglocation.getAbsolutePath() + File.separator + "server.log");
+			}
+			ReverseFileReader rfr = new ReverseFileReader(logfile.getAbsolutePath());
 			LinkedList<String> errormessages = new LinkedList<String>();
 			String line = "";
 			boolean errorfound = false;
@@ -47,11 +52,11 @@ public class ReportMakerThread implements Runnable {
 					errormessages.removeFirst();
 				}
 				errormessages.add(line);
-				if(line.contains("[SEVERE]")) {
+				if(line.contains("[SEVERE]") || line.contains("ERROR]")) {
 					//let's catch the entire severe error message.
 					boolean severeended = false;
 					while((line = rfr.readLine()) != null && !severeended) {
-						if(line.contains("[SEVERE]")) {
+						if(line.contains("[SEVERE]") || line.contains("ERROR]")) {
 							if(errormessages.size() >= 40) {
 								errormessages.removeFirst();
 							}
@@ -71,6 +76,21 @@ public class ReportMakerThread implements Runnable {
 			if(EnjinMinecraftPlugin.debug) {
 				e.printStackTrace();
 			}
+		}
+		try {
+			ReverseFileReader rfrlog = new ReverseFileReader(plugin.getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log");
+			builder.append("\nLast 60 lines of enjin.log: \n");
+			LinkedList<String> enjinlogstuff = new LinkedList<String>();
+			String line = "";
+			boolean errorfound = false;
+			for(int i = 0; i < 60 && (line = rfrlog.readLine()) != null; i++) {
+				enjinlogstuff.add(line);
+			}
+			for(int i = enjinlogstuff.size(); i > 0; i--) {
+				builder.append(enjinlogstuff.get(i - 1) + "\n");
+			}
+			rfrlog.close();
+		} catch (Exception e2) {
 		}
 		if(plugin.lasterror != null) {
 			builder.append("\nLast Enjin Plugin Severe error message: \n");

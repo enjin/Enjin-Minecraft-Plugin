@@ -2,6 +2,8 @@ package com.enjin.officialplugin.shop;
 
 import java.util.ArrayList;
 
+import org.bukkit.Material;
+
 import com.enjin.officialplugin.shop.ServerShop.Type;
 
 public class ShopCategory extends AbstractShopSuperclass implements ShopItemAdder {
@@ -11,6 +13,9 @@ public class ShopCategory extends AbstractShopSuperclass implements ShopItemAdde
 	String info = "";
 	ServerShop.Type type = Type.Item;
 	ShopItemAdder parentcategory = null;
+	
+	Material material = Material.CHEST;
+	short matdamage = 0;
 	
 	ArrayList<AbstractShopSuperclass> items = new ArrayList<AbstractShopSuperclass>();
 	
@@ -103,5 +108,25 @@ public class ShopCategory extends AbstractShopSuperclass implements ShopItemAdde
 	@Override
 	public ArrayList<ArrayList<String>> getPages() {
 		return pages;
+	}
+
+	@Override
+	public Material getMaterial() {
+		return material;
+	}
+
+	@Override
+	public short getMaterialDamage() {
+		return matdamage;
+	}
+
+	@Override
+	public void setMaterial(Material mat) {
+		material = mat;
+	}
+
+	@Override
+	public void setMaterialDamage(short dmg) {
+		matdamage = dmg;
 	}
 }

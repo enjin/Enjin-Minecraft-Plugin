@@ -60,7 +60,17 @@ public class PlayerShopGetter implements Runnable {
 			PlayerShopsInstance shops = ShopUtils.parseShopsJSON(json);
 			listener.activeshops.put(player.getName().toLowerCase(), shops);
 			listener.playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
-			listener.sendPlayerInitialShopData(player, shops);
+			if(EnjinMinecraftPlugin.USEBUYGUI) {
+				if(shops.getServerShopCount() == 1) {
+					shops.setActiveShop(0);
+					shops.setActiveCategory(shops.getActiveShop());
+					listener.sendPlayerShopChestData(player, shops, shops.getActiveShop(), 0);
+				}else {
+					listener.sendPlayerShopChestData(player, shops, (ShopItemAdder)null, 0);
+				}
+			}else {
+				listener.sendPlayerInitialShopData(player, shops);
+			}
 			return;
 		} catch (SocketTimeoutException e) {
 			e.printStackTrace();

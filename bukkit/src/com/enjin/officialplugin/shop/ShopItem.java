@@ -2,6 +2,8 @@ package com.enjin.officialplugin.shop;
 
 import java.util.ArrayList;
 
+import org.bukkit.Material;
+
 public class ShopItem extends AbstractShopSuperclass {
 	
 	String id = "";
@@ -9,6 +11,9 @@ public class ShopItem extends AbstractShopSuperclass {
 	String price = "";
 	String info = "";
 	String points = "";
+
+	Material material = Material.PAPER;
+	short matdamage = 0;
 	
 	ArrayList<ShopItemOptions> options = new ArrayList<ShopItemOptions>();
 	
@@ -54,5 +59,25 @@ public class ShopItem extends AbstractShopSuperclass {
 		}catch (Exception e) {
 			return null;
 		}
+	}
+
+	@Override
+	public Material getMaterial() {
+		return material;
+	}
+
+	@Override
+	public short getMaterialDamage() {
+		return matdamage;
+	}
+
+	@Override
+	public void setMaterial(Material mat) {
+		material = mat;
+	}
+
+	@Override
+	public void setMaterialDamage(short dmg) {
+		matdamage = dmg;
 	}
 }

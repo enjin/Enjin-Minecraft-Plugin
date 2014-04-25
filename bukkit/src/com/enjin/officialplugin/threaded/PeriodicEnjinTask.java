@@ -22,6 +22,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.enjin.officialplugin.CommandWrapper;
 import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.packets.Packet10AddPlayerGroup;
@@ -292,13 +293,17 @@ public class PeriodicEnjinTask implements Runnable {
 	
 	private String getExecutedCommands() {
 		StringBuilder sb = new StringBuilder();
-		Iterator<Entry<String, String>> es = plugin.getCommandIDs().entrySet().iterator();
+		Iterator<Entry<String, CommandWrapper>> es = plugin.getCommandIDs().entrySet().iterator();
 		while(es.hasNext() && sb.length() < 40*1024) {
-			Entry<String, String> element = es.next();
+			Entry<String, CommandWrapper> element = es.next();
 			if(sb.length() > 0) {
 				sb.append(",");
 			}
-			sb.append(element.getKey() + ":" + element.getValue());
+			if(element.getValue().getResult().equals("")) {
+				sb.append(element.getKey() + ":" + element.getValue().getHash());
+			}else {
+				sb.append(element.getKey() + ":" + element.getValue().getHash() + ":" + base64Encode(element.getValue().getResult()));
+			}
 		}
 		return sb.toString();
 		
@@ -581,7 +586,7 @@ public class PeriodicEnjinTask implements Runnable {
 		StringBuilder builder = new StringBuilder();
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			builder.append(',');
-			builder.append(p.getName());
+			builder.append(p.getUniqueId().toString() + ":" + p.getName());
 		}
 		if(builder.length() > 2) {
 			builder.deleteCharAt(0);
@@ -671,4 +676,11 @@ public class PeriodicEnjinTask implements Runnable {
 		}
 		return builder.toString();
 	}
+    
+    private String base64Encode(String encode) {
+        if(encode == null) {
+            return "";
+        }
+        return javax.xml.bind.DatatypeConverter.printBase64Binary(encode.getBytes());
+    }
 }

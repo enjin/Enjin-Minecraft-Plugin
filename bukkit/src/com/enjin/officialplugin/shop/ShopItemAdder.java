@@ -2,6 +2,8 @@ package com.enjin.officialplugin.shop;
 
 import java.util.ArrayList;
 
+import org.bukkit.Material;
+
 import com.enjin.officialplugin.shop.ServerShop.Type;
 
 public interface ShopItemAdder {

@@ -17,15 +17,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLHandshakeException;
 
 import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
+import net.minecraft.util.com.mojang.util.QueueLogAppender;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -74,6 +78,7 @@ import com.enjin.officialplugin.threaded.BanLister;
 import com.enjin.officialplugin.threaded.CommandExecuter;
 import com.enjin.officialplugin.threaded.ConfigSender;
 import com.enjin.officialplugin.threaded.DelayedCommandExecuter;
+import com.enjin.officialplugin.threaded.EnjinRetrievePlayerTags;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
 import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
@@ -86,7 +91,6 @@ import com.enjin.proto.stats.EnjinStats;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
 
 import de.bananaco.bpermissions.imp.Permissions;
-
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 /**
@@ -117,6 +121,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean votifierinstalled = false;
 	public int xpversion = 0;
 	public String mcversion = "";
+	
+	public static boolean USEBUYGUI = true;
 
 	int signupdateinterval = 10;
 
@@ -132,7 +138,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class .getName());
 
-	public CommandExecuter commandqueue = new CommandExecuter();
+	public CommandExecuter commandqueue = new CommandExecuter(this);
 
 	public StatsServer serverstats = new StatsServer(this);
 	public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
@@ -143,6 +149,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public ShopItems cachedItems = new ShopItems();
 
+	private EnjinLogAppender mcloglistener = new EnjinLogAppender();
 
 	static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
@@ -152,7 +159,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public boolean autoupdate = true;
 	public String newversion = "";
-
+	
 	public boolean hasupdate = false;
 	public boolean updatefailed = false;
 	public boolean authkeyinvalid = false;
@@ -188,7 +195,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	//Player, lists voted on.
 	public ConcurrentHashMap<String, String> playervotes = new ConcurrentHashMap<String, String>();
 
-	private ConcurrentHashMap<String, String> commandids = new ConcurrentHashMap<String, String>();
+	private ConcurrentHashMap<String, CommandWrapper> commandids = new ConcurrentHashMap<String, CommandWrapper>();
 
 	public EnjinErrorReport lasterror = null;
 
@@ -206,7 +213,26 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		org.apache.logging.log4j.core.Logger jlogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+		jlogger.addAppender(mcloglistener);
 		try {
+			File oldnewdatafolder = new File(getDataFolder().getParent(), "Enjin_Minecraft_Plugin");
+			File olddatafolder = new File(getDataFolder().getParent(), "Enjin Minecraft Plugin");
+			if(oldnewdatafolder.exists()) {
+				try {
+					oldnewdatafolder.renameTo(getDataFolder());
+					reloadConfig();
+				}catch (Exception e) {
+					
+				}
+			}else if(olddatafolder.exists()) {
+				try {
+					olddatafolder.renameTo(getDataFolder());
+					reloadConfig();
+				}catch (Exception e) {
+					
+				}
+			}
 			debug("Initializing internal logger");
 			enjinlogger.setLevel(Level.FINEST);
 			File logsfolder = new File(getDataFolder().getAbsolutePath() + File.separator + "logs");
@@ -442,6 +468,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			createConfig();
 		}
 		BUY_COMMAND = config.getString("buycommand", null);
+		teststats = config.getString("usebuygui", null);
+		if(teststats == null) {
+			createConfig();
+		}
+		configvalues.put("usebuygui", ConfigValueTypes.BOOLEAN);
+		USEBUYGUI = config.getBoolean("usebuygui");
 	}
 
 	private void createConfig() {
@@ -466,6 +498,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		if(teststats == null) {
 			config.set("buycommand", BUY_COMMAND);
 		}
+		config.set("usebuygui", USEBUYGUI);
 		saveConfig();
 	}
 
@@ -940,6 +973,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						sender.sendMessage(ChatColor.DARK_RED + "I'm sorry, you don't have permission to check points!");
 					}
 					return true;
+				}else if(args[0].equalsIgnoreCase("tags")) {
+					if(!sender.hasPermission("enjin.tags.view")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.tags.view\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 1) {
+						String playername = args[1].trim();
+						sender.sendMessage(ChatColor.GOLD + "Please wait as we retrieve the tags for " + playername + "...");
+						EnjinRetrievePlayerTags mthread = new EnjinRetrievePlayerTags(playername, sender, this);
+						Thread dispatchThread = new Thread(mthread);
+						dispatchThread.start();
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin tags <player>");
+					}
+					return true;
 				}else if(args[0].equalsIgnoreCase("head") || args[0].equalsIgnoreCase("heads")) {
 					if(!sender.hasPermission("enjin.sign.set")) {
 						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.sign.set\" permission or OP to run that command!");
@@ -997,6 +1045,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				if(sender.hasPermission("enjin.sign.set"))
 					sender.sendMessage(ChatColor.GOLD + "/enjin heads: "
 							+ ChatColor.RESET + "Shows in game help for the heads and sign stats part of the plugin.");
+				if(sender.hasPermission("enjin.tags.view"))
+					sender.sendMessage(ChatColor.GOLD + "/enjin tags <player>: "
+							+ ChatColor.RESET + "Shows the tags on the website for the player.");
 
 				// Points commands
 				if(sender.hasPermission("enjin.points.getself"))
@@ -1273,13 +1324,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		return task;
 	}
 
-	public void addCommandID(String id, String command) {
-		if(id.equals("")) {
+	public void addCommandID(CommandWrapper command) {
+		if(command.getId().equals("")) {
 			return;
 		}
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
-			byte[] digest = md.digest(command.getBytes("UTF-8"));
+			byte[] digest = md.digest(command.getCommand().getBytes("UTF-8"));
 
 			BigInteger bigInt = new BigInteger(1,digest);
 			String hashtext = bigInt.toString(16);
@@ -1288,7 +1339,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				hashtext = "0" + hashtext;
 			}
 
-			commandids.put(id, hashtext);
+			command.setHash(hashtext);
+			commandids.put(command.getId(), command);
 
 		}catch(NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -1297,7 +1349,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 
-	public ConcurrentHashMap<String, String> getCommandIDs() {
+	public ConcurrentHashMap<String, CommandWrapper> getCommandIDs() {
 		return commandids;
 	}
 
@@ -1307,12 +1359,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public void saveCommandIDs() {
 		File dataFolder = getDataFolder();
-		File headsfile = new File(dataFolder, "executedcommands.yml");
+		File headsfile = new File(dataFolder, "newexecutedcommands.yml");
 		YamlConfiguration headsconfig = new YamlConfiguration();
-		Iterator<Entry<String, String>> thecodes = commandids.entrySet().iterator();
+		Iterator<Entry<String, CommandWrapper>> thecodes = commandids.entrySet().iterator();
 		while(thecodes.hasNext()) {
-			Entry<String, String> code = thecodes.next();
-			headsconfig.set(code.getKey(), code.getValue());
+			Entry<String, CommandWrapper> code = thecodes.next();
+			headsconfig.set(code.getKey() + ".hash", code.getValue().getHash());
+			headsconfig.set(code.getKey() + ".result", code.getValue().getResult());
+			headsconfig.set(code.getKey() + ".command", code.getValue().getCommand());
 		}
 		try {
 			headsconfig.save(headsfile);
@@ -1326,17 +1380,49 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		commandids.clear();
 		File dataFolder = getDataFolder();
 		File headsfile = new File(dataFolder, "executedcommands.yml");
-		YamlConfiguration commandconfig = new YamlConfiguration();
-		try {
-			commandconfig.load(headsfile);
-			Set<String> keys = commandconfig.getValues(false).keySet();
-			for(String key : keys) {
-				String value = commandconfig.getString(key);
-				commandids.put(key, value);
+		File newheadsfile = new File(dataFolder, "newexecutedcommands.yml");
+		if(headsfile.exists()) {
+			YamlConfiguration commandconfig = new YamlConfiguration();
+			try {
+				commandconfig.load(headsfile);
+				Set<String> keys = commandconfig.getValues(false).keySet();
+				for(String key : keys) {
+					String hash = commandconfig.getString(key);
+					CommandWrapper comm = new CommandWrapper(Bukkit.getConsoleSender(), "", key);
+					comm.setHash(hash);
+					commandids.put(key, comm);
+				}
+				headsfile.delete();
+			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
+			} catch (InvalidConfigurationException e) {
 			}
-		} catch (FileNotFoundException e) {
-		} catch (IOException e) {
-		} catch (InvalidConfigurationException e) {
+		}else if(newheadsfile.exists()) {
+			YamlConfiguration commandconfig = new YamlConfiguration();
+			try {
+				commandconfig.load(newheadsfile);
+				Set<String> keys = commandconfig.getValues(false).keySet();
+				for(String key : keys) {
+					String hash = commandconfig.getString(key + ".hash");
+					String command = commandconfig.getString(key + ".command");
+					String result = commandconfig.getString(key + ".result");
+					CommandWrapper comm = new CommandWrapper(Bukkit.getConsoleSender(), command, key);
+					comm.setHash(hash);
+					comm.setResult(result);
+					commandids.put(key, comm);
+				}
+			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
+			} catch (InvalidConfigurationException e) {
+			}
 		}
+	}
+	
+	public EnjinLogAppender getMcLogListener() {
+		return mcloglistener;
+	}
+	
+	public String getLastLogLine() {
+		return mcloglistener.getLastLine();
 	}
 }

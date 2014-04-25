@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.map.MinecraftFont;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -222,8 +223,15 @@ public class ShopUtils {
 			JSONObject category = (JSONObject) ocategory;
 			ShopCategory scategory = new ShopCategory(
 					(String) category.get("name"), (String) category.get("id"));
-			if (shop instanceof ShopCategory) {
-				scategory.setParentCategory(shop);
+			scategory.setParentCategory(shop);
+			try {
+				String mat = (String) category.get("icon_item");
+				Material material = Material.getMaterial(mat.toUpperCase());
+				scategory.setMaterial(material);
+				int damage = Integer.parseInt((String) category.get("icon_damage"));
+				scategory.setMaterialDamage((short) damage);
+			}catch (Exception e) {
+				
 			}
 			scategory.setInfo((String) category.get("info"));
 			Object items = category.get("items");
@@ -255,6 +263,16 @@ public class ShopUtils {
 			ShopItem sitem = new ShopItem((String) item.get("name"),
 					(String) item.get("id"), getPriceString(item.get("price")),
 					(String) item.get("info"), getPointsString(item.get("points")));
+
+			try {
+				String mat = (String) item.get("icon_item");
+				Material material = Material.getMaterial(mat.toUpperCase());
+				sitem.setMaterial(material);
+				int damage = Integer.parseInt((String) item.get("icon_damage"));
+				sitem.setMaterialDamage((short) damage);
+			}catch (Exception e) {
+				
+			}
 			Object options = item.get("variables");
 			if (options != null && options instanceof JSONObject
 					&& ((JSONObject) options).size() > 0) {
@@ -599,7 +617,7 @@ public class ShopUtils {
 				&& shop.getBorder_v() == null) {
 			collapsed = true;
 			header.add(" ");
-			if (itemcategory.getParentCategory() != null) {
+			if (itemcategory.getParentCategory() != null && itemcategory.getParentCategory() instanceof ShopCategory) {
 				header.add(TrimText(FORMATTING_CODE + shop.getColortitle()
 						+ itemcategory.getParentCategory().getName() + " - "
 						+ itemcategory.getName(), "..."));
@@ -610,7 +628,7 @@ public class ShopUtils {
 			if (itemcategory.getInfo() != null
 					&& !itemcategory.getInfo().trim().equals("")) {
 				String[] info = WrapText(itemcategory.getInfo(),
-						shop.getColortext(), 6);
+						shop.getColortext(), 6, false);
 				for (String sinfo : info) {
 					header.add(sinfo);
 				}
@@ -641,7 +659,7 @@ public class ShopUtils {
 				first4chars = first4chars.substring(0,4);
 			}
 			topline.append(FORMATTING_CODE + shop.getColorborder() + first4chars);
-			if (itemcategory.getParentCategory() != null) {
+			if (itemcategory.getParentCategory() != null && itemcategory.getParentCategory() instanceof ShopCategory) {
 				topline.append("[ " + FORMATTING_CODE + shop.getColortitle()
 						+ itemcategory.getParentCategory().getName() + " - "
 						+ itemcategory.getName() + FORMATTING_CODE
@@ -878,7 +896,7 @@ public class ShopUtils {
 		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Info:");
 		String[] infolines;
 		if (collapsed) {
-			infolines = WrapText(item.getInfo(), shop.getColorinfo(), 10);
+			infolines = WrapText(item.getInfo(), shop.getColorinfo(), 10, false);
 		}else {
 			infolines = WrapText(item.getInfo(), shop.getBorder_v(), shop.getColorborder(), shop.getColorinfo(), 10);
 		}
@@ -889,8 +907,14 @@ public class ShopUtils {
 		for (int i = itempage.size(); i < 15; i++) {
 			itempage.add(verticalborder + " ");
 		}
-		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Click the following link to checkout:");
-		itempage.add(verticalborder + FORMATTING_CODE + shop.getColorurl() + shop.getBuyurl() + item.getId());
+		if(formattedprice.equals("") && formattedpoints.equals("")) {
+			itempage.add(verticalborder + " ");
+			itempage.add(verticalborder + " ");
+		}else {
+			itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Click the following link to checkout:");
+			itempage.add(verticalborder + FORMATTING_CODE + shop.getColorurl() + shop.getBuyurl() + item.getId());
+			
+		}
 		itempage.add(verticalborder + " ");
 		itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext()	+ "Type /" + EnjinMinecraftPlugin.BUY_COMMAND
 				+ " to go back, or type /ec to enable chat");
@@ -1074,7 +1098,7 @@ public class ShopUtils {
 							+ FORMATTING_CODE + shop.getColorprice()
 							+ formattedpoints + FORMATTING_CODE
 							+ shop.getColorbracket() + ")");
-		}else {
+		}else if(!formattedprice.equals("")) {
 			itemstring[0] = TrimText(
 					itemstring[0],
 					"...",
@@ -1082,6 +1106,8 @@ public class ShopUtils {
 							+ FORMATTING_CODE + shop.getColorprice()
 							+ formattedprice + FORMATTING_CODE
 							+ shop.getColorbracket() + ")");
+		}else {
+			itemstring[0] = TrimText(itemstring[0], "...", "");
 		}
 		String[] fulldescription = item.getInfo().split("\n");
 		String description = fulldescription[0];
@@ -1152,9 +1178,11 @@ public class ShopUtils {
 		}else if(!formattedpoints.equals("")) {
 			itemstring[0] = TrimText(itemstring[0], "...", FORMATTING_CODE + shop.getColorbracket() + " ("
 					+ FORMATTING_CODE + shop.getColorprice() + formattedpoints + FORMATTING_CODE + shop.getColorbracket() + ")");
-		}else {
+		}else if(!formattedprice.equals("")) {
 			itemstring[0] = TrimText(itemstring[0], "...", FORMATTING_CODE + shop.getColorbracket() + " ("
 					+ FORMATTING_CODE + shop.getColorprice() + formattedprice + FORMATTING_CODE + shop.getColorbracket() + ")");
+		}else {
+			itemstring[0] = TrimText(itemstring[0], "...","");
 		}
 		return itemstring;
 	}
@@ -1220,18 +1248,22 @@ public class ShopUtils {
 		return returnarray;
 	}
 
-	public static String[] WrapText(String text, String textcolor, int numlines) {
+	public static String[] WrapText(String text, String textcolor, int numlines, boolean halfwidth) {
+		int width = MINECRAFT_CONSOLE_WIDTH;
+		if(halfwidth) {
+			width = MINECRAFT_CONSOLE_WIDTH/2;
+		}
 		String[] lines = text.split("\n");
 		ArrayList<String> formattedlines = new ArrayList<String>();
 		for (int i = 0; i < lines.length && formattedlines.size() < 6; i++) {
 			String fullline = lines[i];
-			if (getWidth(fullline) > MINECRAFT_CONSOLE_WIDTH) {
+			if (getWidth(fullline) > width) {
 				int index = 0;
 				while (index < fullline.length() - 1
 						&& formattedlines.size() < numlines) {
 					String line = fullline.substring(index);
 					if(formattedlines.size() == numlines -1 && i < lines.length -1) {
-						while (getWidth(line + "...") > MINECRAFT_CONSOLE_WIDTH) {
+						while (getWidth(line + "...") > width) {
 							if (line.lastIndexOf(' ') > 0) {
 								line = line.substring(0, line.lastIndexOf(' '));
 							} else {
@@ -1240,7 +1272,7 @@ public class ShopUtils {
 						}
 						line = line + "...";
 					}else {
-						while (getWidth(line) > MINECRAFT_CONSOLE_WIDTH) {
+						while (getWidth(line) > width) {
 							if (line.lastIndexOf(' ') > 0) {
 								line = line.substring(0, line.lastIndexOf(' '));
 							} else {

@@ -112,7 +112,7 @@ public class HeadLocations {
 	public void loadHeads() {
 		headlist.clear();
 		locheadlist.clear();
-		File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("Enjin Minecraft Plugin").getDataFolder();
+		File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("EnjinMinecraftPlugin").getDataFolder();
 		File headsfile = new File(dataFolder, "heads.yml");
 		YamlConfiguration headsconfig = new YamlConfiguration();
 		try {
@@ -165,7 +165,7 @@ public class HeadLocations {
 	 * Saves all the heads to the disk.
 	 */
 	public void saveHeads() {
-		File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("Enjin Minecraft Plugin").getDataFolder();
+		File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("EnjinMinecraftPlugin").getDataFolder();
 		File headsfile = new File(dataFolder, "heads.yml");
 		YamlConfiguration headsconfig = new YamlConfiguration();
 		Enumeration<HeadLocation> theheads = locheadlist.elements();

@@ -4,13 +4,17 @@ import org.bukkit.command.CommandSender;
 
 public class CommandWrapper implements Comparable<CommandWrapper> {
 
-	String command;
-	CommandSender sender;
-	long delay = 0;
+	private String command;
+	private CommandSender sender;
+	private String id;
+	private String result = "";
+	private long delay = 0;
+	private String hash = "";
 
-	public CommandWrapper(CommandSender sender, String command) {
+	public CommandWrapper(CommandSender sender, String command, String id) {
 		this.sender = sender;
 		this.command = command;
+		this.id = id;
 	}
 
 	/**
@@ -19,10 +23,11 @@ public class CommandWrapper implements Comparable<CommandWrapper> {
 	 * @param command The actual command to execute
 	 * @param delay The time, in milliseconds, when it should execute.
 	 */
-	public CommandWrapper(CommandSender sender, String command, long delay) {
+	public CommandWrapper(CommandSender sender, String command, long delay, String id) {
 		this.sender = sender;
 		this.command = command;
 		this.delay = delay;
+		this.id = id;
 	}
 
 	public String getCommand() {
@@ -54,7 +59,27 @@ public class CommandWrapper implements Comparable<CommandWrapper> {
 
 	@Override
 	public String toString() {
-		return command + "\0" + delay;
+		return command + "\0" + delay + "\0" + id;
+	}
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
+
+	public String getId() {
+		return id;
 	}
 	
 }

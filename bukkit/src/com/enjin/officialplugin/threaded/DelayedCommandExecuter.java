@@ -29,8 +29,8 @@ public class DelayedCommandExecuter implements Runnable {
 		this.plugin = plugin;
 	}
 	
-	public synchronized void addCommand(CommandSender sender, String command, long timetoexecute) {
-		commandqueue.add(new CommandWrapper(sender, command, timetoexecute));
+	public synchronized void addCommand(CommandWrapper command) {
+		commandqueue.add(command);
 		CommandWrapper comm;
 		if((comm = commandqueue.peek()) != null) {
 			nexttime = comm.getDelay();
@@ -87,11 +87,13 @@ public class DelayedCommandExecuter implements Runnable {
 			String currentLine = "";
 			while (((currentLine = buffReader.readLine()) != null)) {
 				String[] commandsplit = currentLine.split("\0");
-				if(commandsplit.length > 1) {
-					addCommand(sender, commandsplit[0], Long.getLong(commandsplit[1]));
+				if(commandsplit.length > 2) {
+					addCommand(new CommandWrapper(sender, commandsplit[0], Long.getLong(commandsplit[1]), commandsplit[2]));
+				}else if(commandsplit.length > 1) {
+					addCommand(new CommandWrapper(sender, commandsplit[0], Long.getLong(commandsplit[1]), ""));
 				}else {
 					//Well, we couldn't split it, so execute the command immediately
-					addCommand(sender, commandsplit[0], 0L);
+					addCommand(new CommandWrapper(sender, commandsplit[0], 0L, ""));
 				}
 			}
 			buffReader.close();
@@ -110,6 +112,8 @@ public class DelayedCommandExecuter implements Runnable {
 					comm = commandqueue.poll();
 					EnjinMinecraftPlugin.debug("Executing delayed command: " + comm.getCommand());
 					Bukkit.getServer().dispatchCommand(comm.getSender(), comm.getCommand());
+					comm.setResult(plugin.getLastLogLine());
+					EnjinMinecraftPlugin.debug("Result: " + comm.getResult());
 				}
 			}catch (Exception e) {
 				//Concurrent modification or null exception anyone?

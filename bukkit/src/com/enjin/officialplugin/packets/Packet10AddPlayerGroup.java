@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import com.enjin.officialplugin.CommandWrapper;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.AddPlayerGroupEvent;
 
@@ -33,7 +34,7 @@ public class Packet10AddPlayerGroup {
 				//Check to see if we have PermissionsBukkit. If we do we have to do something special
 				if(plugin.permissionsbukkit != null) {
 					EnjinMinecraftPlugin.debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);
-					plugin.commandqueue.addCommand(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname);
+					plugin.commandqueue.addCommand(new CommandWrapper(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname, ""));
 					//Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname));
 				}else {
 					//We need some support if they want the group added to all worlds if the plugin doesn't support global groups

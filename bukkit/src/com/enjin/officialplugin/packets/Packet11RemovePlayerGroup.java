@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import com.enjin.officialplugin.CommandWrapper;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.RemovePlayerGroupEvent;
 
@@ -34,7 +35,7 @@ public class Packet11RemovePlayerGroup {
 				EnjinMinecraftPlugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
 				if(plugin.permissionsbukkit != null) {
 					EnjinMinecraftPlugin.debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
-					plugin.commandqueue.addCommand(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname);
+					plugin.commandqueue.addCommand(new CommandWrapper(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname, ""));
 					//Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname));
 				}else {
 					//We need some support if they want the group removed from all worlds if the plugin doesn't support global groups

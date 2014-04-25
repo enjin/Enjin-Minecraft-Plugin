@@ -8,13 +8,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.ServerShop.Type;
@@ -70,7 +77,11 @@ public class ShopListener implements Listener {
 				if(args.length == 1) {
 					//If they haven't selected a shop yet, show them the shop selection screen again.
 					if(psi.getActiveShop() == null) {
-						sendPlayerInitialShopData(player, psi);
+						if(EnjinMinecraftPlugin.USEBUYGUI) {
+							sendPlayerShopChestData(player, psi, psi.getActiveShop(), 0);
+						}else {
+							sendPlayerInitialShopData(player, psi);
+						}
 						//Else, if they have, show them the shop main menu again.
 					}else {
 						ServerShop selectedshop = psi.getActiveShop();
@@ -84,7 +95,11 @@ public class ShopListener implements Listener {
 							psi.setActiveCategory(selectedshop);
 							psi.setActiveItem(null);
 						}
-						sendPlayerShopData(player, psi, psi.getActiveCategory(), 0);
+						if(EnjinMinecraftPlugin.USEBUYGUI) {
+							sendPlayerShopChestData(player, psi, psi.getActiveCategory(), 0);
+						}else {
+							sendPlayerShopData(player, psi, psi.getActiveCategory(), 0);
+						}
 					}
 				}else {
 					if(args[1].equalsIgnoreCase("shop")) {
@@ -472,6 +487,195 @@ public class ShopListener implements Listener {
 		activeshops.remove(player);
 	}
 
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		//If a player quits, let's reset the shop data and remove them from the list.
+		String player = event.getPlayer().getName().toLowerCase();
+		if(plugin.USEBUYGUI && activeshops.containsKey(player)) {
+			activeshops.remove(player);
+			event.getPlayer().updateInventory();
+			
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerInventoryInteract(InventoryClickEvent event) {
+		//If a player quits, let's reset the shop data and remove them from the list.
+		Player player = (Player) event.getWhoClicked();
+		if(activeshops.containsKey(player.getName().toLowerCase())) {
+			if(!event.getView().getTitle().startsWith(ChatColor.BLACK.toString() + ChatColor.RESET)) {
+				activeshops.remove(player.getName().toLowerCase());
+				return;
+			}
+			event.setCancelled(true);
+			PlayerShopsInstance psi = activeshops.get(player.getName().toLowerCase());
+			ItemStack item = event.getCurrentItem();
+			if(item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+				String itemname = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+				if(itemname.equalsIgnoreCase("Next Page") || itemname.equalsIgnoreCase("Previous Page")) {
+					String page = item.getItemMeta().getLore().get(0);
+					int ipage = Integer.parseInt(page.split(" ")[1]) - 1;
+					sendPlayerShopChestData(player, psi, psi.getActiveCategory(), ipage);
+				}else if(itemname.equalsIgnoreCase("Back")) {
+					if(psi.getActiveItem() != null) {
+						psi.setActiveItem(null);
+						sendPlayerShopChestData(player, psi, psi.getActiveCategory(), 0);
+					}else if(psi.getActiveCategory() != null) {
+						if(psi.getActiveCategory().getParentCategory() == null) {
+							psi.setActiveCategory(null);
+							psi.setActiveShop(null);
+							sendPlayerShopChestData(player, psi, psi.getActiveCategory(), 0);
+						}else {
+							psi.setActiveCategory(psi.getActiveCategory().getParentCategory());
+							sendPlayerShopChestData(player, psi, psi.getActiveCategory(), 0);
+						}
+					}
+				}else if(itemname.equalsIgnoreCase("Buy with Points")) {
+					if(psi.getActiveItem() != null) {
+						ShopItem sitem = psi.getActiveItem();
+						if(sitem.points != "") {
+							if(sitem.getOptions().size() > 0) {
+								ShopItemBuyer buyer = new ShopItemBuyer(sitem);
+								playersbuying.put(player.getName(), buyer);
+								sendPlayerInitialBuyData(player, buyer);
+								player.closeInventory();
+								return;
+							}else {
+								player.sendMessage(ChatColor.GOLD + "Please wait as we verify your purchase...");
+								ShopItemBuyer buyer = new ShopItemBuyer(sitem);
+								Thread buythread = new Thread(new SendItemPurchaseToEnjin(plugin, buyer, player));
+								buythread.start();
+								player.closeInventory();
+								return;
+							}
+						}
+					}
+				}else if(itemname.equalsIgnoreCase("Buy with Money")) {
+					if(psi.getActiveItem() != null) {
+						ShopItem sitem = psi.getActiveItem();
+						if(sitem.getPrice() != "") {
+							player.sendMessage("--------------------------------------------");
+							player.sendMessage(ShopUtils.FORMATTING_CODE + psi.getActiveShop().getColorname() + sitem.getName());
+							player.sendMessage(ShopUtils.FORMATTING_CODE + psi.getActiveShop().getColortext() + "Click the following link to checkout:");
+							player.sendMessage(ShopUtils.FORMATTING_CODE + psi.getActiveShop().getColorurl() + psi.getActiveShop().getBuyurl() + sitem.getId());
+							player.sendMessage("--------------------------------------------");
+							player.closeInventory();
+							return;
+						}
+					}
+				}else {
+					int period = itemname.indexOf(".");
+					if(period == -1) {
+						if(psi.getActiveItem() != null) {
+							sendPlayerShopChestData(player, psi, psi.getActiveItem(), 0);
+						}
+						return;
+					}
+					int selection = 0;
+					try {
+						selection = Integer.parseInt(itemname.substring(0, period)) -1;
+					}catch (NumberFormatException e) {
+						if(psi.getActiveItem() != null) {
+							sendPlayerShopChestData(player, psi, psi.getActiveItem(), 0);
+						}
+						return;
+					}
+					if(psi.getActiveShop() == null) {
+						if(selection < psi.getServerShopCount()) {
+							psi.setActiveShop(selection);
+							psi.setActiveCategory(psi.getActiveShop());
+							sendPlayerShopChestData(player, psi, psi.getActiveShop(), 0);
+						}
+					}else {
+						if(selection < psi.getActiveCategory().getItems().size()) {
+							AbstractShopSuperclass sitem = psi.getActiveCategory().getItem(selection);
+							if(sitem instanceof ShopCategory) {
+								ShopCategory scat = (ShopCategory) sitem;
+								psi.setActiveCategory(scat);
+								sendPlayerShopChestData(player, psi, scat, 0);
+							}else if(sitem instanceof ShopItem) {
+								psi.setActiveItem((ShopItem) sitem);
+								sendPlayerShopChestData(player, psi, (ShopItem)sitem, 0);
+							}
+						}
+					}
+				}
+			}else {
+				player.updateInventory();
+			}
+		}
+	}
+
+	protected void sendPlayerShopChestData(Player player, PlayerShopsInstance shops, ShopItem item, int page) {
+		String windowtitle = item.getName();
+		if(windowtitle.length() > 26) {
+			windowtitle = windowtitle.substring(0, 26);
+		}
+		Inventory inv = Bukkit.getServer().createInventory(null, 9, ChatColor.BLACK.toString() + ChatColor.RESET + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortitle() + windowtitle);
+		ItemStack back = new ItemStack(Material.ARROW, 1);
+		ItemMeta meta = back.getItemMeta();
+		meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Back");
+		ArrayList<String> lore = new ArrayList<String>();
+		lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Go back");
+		meta.setLore(lore);
+		back.setItemMeta(meta);
+		inv.setItem(0, back);
+		
+		ItemStack is = new ItemStack(item.getMaterial(), 1, item.getMaterialDamage());
+		meta = is.getItemMeta();
+		String name = item.getName();
+		lore = new ArrayList<String>();
+		String[] l = ShopUtils.WrapText(((ShopItem) item).getInfo(), shops.getActiveShop().getColorinfo(), 8, true);
+		for(String ls : l) {
+			lore.add(ls);
+		}
+		meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorname() + name);
+		meta.setLore(lore);
+		is.setItemMeta(meta);
+		inv.setItem(4, is);
+		
+
+		String formattedpoints = ShopUtils.formatPoints(item.getPoints(), false);
+		if(!formattedpoints.equals("")) {
+
+			ItemStack points = new ItemStack(Material.EMERALD, 1);
+			meta = points.getItemMeta();
+			meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Buy with Points");
+			lore = new ArrayList<String>();
+
+			lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext()
+					+ "Points: " + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorprice() + formattedpoints);
+			meta.setLore(lore);
+			points.setItemMeta(meta);
+			inv.setItem(7, points);
+		}
+		String formattedprice = ShopUtils.formatPrice(item.getPrice(), shops.getActiveShop().getCurrency());
+		if(!formattedprice.equals("")) {
+			ItemStack money = new ItemStack(Material.DIAMOND, 1);
+			meta = money.getItemMeta();
+			meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Buy with Money");
+			lore = new ArrayList<String>();
+
+			lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext()
+					+ "Price: " + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorprice() + formattedprice);
+			meta.setLore(lore);
+			money.setItemMeta(meta);
+			inv.setItem(8, money);
+		}
+		
+		player.openInventory(inv);
+		
+	}
+
+	/*
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerCloseInventory(InventoryCloseEvent event) {
+		//If a player closes the virtual chest, let's reset the shop data and remove them from the list.
+		String player = event.getPlayer().getName().toLowerCase();
+		playersdisabledchat.remove(player);
+		activeshops.remove(player);
+	}*/
+
 	public void sendPlayerInitialShopData(Player player, PlayerShopsInstance shops) {
 		if(shops.getServerShopCount() == 1) {
 			ServerShop selectedshop = shops.getServerShop(0);
@@ -496,6 +700,152 @@ public class ShopListener implements Listener {
 		for(String line : page) {
 			player.sendMessage(line);
 		}
+	}
+	
+	protected void sendPlayerShopChestData(Player player, PlayerShopsInstance shops, ShopItemAdder category, int page) {
+		int slot = 0;
+		if(shops.getActiveShop() == null) {
+			Inventory inv = Bukkit.getServer().createInventory(null, 6*9, ChatColor.BLACK.toString() + ChatColor.RESET + ChatColor.GOLD + "Select a Shop");
+			for(int i = 0;i < shops.getServerShopCount(); i++) {
+				ServerShop item = shops.getServerShop(i);
+				ItemStack is = new ItemStack(item.getMaterial(), 1, item.getMaterialDamage());
+				ItemMeta meta = is.getItemMeta();
+				String name = item.getName();
+				meta.setDisplayName(ChatColor.GOLD.toString() + (i + 1) + ". " + name);
+				is.setItemMeta(meta);
+				inv.setItem(slot + i, is);
+			}
+			player.openInventory(inv);
+			return;
+		}
+		String windowtitle = category.getName();
+		if(windowtitle.length() > 26) {
+			windowtitle = windowtitle.substring(0, 26);
+		}
+		Inventory inv = Bukkit.getServer().createInventory(null, 6*9, ChatColor.BLACK.toString() + ChatColor.RESET + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortitle() + windowtitle);
+		if(category.getParentCategory() != null || shops.getServerShopCount() > 1) {
+			ItemStack back = new ItemStack(Material.ARROW, 1);
+			ItemMeta meta = back.getItemMeta();
+			meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Back");
+			ArrayList<String> lore = new ArrayList<String>();
+			lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Go back");
+			meta.setLore(lore);
+			back.setItemMeta(meta);
+			inv.setItem(0, back);
+			slot = 9;
+		}
+		if(slot == 9 && category.getItems().size() > 5*9) {
+			int maxpage = category.getItems().size()/(5*9);
+			if(category.getItems().size()%(5*9) > 0) {
+				maxpage++;
+			}
+			if(page >= maxpage) {
+				page = maxpage - 1;
+			}
+			if(page > 0 && category.getItems().size() > (5*9)*(page)) {
+				ItemStack previous = new ItemStack(Material.DRAGON_EGG, 1);
+				ItemMeta meta = previous.getItemMeta();
+				meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Previous Page");
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Page: " + page);
+				lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "You are on page: " + (page+1));
+				meta.setLore(lore);
+				previous.setItemMeta(meta);
+				inv.setItem(7, previous);
+				slot = 9;
+			}
+			if(page < maxpage - 1) {
+				ItemStack next = new ItemStack(Material.HOPPER, 1);
+				ItemMeta meta = next.getItemMeta();
+				meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Next Page");
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Page: " + (page+2));
+				lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "You are on page: " + (page+1));
+				meta.setLore(lore);
+				next.setItemMeta(meta);
+				inv.setItem(8, next);
+				slot = 9;
+			}
+		}else if(slot == 0 && category.getItems().size() > 6*9) {
+			int maxpage = category.getItems().size()/(5*9);
+			if(category.getItems().size()%(5*9) > 0) {
+				maxpage++;
+			}
+			if(page >= maxpage) {
+				page = maxpage - 1;
+			}
+			if(maxpage > 1) {
+				if(page > 0 && category.getItems().size() > (5*9)*(page)) {
+					ItemStack previous = new ItemStack(Material.DRAGON_EGG, 1);
+					ItemMeta meta = previous.getItemMeta();
+					meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Previous Page");
+					ArrayList<String> lore = new ArrayList<String>();
+					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Page: " + page);
+					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "You are on page: " + (page+1));
+					meta.setLore(lore);
+					previous.setItemMeta(meta);
+					inv.setItem(7, previous);
+					slot = 9;
+				}
+				if(page < maxpage - 1) {
+					ItemStack next = new ItemStack(Material.HOPPER, 1);
+					ItemMeta meta = next.getItemMeta();
+					meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Next Page");
+					ArrayList<String> lore = new ArrayList<String>();
+					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Page: " + (page+2));
+					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "You are on page: " + (page+1));
+					meta.setLore(lore);
+					next.setItemMeta(meta);
+					inv.setItem(8, next);
+					slot = 9;
+				}
+			}
+		}
+		if(page > 0 && slot == 0) {
+			page = 0;
+		}
+		int multiplier = 6*9;
+		if(slot == 9) {
+			multiplier = 5*9;
+		}
+		for(int i = 0; (multiplier * page) + i < category.getItems().size() && i < multiplier; i++) {
+			AbstractShopSuperclass item = category.getItem(multiplier * page + i);
+			ItemStack is = new ItemStack(item.getMaterial(), 1, item.getMaterialDamage());
+			ItemMeta meta = is.getItemMeta();
+			String name = "";
+			ArrayList<String> lore = new ArrayList<String>();
+			
+			if (item instanceof ShopItem) {
+				name = ((ShopItem) item).getName();
+				String[] l = ShopUtils.WrapText(((ShopItem) item).getInfo(), shops.getActiveShop().getColorinfo(), 8, true);
+
+				String formattedprice = ShopUtils.formatPrice(((ShopItem) item).getPrice(), shops.getActiveShop().getCurrency());
+				if(!formattedprice.equals("")) {
+					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext()
+							+ "Price: " + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorprice() + formattedprice);
+				}
+				String formattedpoints = ShopUtils.formatPoints(((ShopItem) item).getPoints(), false);
+				if(!formattedpoints.equals("")) {
+					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext()
+							+ "Points: " + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorprice() + formattedpoints);
+				}
+				for(String ls : l) {
+					lore.add(ls);
+				}
+			} else if (item instanceof ShopCategory) {
+				name = ((ShopCategory) item).getName();
+				String[] l = ShopUtils.WrapText(((ShopCategory) item).getInfo(), shops.getActiveShop().getColorinfo(), 8, true);
+				for(String ls : l) {
+					lore.add(ls);
+				}
+			}
+			
+			meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorname() + (multiplier * page + i + 1) + ". " + name);
+			meta.setLore(lore);
+			is.setItemMeta(meta);
+			inv.setItem(slot + i, is);
+		}
+		player.openInventory(inv);
 	}
 
 	public void sendPlayerShopData(Player player, PlayerShopsInstance shops, ShopItemAdder category, int page) {
