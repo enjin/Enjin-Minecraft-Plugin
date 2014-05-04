@@ -586,7 +586,11 @@ public class PeriodicEnjinTask implements Runnable {
 		StringBuilder builder = new StringBuilder();
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			builder.append(',');
-			builder.append(p.getUniqueId().toString() + ":" + p.getName());
+			if(plugin.supportsUUID()) {
+				builder.append(p.getUniqueId().toString() + ":" + p.getName());
+			}else {
+				builder.append(p.getName());
+			}
 		}
 		if(builder.length() > 2) {
 			builder.deleteCharAt(0);

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.core.ErrorHandler;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 
-public class EnjinLogAppender implements Appender {
+public class EnjinLogAppender implements Appender, EnjinLogInterface {
 
 	String lastline = "";
 	
@@ -33,7 +33,8 @@ public class EnjinLogAppender implements Appender {
 	public void append(LogEvent event) {
 		lastline = event.getMessage().getFormattedMessage();
 		//remove control characters
-		lastline = lastline.substring(0, lastline.length()-3);
+		lastline = lastline.replaceAll("\\p{Cntrl}.{2}", "");
+		//lastline = lastline.substring(0, lastline.length()-3);
 		lastline = lastline.replaceAll("\\p{Cntrl}", "");
 	}
 

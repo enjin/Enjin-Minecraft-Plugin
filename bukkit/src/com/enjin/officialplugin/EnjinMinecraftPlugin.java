@@ -30,6 +30,7 @@ import net.minecraft.util.com.mojang.util.QueueLogAppender;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -120,6 +121,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean supportsglobalgroups = true;
 	public boolean votifierinstalled = false;
 	public int xpversion = 0;
+	int logversion = 1;
 	public String mcversion = "";
 	
 	public static boolean USEBUYGUI = true;
@@ -149,7 +151,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public ShopItems cachedItems = new ShopItems();
 
-	private EnjinLogAppender mcloglistener = new EnjinLogAppender();
+	private EnjinLogInterface mcloglistener = null;
 
 	static public String apiurl = "://api.enjin.com/api/";
 	//static public String apiurl = "://gamers.enjin.ca/api/";
@@ -165,7 +167,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean authkeyinvalid = false;
 	public boolean unabletocontactenjin = false;
 	public boolean permissionsnotworking = false;
-	static public boolean bukkitversion = false;
+	static public boolean bukkitversion = true;
 
 	public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
 
@@ -213,8 +215,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		org.apache.logging.log4j.core.Logger jlogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-		jlogger.addAppender(mcloglistener);
 		try {
 			File oldnewdatafolder = new File(getDataFolder().getParent(), "Enjin_Minecraft_Plugin");
 			File olddatafolder = new File(getDataFolder().getParent(), "Enjin Minecraft Plugin");
@@ -298,15 +298,34 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}else {
 						logger.info("[Enjin Minecraft Plugin] MC 1.2 or below found, enabling version 1 XP handling.");
 					}
+					if(minorversion > 6) {
+						logversion = 2;
+						logger.info("[Enjin Minecraft Plugin] MC 1.7.2 or above found, enabling version 2 log handling.");
+					}else {
+						logger.info("[Enjin Minecraft Plugin] MC 1.6.4 or below found, enabling version 1 log handling.");
+					}
 				}else if(majorversion > 1) {
 					xpversion = 1;
 					logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
+					logversion = 2;
+					logger.info("[Enjin Minecraft Plugin] MC 1.7.2 or above found, enabling version 2 log handling.");
 				}
 			}catch (Exception e) {
-				logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP handling may occurr!");
+				logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP and log handling may occurr!");
 				logger.severe("[Enjin Minecraft Plugin] Server Version String: " + getServer().getVersion());
 			}
 
+			if(logversion == 2) {
+				org.apache.logging.log4j.core.Logger jlogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+				mcloglistener = new EnjinLogAppender();
+				jlogger.addAppender((Appender) mcloglistener);
+			}else {
+				Logger logger2 = getLogger().getParent();
+				debug("Top logger: " + logger2.getName());
+				mcloglistener = new EnjinLogHandler();
+				logger2.addHandler((Handler) mcloglistener);
+			}
+			
 			if(collectstats) {
 				startStatsCollecting();
 				File stats = new File("stats.stats");
@@ -1228,7 +1247,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			for(Player player : players) {
 				if(player.hasPermission("enjin.notify.connectionstatus")) {
 					player.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
-					player.sendMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin log");
+					player.sendMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin report");
 				}
 			}
 		}
@@ -1418,11 +1437,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 	}
 	
-	public EnjinLogAppender getMcLogListener() {
+	public EnjinLogInterface getMcLogListener() {
 		return mcloglistener;
 	}
 	
 	public String getLastLogLine() {
 		return mcloglistener.getLastLine();
+	}
+	
+	public boolean supportsUUID() {
+		return logversion > 1;
 	}
 }

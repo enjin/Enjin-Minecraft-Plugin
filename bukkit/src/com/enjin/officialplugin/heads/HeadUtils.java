@@ -47,9 +47,12 @@ public class HeadUtils {
 		}
 		Block headblock = headloc.getBlock();
 		if(headblock != null && headblock.getType() == Material.SKULL && headblock.getState() != null) {
-			Skull skullblock = (Skull) headblock.getState();
-			skullblock.setOwner(playername);
-			skullblock.update();
+			//We don't want to update the head in the new craftbukkit as it HAS to be some player.
+			if(!playername.equals("")) {
+				Skull skullblock = (Skull) headblock.getState();
+				skullblock.setOwner(playername);
+				skullblock.update();
+			}
 		}else {
 			return false;
 		}

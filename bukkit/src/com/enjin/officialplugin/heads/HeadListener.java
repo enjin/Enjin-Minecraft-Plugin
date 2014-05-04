@@ -27,7 +27,7 @@ import com.enjin.officialplugin.heads.HeadLocation.Type;
  *
  */
 public class HeadListener implements Listener {
-	
+
 	EnjinMinecraftPlugin plugin;
 	Pattern recentitempattern = Pattern.compile("\\[donation([1-9]|10)\\]");
 	Pattern topvoterpattern = Pattern.compile("\\[topvoter([1-9]|10)\\]");
@@ -40,11 +40,11 @@ public class HeadListener implements Listener {
 	Pattern topdonatorpointspattern = Pattern.compile("\\[pointsspent([1-9]|10)\\]");
 	Pattern topdonatormoneypattern = Pattern.compile("\\[moneyspent([1-9]|10)\\]");
 	BlockFace[] blockfaces = {BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
-	
+
 	public HeadListener(EnjinMinecraftPlugin plugin) {
 		this.plugin = plugin;
 	}
-	
+
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onBlockDestroy(BlockBreakEvent event) {
 		if(event.isCancelled()) {
@@ -63,16 +63,17 @@ public class HeadListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onHeadDataUpdated(HeadsUpdatedEvent event) {
 		ArrayList<HeadLocation> headlist = plugin.headlocation.headlist.get(event.getType());
 		if(headlist == null) {
 			return;
 		}
-		for(HeadLocation hloc : headlist) {
+		for(int i = 0; i < headlist.size(); i++) {
+			HeadLocation hloc = headlist.get(i);
 			HeadData headdata = plugin.headdata.getHead(event.getType(), hloc.getPosition(), hloc.getItemid());
-			
+
 			if(headdata == null) {
 				String[] signlines = plugin.cachedItems.getSignData("", "", event.getType(), hloc.getPosition(), "");
 				headdata = new HeadData("", signlines, event.getType(), hloc.getPosition());
@@ -84,7 +85,7 @@ public class HeadListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onSignUpdate(SignChangeEvent event) {
 		if(event.isCancelled()) {
@@ -121,7 +122,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 			if(type == HeadLocation.Type.RecentItemDonator) {
 				hl.setItemid(signlines[1].trim());
@@ -148,7 +149,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}else if(recentvotersmatcher.find()) {
 			int position = Integer.parseInt(recentvotersmatcher.group(1)) - 1;
@@ -161,7 +162,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}else if(topplayermatcher.find()) {
 			int position = Integer.parseInt(topplayermatcher.group(1)) - 1;
@@ -174,7 +175,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}else if(toppostermatcher.find()) {
 			int position = Integer.parseInt(toppostermatcher.group(1)) - 1;
@@ -187,7 +188,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}else if(toplikesmatcher.find()) {
 			int position = Integer.parseInt(toplikesmatcher.group(1)) - 1;
@@ -200,7 +201,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}else if(latestmembermatcher.find()) {
 			int position = Integer.parseInt(latestmembermatcher.group(1)) - 1;
@@ -213,7 +214,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}else if(toppointsmatcher.find()) {
 			int position = Integer.parseInt(toppointsmatcher.group(1)) - 1;
@@ -233,7 +234,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}else if(topdonatorpointsmatcher.find()) {
 			int position = Integer.parseInt(topdonatorpointsmatcher.group(1)) - 1;
@@ -253,7 +254,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}else if(topdonatormoneymatcher.find()) {
 			int position = Integer.parseInt(topdonatormoneymatcher.group(1)) - 1;
@@ -273,7 +274,7 @@ public class HeadListener implements Listener {
 						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}else {
 				hl = new HeadLocation(signlocation.getWorld().getName(), signlocation.getBlockX(),
-					signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
+						signlocation.getBlockY(), signlocation.getBlockZ(), type, position);
 			}
 		}
 		if(hl != null) {
@@ -300,7 +301,7 @@ public class HeadListener implements Listener {
 			}
 		}
 	}
-	
+
 	/**
 	 * This finds a head in the vicinity of a block. It looks all around the block in
 	 * a radius of 1, including edges. So if the sign was "S" and the other blocks were
