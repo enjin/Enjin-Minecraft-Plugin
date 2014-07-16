@@ -195,5 +195,9 @@ public class HeadLocations {
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean hasHeads() {
+		return !locheadlist.isEmpty();
+	}
 
 }

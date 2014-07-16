@@ -420,7 +420,6 @@ public class Updater implements Runnable {
                 this.plugin.getLogger().warning("If you have not recently modified your configuration and this is the first time you are seeing this message, the site may be experiencing temporary downtime.");
                 this.result = UpdateResult.FAIL_DBO;
             }
-            e.printStackTrace();
             return false;
         }
     }

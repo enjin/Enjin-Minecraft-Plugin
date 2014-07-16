@@ -25,6 +25,9 @@ public class EnjinLogHandler extends Handler implements EnjinLogInterface {
 
 	@Override
 	public void publish(LogRecord record) {
+		if(record.getMessage() == null) {
+			return;
+		}
 		lastline = record.getMessage();
 		//remove control characters
 		lastline = lastline.replaceAll("\\p{Cntrl}.{2}", "");

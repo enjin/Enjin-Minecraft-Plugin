@@ -51,6 +51,10 @@ public class UpdateHeadsThread implements Runnable {
 	}
 	
 	public synchronized void updateHeads() {
+		//Disable the head sync if there are no heads to sync.
+		if(!plugin.headlocation.hasHeads()) {
+			return;
+		}
 		//Let's update all the packages before updating the heads...
 		try {
 			EnjinMinecraftPlugin.debug("Connecting to Enjin for package data for heads...");

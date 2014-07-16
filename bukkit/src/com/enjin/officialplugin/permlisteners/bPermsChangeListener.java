@@ -3,6 +3,7 @@ package com.enjin.officialplugin.permlisteners;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,9 +39,14 @@ public class bPermsChangeListener implements Listener {
 						args[1].trim().equalsIgnoreCase("setgroup"))) {
 					if(usereditingwhatplayer.containsKey(p.getName())) {
 						String ep = usereditingwhatplayer.get(p.getName());
+						String uuid = "";
+						if(EnjinMinecraftPlugin.supportsUUID()) {
+							OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
+							uuid = op.getUniqueId().toString();
+						}
 						//We need to make sure the command executes before we actually grab the data.
 						EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
-						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
 					}
 				}else {
 					usereditingwhatplayer.put(p.getName(), args[1].trim());

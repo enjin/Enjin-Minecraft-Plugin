@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.map.MinecraftFont;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -813,7 +814,7 @@ public class ShopUtils {
 	}
 
 	public static ArrayList<String> getItemDetailsPage(ServerShop shop,
-			ShopItem item) {
+			ShopItem item, Player player) {
 		ArrayList<String> itempage = new ArrayList<String>();
 		boolean collapsed = false;
 		String verticalborder;
@@ -912,7 +913,7 @@ public class ShopUtils {
 			itempage.add(verticalborder + " ");
 		}else {
 			itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Click the following link to checkout:");
-			itempage.add(verticalborder + FORMATTING_CODE + shop.getColorurl() + shop.getBuyurl() + item.getId());
+			itempage.add(verticalborder + FORMATTING_CODE + shop.getColorurl() + shop.getBuyurl() + item.getId() + "?player=" + player.getName());
 			
 		}
 		itempage.add(verticalborder + " ");

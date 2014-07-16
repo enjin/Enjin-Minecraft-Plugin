@@ -1,16 +1,16 @@
 package com.enjin.officialplugin.stats;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.json.simple.JSONObject;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.proto.stats.EnjinStats;
-import com.enjin.proto.stats.EnjinStats.Server.KickPlayer;
 
 public class StatsServer {
 	
@@ -25,13 +25,18 @@ public class StatsServer {
 		this.plugin = plugin;
 	}
 	
-	public StatsServer(EnjinMinecraftPlugin plugin, EnjinStats.Server serverstats) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public StatsServer(EnjinMinecraftPlugin plugin, JSONObject serverstats) {
 		this.plugin = plugin;
-		totalkicks = serverstats.getTotalkicks();
-		creeperexplosions = serverstats.getCreeperexplosions();
-		List<KickPlayer> kicks = serverstats.getPlayerskickedList();
-		for(KickPlayer kick : kicks) {
-			playerkicks.put(kick.getName(), kick.getCount());
+		totalkicks = StatsUtils.getInt(serverstats.get("totalkicks"));
+		creeperexplosions = StatsUtils.getInt(serverstats.get("creeperexplosions"));
+		Object okicks = serverstats.get("playerskickedlist");
+		if(okicks instanceof JSONObject) {
+			JSONObject kicks = (JSONObject) okicks;
+			Set<Map.Entry> skicks = kicks.entrySet();
+			for(Map.Entry kick : skicks) {
+				playerkicks.put(kick.getKey().toString(), StatsUtils.getInt(kick.getValue()));
+			}
 		}
 	}
 	
@@ -77,32 +82,35 @@ public class StatsServer {
 		this.creeperexplosions = creeperexplosions;
 	}
 	
-	public EnjinStats.Server.Builder getSerialized() {
-		EnjinStats.Server.Builder serverbuilder = EnjinStats.Server.newBuilder();
-		serverbuilder.setCreeperexplosions(creeperexplosions);
+	@SuppressWarnings("unchecked")
+	public JSONObject getSerialized() {
+		JSONObject serverbuilder = new JSONObject();
+		serverbuilder.put("creeperexplosions", new Integer(creeperexplosions));
 		int totalentities = 0;
 		List<World> worlds = Bukkit.getWorlds();
 		for(World world : worlds) {
 			totalentities += world.getEntities().size();
 		}
-		serverbuilder.setEntities(totalentities);
+		serverbuilder.put("totalentities", new Integer(totalentities));
 		Runtime runtime = Runtime.getRuntime();
 		long memused = runtime.totalMemory()/(1024*1024);
 		long maxmemory = runtime.maxMemory()/(1024*1024);
-		serverbuilder.setMemoryused((int) memused);
-		EnjinStats.Server.ServerInformation serverinfo = EnjinStats.Server.ServerInformation.newBuilder().
-				setMaxmemory((int) maxmemory).setJavaversion(System.getProperty("java.version") + " " + System.getProperty("java.vendor"))
-				.setOperatingsystem(System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"))
-				.setCorecount(runtime.availableProcessors())
-				.setServerversion(plugin.getServer().getVersion())
-				.setLaststarttime((int)(lastserverstarttime/1000)).build();
-		serverbuilder.setServerinfo(serverinfo);
+		JSONObject serverinfo = new JSONObject();
+		serverinfo.put("maxmemory", new Integer((int) maxmemory));
+		serverinfo.put("memoryused", new Integer((int) memused));
+		serverinfo.put("javaversion", System.getProperty("java.version") + " " + System.getProperty("java.vendor"));
+		serverinfo.put("os", System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"));
+		serverinfo.put("corecount", new Integer(runtime.availableProcessors()));
+		serverinfo.put("serverversion", plugin.getServer().getVersion());
+		serverinfo.put("laststarttime", new Integer((int)(lastserverstarttime/1000)));
+		JSONObject kickedplayers = new JSONObject();
 		Set<Entry<String, Integer>> kicks = playerkicks.entrySet();
 		for(Entry<String, Integer> kick : kicks) {
-			serverbuilder.addPlayerskicked(KickPlayer.newBuilder().setName(kick.getKey()).setCount(kick.getValue().intValue()));
+			kickedplayers.put(kick.getKey(), kick.getValue());
 		}
-		serverbuilder.setTotalkicks(totalkicks);
-		return serverbuilder;
+		serverinfo.put("playerskickedlist", kickedplayers);
+		serverinfo.put("totalkicks", new Integer(totalkicks));
+		return serverinfo;
 	}
 
 	public ConcurrentHashMap<String, Integer> getPlayerkicks() {

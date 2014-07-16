@@ -1,10 +1,10 @@
 name: EnjinMinecraftPlugin
 main: com.enjin.officialplugin.EnjinMinecraftPlugin
-version: 2.5.8-bukkit
+version: 2.6.6-bukkit
 website: www.enjin.com
 author: www.Enjin.com
 description: A plugin which allows the enjin servers to communicate with your server.
-softdepend: [Vault,Votifier]
+softdepend: [Vault,Votifier,mcMMO]
 commands:
   enjinkey:
     description: Sets the enjin online key to the specified string.
@@ -30,6 +30,9 @@ permissions:
   enjin.updateheads:
     description: Forces an update on all the stat signs and heads in the game.
     default: op
+  enjin.lag:
+    description: Allows the player to access the lag report on the server.
+    default: op
   enjin.notify.*:
     default: op
     description: Enables all notifications.
@@ -39,6 +42,9 @@ permissions:
       enjin.notify.failedupdate: true
       enjin.notify.invalidauthkey: true
       enjin.notify.permissionsnotworking: true
+      enjin.notify.votifiererrored: true
+      enjin.notify.econoutdated: true
+      enjin.notify.mcmmooutdated: true
   enjin.sign:
     default: op
     description: Allows the player to make and remove stat signs and heads.
@@ -65,6 +71,15 @@ permissions:
     default: op
   enjin.notify.permissionsnotworking:
     description: Receive notification if the permissions plugin isn't working correctly.
+    default: op
+  enjin.notify.votifiererrored:
+    description: Receive notification if Votifier isn't working correctly.
+    default: op
+  enjin.notify.econoutdated:
+    description: Receive notification if your economy plugin isn't updated for Vault 1.4.1.
+    default: op
+  enjin.notify.mcmmooutdated:
+    description: Receive notification if your mcMMO plugin is older than what we support.
     default: op
   enjin.points.add:
     description: Add points to a player.

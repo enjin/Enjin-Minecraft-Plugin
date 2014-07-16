@@ -31,11 +31,14 @@ public class EnjinLogAppender implements Appender, EnjinLogInterface {
 
 	@Override
 	public void append(LogEvent event) {
-		lastline = event.getMessage().getFormattedMessage();
-		//remove control characters
-		lastline = lastline.replaceAll("\\p{Cntrl}.{2}", "");
-		//lastline = lastline.substring(0, lastline.length()-3);
-		lastline = lastline.replaceAll("\\p{Cntrl}", "");
+		if(event != null && event.getMessage() != null && event.getMessage().getFormattedMessage() != null) {
+			lastline = event.getMessage().getFormattedMessage();
+			//remove control characters
+			lastline = lastline.replaceAll("\\p{Cntrl}.{2}", "");
+			//lastline = lastline.substring(0, lastline.length()-3);
+			lastline = lastline.replaceAll("\\p{Cntrl}", "");
+		}
+		//lastline = "ERROR: Last message was null.";
 	}
 
 	@Override

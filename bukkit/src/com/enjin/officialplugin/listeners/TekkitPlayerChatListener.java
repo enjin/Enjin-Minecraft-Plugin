@@ -20,7 +20,7 @@ public class TekkitPlayerChatListener implements Listener {
 		if(event.isCancelled()) {
 			return;
 		}
-		plugin.GetPlayerStats(event.getPlayer().getName()).addChatLine();
+		plugin.getPlayerStats(event.getPlayer()).addChatLine();
 	}
 
 }

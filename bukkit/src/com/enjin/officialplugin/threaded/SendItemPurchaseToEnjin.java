@@ -58,6 +58,9 @@ public class SendItemPurchaseToEnjin implements Runnable {
 			builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
 			builder.append("&item_id=" + encode(buyer.getItem().getId()));
 			builder.append("&player=" + encode(player.getName()));
+			if(EnjinMinecraftPlugin.supportsUUID()) {
+				builder.append("&uuid=" + encode(player.getUniqueId().toString()));
+			}
 			builder.append("&custom_points=0&custom_price=0");
 			for(String option : buyer.getOptions()) {
 				builder.append("&" + option);

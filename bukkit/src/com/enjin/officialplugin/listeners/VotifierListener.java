@@ -3,6 +3,8 @@ package com.enjin.officialplugin.listeners;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -35,9 +37,14 @@ public class VotifierListener implements Listener {
 		//Remove anything non-alphanumeric from the username, removing exploits
 		String username = vote.getUsername().replaceAll("[^0-9A-Za-z_]", "");
 		if(username.isEmpty()) return;
+		String userid = username;
+		if(EnjinMinecraftPlugin.supportsUUID()) {
+			OfflinePlayer op = Bukkit.getOfflinePlayer(username);
+			userid = username + "|" + op.getUniqueId().toString();
+		}
 		String lists = "";
-		if(plugin.playervotes.containsKey(username)) {
-			lists = plugin.playervotes.get(username);
+		if(plugin.playervotes.containsKey(userid)) {
+			lists = plugin.playervotes.get(userid);
 			lists = lists + "," + vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 		}else {
 			lists = vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
@@ -55,7 +62,7 @@ public class VotifierListener implements Listener {
 		String[] signdata = plugin.cachedItems.getSignData(username, voteday, HeadLocation.Type.RecentVoter, 0, svotetime);
 		HeadData hd = new HeadData(username, signdata, HeadLocation.Type.RecentVoter, 0);
 		plugin.headdata.addToHead(hd, true);
-		plugin.playervotes.put(username, lists);
+		plugin.playervotes.put(userid, lists);
 	}
 
 }

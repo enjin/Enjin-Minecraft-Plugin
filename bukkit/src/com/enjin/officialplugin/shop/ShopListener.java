@@ -276,7 +276,7 @@ public class ShopListener implements Listener {
 									}else {
 										//It must be an item, let's send the item details page.
 										psi.setActiveItem((ShopItem) category.getItem(optionnumber));
-										sendPlayerPage(player, ShopUtils.getItemDetailsPage(psi.getActiveShop(), (ShopItem) category.getItem(optionnumber)));
+										sendPlayerPage(player, ShopUtils.getItemDetailsPage(psi.getActiveShop(), (ShopItem) category.getItem(optionnumber), player));
 									}
 								}else {
 									player.sendMessage(ChatColor.RED + "Invalid page number.");
@@ -557,7 +557,7 @@ public class ShopListener implements Listener {
 							player.sendMessage("--------------------------------------------");
 							player.sendMessage(ShopUtils.FORMATTING_CODE + psi.getActiveShop().getColorname() + sitem.getName());
 							player.sendMessage(ShopUtils.FORMATTING_CODE + psi.getActiveShop().getColortext() + "Click the following link to checkout:");
-							player.sendMessage(ShopUtils.FORMATTING_CODE + psi.getActiveShop().getColorurl() + psi.getActiveShop().getBuyurl() + sitem.getId());
+							player.sendMessage(ShopUtils.FORMATTING_CODE + psi.getActiveShop().getColorurl() + psi.getActiveShop().getBuyurl() + sitem.getId() + "?player=" + player.getName());
 							player.sendMessage("--------------------------------------------");
 							player.closeInventory();
 							return;
@@ -860,7 +860,7 @@ public class ShopListener implements Listener {
 	}
 
 	public void sendPlayerItemData(Player player, PlayerShopsInstance shops, ShopItem item) {
-		sendPlayerPage(player, ShopUtils.getItemDetailsPage(shops.getActiveShop(), item));
+		sendPlayerPage(player, ShopUtils.getItemDetailsPage(shops.getActiveShop(), item, player));
 	}
 
 	private String encode(String in) {

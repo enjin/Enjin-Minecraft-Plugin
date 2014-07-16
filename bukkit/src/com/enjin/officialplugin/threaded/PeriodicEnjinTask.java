@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 
@@ -286,8 +287,8 @@ public class PeriodicEnjinTask implements Runnable {
 			}
 		}
 		if(plugin.collectstats) {
-			new WriteStats(plugin).write("stats.stats");
-			EnjinMinecraftPlugin.debug("Stats saved to stats.stats.");
+			new WriteStats(plugin).write("enjin-stats.json");
+			EnjinMinecraftPlugin.debug("Stats saved to enjin-stats.json.");
 		}
 	}
 	
@@ -349,16 +350,19 @@ public class PeriodicEnjinTask implements Runnable {
 	}
 	
 	private String getStats() {
-		byte[] rawstats = new WriteStats(plugin).write();
-		ByteOutputStream output = new ByteOutputStream();
 		try {
+			byte[] rawstats = new WriteStats(plugin).write();
+			ByteOutputStream output = new ByteOutputStream();
 			GZIPOutputStream out = new GZIPOutputStream(output);
 			out.write(rawstats, 0, rawstats.length);
 			out.finish();
 			out.close();
 			String serialized = javax.xml.bind.DatatypeConverter.printBase64Binary(output.getBytes());
 			return serialized;
+		} catch (Error e) {
+			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "";
@@ -382,7 +386,12 @@ public class PeriodicEnjinTask implements Runnable {
 			//We don't want to get global groups with plugins that don't support it.
 			try {
 				if(plugin.supportsglobalgroups) {
-					String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
+					String[] tempperms;
+					if(EnjinMinecraftPlugin.supportsUUID()) {
+						tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(null, Bukkit.getOfflinePlayer(UUID.fromString(entry.getValue())));
+					}else {
+						tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups((World)null, entry.getKey());
+					}
 					if(perms.length() > 0 && tempperms.length > 0) {
 						perms.append("|");
 					}
@@ -401,7 +410,12 @@ public class PeriodicEnjinTask implements Runnable {
 				}
 				//Now let's get groups per world.
 				for(World w: Bukkit.getWorlds()) {
-					String[] tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
+					String[] tempperms;
+					if(EnjinMinecraftPlugin.supportsUUID()) {
+						tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w.getName(), Bukkit.getOfflinePlayer(UUID.fromString(entry.getValue())));
+					}else {
+						tempperms = EnjinMinecraftPlugin.permission.getPlayerGroups(w, entry.getKey());
+					}
 					if(tempperms != null && tempperms.length > 0) {
 						
 						//The below variable is only used for GroupManager since it
@@ -442,7 +456,11 @@ public class PeriodicEnjinTask implements Runnable {
 				if(allperms.length() > 0) {
 					allperms.append("\n");
 				}
-				allperms.append(entry.getKey() + ";" + perms.toString());
+				if(EnjinMinecraftPlugin.supportsUUID()) {
+					allperms.append(entry.getKey() + "|" + entry.getValue() + ";" + perms.toString());
+				}else {
+					allperms.append(entry.getKey() + ";" + perms.toString());
+				}
 			}catch (Exception e) {
 				EnjinMinecraftPlugin.debug("Unable to get permissions data for player " + entry.getKey());
 				//Assume this plugin does not support offline players;

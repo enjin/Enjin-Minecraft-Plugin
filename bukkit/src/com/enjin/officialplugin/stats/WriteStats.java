@@ -1,13 +1,16 @@
 package com.enjin.officialplugin.stats;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map.Entry;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.proto.stats.EnjinStats;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class WriteStats {
 	
@@ -18,13 +21,11 @@ public class WriteStats {
 	}
 	
 	public boolean write(String file) {
-		EnjinStats.Server.Builder stats = plugin.serverstats.getSerialized();
-		for(Entry<String, StatsPlayer> eplayer : plugin.playerstats.entrySet()) {
-			stats.addPlayers(eplayer.getValue().getSerialized());
-		}
 		try {
-			FileOutputStream output = new FileOutputStream(file);
-			stats.build().writeTo(output);
+			BufferedWriter outChannel = new BufferedWriter(new FileWriter(file));
+			String jsonString = getStatsJSON();
+			outChannel.write(jsonString);
+			outChannel.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,20 +37,20 @@ public class WriteStats {
 		return true;
 	}
 	
-	public byte[] write() {
-		EnjinStats.Server.Builder stats = plugin.serverstats.getSerialized();
+	@SuppressWarnings("unchecked")
+	public String getStatsJSON() {
+		JSONObject stats = plugin.serverstats.getSerialized();
+		JSONArray players = new JSONArray();
 		for(Entry<String, StatsPlayer> eplayer : plugin.playerstats.entrySet()) {
-			stats.addPlayers(eplayer.getValue().getSerialized());
+			players.add(eplayer.getValue().getSerialized());
 		}
-		ByteOutputStream output = new ByteOutputStream();
-		try {
-			stats.build().writeTo(output);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		stats.put("players", players);
+		return JSONValue.toJSONString(stats);
 		
-		return output.getBytes();
+	}
+	
+	public byte[] write() {
+		return getStatsJSON().getBytes();
 	}
 
 }

@@ -3,13 +3,17 @@ package com.enjin.officialplugin;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -19,14 +23,15 @@ import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLHandshakeException;
 
+import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
-import net.minecraft.util.com.mojang.util.QueueLogAppender;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +39,6 @@ import org.apache.logging.log4j.core.Appender;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -56,7 +60,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import com.enjin.officialplugin.heads.CachedHeadData;
 import com.enjin.officialplugin.heads.HeadListener;
-import com.enjin.officialplugin.heads.HeadLocation;
 import com.enjin.officialplugin.heads.HeadLocations;
 import com.enjin.officialplugin.listeners.EnjinStatsListener;
 import com.enjin.officialplugin.listeners.NewPlayerChatListener;
@@ -73,6 +76,7 @@ import com.enjin.officialplugin.shop.ShopItems;
 import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.stats.StatsPlayer;
 import com.enjin.officialplugin.stats.StatsServer;
+import com.enjin.officialplugin.stats.StatsUtils;
 import com.enjin.officialplugin.stats.WriteStats;
 import com.enjin.officialplugin.threaded.AsyncToSyncEventThrower;
 import com.enjin.officialplugin.threaded.BanLister;
@@ -88,8 +92,9 @@ import com.enjin.officialplugin.threaded.UpdateHeadsThread;
 import com.enjin.officialplugin.threaded.Updater;
 import com.enjin.officialplugin.tpsmeter.MonitorTPS;
 import com.enjin.officialplugin.EnjinConsole;
-import com.enjin.proto.stats.EnjinStats;
+import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
+import com.vexsoftware.votifier.Votifier;
 
 import de.bananaco.bpermissions.imp.Permissions;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -107,23 +112,31 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public FileConfiguration config;
 	public static boolean usingGroupManager = false;
-	File hashFile;
 	public static String hash = "";
 	Server s;
 	Logger logger;
 	public static Permission permission = null;
+    public static Economy economy = null;
 	public static boolean debug = false;
-	public boolean collectstats = false;
+	/**
+	 * Whether the plugin has stats collecting enabled.
+	 */
+	public boolean collectstats = true;
 	public PermissionsEx permissionsex;
 	public GroupManager groupmanager;
 	public Permissions bpermissions;
 	public PermissionsPlugin permissionsbukkit;
+	private static boolean isMcMMOloaded = false;
+	private boolean mcMMOSupported = false;
 	public boolean supportsglobalgroups = true;
 	public boolean votifierinstalled = false;
+	protected boolean votifiererrored = false;
 	public int xpversion = 0;
-	int logversion = 1;
+	static int logversion = 1;
+	static boolean supportsuuid = false;
+	static boolean mcmmoOutdated = false;
 	public String mcversion = "";
-	
+
 	public static boolean USEBUYGUI = true;
 
 	int signupdateinterval = 10;
@@ -161,12 +174,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	public boolean autoupdate = true;
 	public String newversion = "";
-	
+
 	public boolean hasupdate = false;
 	public boolean updatefailed = false;
 	public boolean authkeyinvalid = false;
 	public boolean unabletocontactenjin = false;
 	public boolean permissionsnotworking = false;
+	public boolean vaultneedsupdating = false;
+	public boolean gmneedsupdating = false;
+	public static boolean econcompatmode = false;
 	static public boolean bukkitversion = true;
 
 	public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
@@ -223,14 +239,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					oldnewdatafolder.renameTo(getDataFolder());
 					reloadConfig();
 				}catch (Exception e) {
-					
+
 				}
 			}else if(olddatafolder.exists()) {
 				try {
 					olddatafolder.renameTo(getDataFolder());
 					reloadConfig();
 				}catch (Exception e) {
-					
+
 				}
 			}
 			debug("Initializing internal logger");
@@ -255,27 +271,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Begin init");
 			initVariables();
 			debug("Init vars done.");
-			debug("Get the ban list");
-			banlistertask = new BanLister(this);
-			debug("Ban list loaded");
-			debug("Init Files");
-			initFiles();
-			headlocation.loadHeads();
-			loadCommandIDs();
-			debug("Init files done.");
-			initPlugins();
-			debug("Init plugins done.");
-			setupPermissions();
-			debug("Setup permissions integration");
-			setupVotifierListener();
-			debug("Setup Votifier integration");
-
-			//------We should do TPS even if we have an invalid auth key
-			Bukkit.getScheduler().runTaskTimerAsynchronously(this, tpstask = new MonitorTPS(this), 40, 40);
-
-			Thread configthread = new Thread(new ConfigSender(this));
-			configthread.start();
-
+			
 			//Let's get the minecraft version.
 			String[] cbversionstring = getServer().getVersion().split(":");
 			String[] versionstring = cbversionstring[1].split("\\.");
@@ -298,8 +294,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					}else {
 						logger.info("[Enjin Minecraft Plugin] MC 1.2 or below found, enabling version 1 XP handling.");
 					}
+					if(minorversion > 5) {
+						mcMMOSupported = true;
+					}
 					if(minorversion > 6) {
 						logversion = 2;
+						if(minorversion == 7 && buildnumber > 8) {
+							supportsuuid = true;
+						}else if(minorversion > 7) {
+							supportsuuid = true;
+						}
 						logger.info("[Enjin Minecraft Plugin] MC 1.7.2 or above found, enabling version 2 log handling.");
 					}else {
 						logger.info("[Enjin Minecraft Plugin] MC 1.6.4 or below found, enabling version 1 log handling.");
@@ -309,6 +313,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
 					logversion = 2;
 					logger.info("[Enjin Minecraft Plugin] MC 1.7.2 or above found, enabling version 2 log handling.");
+					supportsuuid = true;
+					mcMMOSupported = true;
 				}
 			}catch (Exception e) {
 				logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP and log handling may occurr!");
@@ -326,17 +332,37 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				logger2.addHandler((Handler) mcloglistener);
 			}
 			
+			debug("Get the ban list");
+			banlistertask = new BanLister(this);
+			debug("Ban list loaded");
+			debug("Init Files");
+			initFiles();
+			headlocation.loadHeads();
+			loadCommandIDs();
+			debug("Init files done.");
+			initPlugins();
+			debug("Init plugins done.");
+			setupPermissions();
+			debug("Setup permissions integration");
+			setupVotifierListener();
+			debug("Setup Votifier integration");
+
+			//------We should do TPS even if we have an invalid auth key
+			Bukkit.getScheduler().runTaskTimerAsynchronously(this, tpstask = new MonitorTPS(this), 40, 40);
+
+			Thread configthread = new Thread(new ConfigSender(this));
+			configthread.start();
+
 			if(collectstats) {
 				startStatsCollecting();
-				File stats = new File("stats.stats");
+				File stats = new File("enjin-stats.json");
 				if(stats.exists()) {
-					FileInputStream input = new FileInputStream(stats);
-					EnjinStats.Server serverstats = EnjinStats.Server.parseFrom(input);
-					debug("Parsing stats input.");
-					this.serverstats = new StatsServer(this, serverstats);
-					for(EnjinStats.Server.Player player : serverstats.getPlayersList()) {
-						debug("Adding player " + player.getName() + ".");
-						playerstats.put(player.getName().toLowerCase(), new StatsPlayer(player));
+					//Let's not error when we fail to parse the stats.
+					try {
+						String content = readFile(stats, StandardCharsets.UTF_8);
+						StatsUtils.parseStats(content, this);
+					}catch (Exception e) {
+						
 					}
 				}
 				//XP handling and chat event handling changed at 1.3, so we can use the same variable. :D
@@ -358,6 +384,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				authkeyinvalid = true;
 				debug("Auth key is invalid. Wrong length.");
 			}
+			
+			// Adding in metrics
+	        try {
+	            MetricsLite metrics = new MetricsLite(this);
+	            metrics.start();
+	        } catch(IOException e) {
+	            // Failed to submit the stats :-(
+	        }
 		}
 		catch(Throwable t) {
 			Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
@@ -371,7 +405,42 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		HandlerList.unregisterAll(esl);
 	}
 
+	static String readFile(File path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path.getAbsolutePath()));
+		return new String(encoded, encoding);
+	}
+	
+	public static boolean isMcMMOEnabled() {
+		return isMcMMOloaded;
+	}
+
 	public void startStatsCollecting() {
+		if(mcMMOSupported) {
+			Plugin mcmmo = this.getServer().getPluginManager().getPlugin("mcMMO");
+			if (mcmmo != null) {
+				try {
+					//Let's try to load the method, if it fails, catch it.
+					List<SkillType> skills = SkillType.NON_CHILD_SKILLS;
+					isMcMMOloaded = true;
+					debug("mcMMO found, hooking custom stats.");
+				}catch (NoSuchFieldError e) {
+					mcmmoOutdated = true;
+					isMcMMOloaded = false;
+					getLogger().warning("Your version of mcMMO is outdated! Please update here: http://dev.bukkit.org/bukkit-plugins/mcmmo/");
+				}catch (NoClassDefFoundError e) {
+					mcmmoOutdated = true;
+					isMcMMOloaded = false;
+					getLogger().warning("Your version of mcMMO is outdated! Please update here: http://dev.bukkit.org/bukkit-plugins/mcmmo/");
+				}catch (Error e) {
+					mcmmoOutdated = true;
+					isMcMMOloaded = false;
+					getLogger().warning("Your version of mcMMO is outdated! Please update here: http://dev.bukkit.org/bukkit-plugins/mcmmo/");
+				}
+			}else {
+				isMcMMOloaded = false;
+			}
+		}
+		
 		if(esl == null) {
 			esl = new EnjinStatsListener(this);
 		}
@@ -408,13 +477,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		stopTask();
 		//unregisterEvents();
 		if(collectstats) {
-			new WriteStats(this).write("stats.stats");
-			debug("Stats saved to stats.stats.");
+			new WriteStats(this).write("enjin-stats.json");
+			debug("Stats saved to enjin-stats.json.");
 		}
 	}
 
 	private void initVariables() throws Throwable {
-		hashFile = new File(this.getDataFolder(), "HASH.txt");
 		s = Bukkit.getServer();
 		logger = Bukkit.getLogger();
 		try {
@@ -431,20 +499,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	}
 
 	public void initFiles() {
-		//let's read in the old hash file if there is one and convert it to the new format.
-		if(hashFile.exists()) {
-			try {
-				BufferedReader r = new BufferedReader(new FileReader(hashFile));
-				hash = r.readLine();
-				r.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			//Remove it, we won't ever need it again.
-			hashFile.delete();
-		}
 		config = getConfig();
 		File configfile = new File(getDataFolder().toString() + "/config.yml");
 		if(!configfile.exists()) {
@@ -461,12 +515,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		autoupdate = config.getBoolean("autoupdate", true);
 		apiurl = config.getString("apiurl", apiurl);
 		//Test to see if we need to update the config file.
-		String teststats = config.getString("collectstats", "");
+		String teststats = config.getString("collectplayerstats", "");
 		if(teststats.equals("")) {
 			createConfig();
 		}
-		configvalues.put("collectstats", ConfigValueTypes.BOOLEAN);
-		collectstats = config.getBoolean("collectstats", collectstats);
+		configvalues.put("collectplayerstats", ConfigValueTypes.BOOLEAN);
+		collectstats = config.getBoolean("collectplayerstats", collectstats);
 		configvalues.put("sendstatsinterval", ConfigValueTypes.INT);
 		statssendinterval = config.getInt("sendstatsinterval", 5);
 		configvalues.put("statscollected.player.travel", ConfigValueTypes.BOOLEAN);
@@ -500,7 +554,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		config.set("authkey", hash);
 		config.set("https", usingSSL);
 		config.set("autoupdate", autoupdate);
-		config.set("collectstats", collectstats);
+		config.set("collectstats", null);
+		config.set("collectplayerstats", collectstats);
 		config.set("sendstatsinterval", statssendinterval);
 		String teststats = config.getString("statscollected.player.travel", "");
 		if(teststats.equals("")) {
@@ -597,18 +652,71 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			enjinlogger.info("Votifier plugin found, enabling Votifier support.");
 			Bukkit.getPluginManager().registerEvents(new VotifierListener(this), this);
 			votifierinstalled = true;
+
+			Plugin vobject = Bukkit.getPluginManager().getPlugin("Votifier");
+			if(vobject != null && vobject instanceof Votifier) {
+				Votifier votifier = (Votifier) vobject;
+				votifiererrored = false;
+				if(votifier.getVoteReceiver() == null) {
+					votifiererrored = true;
+				}
+			}
+		
 		}
+		
+		
+		
 	}
 
 	private void initPlugins() throws Throwable {
 		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			enjinlogger.warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/server-mods/vault/!");
-			getLogger().warning("[Enjin Minecraft Plugin] Couldn't find the vault plugin! Please get it from dev.bukkit.org/server-mods/vault/!");
+			enjinlogger.warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
+			getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
 			return;
+		}
+		Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
+		if(supportsUUID()) {
+			boolean vaultupdated = false;
+			if(vault != null) {
+				String[] version = vault.getDescription().getVersion().split("\\.");
+				int majorver = Integer.parseInt(version[0]);
+				int minorver = Integer.parseInt(version[1]);
+				if(majorver > 1) {
+					vaultupdated = true;
+				}else if(minorver > 3) {
+					vaultupdated = true;
+				}
+			}
+			if(!vaultupdated) {
+				vaultneedsupdating = true;
+				enjinlogger.severe("This version of vault doesn't support UUID! Please update to the latest version here: http://dev.bukkit.org/bukkit-plugins/vault/files/");
+				enjinlogger.severe("Disabling vault integration until Vault is updated.");
+				getLogger().severe("This version of vault doesn't support UUID! Please update to the latest version here: http://dev.bukkit.org/bukkit-plugins/vault/files/");
+				getLogger().severe("Disabling vault integration until Vault is updated.");
+				return;
+			}
 		}
 		debug("Initializing permissions.");
 		initPermissions();
+		setupEconomy();
 	}
+	
+	private void setupEconomy()
+    {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            economy = economyProvider.getProvider();
+            if(supportsUUID() && !vaultneedsupdating) {
+                try {
+                	economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
+                }catch(AbstractMethodError e) {
+                	econcompatmode = true;
+        			enjinlogger.warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+                	getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+                }
+            }
+        }
+    }
 
 	private void initPermissions() throws Throwable {
 		RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
@@ -699,9 +807,28 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					if(permission != null) {
 						report.append("Vault permissions system reported: " + permission.getName() + "\n");
 					}
+					if(economy != null) {
+						report.append("Vault economy system reported: " + economy.getName() + "\n");
+					}
+					if(econcompatmode) {
+						report.append("WARNING! Economy plugin doesn't support UUID, needs update.\n");
+					}
 					if(votifierinstalled) {
 						String votiferversion = Bukkit.getPluginManager().getPlugin("Votifier").getDescription().getVersion();
 						report.append("Votifier version: " + votiferversion + "\n");
+						Plugin vobject = Bukkit.getPluginManager().getPlugin("Votifier");
+						if(vobject != null && vobject instanceof Votifier) {
+							Votifier votifier = (Votifier) vobject;
+							boolean votifiererrored = false;
+							if(votifier.getVoteReceiver() == null) {
+								votifiererrored = true;
+							}
+							FileConfiguration voteconfig = votifier.getConfig();
+							String port = voteconfig.getString("port", "");
+							String host = voteconfig.getString("host", "");
+							report.append("Votifier is enabled properly: " + !votifiererrored + "\n");
+							report.append("Votifier is listening on: " + host + ":" + port + "\n");
+						}
 					}
 					report.append("Bukkit version: " + getServer().getVersion() + "\n");
 					report.append("Java version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n");
@@ -773,7 +900,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						return true;
 					}
 					for(OfflinePlayer offlineplayer : allplayers) {
-						playerperms.put(offlineplayer.getName(), "");
+						playerperms.put(offlineplayer.getName(), offlineplayer.getUniqueId().toString());
 					}
 
 					//Calculate how many minutes approximately it's going to take.
@@ -807,8 +934,20 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						return true;
 					}
 					if(args.length > 1) {
-						if(playerstats.containsKey(args[1].toLowerCase())) {
-							StatsPlayer player = playerstats.get(args[1].toLowerCase());
+						StatsPlayer player = null;
+						if(supportsUUID()) {
+							OfflinePlayer statplayer = Bukkit.getOfflinePlayer(args[1]);
+							String uuid = statplayer.getUniqueId().toString().toLowerCase();
+							if(playerstats.containsKey(uuid)) {
+								player = playerstats.get(uuid);
+								
+							}
+						}else {
+							if(playerstats.containsKey(args[1].toLowerCase())) {
+								player = playerstats.get(args[1].toLowerCase());
+							}
+						}
+						if(player != null) {
 							sender.sendMessage(ChatColor.DARK_GREEN + "Player stats for player: " + ChatColor.GOLD + player.getName());
 							sender.sendMessage(ChatColor.DARK_GREEN + "Deaths: " + ChatColor.GOLD + player.getDeaths());
 							sender.sendMessage(ChatColor.DARK_GREEN + "Kills: " + ChatColor.GOLD + player.getKilled());
@@ -820,6 +959,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 							sender.sendMessage(ChatColor.DARK_GREEN + "Boat distance traveled: " + ChatColor.GOLD + player.getBoatdistance());
 							sender.sendMessage(ChatColor.DARK_GREEN + "Minecart distance traveled: " + ChatColor.GOLD + player.getMinecartdistance());
 							sender.sendMessage(ChatColor.DARK_GREEN + "Pig distance traveled: " + ChatColor.GOLD + player.getPigdistance());
+						}else {
+							sender.sendMessage("I'm sorry, but I couldn't find a player with stats with that name.");
 						}
 					}else {
 						return false;
@@ -1007,6 +1148,41 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin tags <player>");
 					}
 					return true;
+				}else if(args[0].equalsIgnoreCase("customstat")) {
+					if(!sender.hasPermission("enjin.customstat")) {
+						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.customstat\" permission or OP to run that command!");
+						return true;
+					}
+					if(args.length > 5) {
+						String playername = args[1].trim();
+						String pluginname = args[2].trim();
+						String customname = args[3].trim();
+						String customvalue = args[4].trim();
+						String cumulative = args[5].trim();
+						boolean existing = cumulative.equalsIgnoreCase("true");
+						OfflinePlayer oplayer = Bukkit.getOfflinePlayer(playername);
+						StatsPlayer splayer = getPlayerStats(oplayer);
+						if(customvalue.indexOf(".") > -1) {
+							try {
+								double dvalue = Double.parseDouble(customvalue);
+								splayer.addCustomStat(pluginname, customname, dvalue, existing);
+								sender.sendMessage(ChatColor.GREEN + "Successfully set the custom value!");
+							}catch (NumberFormatException e) {
+								sender.sendMessage(ChatColor.RED + "I'm sorry, custom values can only be numerical.");
+							}
+						}else {
+							try {
+								int ivalue = Integer.parseInt(customvalue);
+								splayer.addCustomStat(pluginname, customname, ivalue, existing);
+								sender.sendMessage(ChatColor.GREEN + "Successfully set the custom value!");
+							}catch(NumberFormatException e) {
+								sender.sendMessage(ChatColor.RED + "I'm sorry, custom values can only be numerical.");
+							}
+						}
+					}else {
+						sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin customstat <player> <plugin> <statname> <value> <cumulative>");
+					}
+					return true;
 				}else if(args[0].equalsIgnoreCase("head") || args[0].equalsIgnoreCase("heads")) {
 					if(!sender.hasPermission("enjin.sign.set")) {
 						sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.sign.set\" permission or OP to run that command!");
@@ -1128,7 +1304,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			if(queryValues.length > 0) {
 				query.deleteCharAt(0); //remove first &
 			}
-			
+
 			con.setRequestProperty("Content-length", String.valueOf(query.length()));
 			con.getOutputStream().write(query.toString().getBytes());
 			String read = PacketUtilities.readString(new BufferedInputStream(con.getInputStream()));
@@ -1182,6 +1358,65 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		if(groupmanager != null) {
 			this.groupmanager = (GroupManager)groupmanager;
 			debug("GroupManager found, hooking custom events.");
+			if(supportsUUID()) {
+				boolean gmupdated = false;
+				Pattern devbuild = Pattern.compile("\\(Dev(\\d+)\\.(\\d+)\\.(\\d+)\\)");
+				Matcher devmatch = devbuild.matcher(groupmanager.getDescription().getVersion());
+				if(devmatch.find()) {
+					int majorver = Integer.parseInt(devmatch.group(1));
+					int minorver = Integer.parseInt(devmatch.group(2));
+					int buildver = Integer.parseInt(devmatch.group(3));
+					if(majorver > 2) {
+						gmupdated = true;
+					}else if(majorver == 2) {
+						if(minorver == 14 && buildver > 49) {
+							gmupdated = true;
+						}else if(buildver > 14) {
+							gmupdated = true;
+						}
+					}
+					debug("GroupManager dev version: " + majorver + "." + minorver + "." + buildver);
+				}else {
+					String[] version = groupmanager.getDescription().getVersion().split("\\.");
+					int majorver = Integer.parseInt(version[0]);
+					Pattern numberpattern = Pattern.compile("\\d+");
+					int minorver = 0;
+					if(version.length > 1) {
+						Matcher match = numberpattern.matcher(version[1]);
+						if(match.find()) {
+							minorver = Integer.parseInt(match.group());
+						}
+					}
+					int revver = 0;
+					if(version.length > 2) {
+						Matcher match = numberpattern.matcher(version[2]);
+						try {
+							if(match.find()) {
+								revver = Integer.parseInt(match.group());
+							}
+						}catch (Exception e) {
+							
+						}
+					}
+					debug("GroupManager version: " + majorver + "." + minorver + "." + revver);
+					if(majorver > 2) {
+						gmupdated = true;
+					}else if(majorver == 2 && minorver > 1) {
+						gmupdated = true;
+					}else if(majorver == 2 && minorver == 1 && revver > 10) {
+						gmupdated = true;
+					}
+				}
+			
+				if(!gmupdated) {
+					gmneedsupdating = true;
+					enjinlogger.severe("This version of GroupManager doesn't support UUID! Please update to the latest version here: http://tiny.cc/EssentialsGMZip");
+					enjinlogger.severe("Disabling GroupManager integration until GroupManager is updated.");
+					getLogger().severe("This version of GroupManager doesn't support UUID! Please update to the latest version here: http://tiny.cc/EssentialsGMZip");
+					getLogger().severe("Disabling GroupManager integration until GroupManager is updated.");
+					return;
+				}
+			}
 			supportsglobalgroups = false;
 			Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
 			return;
@@ -1231,13 +1466,40 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		return totalxp;
 	}
 
-	public StatsPlayer GetPlayerStats(String name) {
-		StatsPlayer stats = playerstats.get(name.toLowerCase());
-		if(stats == null) {
-			stats = new StatsPlayer(name);
-			playerstats.put(name.toLowerCase(), stats);
+	/**
+	 * Use this to get any player's stats, whether they are online or offline.
+	 * @param player the player you want to get stats for.
+	 * @return the StatsPlayer object. This function always returns a StatsPlayer.
+	 */
+	public StatsPlayer getPlayerStats(OfflinePlayer player) {
+		if(supportsUUID()) {
+			String uuid = player.getUniqueId().toString().toLowerCase();
+			StatsPlayer stats = playerstats.get(uuid);
+			if(stats == null) {
+				stats = new StatsPlayer(player);
+				playerstats.put(uuid, stats);
+			}
+			return stats;
+		}else {
+			StatsPlayer stats = playerstats.get(player.getName().toLowerCase());
+			if(stats == null) {
+				stats = new StatsPlayer(player);
+				playerstats.put(player.getName().toLowerCase(), stats);
+			}
+			return stats;
 		}
-		return stats;
+	}
+
+	/**
+	 * Please don't use this for your plugins as this is only for internal use.
+	 * @param player
+	 */
+	public void setPlayerStats(StatsPlayer player) {
+		if(supportsUUID()) {
+			playerstats.put(player.getUUID().toLowerCase(), player);
+		}else {
+			playerstats.put(player.getName(), player);
+		}
 	}
 
 	public void noEnjinConnectionEvent() {
@@ -1353,7 +1615,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 			BigInteger bigInt = new BigInteger(1,digest);
 			String hashtext = bigInt.toString(16);
-			
+
 			while ( hashtext.length() < 32 ){
 				hashtext = "0" + hashtext;
 			}
@@ -1375,7 +1637,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public void removeCommandID(String id) {
 		commandids.remove(id);
 	}
-	
+
 	public void saveCommandIDs() {
 		File dataFolder = getDataFolder();
 		File headsfile = new File(dataFolder, "newexecutedcommands.yml");
@@ -1394,7 +1656,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void loadCommandIDs() {
 		commandids.clear();
 		File dataFolder = getDataFolder();
@@ -1436,16 +1698,20 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			}
 		}
 	}
-	
+
 	public EnjinLogInterface getMcLogListener() {
 		return mcloglistener;
 	}
-	
+
 	public String getLastLogLine() {
 		return mcloglistener.getLastLine();
 	}
+
+	public static boolean supportsUUID() {
+		return supportsuuid;
+	}
 	
-	public boolean supportsUUID() {
-		return logversion > 1;
+	public static boolean econUpdated() {
+		return !econcompatmode;
 	}
 }

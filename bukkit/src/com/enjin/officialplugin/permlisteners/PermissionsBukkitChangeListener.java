@@ -1,6 +1,7 @@
 package com.enjin.officialplugin.permlisteners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,8 +32,13 @@ public class PermissionsBukkitChangeListener implements Listener {
 			if(args[1].equalsIgnoreCase("setrank") || args[1].equalsIgnoreCase("rank")) {
 				if(args.length >= 4 && p.hasPermission("permissions.setrank." + args[3])) {
 					String ep = args[2];
+					String uuid = "";
+					if(EnjinMinecraftPlugin.supportsUUID()) {
+						OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
+						uuid = op.getUniqueId().toString();
+					}
 					EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
-					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
 				}
 			}else if(args[1].equalsIgnoreCase("player")) {
 				if(args.length >= 5) {
@@ -40,9 +46,14 @@ public class PermissionsBukkitChangeListener implements Listener {
 							(args[2].equalsIgnoreCase("addgroup") && p.hasPermission("permissions.player.addgroup")) || 
 							(args[2].equalsIgnoreCase("removegroup") && p.hasPermission("permissions.player.removegroup"))) {
 						String ep = args[3];
+						String uuid = "";
+						if(plugin.supportsUUID()) {
+							OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
+							uuid = op.getUniqueId().toString();
+						}
 						//We need to make sure the command executes before we actually grab the data.
 						EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
-						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep), 2);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
 					}
 				}
 			}
