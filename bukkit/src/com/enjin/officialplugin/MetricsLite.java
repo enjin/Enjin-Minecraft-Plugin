@@ -75,7 +75,7 @@ public class MetricsLite {
     /**
      * The plugin this metrics submits for
      */
-    private final Plugin plugin;
+    private final EnjinMinecraftPlugin plugin;
 
     /**
      * The plugin configuration file
@@ -107,7 +107,7 @@ public class MetricsLite {
      */
     private volatile BukkitTask task = null;
 
-    public MetricsLite(Plugin plugin) throws IOException {
+    public MetricsLite(EnjinMinecraftPlugin plugin) throws IOException {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null");
         }
@@ -284,7 +284,7 @@ public class MetricsLite {
         boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
         String pluginVersion = description.getVersion();
         String serverVersion = Bukkit.getVersion();
-        int playersOnline = Bukkit.getServer().getOnlinePlayers().length;
+        int playersOnline = plugin.getPlayerGetter().getOnlinePlayers().length;
 
         // END server software specific section -- all code below does not use any code outside of this class / Java
 

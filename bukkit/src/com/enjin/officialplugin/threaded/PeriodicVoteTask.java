@@ -92,7 +92,7 @@ public class PeriodicVoteTask implements Runnable {
 					successful = true;
 					if(plugin.unabletocontactenjin) {
 						plugin.unabletocontactenjin = false;
-						Player[] players = plugin.getServer().getOnlinePlayers();
+						Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
 						for(Player player : players) {
 							if(player.hasPermission("enjin.notify.connectionstatus")) {
 								player.sendMessage(ChatColor.DARK_GREEN + "[Enjin Minecraft Plugin] Connection to Enjin re-established!");
@@ -105,7 +105,7 @@ public class PeriodicVoteTask implements Runnable {
 					EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
 					plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
 					plugin.stopTask();
-					Player[] players = plugin.getServer().getOnlinePlayers();
+					Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
 					for(Player player : players) {
 						if(player.hasPermission("enjin.notify.invalidauthkey")) {
 							player.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Auth key is invalid. Please generate a new one.");

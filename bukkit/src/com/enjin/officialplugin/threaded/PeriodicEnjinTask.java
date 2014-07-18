@@ -108,7 +108,7 @@ public class PeriodicEnjinTask implements Runnable {
 				builder.append("&maxplayers=" + encode(String.valueOf(Bukkit.getServer().getMaxPlayers()))); //max players
 				builder.append("&mc_version=" + encode(plugin.mcversion));
 			}
-			builder.append("&players=" + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))); //current players
+			builder.append("&players=" + encode(String.valueOf(plugin.getPlayerGetter().getOnlinePlayers().length))); //current players
 			builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null || EnjinMinecraftPlugin.permission.getName().equalsIgnoreCase("SuperPerms")) ? "FALSE" : "TRUE")));
 			builder.append("&pluginversion=" + encode(plugin.getDescription().getVersion()));
 			if(plugin.getCommandIDs().size() > 0) {
@@ -158,7 +158,7 @@ public class PeriodicEnjinTask implements Runnable {
 				successful = true;
 				if(plugin.unabletocontactenjin) {
 					plugin.unabletocontactenjin = false;
-					Player[] players = plugin.getServer().getOnlinePlayers();
+					Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
 					for(Player player : players) {
 						if(player.hasPermission("enjin.notify.connectionstatus")) {
 							player.sendMessage(ChatColor.DARK_GREEN + "[Enjin Minecraft Plugin] Connection to Enjin re-established!");
@@ -171,7 +171,7 @@ public class PeriodicEnjinTask implements Runnable {
 				EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
 				plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
 				plugin.stopTask();
-				Player[] players = plugin.getServer().getOnlinePlayers();
+				Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
 				for(Player player : players) {
 					if(player.hasPermission("enjin.notify.invalidauthkey")) {
 						player.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Auth key is invalid. Please generate a new one.");
@@ -602,9 +602,10 @@ public class PeriodicEnjinTask implements Runnable {
 	
 	private String getPlayers() {
 		StringBuilder builder = new StringBuilder();
-		for(Player p : Bukkit.getOnlinePlayers()) {
+		Player[] onlineplayers = plugin.getPlayerGetter().getOnlinePlayers();
+		for(Player p : onlineplayers) {
 			builder.append(',');
-			if(plugin.supportsUUID()) {
+			if(EnjinMinecraftPlugin.supportsUUID()) {
 				builder.append(p.getUniqueId().toString() + ":" + p.getName());
 			}else {
 				builder.append(p.getName());
@@ -637,7 +638,7 @@ public class PeriodicEnjinTask implements Runnable {
 				builder.deleteCharAt(0);
 			}
 			if(plugin.permissionsnotworking) {
-				Player[] players = plugin.getServer().getOnlinePlayers();
+				Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
 				for(Player p : players) {
 					if(p.hasPermission("enjin.notify.permissionsnotworking")) {
 						p.sendMessage(ChatColor.DARK_GREEN + "[Enjin Minecraft Plugin] Your permissions plugin is properly configured now.");
@@ -648,7 +649,7 @@ public class PeriodicEnjinTask implements Runnable {
 			return builder.toString();
 		}catch(Exception e) {
 			if(!plugin.permissionsnotworking) {
-				Player[] players = plugin.getServer().getOnlinePlayers();
+				Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
 				for(Player p : players) {
 					if(p.hasPermission("enjin.notify.permissionsnotworking")) {
 						p.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");

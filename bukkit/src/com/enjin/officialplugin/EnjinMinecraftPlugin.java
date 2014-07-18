@@ -58,6 +58,9 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.enjin.officialplugin.compatibility.NewPlayerGetter;
+import com.enjin.officialplugin.compatibility.OldPlayerGetter;
+import com.enjin.officialplugin.compatibility.OnlinePlayerGetter;
 import com.enjin.officialplugin.heads.CachedHeadData;
 import com.enjin.officialplugin.heads.HeadListener;
 import com.enjin.officialplugin.heads.HeadLocations;
@@ -184,6 +187,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean gmneedsupdating = false;
 	public static boolean econcompatmode = false;
 	static public boolean bukkitversion = true;
+	
+	OnlinePlayerGetter playergetter = null;
 
 	public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
 
@@ -274,52 +279,75 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			
 			//Let's get the minecraft version.
 			String[] cbversionstring = getServer().getVersion().split(":");
-			String[] versionstring = cbversionstring[1].split("\\.");
-			try{
-				int majorversion = Integer.parseInt(versionstring[0].trim());
-				int minorversion = Integer.parseInt(versionstring[1].trim().substring(0, 1));
-				int buildnumber = 0;
-				if(versionstring.length > 2) {
-					try {
-						buildnumber = Integer.parseInt(versionstring[2].substring(0, 1));
-					}catch(NumberFormatException e) {
+			Pattern pmcversion = Pattern.compile("(\\d+)\\.(\\d+)\\.?(\\d*)");
+			Matcher mcmatch = pmcversion.matcher(cbversionstring[1]);
+			if(mcmatch.find()) {
+				try{
+					int majorversion = Integer.parseInt(mcmatch.group(1));
+					int minorversion = Integer.parseInt(mcmatch.group(2));
+					int buildnumber = 0;
+					if(mcmatch.group(3) != null && !mcmatch.group(3).equals("")) {
+						try {
+							buildnumber = Integer.parseInt(mcmatch.group(3));
+						}catch(NumberFormatException e) {
 
-					}
-				}
-				mcversion = majorversion + "." + minorversion + "." + buildnumber;
-				if(majorversion == 1) {
-					if(minorversion > 2) {
-						xpversion = 1;
-						logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
-					}else {
-						logger.info("[Enjin Minecraft Plugin] MC 1.2 or below found, enabling version 1 XP handling.");
-					}
-					if(minorversion > 5) {
-						mcMMOSupported = true;
-					}
-					if(minorversion > 6) {
-						logversion = 2;
-						if(minorversion == 7 && buildnumber > 8) {
-							supportsuuid = true;
-						}else if(minorversion > 7) {
-							supportsuuid = true;
 						}
-						logger.info("[Enjin Minecraft Plugin] MC 1.7.2 or above found, enabling version 2 log handling.");
-					}else {
-						logger.info("[Enjin Minecraft Plugin] MC 1.6.4 or below found, enabling version 1 log handling.");
 					}
-				}else if(majorversion > 1) {
-					xpversion = 1;
-					logger.info("[Enjin Minecraft Plugin] MC 1.3 or above found, enabling version 2 XP handling.");
-					logversion = 2;
-					logger.info("[Enjin Minecraft Plugin] MC 1.7.2 or above found, enabling version 2 log handling.");
-					supportsuuid = true;
-					mcMMOSupported = true;
+					boolean newplayergetterversion = false;
+					mcversion = majorversion + "." + minorversion + "." + buildnumber;
+					debug("MC Version string: " + mcversion);
+					if(majorversion == 1) {
+						if(minorversion > 2) {
+							xpversion = 1;
+							logger.info("[EnjinMinecraftPlugin] MC 1.3 or above found, enabling version 2 XP handling.");
+						}else {
+							logger.info("[EnjinMinecraftPlugin] MC 1.2 or below found, enabling version 1 XP handling.");
+						}
+						if(minorversion > 5) {
+							mcMMOSupported = true;
+						}
+						if(minorversion > 6) {
+							logversion = 2;
+							if(minorversion == 7) {
+								if(buildnumber > 8) {
+									supportsuuid = true;
+								}
+								if(buildnumber > 9) {
+									newplayergetterversion = true;
+								}
+							}else if(minorversion > 7) {
+								supportsuuid = true;
+								newplayergetterversion = true;
+							}
+							logger.info("[EnjinMinecraftPlugin] MC 1.7.2 or above found, enabling version 2 log handling.");
+						}else {
+							logger.info("[EnjinMinecraftPlugin] MC 1.6.4 or below found, enabling version 1 log handling.");
+						}
+					}else if(majorversion > 1) {
+						xpversion = 1;
+						logger.info("[EnjinMinecraftPlugin] MC 1.3 or above found, enabling version 2 XP handling.");
+						logversion = 2;
+						logger.info("[EnjinMinecraftPlugin] MC 1.7.2 or above found, enabling version 2 log handling.");
+						supportsuuid = true;
+						mcMMOSupported = true;
+						newplayergetterversion = true;
+					}
+					if(newplayergetterversion) {
+						logger.info("[EnjinMinecraftPlugin] MC 1.7.10 or above found, enabling version 2 player handling.");
+						playergetter = new NewPlayerGetter();
+					}else {
+						logger.info("[EnjinMinecraftPlugin] MC 1.7.9 or below found, enabling version 1 player handling.");
+						playergetter = new OldPlayerGetter();
+					}
+				}catch (Exception e) {
+					logger.severe("[EnjinMinecraftPlugin] Unable to get server version! Inaccurate XP and log handling may occurr!");
+					logger.severe("[EnjinMinecraftPlugin] Server Version String: " + getServer().getVersion());
 				}
-			}catch (Exception e) {
-				logger.severe("[Enjin Minecraft Plugin] Unable to get server version! Inaccurate XP and log handling may occurr!");
-				logger.severe("[Enjin Minecraft Plugin] Server Version String: " + getServer().getVersion());
+			}else {
+				logger.severe("[EnjinMinecraftPlugin] Unable to get server version! Inaccurate XP and log handling may occurr!");
+				logger.severe("[EnjinMinecraftPlugin] Server Version String: " + getServer().getVersion());
 			}
+			
 
 			if(logversion == 2) {
 				org.apache.logging.log4j.core.Logger jlogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
@@ -399,6 +427,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			t.printStackTrace();
 			this.setEnabled(false);
 		}
+	}
+	
+	public OnlinePlayerGetter getPlayerGetter() {
+		return playergetter;
 	}
 
 	public void stopStatsCollecting() {
@@ -1505,7 +1537,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public void noEnjinConnectionEvent() {
 		if(!unabletocontactenjin) {
 			unabletocontactenjin = true;
-			Player[] players = getServer().getOnlinePlayers();
+			Player[] players = getPlayerGetter().getOnlinePlayers();
 			for(Player player : players) {
 				if(player.hasPermission("enjin.notify.connectionstatus")) {
 					player.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
