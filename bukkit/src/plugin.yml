@@ -1,10 +1,10 @@
 name: EnjinMinecraftPlugin
 main: com.enjin.officialplugin.EnjinMinecraftPlugin
-version: 2.6.6-bukkit
+version: 2.6.7-bukkit
 website: www.enjin.com
 author: www.Enjin.com
 description: A plugin which allows the enjin servers to communicate with your server.
-softdepend: [Vault,Votifier,mcMMO]
+softdepend: [Vault,Votifier,mcMMO,GroupManager,Essentials]
 commands:
   enjinkey:
     description: Sets the enjin online key to the specified string.
