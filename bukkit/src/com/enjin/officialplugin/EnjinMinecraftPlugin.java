@@ -738,15 +738,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {
             economy = economyProvider.getProvider();
-            if(supportsUUID() && !vaultneedsupdating) {
-                try {
-                	economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
-                }catch(AbstractMethodError e) {
-                	econcompatmode = true;
-        			enjinlogger.warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
-                	getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
-                }
-            }
+            getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				
+				@Override
+				public void run() {
+		            if(supportsUUID() && !vaultneedsupdating) {
+		                try {
+		                	economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
+		                }catch(AbstractMethodError e) {
+		                	econcompatmode = true;
+		        			enjinlogger.warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+		                	getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+		                }
+		            }
+				}
+			}, 20*20);
         }
     }
 
