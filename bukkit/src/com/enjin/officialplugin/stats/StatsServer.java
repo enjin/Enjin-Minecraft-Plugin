@@ -87,9 +87,13 @@ public class StatsServer {
 		JSONObject serverbuilder = new JSONObject();
 		serverbuilder.put("creeperexplosions", new Integer(creeperexplosions));
 		int totalentities = 0;
-		List<World> worlds = Bukkit.getWorlds();
-		for(World world : worlds) {
-			totalentities += world.getEntities().size();
+		try {
+			List<World> worlds = Bukkit.getWorlds();
+			for(World world : worlds) {
+				totalentities += world.getEntities().size();
+			}
+		}catch (Exception e) {
+			
 		}
 		serverbuilder.put("totalentities", new Integer(totalentities));
 		Runtime runtime = Runtime.getRuntime();

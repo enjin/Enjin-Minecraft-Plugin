@@ -50,8 +50,11 @@ public class HeadUtils {
 			//We don't want to update the head in the new craftbukkit as it HAS to be some player.
 			if(!playername.equals("")) {
 				Skull skullblock = (Skull) headblock.getState();
-				skullblock.setOwner(playername);
-				skullblock.update();
+				//Only update if the name has changed!
+				if(skullblock.getOwner() == null || !skullblock.getOwner().equalsIgnoreCase(playername)) {
+					skullblock.setOwner(playername);
+					skullblock.update();
+				}
 			}
 		}else {
 			return false;

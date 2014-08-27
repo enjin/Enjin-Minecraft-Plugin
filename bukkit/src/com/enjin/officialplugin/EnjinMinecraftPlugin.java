@@ -186,7 +186,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean vaultneedsupdating = false;
 	public boolean gmneedsupdating = false;
 	public static boolean econcompatmode = false;
-	static public boolean bukkitversion = true;
+	static public boolean bukkitversion = false;
 	
 	OnlinePlayerGetter playergetter = null;
 
@@ -387,7 +387,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 				if(stats.exists()) {
 					//Let's not error when we fail to parse the stats.
 					try {
-						String content = readFile(stats, StandardCharsets.UTF_8);
+						String content = readFile(stats, Charset.forName("UTF-8"));
 						StatsUtils.parseStats(content, this);
 					}catch (Exception e) {
 						
@@ -441,6 +441,34 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		byte[] encoded = Files.readAllBytes(Paths.get(path.getAbsolutePath()));
 		return new String(encoded, encoding);
 	}
+
+	//Only needed for Java 1.6
+	/*
+	static String readFile(File path, Charset encoding) throws IOException {
+		byte[] encoded = readAllBytes(path);
+		return new String(encoded, encoding);
+	}
+	
+	public static byte[] readAllBytes(File path) throws IOException {
+        long size = path.length();
+        if (size > (long)Integer.MAX_VALUE)
+        {
+            throw new OutOfMemoryError("Required array size too large");
+        }
+        byte[] read = new byte[(int) size];
+        int totalBytesRead = 0;
+        BufferedInputStream input = new BufferedInputStream(new FileInputStream(path));
+        while(totalBytesRead < read.length){
+          int bytesRemaining = read.length - totalBytesRead;
+          //input.read() returns -1, 0, or more :
+          int bytesRead = input.read(read, totalBytesRead, bytesRemaining); 
+          if (bytesRead > 0){
+            totalBytesRead = totalBytesRead + bytesRead;
+          }
+        }
+        input.close();
+        return read;
+    }*/
 	
 	public static boolean isMcMMOEnabled() {
 		return isMcMMOloaded;
@@ -938,7 +966,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 						return true;
 					}
 					for(OfflinePlayer offlineplayer : allplayers) {
-						playerperms.put(offlineplayer.getName(), offlineplayer.getUniqueId().toString());
+						if(supportsUUID()) {
+							playerperms.put(offlineplayer.getName(), offlineplayer.getUniqueId().toString());
+						}else {
+							playerperms.put(offlineplayer.getName(), "");
+						}
 					}
 
 					//Calculate how many minutes approximately it's going to take.

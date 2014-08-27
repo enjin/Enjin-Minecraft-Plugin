@@ -24,6 +24,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.HeadsUpdatedEvent;
 import com.enjin.officialplugin.heads.HeadData;
@@ -136,6 +137,7 @@ public class UpdateHeadsThread implements Runnable {
 				if(sender != null) {
 					sender.sendMessage(ChatColor.DARK_RED + "There was an error parsing the shop data, donations won't show package information.");
 				}
+				plugin.lasterror = new EnjinErrorReport(e, "Error parsing shop data");
 			}
 		} catch (SocketTimeoutException e) {
 			if(sender != null) {
@@ -701,8 +703,11 @@ public class UpdateHeadsThread implements Runnable {
 			} catch (ParseException e) {
 				if(sender != null) {
 					sender.sendMessage(ChatColor.DARK_RED + "There was an error parsing the head data.");
+				}else {
+					plugin.getLogger().warning("There was an error parsing the head data.");
+					plugin.enjinlogger.warning("There was an error parsing the head data.");
+					plugin.lasterror = new EnjinErrorReport(e, "Error parsing head data");
 				}
-				e.printStackTrace();
 			}
 		} catch (SocketTimeoutException e) {
 			if(sender != null) {

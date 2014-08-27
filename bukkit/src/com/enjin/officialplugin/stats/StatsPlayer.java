@@ -400,7 +400,12 @@ public class StatsPlayer {
 		player.put("xplevel", new Integer(xplevel));
 		if(EnjinMinecraftPlugin.economy != null) {
 			if(EnjinMinecraftPlugin.supportsUUID() && EnjinMinecraftPlugin.econUpdated()) {
-				OfflinePlayer oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUUID()));
+				OfflinePlayer oplayer = null;
+				try {
+					oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUUID()));
+				}catch (IllegalArgumentException e) {
+					
+				}
 				if(oplayer.getName() == null || oplayer.getName().equals("")) {
 					oplayer = Bukkit.getOfflinePlayer(getName());
 				}

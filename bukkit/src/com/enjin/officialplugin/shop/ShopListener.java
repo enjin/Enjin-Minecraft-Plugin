@@ -14,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -30,6 +29,7 @@ import com.enjin.officialplugin.threaded.SendItemPurchaseToEnjin;
 public class ShopListener implements Listener {
 
 	ConcurrentHashMap<String, PlayerShopsInstance> activeshops = new ConcurrentHashMap<String, PlayerShopsInstance>();
+	ConcurrentHashMap<String, String> openshops = new ConcurrentHashMap<String, String>();
 	ConcurrentHashMap<String, String> playersdisabledchat = new ConcurrentHashMap<String, String>();
 	ConcurrentHashMap<String, ShopItemBuyer> playersbuying = new ConcurrentHashMap<String, ShopItemBuyer>();
 	
@@ -485,6 +485,7 @@ public class ShopListener implements Listener {
 		String player = event.getPlayer().getName().toLowerCase();
 		playersdisabledchat.remove(player);
 		activeshops.remove(player);
+		openshops.remove(player);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -493,6 +494,7 @@ public class ShopListener implements Listener {
 		String player = event.getPlayer().getName().toLowerCase();
 		if(plugin.USEBUYGUI && activeshops.containsKey(player)) {
 			activeshops.remove(player);
+			openshops.remove(player);
 			event.getPlayer().updateInventory();
 			
 		}
@@ -502,9 +504,24 @@ public class ShopListener implements Listener {
 	public void onPlayerInventoryInteract(InventoryClickEvent event) {
 		//If a player quits, let's reset the shop data and remove them from the list.
 		Player player = (Player) event.getWhoClicked();
+		if(openshops.containsKey(player.getName().toLowerCase())) {
+			if(!event.getView().getTitle().startsWith(ChatColor.BLACK.toString() + ChatColor.RESET)) {
+				activeshops.remove(player.getName().toLowerCase());
+				openshops.remove(player.getName().toLowerCase());
+				return;
+			}else {
+				if(!activeshops.containsKey(player.getName().toLowerCase())) {
+					event.setCancelled(true);
+					player.closeInventory();
+					player.sendMessage(ChatColor.RED + "Shop timed out, please re-open the shop to continue browsing.");
+					return;
+				}
+			}
+		}
 		if(activeshops.containsKey(player.getName().toLowerCase())) {
 			if(!event.getView().getTitle().startsWith(ChatColor.BLACK.toString() + ChatColor.RESET)) {
 				activeshops.remove(player.getName().toLowerCase());
+				openshops.remove(player.getName().toLowerCase());
 				return;
 			}
 			event.setCancelled(true);
@@ -810,7 +827,12 @@ public class ShopListener implements Listener {
 		}
 		for(int i = 0; (multiplier * page) + i < category.getItems().size() && i < multiplier; i++) {
 			AbstractShopSuperclass item = category.getItem(multiplier * page + i);
-			ItemStack is = new ItemStack(item.getMaterial(), 1, item.getMaterialDamage());
+			short damage = item.getMaterialDamage();
+			Material mat = item.getMaterial();
+			if(mat == null) {
+				mat = Material.CHEST;
+			}
+			ItemStack is = new ItemStack(mat, 1, damage);
 			ItemMeta meta = is.getItemMeta();
 			String name = "";
 			ArrayList<String> lore = new ArrayList<String>();

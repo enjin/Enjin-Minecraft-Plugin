@@ -61,6 +61,7 @@ public class PlayerShopGetter implements Runnable {
 			listener.activeshops.put(player.getName().toLowerCase(), shops);
 			listener.playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
 			if(EnjinMinecraftPlugin.USEBUYGUI) {
+				listener.openshops.put(player.getName().toLowerCase(), "");
 				if(shops.getServerShopCount() == 1) {
 					shops.setActiveShop(0);
 					shops.setActiveCategory(shops.getActiveShop());
