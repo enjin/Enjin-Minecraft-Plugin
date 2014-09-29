@@ -1,0 +1,5 @@
+name: EnjinMinecraftPlugin
+main: com.enjin.emp.bungee.EnjinPlugin
+version: 2.6.9-bungee
+author: www.Enjin.com
+description: A plugin which allows the enjin servers to communicate with your proxy server.
