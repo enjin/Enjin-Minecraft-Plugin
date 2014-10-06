@@ -57,6 +57,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.kitteh.vanish.VanishManager;
+import org.kitteh.vanish.VanishPlugin;
 
 import com.enjin.officialplugin.compatibility.NewPlayerGetter;
 import com.enjin.officialplugin.compatibility.OldPlayerGetter;
@@ -121,6 +123,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public static Permission permission = null;
     public static Economy economy = null;
 	public static boolean debug = false;
+	private static boolean loggingenabled = true;
 	/**
 	 * Whether the plugin has stats collecting enabled.
 	 */
@@ -129,6 +132,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public GroupManager groupmanager;
 	public Permissions bpermissions;
 	public PermissionsPlugin permissionsbukkit;
+	private VanishManager vanishmanager = null;
 	private static boolean isMcMMOloaded = false;
 	private boolean mcMMOSupported = false;
 	public boolean supportsglobalgroups = true;
@@ -231,7 +235,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		if(debug) {
 			System.out.println("Enjin Debug: " + s);
 		}
-		enjinlogger.fine(s);
+		if(loggingenabled) {
+			enjinlogger.fine(s);
+		}
 	}
 
 	@Override
@@ -254,6 +260,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 				}
 			}
+			initFiles();
 			debug("Initializing internal logger");
 			enjinlogger.setLevel(Level.FINEST);
 			File logsfolder = new File(getDataFolder().getAbsolutePath() + File.separator + "logs");
@@ -363,8 +370,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Get the ban list");
 			banlistertask = new BanLister(this);
 			debug("Ban list loaded");
-			debug("Init Files");
-			initFiles();
 			headlocation.loadHeads();
 			loadCommandIDs();
 			debug("Init files done.");
@@ -607,6 +612,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		}
 		configvalues.put("usebuygui", ConfigValueTypes.BOOLEAN);
 		USEBUYGUI = config.getBoolean("usebuygui");
+		
+		String logenabled = config.getString("loggingenabled", "");
+		if(logenabled == "") {
+			createConfig();
+		}
+		loggingenabled = config.getBoolean("loggingenabled", loggingenabled);
 	}
 
 	private void createConfig() {
@@ -633,6 +644,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			config.set("buycommand", BUY_COMMAND);
 		}
 		config.set("usebuygui", USEBUYGUI);
+		config.set("loggingenabled", loggingenabled);
 		saveConfig();
 	}
 
@@ -759,6 +771,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		debug("Initializing permissions.");
 		initPermissions();
 		setupEconomy();
+		setupVanishNoPacket();
+	}
+	
+	private void setupVanishNoPacket() {
+		Plugin vanish = Bukkit.getPluginManager().getPlugin("VanishNoPacket");
+		if(vanish != null && vanish instanceof VanishPlugin) {
+			vanishmanager = ((VanishPlugin)vanish).getManager();
+		}
 	}
 	
 	private void setupEconomy()
@@ -1783,5 +1803,18 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	
 	public static boolean econUpdated() {
 		return !econcompatmode;
+	}
+	
+	public boolean isVanished(Player player) {
+		if(vanishmanager != null) {
+			try {
+				return vanishmanager.isVanished(player);
+				//Make sure old versions of Vanish don't mess up the plugin.
+			}catch (Throwable e) {
+				return vanishmanager.isVanished(player.getName());
+			}
+		}else {
+			return false;
+		}
 	}
 }

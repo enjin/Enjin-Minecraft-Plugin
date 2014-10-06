@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
 public class PlayerShopGetter implements Runnable {
@@ -75,8 +76,10 @@ public class PlayerShopGetter implements Runnable {
 			return;
 		} catch (SocketTimeoutException e) {
 			e.printStackTrace();
+			EnjinMinecraftPlugin.debug("Shop couldn't get json:\n" + EnjinErrorReport.getStackTrace(e));
 		} catch (Throwable t) {
 			t.printStackTrace();
+			EnjinMinecraftPlugin.debug("Shop couldn't get json:\n" + EnjinErrorReport.getStackTrace(t));
 		}
 		player.sendMessage(ChatColor.RED + "There was a problem loading the shop, please try again later.");
 	}

@@ -79,11 +79,10 @@ public class ReportMakerThread implements Runnable {
 		}
 		try {
 			ReverseFileReader rfrlog = new ReverseFileReader(plugin.getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log");
-			builder.append("\nLast 60 lines of enjin.log: \n");
+			builder.append("\nLast 100 lines of enjin.log: \n");
 			LinkedList<String> enjinlogstuff = new LinkedList<String>();
 			String line = "";
-			boolean errorfound = false;
-			for(int i = 0; i < 60 && (line = rfrlog.readLine()) != null; i++) {
+			for(int i = 0; i < 100 && (line = rfrlog.readLine()) != null; i++) {
 				enjinlogstuff.add(line);
 			}
 			for(int i = enjinlogstuff.size(); i > 0; i--) {

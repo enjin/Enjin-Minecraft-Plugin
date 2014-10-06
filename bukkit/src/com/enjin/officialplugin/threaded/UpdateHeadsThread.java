@@ -140,10 +140,12 @@ public class UpdateHeadsThread implements Runnable {
 				plugin.lasterror = new EnjinErrorReport(e, "Error parsing shop data");
 			}
 		} catch (SocketTimeoutException e) {
+			EnjinMinecraftPlugin.debug(EnjinErrorReport.getStackTrace(e));
 			if(sender != null) {
 				sender.sendMessage(ChatColor.DARK_RED + "There was an error connecting to enjin, please try again later.");
 			}
 		} catch (Throwable t) {
+			EnjinMinecraftPlugin.debug(EnjinErrorReport.getStackTrace(t));
 			if(sender != null) {
 				sender.sendMessage(ChatColor.DARK_RED + "There was an error syncing the shop's packages, please fill out a support ticket at http://enjin.com/support and include the results of your /enjin report");
 			}
@@ -705,7 +707,7 @@ public class UpdateHeadsThread implements Runnable {
 					sender.sendMessage(ChatColor.DARK_RED + "There was an error parsing the head data.");
 				}else {
 					plugin.getLogger().warning("There was an error parsing the head data.");
-					plugin.enjinlogger.warning("There was an error parsing the head data.");
+					EnjinMinecraftPlugin.enjinlogger.warning("There was an error parsing the head data.");
 					plugin.lasterror = new EnjinErrorReport(e, "Error parsing head data");
 				}
 			}

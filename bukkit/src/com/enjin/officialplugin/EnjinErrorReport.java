@@ -41,5 +41,17 @@ public class EnjinErrorReport {
 		}
 		return errorstring.toString();
 	}
+	
+	public static String getStackTrace(Throwable t) {
+		StringBuilder errorstring = new StringBuilder();
+		if(t != null) {
+			errorstring.append(t.toString() + "\n");
+			StackTraceElement[] stacktrace = t.getStackTrace();
+			for(int i = 0; i < stacktrace.length; i++) {
+				errorstring.append(stacktrace[i].toString() + "\n");
+			}
+		}
+		return errorstring.toString();
+	}
 
 }

@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
@@ -32,6 +33,8 @@ public class ShopListener implements Listener {
 	ConcurrentHashMap<String, String> openshops = new ConcurrentHashMap<String, String>();
 	ConcurrentHashMap<String, String> playersdisabledchat = new ConcurrentHashMap<String, String>();
 	ConcurrentHashMap<String, ShopItemBuyer> playersbuying = new ConcurrentHashMap<String, ShopItemBuyer>();
+	
+	String enjinshopidentifier = ChatColor.BLACK.toString() + ChatColor.RESET;
 	
 	EnjinMinecraftPlugin plugin;
 	
@@ -381,6 +384,9 @@ public class ShopListener implements Listener {
 						//We don't know what it is, so maybe, just maybe we can get it right?
 					case Undefined:
 						EnjinMinecraftPlugin.debug("Testing string...");
+						if(option.getMaxLength() == 0) {
+							option.setMaxLength(Integer.MAX_VALUE);
+						}
 						if(option.getMinLength() <= event.getMessage().length() && option.getMaxLength() >= event.getMessage().length()) {
 							if(ShopUtils.isInputValid(option, event.getMessage())) {
 								String formattedtext = "item_variables[" + option.getID() + "]=" + encode(event.getMessage());
@@ -488,11 +494,12 @@ public class ShopListener implements Listener {
 		openshops.remove(player);
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		//If a player quits, let's reset the shop data and remove them from the list.
 		String player = event.getPlayer().getName().toLowerCase();
 		if(plugin.USEBUYGUI && activeshops.containsKey(player)) {
+			removeEnjinItems(event.getPlayer());
 			activeshops.remove(player);
 			openshops.remove(player);
 			event.getPlayer().updateInventory();
@@ -505,7 +512,8 @@ public class ShopListener implements Listener {
 		//If a player quits, let's reset the shop data and remove them from the list.
 		Player player = (Player) event.getWhoClicked();
 		if(openshops.containsKey(player.getName().toLowerCase())) {
-			if(!event.getView().getTitle().startsWith(ChatColor.BLACK.toString() + ChatColor.RESET)) {
+			if(!event.getView().getTitle().startsWith(enjinshopidentifier)) {
+				removeEnjinItems(player);
 				activeshops.remove(player.getName().toLowerCase());
 				openshops.remove(player.getName().toLowerCase());
 				return;
@@ -519,7 +527,7 @@ public class ShopListener implements Listener {
 			}
 		}
 		if(activeshops.containsKey(player.getName().toLowerCase())) {
-			if(!event.getView().getTitle().startsWith(ChatColor.BLACK.toString() + ChatColor.RESET)) {
+			if(!event.getView().getTitle().startsWith(enjinshopidentifier)) {
 				activeshops.remove(player.getName().toLowerCase());
 				openshops.remove(player.getName().toLowerCase());
 				return;
@@ -628,10 +636,10 @@ public class ShopListener implements Listener {
 		if(windowtitle.length() > 26) {
 			windowtitle = windowtitle.substring(0, 26);
 		}
-		Inventory inv = Bukkit.getServer().createInventory(null, 9, ChatColor.BLACK.toString() + ChatColor.RESET + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortitle() + windowtitle);
+		Inventory inv = Bukkit.getServer().createInventory(null, 9, enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortitle() + windowtitle);
 		ItemStack back = new ItemStack(Material.ARROW, 1);
 		ItemMeta meta = back.getItemMeta();
-		meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Back");
+		meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Back");
 		ArrayList<String> lore = new ArrayList<String>();
 		lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Go back");
 		meta.setLore(lore);
@@ -646,7 +654,7 @@ public class ShopListener implements Listener {
 		for(String ls : l) {
 			lore.add(ls);
 		}
-		meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorname() + name);
+		meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorname() + name);
 		meta.setLore(lore);
 		is.setItemMeta(meta);
 		inv.setItem(4, is);
@@ -657,7 +665,7 @@ public class ShopListener implements Listener {
 
 			ItemStack points = new ItemStack(Material.EMERALD, 1);
 			meta = points.getItemMeta();
-			meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Buy with Points");
+			meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Buy with Points");
 			lore = new ArrayList<String>();
 
 			lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext()
@@ -670,7 +678,7 @@ public class ShopListener implements Listener {
 		if(!formattedprice.equals("")) {
 			ItemStack money = new ItemStack(Material.DIAMOND, 1);
 			meta = money.getItemMeta();
-			meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Buy with Money");
+			meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Buy with Money");
 			lore = new ArrayList<String>();
 
 			lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext()
@@ -722,13 +730,13 @@ public class ShopListener implements Listener {
 	protected void sendPlayerShopChestData(Player player, PlayerShopsInstance shops, ShopItemAdder category, int page) {
 		int slot = 0;
 		if(shops.getActiveShop() == null) {
-			Inventory inv = Bukkit.getServer().createInventory(null, 6*9, ChatColor.BLACK.toString() + ChatColor.RESET + ChatColor.GOLD + "Select a Shop");
+			Inventory inv = Bukkit.getServer().createInventory(null, 6*9, enjinshopidentifier + ChatColor.GOLD + "Select a Shop");
 			for(int i = 0;i < shops.getServerShopCount(); i++) {
 				ServerShop item = shops.getServerShop(i);
 				ItemStack is = new ItemStack(item.getMaterial(), 1, item.getMaterialDamage());
 				ItemMeta meta = is.getItemMeta();
 				String name = item.getName();
-				meta.setDisplayName(ChatColor.GOLD.toString() + (i + 1) + ". " + name);
+				meta.setDisplayName(enjinshopidentifier + ChatColor.GOLD.toString() + (i + 1) + ". " + name);
 				is.setItemMeta(meta);
 				inv.setItem(slot + i, is);
 			}
@@ -739,11 +747,11 @@ public class ShopListener implements Listener {
 		if(windowtitle.length() > 26) {
 			windowtitle = windowtitle.substring(0, 26);
 		}
-		Inventory inv = Bukkit.getServer().createInventory(null, 6*9, ChatColor.BLACK.toString() + ChatColor.RESET + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortitle() + windowtitle);
+		Inventory inv = Bukkit.getServer().createInventory(null, 6*9, enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortitle() + windowtitle);
 		if(category.getParentCategory() != null || shops.getServerShopCount() > 1) {
 			ItemStack back = new ItemStack(Material.ARROW, 1);
 			ItemMeta meta = back.getItemMeta();
-			meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Back");
+			meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Back");
 			ArrayList<String> lore = new ArrayList<String>();
 			lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Go back");
 			meta.setLore(lore);
@@ -762,7 +770,7 @@ public class ShopListener implements Listener {
 			if(page > 0 && category.getItems().size() > (5*9)*(page)) {
 				ItemStack previous = new ItemStack(Material.DRAGON_EGG, 1);
 				ItemMeta meta = previous.getItemMeta();
-				meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Previous Page");
+				meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Previous Page");
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Page: " + page);
 				lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "You are on page: " + (page+1));
@@ -774,7 +782,7 @@ public class ShopListener implements Listener {
 			if(page < maxpage - 1) {
 				ItemStack next = new ItemStack(Material.HOPPER, 1);
 				ItemMeta meta = next.getItemMeta();
-				meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Next Page");
+				meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Next Page");
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Page: " + (page+2));
 				lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "You are on page: " + (page+1));
@@ -795,7 +803,7 @@ public class ShopListener implements Listener {
 				if(page > 0 && category.getItems().size() > (5*9)*(page)) {
 					ItemStack previous = new ItemStack(Material.DRAGON_EGG, 1);
 					ItemMeta meta = previous.getItemMeta();
-					meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Previous Page");
+					meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Previous Page");
 					ArrayList<String> lore = new ArrayList<String>();
 					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Page: " + page);
 					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "You are on page: " + (page+1));
@@ -807,7 +815,7 @@ public class ShopListener implements Listener {
 				if(page < maxpage - 1) {
 					ItemStack next = new ItemStack(Material.HOPPER, 1);
 					ItemMeta meta = next.getItemMeta();
-					meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Next Page");
+					meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColortext() + "Next Page");
 					ArrayList<String> lore = new ArrayList<String>();
 					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "Page: " + (page+2));
 					lore.add(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorinfo() + "You are on page: " + (page+1));
@@ -862,7 +870,7 @@ public class ShopListener implements Listener {
 				}
 			}
 			
-			meta.setDisplayName(ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorname() + (multiplier * page + i + 1) + ". " + name);
+			meta.setDisplayName(enjinshopidentifier + ShopUtils.FORMATTING_CODE + shops.getActiveShop().getColorname() + (multiplier * page + i + 1) + ". " + name);
 			meta.setLore(lore);
 			is.setItemMeta(meta);
 			inv.setItem(slot + i, is);
@@ -894,5 +902,32 @@ public class ShopListener implements Listener {
 			return "";
 		}
 		//return in;
+	}
+	
+	private void removeEnjinItems(Player player) {
+		PlayerInventory inv = player.getInventory();
+		ItemStack[] inventory = inv.getContents();
+		boolean inventorychanged = false;
+		for(int i = 0; i < inventory.length; i++) {
+			if(inventory[i] != null && inventory[i].getItemMeta() != null && inventory[i].getItemMeta().getDisplayName() != null && inventory[i].getItemMeta().getDisplayName().startsWith(enjinshopidentifier)) {
+				inv.setItem(i, null);
+				inventorychanged = true;
+			}
+		}
+		inventory = inv.getArmorContents();
+		boolean armorchanged = false;
+		for(int i = 0; i < inventory.length; i++) {
+			if(inventory[i] != null && inventory[i].getItemMeta() != null && inventory[i].getItemMeta().getDisplayName() != null && inventory[i].getItemMeta().getDisplayName().startsWith(enjinshopidentifier)) {
+				inventory[i] = null;
+				armorchanged = true;
+			}
+		}
+		if(armorchanged) {
+			inv.setArmorContents(inventory);
+		}
+		if(armorchanged || inventorychanged) {
+			plugin.getLogger().warning(player.getName() + " just tried glitching an item out of the Enjin in game shop. Item removed successfully from player's inventory.");
+			player.updateInventory();
+		}
 	}
 }

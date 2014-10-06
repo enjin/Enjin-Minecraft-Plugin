@@ -606,9 +606,9 @@ public class PeriodicEnjinTask implements Runnable {
 		for(Player p : onlineplayers) {
 			builder.append(',');
 			if(EnjinMinecraftPlugin.supportsUUID()) {
-				builder.append(p.getUniqueId().toString() + ":" + p.getName());
+				builder.append(p.getUniqueId().toString() + ":" + p.getName() + ":" + plugin.isVanished(p));
 			}else {
-				builder.append(p.getName());
+				builder.append(p.getName() + ":" + plugin.isVanished(p));
 			}
 		}
 		if(builder.length() > 2) {
