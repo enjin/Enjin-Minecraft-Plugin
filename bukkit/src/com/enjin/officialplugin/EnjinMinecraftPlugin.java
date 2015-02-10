@@ -11,12 +11,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,6 +55,10 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -59,6 +66,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.kitteh.vanish.VanishManager;
 import org.kitteh.vanish.VanishPlugin;
+
+import Tux2.TuxTwoLib.TuxTwoPlayer;
 
 import com.enjin.officialplugin.compatibility.NewPlayerGetter;
 import com.enjin.officialplugin.compatibility.OldPlayerGetter;
@@ -143,6 +152,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	static boolean supportsuuid = false;
 	static boolean mcmmoOutdated = false;
 	public String mcversion = "";
+	boolean listenforbans = true;
+	boolean tuxtwolibinstalled = false;
 
 	public static boolean USEBUYGUI = true;
 
@@ -191,6 +202,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean gmneedsupdating = false;
 	public static boolean econcompatmode = false;
 	static public boolean bukkitversion = false;
+	private boolean isglowstone = false;
+
+	private LinkedList<String> keywords = new LinkedList<String>();
 	
 	OnlinePlayerGetter playergetter = null;
 
@@ -242,6 +256,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		
+		//Add keywords for item giving
+		keywords.add("-name");
+		keywords.add("-color");
+		keywords.add("-repairxp");
+		keywords.add("--n");
+		keywords.add("--c");
+		keywords.add("--r");
+		
 		try {
 			File oldnewdatafolder = new File(getDataFolder().getParent(), "Enjin_Minecraft_Plugin");
 			File olddatafolder = new File(getDataFolder().getParent(), "Enjin Minecraft Plugin");
@@ -285,9 +308,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			debug("Init vars done.");
 			
 			//Let's get the minecraft version.
-			String[] cbversionstring = getServer().getVersion().split(":");
-			Pattern pmcversion = Pattern.compile("(\\d+)\\.(\\d+)\\.?(\\d*)");
-			Matcher mcmatch = pmcversion.matcher(cbversionstring[1]);
+			debug("Minecraft version: " + getServer().getVersion());
+			Matcher mcmatch;
+			if(isglowstone) {
+				Pattern pmcversion = Pattern.compile("(\\d+)\\.(\\d+)\\.?(\\d*)");
+				mcmatch = pmcversion.matcher(getServer().getVersion());
+			}else {
+				String[] cbversionstring = getServer().getVersion().split(":");
+				Pattern pmcversion = Pattern.compile("(\\d+)\\.(\\d+)\\.?(\\d*)");
+				mcmatch = pmcversion.matcher(cbversionstring[1]);
+			}
 			if(mcmatch.find()) {
 				try{
 					int majorversion = Integer.parseInt(mcmatch.group(1));
@@ -356,7 +386,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			}
 			
 
-			if(logversion == 2) {
+			if(logversion == 2 && !isglowstone) {
 				org.apache.logging.log4j.core.Logger jlogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
 				mcloglistener = new EnjinLogAppender();
 				jlogger.addAppender((Appender) mcloglistener);
@@ -550,16 +580,34 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	private void initVariables() throws Throwable {
 		s = Bukkit.getServer();
 		logger = Bukkit.getLogger();
-		try {
-			Properties serverProperties = new Properties();
-			FileInputStream in = new FileInputStream(new File("server.properties"));
-			serverProperties.load(in);
-			in.close();
-			minecraftport = serverProperties.getProperty("server-port");
-		} catch (Throwable t) {
-			t.printStackTrace();
-			enjinlogger.severe("Couldn't find a localhost ip! Please report this problem!");
-			throw new Exception("[Enjin Minecraft Plugin] Couldn't find a localhost ip! Please report this problem!");
+		File bukkitproperties = new File("server.properties");
+		File glowstoneproperties = new File("config/glowstone.yml");
+		if(bukkitproperties.exists()) {
+			try {
+				Properties serverProperties = new Properties();
+				FileInputStream in = new FileInputStream(new File("server.properties"));
+				serverProperties.load(in);
+				in.close();
+				minecraftport = serverProperties.getProperty("server-port");
+			} catch (Throwable t) {
+				t.printStackTrace();
+				enjinlogger.severe("Couldn't find a localhost ip! Please report this problem!");
+				throw new Exception("[Enjin Minecraft Plugin] Couldn't find a localhost ip! Please report this problem!");
+			}
+		}else if(glowstoneproperties.exists()) {
+			isglowstone = true;
+			YamlConfiguration glowstoneconfig = new YamlConfiguration();
+			try {
+				glowstoneconfig.load(glowstoneproperties);
+				minecraftport = glowstoneconfig.getString("server.port", "25565");
+			}catch(Exception e) {
+				e.printStackTrace();
+				enjinlogger.severe("Couldn't find a localhost ip! Please report this problem!");
+				throw new Exception("[Enjin Minecraft Plugin] Couldn't find a localhost ip! Please report this problem!");
+			}
+		}else {
+			enjinlogger.severe("Couldn't find the server configuration file! Please report this problem!");
+			throw new Exception("[Enjin Minecraft Plugin] Couldn't find the server configuration file! Please report this problem!");
 		}
 	}
 
@@ -618,6 +666,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			createConfig();
 		}
 		loggingenabled = config.getBoolean("loggingenabled", loggingenabled);
+
+		String banslisten = config.getString("listenforbans", "");
+		if(banslisten == "") {
+			createConfig();
+		}
+		listenforbans = config.getBoolean("listenforbans", listenforbans);
+		configvalues.put("listenforbans", ConfigValueTypes.BOOLEAN);
+		autoupdate = config.getBoolean("listenforbans", true);
 	}
 
 	private void createConfig() {
@@ -628,6 +684,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 		config.set("collectstats", null);
 		config.set("collectplayerstats", collectstats);
 		config.set("sendstatsinterval", statssendinterval);
+		config.set("listenforbans", listenforbans);
 		String teststats = config.getString("statscollected.player.travel", "");
 		if(teststats.equals("")) {
 			config.set("statscollected.player.travel", true);
@@ -672,6 +729,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public void registerEvents() {
 		debug("Registering events.");
 		Bukkit.getPluginManager().registerEvents(listener, this);
+		if(listenforbans) {
+			Bukkit.getPluginManager().registerEvents(new BanListeners(this), this);
+		}
 		//Listen for all the heads events.
 		Bukkit.getPluginManager().registerEvents(new HeadListener(this), this);
 		if(BUY_COMMAND != null) {
@@ -741,6 +801,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	}
 
 	private void initPlugins() throws Throwable {
+		if(!Bukkit.getPluginManager().isPluginEnabled("TuxTwoLib")) {
+			tuxtwolibinstalled = false;
+			enjinlogger.info("Couldn't find the TuxTwoLib plugin. Only able to give items to online players only.");
+			getLogger().info("Couldn't find the TuxTwoLib plugin. Only able to give items to online players only.");
+		}else {
+			tuxtwolibinstalled = true;
+		}
 		if(!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			enjinlogger.warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
 			getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
@@ -1302,6 +1369,154 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 					sender.sendMessage(ChatColor.GOLD + "[moneyspent#] " + ChatColor.RESET + " - Player which has spent the most money on the server overall.");
 					sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
 					return true;
+				}else if(args[0].equalsIgnoreCase("give")) {
+					//If this is a player let's see if they have permission.
+					if(!sender.hasPermission("enjin.give")) {
+						return true;
+					}
+					if(args.length < 3) {
+						sender.sendMessage(ChatColor.RED + "Syntax: /enjin give [playername or UUID] MaterialName");
+						return true;
+					}
+					
+					Player giveplayer;
+					String suuid = args[1].trim();
+					UUID uuid = null;
+					if(suuid.length() > 20) {
+						if(suuid.length() == 32) {
+							suuid = suuid.substring(0, 8) + "-" + suuid.substring(8, 12) + "-" + suuid.substring(12, 16) + "-" + suuid.substring(16, 20) + "-" + suuid.substring(20, 32);
+						}else if(suuid.length() != 36) {
+							sender.sendMessage(ChatColor.RED + "Invalid UUID");
+							return true;
+						}
+						try {
+							uuid = UUID.fromString(suuid);
+							giveplayer = getServer().getPlayer(uuid);
+						}catch (IllegalArgumentException e) {
+							sender.sendMessage(ChatColor.RED + "Invalid UUID");
+							return true;
+						}
+					}else {
+						//Must be a player name
+						giveplayer = getServer().getPlayer(suuid);
+					}
+					boolean playeronline = true;
+					//see if the player is online
+					if(giveplayer == null || !giveplayer.isOnline()) {
+						//Let's do the TuxTwoLib check to see if we can give items to players not online at the moment.
+						if(!tuxtwolibinstalled) {
+							sender.sendMessage(ChatColor.RED + "This player is not online. In order to give items to players not online at the moment please install TuxTwoLib");
+							return true;
+						}
+						OfflinePlayer oplayer;
+						if(uuid != null) {
+							oplayer = getServer().getOfflinePlayer(uuid);
+						}else {
+							oplayer = getServer().getOfflinePlayer(args[1]);
+						}
+						Player target = TuxTwoPlayer.getOfflinePlayer(oplayer);
+						if(target != null) {
+							target.loadData();
+							playeronline = false;
+							giveplayer = target;
+						}else {
+							sender.sendMessage(ChatColor.DARK_RED + "[Enjin] Player not found. Item not given.");
+							return true;
+						}
+					}
+					try {
+						int extradatastart = 3;
+						Pattern digits = Pattern.compile("\\d+");
+						if(args[2].contains(":")) {
+							String[] split = args[2].split(":");
+							ItemStack is;
+							Pattern pattern = Pattern.compile("\\d+:\\d+");
+							Matcher match = pattern.matcher(args[2]);
+							if(match.find()) {
+								try {
+									int itemid = Integer.parseInt(split[0]);
+									int damage = Integer.parseInt(split[1]);
+									int quantity = 1;
+									if(args.length > 3 && digits.matcher(args[3]).find()) {
+										quantity = Integer.parseInt(args[3]);
+										extradatastart = 4;
+									}
+									is = new ItemStack(itemid, quantity, (short) damage);
+									sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
+								}catch (NumberFormatException e) {
+									sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+									return false;
+								}
+							}else {
+								try {
+									Material itemid = Material.getMaterial(split[0].trim().toUpperCase());
+									if(itemid == null) {
+										sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
+										return false;
+									}
+									int damage = Integer.parseInt(split[1]);
+									int quantity = 1;
+									if(args.length > 3 && digits.matcher(args[3]).find()) {
+										quantity = Integer.parseInt(args[3]);
+										extradatastart = 4;
+									}
+									is = new ItemStack(itemid, quantity, (short) damage);
+								}catch (NumberFormatException ex) {
+									sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+									return false;
+								}
+							}
+							if(args.length > extradatastart) {
+								addCustomData(is, args, giveplayer, extradatastart);
+							}
+							giveplayer.getInventory().addItem(is);
+							if(!playeronline) {
+								giveplayer.saveData();
+							}
+							
+							String itemname = is.getType().toString().toLowerCase();
+							sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[1] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+							return true;
+						}else {
+							ItemStack is;
+							try {
+								int itemid = Integer.parseInt(args[2]);
+								int quantity = 1;
+								if(args.length > 3 && digits.matcher(args[3]).find()) {
+									quantity = Integer.parseInt(args[3]);
+									extradatastart = 4;
+								}
+								is = new ItemStack(itemid, quantity);
+								sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
+							}catch(NumberFormatException e) {
+								Material material = Material.getMaterial(args[2].trim().toUpperCase());
+								if(material == null) {
+									sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
+									return false;
+								}
+								int quantity = 1;
+								if(args.length > 3 && digits.matcher(args[3]).find()) {
+									quantity = Integer.parseInt(args[3]);
+									extradatastart = 4;
+								}
+								is = new ItemStack(material, quantity);
+							}
+							if(args.length > extradatastart) {
+								addCustomData(is, args, giveplayer, extradatastart);
+							}
+							giveplayer.getInventory().addItem(is);
+							if(!playeronline) {
+								giveplayer.saveData();
+							}
+							
+							String itemname = is.getType().toString().toLowerCase();
+							sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[1] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+							return true;
+						}
+					}catch (Exception e) {
+						sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+						return false;
+					}
 				}
 			}else {
 				/*
@@ -1817,4 +2032,72 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 			return false;
 		}
 	}
+
+	private void addCustomData(ItemStack is, String[] args, OfflinePlayer reciever, int startingpos) {
+		for(int i = startingpos; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase("-name") || args[i].equalsIgnoreCase("--n")) {
+				boolean noflags = true;
+				i++;
+				StringBuilder name = new StringBuilder();
+				while(noflags && i < args.length) {
+					if(keywords.contains(args[i].toLowerCase())) {
+						noflags = false;
+						i--;
+					}else {
+						name.append(args[i] + " ");
+						i++;
+					}
+				}
+				addName(is, ChatColor.translateAlternateColorCodes('&', name.toString().trim()));
+			}else if(args[i].equalsIgnoreCase("-color") || args[i].equalsIgnoreCase("--c")) {
+				i++;
+				if(args.length > i) {
+					try {
+						String[] rgb = args[i].split(",");
+						int r = 0;
+						int g = 0;
+						int b = 0;
+						for(String col : rgb) {
+							col = col.toLowerCase();
+							if(col.startsWith("r")) {
+								r = Integer.parseInt(col.substring(1));
+							}else if(col.startsWith("g")) {
+								g = Integer.parseInt(col.substring(1));
+							}else if(col.startsWith("b")) {
+								b = Integer.parseInt(col.substring(1));
+							}
+						}
+						ItemMeta meta = is.getItemMeta();
+						if(meta instanceof LeatherArmorMeta) {
+							((LeatherArmorMeta) meta).setColor(Color.fromRGB(r, g, b));
+							is.setItemMeta(meta);
+						}
+					}catch(NumberFormatException e) {
+	
+					}
+				}
+			}else if(args[i].equalsIgnoreCase("-repairxp") || args[i].equalsIgnoreCase("--r")) {
+				i++;
+				if(args.length > i) {
+					try {
+						int repaircost = Integer.parseInt(args[i]);
+						ItemMeta meta = is.getItemMeta();
+						if(meta instanceof Repairable) {
+							((Repairable) meta).setRepairCost(repaircost);
+							is.setItemMeta(meta);
+						}
+					}catch(NumberFormatException e) {
+	
+					}
+				}
+			}
+		}
+	}
+    
+    public ItemStack addName(ItemStack is, String name) {
+    	ItemMeta meta = is.getItemMeta();
+    	meta.setDisplayName(name);
+    	is.setItemMeta(meta);
+    	return is;
+    }
 }

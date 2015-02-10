@@ -75,36 +75,6 @@ public class EMPListener implements Listener {
 		updatePlayerRanks(p);
 	}
 	
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerBan(PlayerKickEvent event) {
-		if(event.isCancelled()) {
-			return;
-		}
-		if(event.getPlayer().isBanned() && !plugin.banlistertask.playerIsBanned(event.getPlayer().getName())) {
-			plugin.bannedplayers.put(event.getPlayer().getName(), "");
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void banAndPardonListener(PlayerCommandPreprocessEvent event) {
-		if(event.isCancelled()) {
-			return;
-		}
-		if(event.getMessage().toLowerCase().startsWith("/ban ") && event.getPlayer().hasPermission("bukkit.command.ban.player")) {
-			String[] args = event.getMessage().split(" ");
-			if(args.length > 1) {
-				plugin.banlistertask.addBannedPlayer(args[1].toLowerCase());
-				plugin.bannedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
-			}
-		}else if(event.getMessage().toLowerCase().startsWith("/pardon ") && event.getPlayer().hasPermission("bukkit.command.unban.player")) {
-			String[] args = event.getMessage().split(" ");
-			if(args.length > 1) {
-				plugin.banlistertask.pardonBannedPlayer(args[1].toLowerCase());
-				plugin.pardonedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
-			}
-		}
-	}
-	
 	public void updatePlayerRanks(Player p) {
 		String uuid = "";
 		if(EnjinMinecraftPlugin.supportsUUID()) {

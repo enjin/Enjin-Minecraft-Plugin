@@ -3,8 +3,6 @@ package com.enjin.officialplugin.threaded;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import com.enjin.officialplugin.CommandWrapper;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 

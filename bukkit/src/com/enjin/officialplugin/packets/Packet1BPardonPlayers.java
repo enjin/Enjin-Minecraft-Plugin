@@ -32,7 +32,7 @@ public class Packet1BPardonPlayers {
 			if((msg.length > 0)) {
 				for(int i = 0; i < msg.length; i++) {
 					OfflinePlayer player = plugin.getServer().getOfflinePlayer(msg[i]);
-					plugin.banlistertask.pardonBannedPlayer(msg[i]);
+					plugin.banlistertask.pardonBannedPlayer(player);
 					player.setBanned(false);
 				}
 			}

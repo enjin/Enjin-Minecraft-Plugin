@@ -25,7 +25,11 @@ public class BanLister implements Runnable {
 			Set<OfflinePlayer> bannedplayerlist = Bukkit.getServer().getBannedPlayers();
 			for(OfflinePlayer player : bannedplayerlist) {
 				if(player != null && player.getName() != null) {
-					currentbannedplayers.put(player.getName().toLowerCase(), "");
+					if(EnjinMinecraftPlugin.supportsUUID()) {
+						currentbannedplayers.put(player.getUniqueId().toString(), "");
+					}else {
+						currentbannedplayers.put(player.getName().toLowerCase(), "");
+					}
 				}
 			}
 			firstrun = false;
@@ -61,8 +65,12 @@ public class BanLister implements Runnable {
 	 * in the plugin
 	 * @param name Name of the player that got banned.
 	 */
-	public synchronized void addBannedPlayer(String name) {
-		currentbannedplayers.put(name.toLowerCase(), "");
+	public synchronized void addBannedPlayer(OfflinePlayer name) {
+		if(EnjinMinecraftPlugin.supportsUUID()) {
+			currentbannedplayers.put(name.getUniqueId().toString(), "");
+		}else {
+			currentbannedplayers.put(name.getName().toLowerCase(), "");
+		}
 	}
 	
 
@@ -72,8 +80,12 @@ public class BanLister implements Runnable {
 	 * in the plugin
 	 * @param name Name of the player that got pardoned.
 	 */
-	public synchronized void pardonBannedPlayer(String name) {
-		currentbannedplayers.remove(name.toLowerCase());
+	public synchronized void pardonBannedPlayer(OfflinePlayer name) {
+		if(EnjinMinecraftPlugin.supportsUUID()) {
+			currentbannedplayers.remove(name.getUniqueId().toString());
+		}else {
+			currentbannedplayers.remove(name.getName().toLowerCase());
+		}
 	}
 	
 	/**
@@ -81,8 +93,12 @@ public class BanLister implements Runnable {
 	 * @param name Name of the player to check
 	 * @return true if the player is banned, false otherwise.
 	 */
-	public synchronized boolean playerIsBanned(String name) {
-		return currentbannedplayers.containsKey(name.toLowerCase());
+	public synchronized boolean playerIsBanned(OfflinePlayer name) {
+		if(EnjinMinecraftPlugin.supportsUUID()) {
+			return currentbannedplayers.containsKey(name.getUniqueId().toString());
+		}else {
+			return currentbannedplayers.containsKey(name.getName().toLowerCase());
+		}
 	}
 
 }
