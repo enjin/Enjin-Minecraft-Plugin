@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.events;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -21,18 +22,23 @@ public class RemovePlayerGroupEvent extends Event {
         return handlers;
     }
     
-    String player;
+    OfflinePlayer player;
     String groupname;
     String world;
     
-    public RemovePlayerGroupEvent(String player, String groupname, String world) {
+    public RemovePlayerGroupEvent(OfflinePlayer player, String groupname, String world) {
     	super(true);
 		this.player = player;
 		this.groupname = groupname;
 		this.world = world;
 	}
 
+    @Deprecated
 	public String getPlayer() {
+		return player.getName();
+	}
+	
+	public OfflinePlayer getOfflinePlayer() {
 		return player;
 	}
 

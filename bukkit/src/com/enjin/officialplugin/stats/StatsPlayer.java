@@ -406,7 +406,7 @@ public class StatsPlayer {
 				}catch (IllegalArgumentException e) {
 					
 				}
-				if(oplayer.getName() == null || oplayer.getName().equals("")) {
+				if(oplayer == null || oplayer.getName() == null || oplayer.getName().equals("")) {
 					oplayer = Bukkit.getOfflinePlayer(getName());
 				}
 				try {

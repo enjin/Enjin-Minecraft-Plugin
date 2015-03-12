@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.events;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -21,14 +22,14 @@ public class RemoveWhitelistPlayersEvent extends Event {
         return handlers;
     }
     
-    String[] players;
+    OfflinePlayer[] players;
     
-    public RemoveWhitelistPlayersEvent(String[] players) {
+    public RemoveWhitelistPlayersEvent(OfflinePlayer[] players) {
     	super(true);
 		this.players = players;
 	}
 
-	public String[] getPlayers() {
+	public OfflinePlayer[] getPlayers() {
 		return players;
 	}
 

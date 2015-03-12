@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.events;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -21,11 +22,11 @@ public class AddPlayerGroupEvent extends Event {
         return handlers;
     }
     
-    String player;
+    OfflinePlayer player;
     String groupname;
     String world;
     
-    public AddPlayerGroupEvent(String player, String groupname, String world) {
+    public AddPlayerGroupEvent(OfflinePlayer player, String groupname, String world) {
     	super(true);
 		this.player = player;
 		this.groupname = groupname;
@@ -36,7 +37,12 @@ public class AddPlayerGroupEvent extends Event {
      * Gets the player the group was added on.
      * @return The player name.
      */
+    @Deprecated
 	public String getPlayer() {
+		return player.getName();
+	}
+	
+	public OfflinePlayer getOfflinePlayer() {
 		return player;
 	}
 

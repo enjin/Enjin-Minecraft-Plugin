@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.events;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -18,18 +19,18 @@ public class EnjinBanPlayerEvent extends Event implements Cancellable {
         return handlers;
     }
     
-    String[] players;
+    OfflinePlayer[] players;
     
-    public EnjinBanPlayerEvent(String[] players) {
+    public EnjinBanPlayerEvent(OfflinePlayer[] players) {
     	super(true);
 		this.players = players;
 	}
 
-	public String[] getBannedPlayers() {
+	public OfflinePlayer[] getBannedPlayers() {
 		return players;
 	}
 	
-	public void setBannedPlayers(String[] players) {
+	public void setBannedPlayers(OfflinePlayer[] players) {
 		this.players = players;
 	}
 

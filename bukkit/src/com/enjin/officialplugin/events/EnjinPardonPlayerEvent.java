@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.events;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -23,18 +24,18 @@ public class EnjinPardonPlayerEvent extends Event implements Cancellable {
         return handlers;
     }
     
-    String[] players;
+    OfflinePlayer[] players;
     
-    public EnjinPardonPlayerEvent(String[] players) {
+    public EnjinPardonPlayerEvent(OfflinePlayer[] players) {
     	super(true);
 		this.players = players;
 	}
 
-	public String[] getPardonedPlayers() {
+	public OfflinePlayer[] getPardonedPlayers() {
 		return players;
 	}
 	
-	public void setPardonedPlayers(String[] players) {
+	public void setPardonedPlayers(OfflinePlayer[] players) {
 		this.players = players;
 	}
 

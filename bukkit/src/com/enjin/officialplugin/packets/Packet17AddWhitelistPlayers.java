@@ -2,11 +2,15 @@ package com.enjin.officialplugin.packets;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.AddWhitelistPlayersEvent;
+
+import de.bananaco.bpermissions.imp.BukkitCompat;
 
 /**
  * 
@@ -23,11 +27,28 @@ public class Packet17AddWhitelistPlayers {
 			String players = PacketUtilities.readString(in);
 			EnjinMinecraftPlugin.debug("Adding these players to the whitelist: " + players);
 			String[] msg = players.split(",");
-			plugin.getServer().getPluginManager().callEvent(new AddWhitelistPlayersEvent(msg));
-			if((msg.length > 0)) {
-				for(int i = 0; i < msg.length; i++) {
-					OfflinePlayer player = plugin.getServer().getOfflinePlayer(msg[i]);
-					player.setWhitelisted(true);
+			OfflinePlayer[] oplayers = new OfflinePlayer[msg.length];
+			for(int i = 0; i < msg.length; i++) {
+				String playername = msg[i];
+				if(playername.length() == 32) {
+					// expand UUIDs which do not have dashes in them
+					playername = playername.substring(0, 8) + "-" + playername.substring(8, 12) + "-" + playername.substring(12, 16) +
+							"-" + playername.substring(16, 20) + "-" + playername.substring(20, 32);
+				}
+				if(playername.length() == 36) {
+					try {
+						oplayers[i] = Bukkit.getOfflinePlayer(UUID.fromString(playername));
+					}catch (Exception e) {
+						oplayers[i] = Bukkit.getOfflinePlayer(playername);
+					}
+				}else {
+					oplayers[i] = Bukkit.getOfflinePlayer(playername);
+				}
+			}
+			plugin.getServer().getPluginManager().callEvent(new AddWhitelistPlayersEvent(oplayers));
+			if((oplayers.length > 0)) {
+				for(int i = 0; i < oplayers.length; i++) {
+					oplayers[i].setWhitelisted(true);
 				}
 			}
 		} catch (IOException e) {

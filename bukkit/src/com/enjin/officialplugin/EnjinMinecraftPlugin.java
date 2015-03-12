@@ -198,7 +198,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 	public boolean authkeyinvalid = false;
 	public boolean unabletocontactenjin = false;
 	public boolean permissionsnotworking = false;
-	public boolean vaultneedsupdating = false;
+	public static boolean vaultneedsupdating = false;
 	public boolean gmneedsupdating = false;
 	public static boolean econcompatmode = false;
 	static public boolean bukkitversion = false;
