@@ -615,8 +615,7 @@ public class ShopUtils {
         boolean collapsed = false;
         String verticalborder = "";
         String first4chars = "";
-        if (shop.getBorder_c() == null && shop.getBorder_h() == null
-                && shop.getBorder_v() == null) {
+        if (shop.getBorder_c() == null && shop.getBorder_h() == null && shop.getBorder_v() == null) {
             collapsed = true;
             header.add(" ");
             if (itemcategory.getParentCategory() != null && itemcategory.getParentCategory() instanceof ShopCategory) {
@@ -997,9 +996,30 @@ public class ShopUtils {
         if (text == null) {
             return 0;
         }
+
         String cleanedtext = ChatColor.stripColor(text);
         cleanedtext = cleanedtext.replace(FORMATTING_CODE, "");
-        try {
+
+        int width = 0;
+        char[] characterArray = cleanedtext.toCharArray();
+        for (int i = 0; i < characterArray.length; i++) {
+            char c = characterArray[i];
+            if (MinecraftFont.Font.isValid(String.valueOf(c))) {
+                width += MinecraftFont.Font.getWidth(String.valueOf(c));
+            } else {
+                if (glyphWidth == null) {
+                    setupGlyphArrays();
+                }
+
+                if (glyphWidth[c] > 0) {
+                    width += ((glyphWidth[c] + 1) / 6);
+                }
+            }
+        }
+
+        return width + (cleanedtext.length() - 1);
+
+        /*try {
             return MinecraftFont.Font.getWidth(cleanedtext)
                     + (cleanedtext.length() - 1);
         } catch (Exception e) {
@@ -1014,7 +1034,7 @@ public class ShopUtils {
                 }
             }
             return length / 6;
-        }
+        }*/
     }
 
     public static String TrimText(String text, String ellipses) {
