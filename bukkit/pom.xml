@@ -45,6 +45,7 @@
                 <directory>${basedir}/src/main/resources</directory>
                 <includes>
                     <include>*.yml</include>
+                    <include>*.bin</include>
                 </includes>
             </resource>
         </resources>

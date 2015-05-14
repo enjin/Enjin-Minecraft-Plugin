@@ -120,8 +120,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  */
 
 public class EnjinMinecraftPlugin extends JavaPlugin {
-
-
+    public static EnjinMinecraftPlugin instance;
     public FileConfiguration config;
     public static boolean usingGroupManager = false;
     public static String hash = "";
@@ -260,6 +259,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        instance = this;
 
         //Add keywords for item giving
         keywords.add("-name");
