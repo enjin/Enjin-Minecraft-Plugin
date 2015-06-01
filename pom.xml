@@ -10,12 +10,58 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>bukkit</module>
-        <module>bungee</module>
-        <module>canary</module>
-        <module>forge</module>
-        <module>tekkit</module>
+        <module>core</module>
+        <module>rpcapi</module>
+        <module>common</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>bukkit</id>
+            <modules>
+                <module>bukkit</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>bungee</id>
+            <modules>
+                <module>bungee</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>canary</id>
+            <modules>
+                <module>canary</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>forge</id>
+            <modules>
+                <module>forge</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>tekkit</id>
+            <modules>
+                <module>tekkit</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>everything</id>
+            <modules>
+                <module>bukkit</module>
+                <module>bungee</module>
+                <module>canary</module>
+                <module>forge</module>
+                <module>tekkit</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>
@@ -29,6 +75,13 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>2.0-rc1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.16.4</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
