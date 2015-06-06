@@ -13,7 +13,7 @@ import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 import com.enjin.rpc.mappings.deserializers.ExtraQuestionDeserializer;
-import erpc.EnjinRPC;
+import com.enjin.rpc.EnjinRPC;
 
 import java.util.*;
 

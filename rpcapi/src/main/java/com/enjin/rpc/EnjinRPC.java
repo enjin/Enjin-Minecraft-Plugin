@@ -1,4 +1,4 @@
-package erpc;
+package com.enjin.rpc;
 
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.services.TicketsService;

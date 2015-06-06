@@ -2,7 +2,7 @@ package com.enjin.rpc.mappings.deserializers;
 
 import com.enjin.rpc.mappings.mappings.tickets.ExtraQuestion;
 import com.google.gson.*;
-import erpc.EnjinRPC;
+import com.enjin.rpc.EnjinRPC;
 
 import java.lang.reflect.Type;
 

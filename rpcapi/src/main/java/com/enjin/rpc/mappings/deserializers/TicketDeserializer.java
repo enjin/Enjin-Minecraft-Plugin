@@ -6,7 +6,7 @@ import com.enjin.rpc.mappings.mappings.tickets.TicketViewer;
 import com.enjin.rpc.mappings.services.TicketsService;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import erpc.EnjinRPC;
+import com.enjin.rpc.EnjinRPC;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
