@@ -65,6 +65,22 @@
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -105,9 +121,19 @@
             <id>drtshock-repo</id>
             <url>https://ci.drtshock.net/plugin/repository/everything/</url>
         </repository>
+
+        <repository>
+            <id>fanciful-mvn-repo</id>
+            <url>http://repo.franga2000.com/artifactory/public</url>
+        </repository>
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.enjin</groupId>
+            <artifactId>Common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
@@ -125,6 +151,7 @@
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
             <version>LATEST</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -184,6 +211,12 @@
             <version>1.5.00</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/mcMMO.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>mkremins</groupId>
+            <artifactId>fanciful</artifactId>
+            <version>0.3.1</version>
         </dependency>
     </dependencies>
 </project>

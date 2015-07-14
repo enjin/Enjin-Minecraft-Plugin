@@ -1,7 +1,5 @@
 package com.enjin.rpc;
 
-import com.enjin.core.EnjinServices;
-import com.enjin.rpc.mappings.services.TicketsService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
@@ -18,10 +16,6 @@ public class EnjinRPC {
     private static final int CONNECT_TIMEOUT = 15000;
 
     private static final String API_URL = "https://api.enjin.com/api/v1/api.php/";
-
-    static {
-        EnjinServices.registerServices(TicketsService.class);
-    }
 
     private static URL getApiUrl() {
         try {

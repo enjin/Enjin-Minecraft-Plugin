@@ -99,3 +99,6 @@ permissions:
   enjin.tags.view:
     description: Allows the player to see the tags of other players.
     default: op
+  enjin.support:
+    description: Allows the player submit a support ticket.
+    default: op

@@ -4,22 +4,14 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +24,11 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLHandshakeException;
 
+import com.enjin.core.EnjinServices;
+import com.enjin.officialplugin.tickets.TicketSession;
+import com.enjin.rpc.mappings.mappings.tickets.Module;
+import com.enjin.rpc.mappings.services.TicketsService;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
@@ -105,7 +102,6 @@ import com.enjin.officialplugin.threaded.ReportMakerThread;
 import com.enjin.officialplugin.threaded.UpdateHeadsThread;
 import com.enjin.officialplugin.threaded.Updater;
 import com.enjin.officialplugin.tpsmeter.MonitorTPS;
-import com.enjin.officialplugin.EnjinConsole;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
 import com.vexsoftware.votifier.Votifier;
@@ -247,6 +243,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
     public ShopListener shoplistener;
+
+    @Getter
+    private static Map<String, Module> modules = new HashMap<String, Module>();
+
+    static {
+        EnjinServices.registerServices(TicketsService.class);
+    }
 
     public static void debug(String s) {
         if (debug) {
@@ -888,7 +891,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
         //This command is now depreciated in favor of /enjin key
         if (command.getName().equals("enjinkey") || command.getName().equalsIgnoreCase("ek")) {
             if (!sender.hasPermission("enjin.setkey")) {
@@ -1519,6 +1522,73 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
                         return false;
                     }
+                } else if (args[0].equalsIgnoreCase("support")) {
+                    if (!sender.hasPermission("enjin.support")) {
+                        return true;
+                    }
+
+                    if (getHash() == null) {
+                        sender.sendMessage("Cannot use this command without setting your key.");
+                        return true;
+                    }
+
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage("Only players can submit tickets.");
+                        return true;
+                    }
+
+                    Bukkit.getScheduler().runTask(this, new Runnable() {
+                        @Override
+                        public void run() {
+                            TicketsService ticketsService = EnjinServices.getService(TicketsService.class);
+                            Map<Integer, Module> m = ticketsService.getModules(getHash());
+
+                            if (sender == null) {
+                                return;
+                            } else if (sender instanceof Player) {
+                                Player player = (Player) sender;
+                                if (!player.isOnline()) {
+                                    return;
+                                }
+                            }
+
+                            if (m.size() == 0) {
+                                sender.sendMessage("Support tickets are not available on this server.");
+
+                                if (modules.size() > 0) {
+                                    modules.clear();
+                                }
+
+                                return;
+                            } else {
+                                modules.clear();
+
+                                for (Module module : m.values()) {
+                                    modules.put(module.getCommand().toLowerCase(), module);
+                                }
+                            }
+
+                            if (args.length > 1) {
+                                final Module module = modules.get(args[1].toLowerCase());
+                                if (module != null) {
+                                    new TicketSession((Player) sender, module);
+                                } else {
+                                    sender.sendMessage("No module exists for the command id: " + args[1]);
+                                }
+                            } else {
+                                if (modules.size() == 1) {
+                                    final Module module = modules.values().toArray(new Module[]{})[0];
+                                    new TicketSession((Player) sender, module);
+                                } else {
+                                    for (Module module : modules.values()) {
+                                        sender.sendMessage(module.getHelp() != null ? module.getHelp() : "Please type /e support " + module.getCommand() + " to create a support ticket.");
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    return true;
                 }
             } else {
 				/*
@@ -1567,6 +1637,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                 if (sender.hasPermission("enjin.points.set"))
                     sender.sendMessage(ChatColor.GOLD + "/enjin setpoints <NAME> <AMOUNT>: "
                             + ChatColor.RESET + "Set a player's total points.");
+                if (sender.hasPermission("enjin.support"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin support: "
+                            + ChatColor.RESET + "Starts ticket session or informs player of available modules.");
 
                 // Shop buy commands
                 sender.sendMessage(ChatColor.GOLD + "/buy: "

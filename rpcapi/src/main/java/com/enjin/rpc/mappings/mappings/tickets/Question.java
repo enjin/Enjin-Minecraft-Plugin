@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.List;
+
 @ToString
 @EqualsAndHashCode
 public class Question {
@@ -21,19 +23,22 @@ public class Question {
     @Getter
     private String label;
     @Getter
+    @SerializedName(value = "help_text")
+    private String helpText;
+    @Getter
     private boolean required;
     @Getter
     private int order;
     @Getter
     @SerializedName(value = "other_options")
-    private String otherOptions;
+    private MetaOptions otherOptions;
     @Getter
-    private String options;
+    private List<String> options;
     @Getter
-    private String conditions;
+    private List<Condition> conditions;
     @Getter
     @SerializedName(value = "condition_qualify")
-    private String conditionQualify;
+    private ConditionQualify conditionQualify;
     @Getter
     private int system;
 }
