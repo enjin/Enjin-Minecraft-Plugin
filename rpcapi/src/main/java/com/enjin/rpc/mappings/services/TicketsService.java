@@ -199,7 +199,6 @@ public class TicketsService implements Service {
                 }
             }
 
-            System.out.println(resp.toString());
             return new RPCResult(ResultType.UNKNOWN_ERROR, "The error returned was not recognized.");
         } catch (Exception e) {
             e.printStackTrace();
