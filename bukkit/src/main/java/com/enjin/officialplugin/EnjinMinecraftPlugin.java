@@ -1659,7 +1659,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                 TicketsService service = EnjinServices.getService(TicketsService.class);
                                 List<Reply> replies = service.getReplies(getHash(), -1, args[1], player.getName());
 
-                                if (args.length > 0) {
+                                if (replies.size() > 0) {
                                     player.spigot().sendMessage(TicketViewBuilder.buildTicket(replies));
                                 } else {
                                     player.sendMessage("You entered an invalid ticket code!");
