@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.core.EnjinServices;
+import com.enjin.officialplugin.tickets.TicketListener;
 import com.enjin.officialplugin.tickets.TicketSession;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
 import com.enjin.rpc.mappings.services.TicketsService;
@@ -34,7 +35,6 @@ import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.bukkit.*;
@@ -249,6 +249,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     private static Map<Integer, Module> modules = new HashMap<Integer, Module>();
     @Getter
     private static long modulesLastPolled = 0;
+    @Getter
+    private static TicketListener ticketListener;
 
     static {
         EnjinServices.registerServices(TicketsService.class);
@@ -471,6 +473,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             t.printStackTrace();
             this.setEnabled(false);
         }
+
+        prepareTicketService();
+    }
+
+    private void prepareTicketService() {
+        ticketListener = new TicketListener();
+        Bukkit.getPluginManager().registerEvents(ticketListener, this);
+
+        pollModules();
     }
 
     public OnlinePlayerGetter getPlayerGetter() {
@@ -1543,21 +1554,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                         @Override
                         public void run() {
-                            TicketsService ticketsService = EnjinServices.getService(TicketsService.class);
-
-                            if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
-                                Map<Integer, Module> m = ticketsService.getModules(getHash());
-
-                                if (m.size() == 0) {
-                                    modules.clear();
-                                }
-
-                                for (Entry<Integer, Module> entry : m.entrySet()) {
-                                    modules.put(entry.getKey(), entry.getValue());
-                                }
-
-                                modulesLastPolled = System.currentTimeMillis();
-                            }
+                            pollModules();
 
                             if (sender == null) {
                                 return;
@@ -2202,5 +2199,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         meta.setDisplayName(name);
         is.setItemMeta(meta);
         return is;
+    }
+
+    private void pollModules() {
+        if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
+            Map<Integer, Module> m = EnjinServices.getService(TicketsService.class).getModules(getHash());
+
+            if (m.size() == 0) {
+                modules.clear();
+            }
+
+            for (Entry<Integer, Module> entry : m.entrySet()) {
+                modules.put(entry.getKey(), entry.getValue());
+            }
+
+            modulesLastPolled = System.currentTimeMillis();
+        }
     }
 }
