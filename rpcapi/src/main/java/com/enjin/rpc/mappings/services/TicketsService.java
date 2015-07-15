@@ -30,7 +30,7 @@ public class TicketsService implements Service {
             .registerTypeAdapter(Question.class, new QuestionDeserializer())
             .create();
 
-    public List<Ticket> getPlayerTickets(final String authkey, final String player) {
+    public RPCResult getPlayerTickets(final String authkey, final String player) {
         String method = "Tickets.getPlayerTickets";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
@@ -38,17 +38,31 @@ public class TicketsService implements Service {
         }};
         int id = 1;
 
+        JSONRPC2Session session = null;
+        JSONRPC2Request request = null;
+        JSONRPC2Response response = null;
+
         try {
-            JSONRPC2Session session = EnjinRPC.getSession();
-            JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
-            JSONRPC2Response response = session.send(request);
+            session = EnjinRPC.getSession();
+            request = new JSONRPC2Request(method, parameters, id);
+            response = session.send(request);
             RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>(){}.getType());
-            return data.getResult();
+
+            RPCResult result = null;
+            if (data.getError() != null) {
+                if (data.getError().getMessage().equalsIgnoreCase("Please supply a registered minecraft player.")) {
+                    result = new RPCResult(ResultType.PLAYER_NOT_REGISTERED, "You must be registered to the website to submit a ticket.", request, response);
+                }
+            } else {
+                result = new RPCResult(ResultType.SUCCESS, "Successfully fetched players tickets", request, response);
+            }
+
+            return result;
         } catch (JSONRPC2SessionException e) {
             e.printStackTrace();
         }
 
-        return Collections.emptyList();
+        return new RPCResult(ResultType.UNKNOWN_ERROR, "There was an error while sending your request to Enjin.", request, response);
     }
 
     public List<Ticket> getTickets(final String authkey, final int preset) {
@@ -207,7 +221,7 @@ public class TicketsService implements Service {
             e.printStackTrace();
         }
 
-        return new RPCResult(ResultType.UNKNOWN_ERROR, "There was an error while parsing a response from Enjin.", request, response);
+        return new RPCResult(ResultType.UNKNOWN_ERROR, "There was an error while sending your request to Enjin.", request, response);
     }
 
     public boolean sendReply(final String authkey, final int preset, final String code, final String text, final String mode, final TicketStatus status, final String player) {

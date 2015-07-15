@@ -4,5 +4,6 @@ public enum ResultType {
     SUCCESS,
     TICKET_DELAY,
     INVALID_PARAMS,
-    UNKNOWN_ERROR
+    UNKNOWN_ERROR,
+    PLAYER_NOT_REGISTERED
 }
