@@ -34,6 +34,7 @@ import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.bukkit.*;
@@ -245,7 +246,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     public ShopListener shoplistener;
 
     @Getter
-    private static Map<String, Module> modules = new HashMap<String, Module>();
+    private static Map<Integer, Module> modules = new HashMap<Integer, Module>();
+    @Getter
+    private static long modulesLastPolled = 0;
 
     static {
         EnjinServices.registerServices(TicketsService.class);
@@ -1537,11 +1540,24 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
 
-                    Bukkit.getScheduler().runTask(this, new Runnable() {
+                    Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                         @Override
                         public void run() {
                             TicketsService ticketsService = EnjinServices.getService(TicketsService.class);
-                            Map<Integer, Module> m = ticketsService.getModules(getHash());
+
+                            if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
+                                Map<Integer, Module> m = ticketsService.getModules(getHash());
+
+                                if (m.size() == 0) {
+                                    modules.clear();
+                                }
+
+                                for (Entry<Integer, Module> entry : m.entrySet()) {
+                                    modules.put(entry.getKey(), entry.getValue());
+                                }
+
+                                modulesLastPolled = System.currentTimeMillis();
+                            }
 
                             if (sender == null) {
                                 return;
@@ -1552,36 +1568,47 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                 }
                             }
 
-                            if (m.size() == 0) {
+                            if (modules.size() == 0) {
                                 sender.sendMessage("Support tickets are not available on this server.");
-
-                                if (modules.size() > 0) {
-                                    modules.clear();
-                                }
-
                                 return;
-                            } else {
-                                modules.clear();
-
-                                for (Module module : m.values()) {
-                                    modules.put(module.getCommand().toLowerCase(), module);
-                                }
                             }
 
                             if (args.length > 1) {
-                                final Module module = modules.get(args[1].toLowerCase());
+                                int moduleId;
+
+                                try {
+                                    moduleId = Integer.parseInt(args[1]);
+                                } catch (NumberFormatException e) {
+                                    sender.sendMessage("You must enter the numeric id of the module!");
+                                    return;
+                                }
+
+                                EnjinMinecraftPlugin.debug("Checking if module with id \"" + moduleId + "\" exists.");
+                                final Module module = modules.get(moduleId);
                                 if (module != null) {
-                                    new TicketSession((Player) sender, module);
+                                    new TicketSession((Player) sender, moduleId, module);
                                 } else {
-                                    sender.sendMessage("No module exists for the command id: " + args[1]);
+                                    sender.sendMessage("No module with id \"" + moduleId + "\" exists.");
+                                    EnjinMinecraftPlugin.debug("Existing modules:");
+                                    for (Integer id : modules.keySet()) {
+                                        EnjinMinecraftPlugin.debug(String.valueOf(id));
+                                    }
                                 }
                             } else {
                                 if (modules.size() == 1) {
-                                    final Module module = modules.values().toArray(new Module[]{})[0];
-                                    new TicketSession((Player) sender, module);
+                                    final Entry<Integer, Module> entry = modules.entrySet().iterator().next();
+                                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.this, new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            new TicketSession((Player) sender, entry.getKey(), entry.getValue());
+                                        }
+                                    });
                                 } else {
-                                    for (Module module : modules.values()) {
-                                        sender.sendMessage(module.getHelp() != null ? module.getHelp() : "Please type /e support " + module.getCommand() + " to create a support ticket.");
+                                    EnjinMinecraftPlugin.debug(String.valueOf(modules.size()));
+                                    for (Entry<Integer, Module> entry : modules.entrySet()) {
+                                        int id = entry.getKey();
+                                        Module module = entry.getValue();
+                                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', (module.getHelp() != null && !module.getHelp().isEmpty()) ? module.getHelp() : "Type /e support " + id + " to create a support ticket for " + module.getName().replaceAll("\\s+", " ")));
                                     }
                                 }
                             }

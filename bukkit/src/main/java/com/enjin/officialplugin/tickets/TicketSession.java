@@ -17,6 +17,7 @@ public class TicketSession {
     private static ConversationFactory factory;
     private static Map<UUID, TicketSession> sessions = new HashMap<UUID, TicketSession>();
 
+    private int moduleId;
     private Map<Integer, Question> idMap;
     private List<Question> questions;
     private List<Question> conditional = new ArrayList<Question>();
@@ -30,8 +31,9 @@ public class TicketSession {
         dateFormat.setLenient(false);
     }
 
-    public TicketSession(Player player, Module module) {
+    public TicketSession(Player player, int moduleId, Module module) {
         this.uuid = player.getUniqueId();
+        this.moduleId = moduleId;
         this.idMap = module.getIdMappedQuestions();
         this.questions = new ArrayList<Question>(module.getQuestions());
         Collections.sort(this.questions, new Comparator<Question>() {
@@ -150,7 +152,7 @@ public class TicketSession {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        TicketSubmission.submit(player, new ArrayList<QuestionResponse>(responses.values()));
+                        TicketSubmission.submit(player, moduleId, new ArrayList<QuestionResponse>(responses.values()));
                     }
                 });
             }

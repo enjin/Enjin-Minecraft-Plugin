@@ -174,37 +174,40 @@ public class TicketsService implements Service {
         }};
         int id = 1;
 
+        JSONRPC2Session session = null;
+        JSONRPC2Request request = null;
+        JSONRPC2Response response = null;
         try {
-            JSONRPC2Session session = EnjinRPC.getSession();
-            JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
-            JSONRPC2Response response = session.send(request);
+            session = EnjinRPC.getSession();
+            request = new JSONRPC2Request(method, parameters, id);
+            response = session.send(request);
 
             JsonElement resp = EnjinRPC.gson.toJsonTree(response.getResult());
             if (resp.isJsonPrimitive()) {
                 JsonPrimitive primitive = resp.getAsJsonPrimitive();
                 if (primitive.isBoolean()) {
                     if (primitive.getAsBoolean()) {
-                        return new RPCResult(ResultType.SUCCESS, "Your ticket was submitted successfully!");
+                        return new RPCResult(ResultType.SUCCESS, "Your ticket was submitted successfully!", request, response);
                     } else {
-                        return new RPCResult(ResultType.SUCCESS, "Your ticket was could not be submitted!");
+                        return new RPCResult(ResultType.SUCCESS, "Your ticket was could not be submitted!", request, response);
                     }
                 }
             } else if (resp.isJsonObject()) {
                 JsonObject result = resp.getAsJsonObject();
                 if (result.get("reason").getAsString().equals("ticket_delay")) {
                     String time = result.get("time_left").getAsString();
-                    return new RPCResult(ResultType.TICKET_DELAY, "You can submit another ticket " + time);
+                    return new RPCResult(ResultType.TICKET_DELAY, "You can submit another ticket " + time, request, response);
                 } else if (result.get("reason").getAsString().equals("invalid_params")) {
-                    return new RPCResult(ResultType.INVALID_PARAMS, "Invalid parameters");
+                    return new RPCResult(ResultType.INVALID_PARAMS, "Invalid parameters", request, response);
                 }
             }
 
-            return new RPCResult(ResultType.UNKNOWN_ERROR, "The error returned was not recognized.");
+            return new RPCResult(ResultType.UNKNOWN_ERROR, "The error returned was not recognized.", request, response);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return new RPCResult(ResultType.UNKNOWN_ERROR, "There was an error while parsing a response from Enjin.");
+        return new RPCResult(ResultType.UNKNOWN_ERROR, "There was an error while parsing a response from Enjin.", request, response);
     }
 
     public boolean sendReply(final String authkey, final int preset, final String code, final String text, final String mode, final TicketStatus status, final String player) {

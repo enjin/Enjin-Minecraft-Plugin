@@ -15,6 +15,9 @@ public class Module {
     @Getter
     private List<Question> questions;
     @Getter
+    @SerializedName(value = "module_name")
+    private String name;
+    @Getter
     private String command;
     @Getter
     @SerializedName(value = "command_help")
