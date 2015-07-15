@@ -102,3 +102,5 @@ permissions:
   enjin.support:
     description: Allows the player submit a support ticket.
     default: op
+  enjin.ticket.self:
+    description: Allows the player to view their own tickets.

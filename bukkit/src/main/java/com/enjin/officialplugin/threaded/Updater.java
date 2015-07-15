@@ -53,7 +53,7 @@ public class Updater implements Runnable {
     private static final String TITLE_VALUE = "name"; // Gets remote file's title
     private static final String LINK_VALUE = "downloadUrl"; // Gets remote file's download link
     private static final String TYPE_VALUE = "releaseType"; // Gets remote file's release type
-    private static final String VERSION_VALUE = "gameVersion"; // Gets remote file's build version
+    private static final String VERSION_VALUE = "gameVersion"; // Gets remote file's buildTicketList version
     private static final String QUERY = "/servermods/files?projectIds="; // Path to GET
     private static final String HOST = "https://api.curseforge.com"; // Slugs will be appended to this to get to the project's RSS feed
 
@@ -360,7 +360,7 @@ public class Updater implements Runnable {
             final String remoteVersion = title.substring(1); // Get the newest file's version number
 
             if (this.hasTag(version) || version.equalsIgnoreCase(remoteVersion)) {
-                // We already have the latest version, or this build is tagged for no-update
+                // We already have the latest version, or this buildTicketList is tagged for no-update
                 this.result = Updater.UpdateResult.NO_UPDATE;
                 return false;
             }

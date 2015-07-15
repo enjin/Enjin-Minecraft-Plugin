@@ -43,7 +43,7 @@ public class Ticket {
     @Getter
     private String email;
     @Getter
-    private List<TicketViewer> viewers;
+    private boolean viewers;
     @Getter
     @SerializedName(value = "site_name")
     private String siteName;

@@ -56,6 +56,7 @@ public class TicketsService implements Service {
                 }
             } else {
                 result = new RPCResult(ResultType.SUCCESS, "Successfully fetched players tickets", request, response);
+                result.setData(data.getResult());
             }
 
             return result;
@@ -160,10 +161,14 @@ public class TicketsService implements Service {
         String method = "Tickets.getReplies";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
-            put("preset_id", preset);
             put("ticket_code", code);
             put("minecraft_player", player);
         }};
+
+        if (preset != -1) {
+            parameters.put("preset_id", preset);
+        }
+
         int id = 1;
 
         try {

@@ -27,7 +27,12 @@ import javax.net.ssl.SSLHandshakeException;
 import com.enjin.core.EnjinServices;
 import com.enjin.officialplugin.tickets.TicketListener;
 import com.enjin.officialplugin.tickets.TicketCreationSession;
+import com.enjin.officialplugin.tickets.TicketViewBuilder;
+import com.enjin.rpc.mappings.mappings.general.RPCResult;
+import com.enjin.rpc.mappings.mappings.general.ResultType;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
+import com.enjin.rpc.mappings.mappings.tickets.Reply;
+import com.enjin.rpc.mappings.mappings.tickets.Ticket;
 import com.enjin.rpc.mappings.services.TicketsService;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
@@ -1613,6 +1618,57 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     });
 
                     return true;
+                } else if (args[0].equalsIgnoreCase("ticket")) {
+                    if (!sender.hasPermission("enjin.ticket.self")) {
+                        return true;
+                    }
+
+                    if (getHash() == null) {
+                        sender.sendMessage("Cannot use this command without setting your key.");
+                        return true;
+                    }
+
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage("Only players can view their own tickets.");
+                        return true;
+                    }
+
+                    if (args.length == 1) {
+                        final Player player = (Player) sender;
+                        Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                TicketsService service = EnjinServices.getService(TicketsService.class);
+                                RPCResult result = service.getPlayerTickets(getHash(), player.getName());
+
+                                if (result.getType() == ResultType.SUCCESS) {
+                                    List<Ticket> tickets = (List<Ticket>) result.getData();
+                                    if (tickets.size() > 0) {
+                                        player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                                    } else {
+                                        player.sendMessage("You do not have any tickets at this time!");
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        final Player player = (Player) sender;
+                        Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                TicketsService service = EnjinServices.getService(TicketsService.class);
+                                List<Reply> replies = service.getReplies(getHash(), -1, args[1], player.getName());
+
+                                if (args.length > 0) {
+                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(replies));
+                                } else {
+                                    player.sendMessage("You entered an invalid ticket code!");
+                                }
+                            }
+                        });
+                    }
+
+                    return true;
                 }
             } else {
 				/*
@@ -1664,6 +1720,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                 if (sender.hasPermission("enjin.support"))
                     sender.sendMessage(ChatColor.GOLD + "/enjin support: "
                             + ChatColor.RESET + "Starts ticket session or informs player of available modules.");
+                if (sender.hasPermission("enjin.ticket.self"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin ticket: "
+                            + ChatColor.RESET + "Sends player a list of their tickets.");
 
                 // Shop buy commands
                 sender.sendMessage(ChatColor.GOLD + "/buy: "

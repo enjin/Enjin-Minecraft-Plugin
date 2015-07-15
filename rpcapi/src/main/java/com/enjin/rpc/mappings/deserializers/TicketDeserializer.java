@@ -16,7 +16,8 @@ public class TicketDeserializer implements JsonDeserializer<Ticket> {
     @Override
     public Ticket deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject object = jsonElement.getAsJsonObject();
-        if (object.has("viewers")) {
+        /* Was List<TicketViewer> Now Boolean
+         if (object.has("viewers")) {
             JsonElement element = object.get("viewers");
             if (!(element instanceof JsonNull)) {
                 String json = element.getAsString();
@@ -27,6 +28,7 @@ public class TicketDeserializer implements JsonDeserializer<Ticket> {
                 object.add("viewers", EnjinRPC.gson.toJsonTree(new ArrayList<Ticket>()));
             }
         }
+        */
 
         if (object.has("extra_questions")) {
             JsonElement element = object.get("extra_questions");
@@ -36,7 +38,6 @@ public class TicketDeserializer implements JsonDeserializer<Ticket> {
                 } else {
                     String json = element.getAsString();
                     try {
-                        System.out.println(element.toString());
                         List<ExtraQuestion> questions = TicketsService.GSON_EXTRA_QUESTION.fromJson(json, new TypeToken<ArrayList<ExtraQuestion>>() {
                         }.getType());
                         object.add("extra_questions", EnjinRPC.gson.toJsonTree(questions));
