@@ -12,10 +12,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class TicketSession {
+public class TicketCreationSession {
     private static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private static ConversationFactory factory;
-    private static Map<UUID, TicketSession> sessions = new HashMap<UUID, TicketSession>();
+    private static Map<UUID, TicketCreationSession> sessions = new HashMap<UUID, TicketCreationSession>();
 
     private int moduleId;
     private Map<Integer, Question> idMap;
@@ -31,7 +31,7 @@ public class TicketSession {
         dateFormat.setLenient(false);
     }
 
-    public TicketSession(Player player, int moduleId, Module module) {
+    public TicketCreationSession(Player player, int moduleId, Module module) {
         this.uuid = player.getUniqueId();
         this.moduleId = moduleId;
         this.idMap = module.getIdMappedQuestions();
@@ -217,7 +217,7 @@ public class TicketSession {
     public class StartPrompt extends MessagePrompt {
         @Override
         protected Prompt getNextPrompt(ConversationContext context) {
-            TicketSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
+            TicketCreationSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }
 
@@ -260,7 +260,7 @@ public class TicketSession {
         @Override
         public Prompt acceptInput(ConversationContext context, String input) {
             responses.put(question.getId(), new QuestionResponse(question, input));
-            TicketSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
+            TicketCreationSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }
     }
@@ -275,7 +275,7 @@ public class TicketSession {
         @Override
         protected Prompt acceptValidatedInput(ConversationContext context, Number number) {
             responses.put(question.getId(), new QuestionResponse(question, number.toString()));
-            TicketSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
+            TicketCreationSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }
 
@@ -324,7 +324,7 @@ public class TicketSession {
             }
 
             responses.put(question.getId(), new QuestionResponse(question, input));
-            TicketSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
+            TicketCreationSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }
     }
@@ -372,7 +372,7 @@ public class TicketSession {
             }
 
             responses.put(question.getId(), new QuestionResponse(question, answer));
-            TicketSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
+            TicketCreationSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }
     }
@@ -423,7 +423,7 @@ public class TicketSession {
             }
 
             responses.put(question.getId(), new QuestionResponse(question, answers.toArray(new String[]{})));
-            TicketSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
+            TicketCreationSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }
     }

@@ -22,7 +22,7 @@ public class TicketListener implements Listener {
                         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.instance, new Runnable() {
                             @Override
                             public void run() {
-                                new TicketSession(event.getPlayer(), entry.getKey(), module);
+                                new TicketCreationSession(event.getPlayer(), entry.getKey(), module);
                             }
                         });
                     }

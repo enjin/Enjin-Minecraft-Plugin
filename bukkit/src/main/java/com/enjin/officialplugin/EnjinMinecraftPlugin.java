@@ -26,7 +26,7 @@ import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.core.EnjinServices;
 import com.enjin.officialplugin.tickets.TicketListener;
-import com.enjin.officialplugin.tickets.TicketSession;
+import com.enjin.officialplugin.tickets.TicketCreationSession;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
 import com.enjin.rpc.mappings.services.TicketsService;
 import lombok.Getter;
@@ -1583,7 +1583,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                 EnjinMinecraftPlugin.debug("Checking if module with id \"" + moduleId + "\" exists.");
                                 final Module module = modules.get(moduleId);
                                 if (module != null) {
-                                    new TicketSession((Player) sender, moduleId, module);
+                                    new TicketCreationSession((Player) sender, moduleId, module);
                                 } else {
                                     sender.sendMessage("No module with id \"" + moduleId + "\" exists.");
                                     EnjinMinecraftPlugin.debug("Existing modules:");
@@ -1597,7 +1597,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.this, new Runnable() {
                                         @Override
                                         public void run() {
-                                            new TicketSession((Player) sender, entry.getKey(), entry.getValue());
+                                            new TicketCreationSession((Player) sender, entry.getKey(), entry.getValue());
                                         }
                                     });
                                 } else {
