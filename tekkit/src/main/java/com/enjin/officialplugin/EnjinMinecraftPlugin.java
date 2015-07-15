@@ -900,7 +900,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
                     /*
-	                 * Display detailed Enjin help for heads in console
+                     * Display detailed Enjin help for heads in console
 	                 */
                     sender.sendMessage(EnjinConsole.header());
 

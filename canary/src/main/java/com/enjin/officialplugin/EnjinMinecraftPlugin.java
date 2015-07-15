@@ -220,7 +220,7 @@ public class EnjinMinecraftPlugin extends Plugin implements TaskOwner {
     }
 
 	/*
-	public void stopStatsCollecting() {
+    public void stopStatsCollecting() {
 		HandlerList.unregisterAll(esl);
 	}*/
 

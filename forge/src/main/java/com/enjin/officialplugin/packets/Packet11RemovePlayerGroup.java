@@ -29,7 +29,7 @@ public class Packet11RemovePlayerGroup {
                 }
                 //TODO: Add permissions support
                 /*
-				plugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
+                plugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
 				if(plugin.permissionsbukkit != null) {
 					plugin.debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
 					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname));

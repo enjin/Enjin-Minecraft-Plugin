@@ -279,7 +279,7 @@ public class ShopUtils {
                         + " to see details.");
             }
             /*footer.add(FORMATTING_CODE + shop.getColortext() + "Type /"
-					+ EnjinMinecraftPlugin.BUY_COMMAND
+                    + EnjinMinecraftPlugin.BUY_COMMAND
 					+ " to go back, or type /ec to enable chat");*/
         } else {
             // Standard shop format

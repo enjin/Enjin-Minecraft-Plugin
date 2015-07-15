@@ -79,7 +79,7 @@ public class EnjinStatsListener implements PluginListener {
     //TODO: get those methods implemented!
     //Listener to add distance traveled to players
     /*
-	@HookHandler(priority = Priority.PASSIVE)
+    @HookHandler(priority = Priority.PASSIVE)
 	public void onPlayerMove(PlayerMoveHook event) {
 		if(event.isCanceled()) {
 			return;

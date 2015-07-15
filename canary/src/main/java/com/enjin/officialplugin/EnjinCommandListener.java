@@ -116,7 +116,7 @@ public class EnjinCommandListener implements CommandListener {
         report.append("Enjin plugin version: " + plugin.getVersion() + "\n");
         if (plugin.votifierinstalled) {
             /*
-			String votiferversion = Bukkit.getPluginManager().getPlugin("Votifier").getDescription().getVersion();
+            String votiferversion = Bukkit.getPluginManager().getPlugin("Votifier").getDescription().getVersion();
 			report.append("Votifier version: " + votiferversion + "\n");*/
         }
         //report.append("Canarymod version: " + getServer().getVersion() + "\n");

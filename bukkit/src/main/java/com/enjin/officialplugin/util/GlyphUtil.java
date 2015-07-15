@@ -20,7 +20,7 @@ public class GlyphUtil {
     /**
      * Returns the width of this character as rendered.
      */
-    public static int getCharWidth (char c) {
+    public static int getCharWidth(char c) {
         try {
             loadGlyphSizes();
         } catch (IOException e) {

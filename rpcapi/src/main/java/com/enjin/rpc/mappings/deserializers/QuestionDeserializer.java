@@ -24,7 +24,8 @@ public class QuestionDeserializer implements JsonDeserializer<Question> {
                 } else {
                     String json = element.getAsString();
                     try {
-                        List<Condition> conditions = EnjinRPC.gson.fromJson(json, new TypeToken<List<Condition>>(){}.getType());
+                        List<Condition> conditions = EnjinRPC.gson.fromJson(json, new TypeToken<List<Condition>>() {
+                        }.getType());
                         object.add("conditions", EnjinRPC.gson.toJsonTree(conditions));
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -42,7 +43,8 @@ public class QuestionDeserializer implements JsonDeserializer<Question> {
                 } else {
                     String json = element.getAsString();
                     try {
-                        List<String> options = EnjinRPC.gson.fromJson(json, new TypeToken<ArrayList<String>>(){}.getType());
+                        List<String> options = EnjinRPC.gson.fromJson(json, new TypeToken<ArrayList<String>>() {
+                        }.getType());
                         object.add("options", EnjinRPC.gson.toJsonTree(options));
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -62,7 +64,8 @@ public class QuestionDeserializer implements JsonDeserializer<Question> {
                 } else {
                     String json = element.getAsString();
                     try {
-                        MetaOptions options = EnjinRPC.gson.fromJson(json, new TypeToken<MetaOptions>(){}.getType());
+                        MetaOptions options = EnjinRPC.gson.fromJson(json, new TypeToken<MetaOptions>() {
+                        }.getType());
                         object.add("other_options", EnjinRPC.gson.toJsonTree(options));
                     } catch (Exception e) {
                         e.printStackTrace();

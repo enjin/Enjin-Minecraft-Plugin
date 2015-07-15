@@ -22,7 +22,7 @@ public class EMPListener implements IPlayerTracker {
 
     //TODO: Add ban listeners back in
     /*
-	public void onPlayerBan(PlayerKickEvent event) {
+    public void onPlayerBan(PlayerKickEvent event) {
 		if(event.isCancelled()) {
 			return;
 		}

@@ -20,7 +20,8 @@ public class TicketDeserializer implements JsonDeserializer<Ticket> {
             JsonElement element = object.get("viewers");
             if (!(element instanceof JsonNull)) {
                 String json = element.getAsString();
-                List<TicketViewer> viewers = EnjinRPC.gson.fromJson(json, new TypeToken<ArrayList<TicketViewer>>(){}.getType());
+                List<TicketViewer> viewers = EnjinRPC.gson.fromJson(json, new TypeToken<ArrayList<TicketViewer>>() {
+                }.getType());
                 object.add("viewers", EnjinRPC.gson.toJsonTree(viewers));
             } else {
                 object.add("viewers", EnjinRPC.gson.toJsonTree(new ArrayList<Ticket>()));
@@ -36,7 +37,8 @@ public class TicketDeserializer implements JsonDeserializer<Ticket> {
                     String json = element.getAsString();
                     try {
                         System.out.println(element.toString());
-                        List<ExtraQuestion> questions = TicketsService.GSON_EXTRA_QUESTION.fromJson(json, new TypeToken<ArrayList<ExtraQuestion>>(){}.getType());
+                        List<ExtraQuestion> questions = TicketsService.GSON_EXTRA_QUESTION.fromJson(json, new TypeToken<ArrayList<ExtraQuestion>>() {
+                        }.getType());
                         object.add("extra_questions", EnjinRPC.gson.toJsonTree(questions));
                     } catch (Exception e) {
                         System.out.println(e.getMessage());

@@ -302,7 +302,7 @@ public class PeriodicEnjinTask implements Runnable {
     }
 
 	/*
-	private String getStats() {
+    private String getStats() {
 		byte[] rawstats = new WriteStats(plugin).write();
 		ByteOutputStream output = new ByteOutputStream();
 		try {

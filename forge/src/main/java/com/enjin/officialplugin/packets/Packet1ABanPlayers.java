@@ -23,7 +23,7 @@ public class Packet1ABanPlayers {
             plugin.debug("Adding these players to the banlist: " + players);
             String[] msg = players.split(",");
             /*
-			EnjinBanPlayerEvent event = new EnjinBanPlayerEvent(msg);
+            EnjinBanPlayerEvent event = new EnjinBanPlayerEvent(msg);
 			plugin.getServer().getPluginManager().callEvent(event);
 			if(event.isCancelled()) {
 				return;

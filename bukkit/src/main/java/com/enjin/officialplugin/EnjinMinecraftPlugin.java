@@ -1364,7 +1364,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.sign.set\" permission or OP to run that command!");
                         return true;
                     }
-					/*
+                    /*
 					 * Display detailed Enjin help for heads in console
 					 */
                     sender.sendMessage(EnjinConsole.header());

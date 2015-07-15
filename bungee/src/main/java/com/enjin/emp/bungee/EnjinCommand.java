@@ -242,7 +242,7 @@ public class EnjinCommand extends Command {
             }
         } else {
             /*
-			 * Display detailed Enjin help in console
+             * Display detailed Enjin help in console
 			 */
             sender.sendMessages(EnjinConsole.header());
 

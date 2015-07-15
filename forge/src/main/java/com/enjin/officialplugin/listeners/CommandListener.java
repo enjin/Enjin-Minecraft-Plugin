@@ -94,7 +94,7 @@ public class CommandListener extends CommandBase {
                 report.append("Enjin Debug Report generated on " + dateFormat.format(date) + "\n");
                 report.append("Enjin plugin version: " + plugin.getVersion() + "\n");
                 /*if(plugin.votifierinstalled) {
-					String votiferversion = Bukkit.getPluginManager().getPlugin("Votifier").getDescription().getVersion();
+                    String votiferversion = Bukkit.getPluginManager().getPlugin("Votifier").getDescription().getVersion();
 					report.append("Votifier version: " + votiferversion + "\n");
 				}*/
                 report.append("Forge version: " + MinecraftForge.getBrandingVersion() + "\n");

@@ -22,7 +22,7 @@ public class Packet1BPardonPlayers {
             plugin.debug("Removing these players from the banlist: " + players);
             String[] msg = players.split(",");
             /*
-			EnjinPardonPlayerEvent event = new EnjinPardonPlayerEvent(msg);
+            EnjinPardonPlayerEvent event = new EnjinPardonPlayerEvent(msg);
 			plugin.getServer().getPluginManager().callEvent(event);
 			if(event.isCancelled()) {
 				return;

@@ -10,7 +10,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @NoArgsConstructor
 public class ExtraQuestion {
-    public ExtraQuestion(QuestionType type, int questionId, String label, String ... answer) {
+    public ExtraQuestion(QuestionType type, int questionId, String label, String... answer) {
         this(type, questionId, label, Object.class.cast(answer));
     }
 

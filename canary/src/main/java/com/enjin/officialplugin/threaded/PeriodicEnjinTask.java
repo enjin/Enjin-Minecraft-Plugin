@@ -121,7 +121,7 @@ public class PeriodicEnjinTask implements Runnable {
             }
             //Don't add the votifier tag if no one has voted.
             /* Votes are now handled in a separate thread.
-			if(plugin.playervotes.size() > 0) {
+            if(plugin.playervotes.size() > 0) {
 				builder.append("&votifier=" + encode(getVotes()));
 			}*/
 

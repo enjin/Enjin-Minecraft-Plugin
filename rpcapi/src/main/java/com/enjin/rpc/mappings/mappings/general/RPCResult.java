@@ -14,7 +14,8 @@ public class RPCResult {
     private JSONRPC2Request request;
     @Getter
     private JSONRPC2Response response;
-    @Getter @Setter
+    @Getter
+    @Setter
     private Object data;
 
     public RPCResult(ResultType type, String message, JSONRPC2Request request, JSONRPC2Response response) {

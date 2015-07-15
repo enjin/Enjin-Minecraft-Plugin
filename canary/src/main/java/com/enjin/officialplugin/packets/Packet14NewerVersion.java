@@ -16,7 +16,7 @@ public class Packet14NewerVersion {
                 }
                 //This isn't an official port, so let's disable updating.
                 /*
-				//plugin.newversion = newversion;
+                //plugin.newversion = newversion;
 				plugin.hasupdate = true;
 				DownloadPluginThread downloader = new DownloadPluginThread(plugin.getDataFolder().getParent(), newversion, new File(plugin.getDataFolder().getParent() + File.separator + "EnjinMinecraftPlugin.jar"), plugin);
 				Thread downloaderthread = new Thread(downloader);

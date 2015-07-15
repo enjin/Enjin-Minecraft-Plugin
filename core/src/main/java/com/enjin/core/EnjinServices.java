@@ -8,7 +8,7 @@ import java.util.Map;
 public class EnjinServices {
     private static final Map<Class<? extends Service>, Service> services = new HashMap<Class<? extends Service>, Service>();
 
-    public static void registerServices(Class<? extends Service> ... clazzes) {
+    public static void registerServices(Class<? extends Service>... clazzes) {
         for (Class<? extends Service> clazz : clazzes) {
             try {
                 services.put(clazz, clazz.newInstance());

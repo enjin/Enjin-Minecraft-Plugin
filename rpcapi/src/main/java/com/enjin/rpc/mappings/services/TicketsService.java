@@ -46,7 +46,8 @@ public class TicketsService implements Service {
             session = EnjinRPC.getSession();
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
-            RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>(){}.getType());
+            RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {
+            }.getType());
 
             RPCResult result = null;
             if (data.getError() != null) {
@@ -77,7 +78,8 @@ public class TicketsService implements Service {
             JSONRPC2Session session = EnjinRPC.getSession();
             JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
             JSONRPC2Response response = session.send(request);
-            RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>(){}.getType());
+            RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {
+            }.getType());
             return data.getResult();
         } catch (JSONRPC2SessionException e) {
             e.printStackTrace();
@@ -97,7 +99,8 @@ public class TicketsService implements Service {
             JSONRPC2Session session = EnjinRPC.getSession();
             JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
             JSONRPC2Response response = session.send(request);
-            RPCData<Map<Integer, Module>> data = GSON_QUESTION.fromJson(response.toJSONString(), new TypeToken<RPCData<HashMap<Integer, Module>>>(){}.getType());
+            RPCData<Map<Integer, Module>> data = GSON_QUESTION.fromJson(response.toJSONString(), new TypeToken<RPCData<HashMap<Integer, Module>>>() {
+            }.getType());
             return data.getResult();
         } catch (JSONRPC2SessionException e) {
             e.printStackTrace();
@@ -120,7 +123,8 @@ public class TicketsService implements Service {
             JSONRPC2Session session = EnjinRPC.getSession();
             JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
             JSONRPC2Response response = session.send(request);
-            RPCData<Boolean> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>(){}.getType());
+            RPCData<Boolean> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>() {
+            }.getType());
             return data.getResult();
         } catch (JSONRPC2SessionException e) {
             e.printStackTrace();
@@ -241,7 +245,8 @@ public class TicketsService implements Service {
             JSONRPC2Session session = EnjinRPC.getSession();
             JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
             JSONRPC2Response response = session.send(request);
-            RPCData<RPCSuccess> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<RPCSuccess>>(){}.getType());
+            RPCData<RPCSuccess> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<RPCSuccess>>() {
+            }.getType());
             return data.getResult().isSuccess();
         } catch (JSONRPC2SessionException e) {
             e.printStackTrace();

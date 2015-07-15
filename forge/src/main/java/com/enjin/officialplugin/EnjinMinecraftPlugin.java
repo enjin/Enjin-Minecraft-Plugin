@@ -280,7 +280,7 @@ public class EnjinMinecraftPlugin {
         TickRegistry.registerTickHandler(scheduler, Side.SERVER);
         scheduler.runTaskTimerAsynchronously(tpstask = new MonitorTPS(this), 40, 40);
         /*
-		if(collectstats) {
+        if(collectstats) {
 			//startStatsCollecting();
 			File stats = new File("stats.stats");
 			if(stats.exists()) {

@@ -29,7 +29,7 @@ public class TicketSubmission {
 
         for (QuestionResponse response : responses) {
             if (response.getQuestion().getSystem() == 1) {
-                if (subject ==  null && (response.getQuestion().getType() == QuestionType.select || response.getQuestion().getType() == QuestionType.text)) {
+                if (subject == null && (response.getQuestion().getType() == QuestionType.select || response.getQuestion().getType() == QuestionType.text)) {
                     subject = response;
                     answers.remove(response);
                     continue;

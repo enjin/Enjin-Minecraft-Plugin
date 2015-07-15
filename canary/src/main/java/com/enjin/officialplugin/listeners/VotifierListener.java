@@ -12,7 +12,7 @@ public class VotifierListener {
 
     //TODO: Re-add votifier support
     /*
-	@HookHandler(priority = Priority.PASSIVE)
+    @HookHandler(priority = Priority.PASSIVE)
 	public void voteRecieved(VotifierEvent event) {
 		//Lists when testing will send a user called "test", let's
 		//make sure we don't process those votes.
