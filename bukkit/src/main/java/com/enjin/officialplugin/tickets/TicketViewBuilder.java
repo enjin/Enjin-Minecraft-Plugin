@@ -29,7 +29,7 @@ public class TicketViewBuilder {
                 .color(ChatColor.GOLD);
 
         for (Ticket ticket : tickets) {
-            builder.append(ticket.getCode() + ") " + ticket.getSubject() + "\n")
+            builder.append(ticket.getCode() + ") " + ticket.getSubject() + "(" + ticket.getReplyCount() + " Replies)\n")
                     .color(ChatColor.GREEN)
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/e ticket " + ticket.getCode()));
         }

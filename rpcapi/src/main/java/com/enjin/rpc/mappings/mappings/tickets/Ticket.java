@@ -86,4 +86,7 @@ public class Ticket {
     @Getter
     @SerializedName(value = "ticket_priority")
     private String ticketPriority;
+    @Getter
+    @SerializedName(value = "reply_count")
+    private int replyCount;
 }
