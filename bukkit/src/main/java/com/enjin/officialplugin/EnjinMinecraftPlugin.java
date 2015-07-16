@@ -1543,6 +1543,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     }
                 } else if (args[0].equalsIgnoreCase("support")) {
                     if (!sender.hasPermission("enjin.support")) {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou need to have the \"enjin.support\" permission or OP to run that command!"));
                         return true;
                     }
 
@@ -1620,6 +1621,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     return true;
                 } else if (args[0].equalsIgnoreCase("ticket")) {
                     if (!sender.hasPermission("enjin.ticket.self")) {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou need to have the \"enjin.ticket\" permission or OP to run that command!"));
                         return true;
                     }
 
@@ -1660,7 +1662,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                 List<Reply> replies = service.getReplies(getHash(), -1, args[1], player.getName());
 
                                 if (replies.size() > 0) {
-                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(replies));
+                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(replies, player.hasPermission("enjin.ticket.private")));
                                 } else {
                                     player.sendMessage("You entered an invalid ticket code!");
                                 }
