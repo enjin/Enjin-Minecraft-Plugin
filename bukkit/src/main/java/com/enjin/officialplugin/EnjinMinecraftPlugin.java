@@ -33,7 +33,9 @@ import com.enjin.rpc.mappings.mappings.general.ResultType;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
 import com.enjin.rpc.mappings.mappings.tickets.Reply;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
+import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
 import com.enjin.rpc.mappings.services.TicketsService;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -1620,7 +1622,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
                     return true;
                 } else if (args[0].equalsIgnoreCase("ticket")) {
-                    if (!sender.hasPermission("enjin.ticket.self")) {
+                    if (!sender.hasPermission("enjin.ticket")) {
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou need to have the \"enjin.ticket\" permission or OP to run that command!"));
                         return true;
                     }
@@ -1650,6 +1652,64 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                     } else {
                                         player.sendMessage("You do not have any tickets at this time!");
                                     }
+                                }
+                            }
+                        });
+                    } else {
+                        final Player player = (Player) sender;
+                        Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                TicketsService service = EnjinServices.getService(TicketsService.class);
+                                List<Reply> replies = service.getReplies(getHash(), -1, args[1], player.getName());
+
+                                if (replies.size() > 0) {
+                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(replies, player.hasPermission("enjin.ticket.private")));
+                                } else {
+                                    player.sendMessage("You entered an invalid ticket code!");
+                                }
+                            }
+                        });
+                    }
+
+                    return true;
+                } else if (args[0].equalsIgnoreCase("openticket")) {
+                    if (!sender.hasPermission("enjin.ticket.open")) {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou need to have the \"enjin.ticket.open\" permission or OP to run that command!"));
+                        return true;
+                    }
+
+                    if (getHash() == null) {
+                        sender.sendMessage("Cannot use this command without setting your key.");
+                        return true;
+                    }
+
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage("Only players can view their own tickets.");
+                        return true;
+                    }
+
+                    if (args.length == 1) {
+                        final Player player = (Player) sender;
+                        Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                TicketsService service = EnjinServices.getService(TicketsService.class);
+                                List<Ticket> tickets = Lists.newArrayList();
+
+                                for (Integer id : getModules().keySet()) {
+                                    RPCResult result = service.getTickets(getHash(), id, TicketStatus.open);
+
+                                    if (result.getType() == ResultType.SUCCESS) {
+                                        List<Ticket> ticks = (List<Ticket>) result.getData();
+                                        tickets.addAll(ticks);
+                                    }
+                                }
+
+                                if (tickets.size() > 0) {
+                                    player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                                } else {
+                                    player.sendMessage("There are no open tickets at this time.");
                                 }
                             }
                         });

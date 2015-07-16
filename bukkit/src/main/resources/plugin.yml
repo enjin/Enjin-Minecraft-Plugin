@@ -108,3 +108,6 @@ permissions:
   enjin.ticket.private:
     description: Allows the player to view private messages.
     default: op
+  enjin.ticket.open:
+    description: Allows the player to view open tickets.
+    default: op

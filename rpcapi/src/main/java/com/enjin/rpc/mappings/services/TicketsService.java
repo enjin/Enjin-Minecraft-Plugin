@@ -46,13 +46,12 @@ public class TicketsService implements Service {
             session = EnjinRPC.getSession();
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
-            RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {
-            }.getType());
+            RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {}.getType());
 
             RPCResult result = null;
             if (data.getError() != null) {
                 if (data.getError().getMessage().equalsIgnoreCase("Please supply a registered minecraft player.")) {
-                    result = new RPCResult(ResultType.PLAYER_NOT_REGISTERED, "You must be registered to the website to submit a ticket.", request, response);
+                    result = new RPCResult(ResultType.PLAYER_NOT_REGISTERED, "You must be registered to the website to lookup your tickets", request, response);
                 }
             } else {
                 result = new RPCResult(ResultType.SUCCESS, "Successfully fetched players tickets", request, response);
@@ -67,26 +66,42 @@ public class TicketsService implements Service {
         return new RPCResult(ResultType.UNKNOWN_ERROR, "There was an error while sending your request to Enjin.", request, response);
     }
 
-    public List<Ticket> getTickets(final String authkey, final int preset) {
+    public RPCResult getTickets(final String authkey, final int preset, final TicketStatus status) {
         String method = "Tickets.getTickets";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
             put("preset_id", preset);
+            put("status", status.name());
         }};
         int id = 1;
 
+        JSONRPC2Session session = null;
+        JSONRPC2Request request = null;
+        JSONRPC2Response response = null;
+
         try {
-            JSONRPC2Session session = EnjinRPC.getSession();
-            JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
-            JSONRPC2Response response = session.send(request);
+            session = EnjinRPC.getSession();
+            request = new JSONRPC2Request(method, parameters, id);
+            response = session.send(request);
             RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {
             }.getType());
-            return data.getResult();
+
+            RPCResult result = null;
+            if (data.getError() != null) {
+                if (data.getError().getMessage().equalsIgnoreCase("Please supply a registered minecraft player.")) {
+                    result = new RPCResult(ResultType.PLAYER_NOT_REGISTERED, "You must be registered to the website to lookup your tickets", request, response);
+                }
+            } else {
+                result = new RPCResult(ResultType.SUCCESS, "Successfully fetched players tickets", request, response);
+                result.setData(data.getResult());
+            }
+
+            return result;
         } catch (JSONRPC2SessionException e) {
             e.printStackTrace();
         }
 
-        return Collections.emptyList();
+        return new RPCResult(ResultType.UNKNOWN_ERROR, "There was an error while sending your request to Enjin.", request, response);
     }
 
     public Map<Integer, Module> getModules(final String authkey) {
