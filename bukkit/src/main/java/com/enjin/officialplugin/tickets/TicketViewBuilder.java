@@ -30,7 +30,7 @@ public class TicketViewBuilder {
                 .color(ChatColor.GOLD);
 
         for (Ticket ticket : tickets) {
-            builder.append(ticket.getCode() + ") " + ticket.getSubject() + "(" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay((System.currentTimeMillis() / 1000) - ticket.getUpdated()) + " ago)\n")
+            builder.append(ticket.getCode() + ") " + ticket.getSubject() + " (" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay((System.currentTimeMillis() / 1000) - ticket.getUpdated()) + " ago)\n")
                     .color(ChatColor.GREEN)
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/e ticket " + ticket.getCode()));
         }
