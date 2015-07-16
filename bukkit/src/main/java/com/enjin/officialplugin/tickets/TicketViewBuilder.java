@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class TicketViewBuilder {
     private static final DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss dd-MM-yyyy");
@@ -29,7 +30,7 @@ public class TicketViewBuilder {
                 .color(ChatColor.GOLD);
 
         for (Ticket ticket : tickets) {
-            builder.append(ticket.getCode() + ") " + ticket.getSubject() + "(" + ticket.getReplyCount() + " Replies)\n")
+            builder.append(ticket.getCode() + ") " + ticket.getSubject() + "(" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay((System.currentTimeMillis() / 1000) - ticket.getUpdated()) + " ago)\n")
                     .color(ChatColor.GREEN)
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/e ticket " + ticket.getCode()));
         }
@@ -66,5 +67,19 @@ public class TicketViewBuilder {
         }
 
         return builder.create();
+    }
+
+    private static String getLastUpdateDisplay(long time) {
+        if (time < 60) {
+            return time + " seconds";
+        } else if (time < 60 * 60) {
+            return TimeUnit.SECONDS.toMinutes(time) + " minutes";
+        } else if (time < 24 * 60 * 60) {
+            return TimeUnit.SECONDS.toHours(time) + " hours";
+        } else if (time < 365 * 24 * 60 * 60) {
+            return TimeUnit.SECONDS.toDays(time) + " days";
+        } else {
+            return (TimeUnit.SECONDS.toDays(time) / 365) + " years";
+        }
     }
 }
