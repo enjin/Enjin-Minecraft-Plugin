@@ -60,8 +60,11 @@ public class TicketViewBuilder {
                         .color(ChatColor.GOLD);
             }
 
-            builder.append(reply.getUsername() + ChatColor.GRAY.toString() + " (" + ChatColor.GREEN.toString() + dateFormat.format(new Date(reply.getSent())) + ChatColor.GRAY.toString() + ")" + ChatColor.DARK_GRAY.toString() + ":\n")
+            builder.append(reply.getUsername() + ChatColor.GRAY.toString() + " (" + ChatColor.GREEN.toString() + dateFormat.format(new Date(reply.getSent() * 1000)) + ChatColor.GRAY.toString() + ")" + ChatColor.DARK_GRAY.toString() + ":\n")
                     .color(ChatColor.GREEN);
+            if (reply.getMode().equalsIgnoreCase("private")) {
+                builder.append(ChatColor.DARK_GRAY.toString() + "(" + ChatColor.GRAY.toString() + "Private" + ChatColor.DARK_GRAY.toString() + ") ");
+            }
             builder.append(reply.getText().replaceAll("\\s+", " ").replace("<br>", "\n").replace("<b>", ChatColor.GRAY.toString() + ChatColor.BOLD.toString()).replace("</b>", ChatColor.DARK_GRAY.toString() + ":" + ChatColor.GOLD.toString()) + "\n")
                     .color(ChatColor.GOLD);
         }
