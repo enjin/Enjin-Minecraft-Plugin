@@ -192,10 +192,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     private EnjinLogInterface mcloglistener = null;
 
     static public String apiurl = "://api.enjin.com/api/";
-    //static public String apiurl = "://gamers.enjin.ca/api/";
-    //static public String apiurl = "://tuxreminder.info/api/";
-    //static public String apiurl = "://mxm.enjin.com/api/";
-    //static public String apiurl = "://api.enjin.ca/api/";
 
     public boolean autoupdate = true;
     public String newversion = "";
@@ -1664,7 +1660,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                 List<Reply> replies = service.getReplies(getHash(), -1, args[1], player.getName());
 
                                 if (replies.size() > 0) {
-                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(replies, player.hasPermission("enjin.ticket.private")));
+                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[1], replies, player.hasPermission("enjin.ticket.private")));
                                 } else {
                                     player.sendMessage("You entered an invalid ticket code!");
                                 }
@@ -1722,7 +1718,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                 List<Reply> replies = service.getReplies(getHash(), -1, args[1], player.getName());
 
                                 if (replies.size() > 0) {
-                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(replies, player.hasPermission("enjin.ticket.private")));
+                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[1], replies, player.hasPermission("enjin.ticket.private")));
                                 } else {
                                     player.sendMessage("You entered an invalid ticket code!");
                                 }
@@ -1731,6 +1727,102 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     }
 
                     return true;
+                } else if (args[0].equalsIgnoreCase("reply")) {
+                    if (!sender.hasPermission("enjin.ticket.reply")) {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou need to have the \"enjin.ticket.reply\" permission or OP to run that command!"));
+                        return true;
+                    }
+
+                    if (getHash() == null) {
+                        sender.sendMessage("Cannot use this command without setting your key.");
+                        return true;
+                    }
+
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage("Only players can reply to tickets.");
+                        return true;
+                    }
+
+                    if (args.length < 4) {
+                        sender.sendMessage("Usage: /e reply <#> <message>");
+                        return true;
+                    } else {
+                        final int preset;
+                        try {
+                            preset = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException e) {
+                            sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+                            return true;
+                        }
+                        final String ticket = args[2];
+                        String message = "";
+                        for (String arg : Arrays.copyOfRange(args, 3, args.length)) {
+                            message = message.concat(arg + " ");
+                        }
+                        message.trim();
+                        final String finalMessage = message;
+
+                        Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                boolean result = EnjinServices.getService(TicketsService.class).sendReply(getHash(), preset, ticket, finalMessage, "public", TicketStatus.open, ((Player) sender).getName());
+                                if (result) {
+                                    sender.sendMessage("You replied to the ticket successfully.");
+                                } else {
+                                    sender.sendMessage("We were unable to send your reply.");
+                                }
+                            }
+                        });
+                        return true;
+                    }
+                } else if (args[0].equalsIgnoreCase("ticketstatus")) {
+                    if (!sender.hasPermission("enjin.ticket.status")) {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou need to have the \"enjin.ticket.status\" permission or OP to run that command!"));
+                        return true;
+                    }
+
+                    if (getHash() == null) {
+                        sender.sendMessage("Cannot use this command without setting your key.");
+                        return true;
+                    }
+
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage("Only players can change ticket status.");
+                        return true;
+                    }
+
+                    if (args.length != 4) {
+                        sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+                        return true;
+                    } else {
+                        final int preset;
+                        try {
+                            preset = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException e) {
+                            sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+                            return true;
+                        }
+                        final String ticket = args[2];
+                        final TicketStatus status = TicketStatus.valueOf(args[3].toLowerCase());
+
+                        if (status == null) {
+                            sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+                            return true;
+                        }
+
+                        Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                boolean result = EnjinServices.getService(TicketsService.class).setStatus(getHash(), preset, ticket, status);
+                                if (result) {
+                                    sender.sendMessage("The tickets status was successfully changed to " + status.name());
+                                } else {
+                                    sender.sendMessage("The tickets status was unable to be changed to " + status.name());
+                                }
+                            }
+                        });
+                        return true;
+                    }
                 }
             } else {
 				/*

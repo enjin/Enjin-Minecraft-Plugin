@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 
+import com.enjin.officialplugin.packets.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -26,21 +27,6 @@ import org.bukkit.plugin.Plugin;
 import com.enjin.officialplugin.CommandWrapper;
 import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.packets.Packet10AddPlayerGroup;
-import com.enjin.officialplugin.packets.Packet11RemovePlayerGroup;
-import com.enjin.officialplugin.packets.Packet12ExecuteCommand;
-import com.enjin.officialplugin.packets.Packet13ExecuteCommandAsPlayer;
-import com.enjin.officialplugin.packets.Packet14DummyHandler;
-import com.enjin.officialplugin.packets.Packet14NewerVersion;
-import com.enjin.officialplugin.packets.Packet15RemoteConfigUpdate;
-import com.enjin.officialplugin.packets.Packet16MultiUserNotice;
-import com.enjin.officialplugin.packets.Packet17AddWhitelistPlayers;
-import com.enjin.officialplugin.packets.Packet18RemovePlayersFromWhitelist;
-import com.enjin.officialplugin.packets.Packet1ABanPlayers;
-import com.enjin.officialplugin.packets.Packet1BPardonPlayers;
-import com.enjin.officialplugin.packets.Packet1DPlayerPurchase;
-import com.enjin.officialplugin.packets.Packet1ECommandsReceived;
-import com.enjin.officialplugin.packets.PacketUtilities;
 import com.enjin.officialplugin.stats.WriteStats;
 
 /**
@@ -515,12 +501,6 @@ public class PeriodicEnjinTask implements Runnable {
                     commandsrecieved = true;
                     Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
                     break;
-                case 0x0A:
-                    EnjinMinecraftPlugin.debug("Packet [0x0A](New Line) received, ignoring...");
-                    break;
-                case 0x0D:
-                    EnjinMinecraftPlugin.debug("Packet [0x0D](Carriage Return) received, ignoring...");
-                    break;
                 case 0x14:
                     EnjinMinecraftPlugin.debug("Packet [0x14](Newer Version) received.");
                     if (EnjinMinecraftPlugin.bukkitversion) {
@@ -566,15 +546,9 @@ public class PeriodicEnjinTask implements Runnable {
                     Packet1ECommandsReceived.handle(bin, plugin);
                     commandsrecieved = true;
                     break;
-                case 0x3C:
-                    EnjinMinecraftPlugin.debug("Packet [0x3C](Enjin Maintenance Page) received. Aborting sync.");
-                    bin.reset();
-                    StringBuilder input1 = new StringBuilder();
-                    while ((code = bin.read()) != -1) {
-                        input1.append((char) code);
-                    }
-                    EnjinMinecraftPlugin.debug("Raw data received:\n" + input1.toString());
-                    return "retry_later";
+                case 0x1F:
+                    EnjinMinecraftPlugin.debug("Packet [0x1F] (Notifications) received.");
+                    Packet1FNotifications.handle(bin, plugin);
                 default:
                     EnjinMinecraftPlugin.debug("[Enjin] Received an invalid opcode: " + code);
                     bin.reset();
