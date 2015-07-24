@@ -513,10 +513,6 @@ public class PeriodicEnjinTask implements Runnable {
                     EnjinMinecraftPlugin.debug("Packet [0x15](Remote Config Update) received.");
                     Packet15RemoteConfigUpdate.handle(bin, plugin);
                     break;
-                case 0x16:
-                    EnjinMinecraftPlugin.debug("Packet [0x16](Multi-user Notice) received.");
-                    Packet16MultiUserNotice.handle(bin, plugin);
-                    break;
                 case 0x17:
                     EnjinMinecraftPlugin.debug("Packet [0x17](Add Whitelist Players) received.");
                     Packet17AddWhitelistPlayers.handle(bin, plugin);
