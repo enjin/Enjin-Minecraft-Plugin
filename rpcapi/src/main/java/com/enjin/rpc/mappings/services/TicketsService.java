@@ -30,12 +30,17 @@ public class TicketsService implements Service {
             .registerTypeAdapter(Question.class, new QuestionDeserializer())
             .create();
 
-    public RPCResult getPlayerTickets(final String authkey, final String player) {
+    public RPCResult getPlayerTickets(final String authkey, final int preset, final String player) {
         String method = "Tickets.getPlayerTickets";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
             put("minecraft_player", player);
         }};
+
+        if (!(preset == -1)) {
+            parameters.put("preset_id", preset);
+        }
+
         int id = 1;
 
         JSONRPC2Session session = null;
@@ -70,9 +75,13 @@ public class TicketsService implements Service {
         String method = "Tickets.getTickets";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
-            put("preset_id", preset);
             put("status", status.name());
         }};
+
+        if (!(preset == -1)) {
+            parameters.put("preset_id", preset);
+        }
+
         int id = 1;
 
         JSONRPC2Session session = null;

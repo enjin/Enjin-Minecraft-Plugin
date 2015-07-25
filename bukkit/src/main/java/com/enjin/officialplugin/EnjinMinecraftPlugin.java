@@ -1639,7 +1639,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketsService service = EnjinServices.getService(TicketsService.class);
-                                RPCResult result = service.getPlayerTickets(getHash(), player.getName());
+                                RPCResult result = service.getPlayerTickets(getHash(), -1, player.getName());
 
                                 if (result.getType() == ResultType.SUCCESS) {
                                     List<Ticket> tickets = (List<Ticket>) result.getData();
@@ -1693,13 +1693,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                                 TicketsService service = EnjinServices.getService(TicketsService.class);
                                 List<Ticket> tickets = Lists.newArrayList();
 
-                                for (Integer id : getModules().keySet()) {
-                                    RPCResult result = service.getTickets(getHash(), id, TicketStatus.open);
+                                RPCResult result = service.getTickets(getHash(), -1, TicketStatus.open);
 
-                                    if (result.getType() == ResultType.SUCCESS) {
-                                        List<Ticket> ticks = (List<Ticket>) result.getData();
-                                        tickets.addAll(ticks);
-                                    }
+                                if (result.getType() == ResultType.SUCCESS) {
+                                    List<Ticket> ticks = (List<Ticket>) result.getData();
+                                    tickets.addAll(ticks);
                                 }
 
                                 if (tickets.size() > 0) {
