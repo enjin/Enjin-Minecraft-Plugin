@@ -51,7 +51,8 @@ public class TicketsService implements Service {
             session = EnjinRPC.getSession();
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
-            RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {}.getType());
+            RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {
+            }.getType());
 
             RPCResult result = null;
             if (data.getError() != null) {
@@ -120,14 +121,18 @@ public class TicketsService implements Service {
         }};
         int id = 1;
 
+        JSONRPC2Session session = null;
+        JSONRPC2Request request = null;
+        JSONRPC2Response response = null;
+
         try {
-            JSONRPC2Session session = EnjinRPC.getSession();
-            JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
-            JSONRPC2Response response = session.send(request);
-            RPCData<Map<Integer, Module>> data = GSON_QUESTION.fromJson(response.toJSONString(), new TypeToken<RPCData<HashMap<Integer, Module>>>() {
-            }.getType());
+            session = EnjinRPC.getSession();
+            request = new JSONRPC2Request(method, parameters, id);
+            response = session.send(request);
+            RPCData<Map<Integer, Module>> data = GSON_QUESTION.fromJson(response.toJSONString(), new TypeToken<RPCData<HashMap<Integer, Module>>>() {}.getType());
             return data.getResult();
         } catch (JSONRPC2SessionException e) {
+            EnjinRPC.debug("Failed Request to " + EnjinRPC.getApiUrl() + ": to" + request.toJSONString());
             e.printStackTrace();
         }
 

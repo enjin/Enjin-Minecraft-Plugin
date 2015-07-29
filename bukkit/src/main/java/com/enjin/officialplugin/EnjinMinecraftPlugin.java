@@ -28,6 +28,7 @@ import com.enjin.core.EnjinServices;
 import com.enjin.officialplugin.tickets.TicketListener;
 import com.enjin.officialplugin.tickets.TicketCreationSession;
 import com.enjin.officialplugin.tickets.TicketViewBuilder;
+import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCResult;
 import com.enjin.rpc.mappings.mappings.general.ResultType;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
@@ -481,6 +482,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     }
 
     private void prepareTicketService() {
+        EnjinRPC.setLogger(logger);
+        EnjinRPC.setDebug(debug);
+
         ticketListener = new TicketListener();
         Bukkit.getPluginManager().registerEvents(ticketListener, this);
 
@@ -697,6 +701,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         listenforbans = config.getBoolean("listenforbans", listenforbans);
         configvalues.put("listenforbans", ConfigValueTypes.BOOLEAN);
         autoupdate = config.getBoolean("listenforbans", true);
+
+        if (!apiurl.endsWith("/")) {
+            apiurl = apiurl.concat("/");
+        }
+
+        String rpcapiurl = (usingSSL ? "https" : "http") + apiurl + "v1/api.php/";
+        EnjinRPC.setApiUrl(rpcapiurl);
+        debug("RPC API Url: " + rpcapiurl);
     }
 
     private void createConfig() {
