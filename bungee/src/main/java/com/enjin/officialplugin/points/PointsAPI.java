@@ -13,7 +13,7 @@ import net.md_5.bungee.api.ProxyServer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.enjin.emp.bungee.EnjinPlugin;
+import com.enjin.officialplugin.EnjinPlugin;
 
 public class PointsAPI {
 

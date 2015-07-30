@@ -3,8 +3,8 @@ package com.enjin.officialplugin.packets;
 import java.io.BufferedInputStream;
 import java.io.File;
 
-import com.enjin.emp.bungee.DownloadPluginThread;
-import com.enjin.emp.bungee.EnjinPlugin;
+import com.enjin.officialplugin.DownloadPluginThread;
+import com.enjin.officialplugin.EnjinPlugin;
 import net.md_5.bungee.api.ProxyServer;
 
 public class Packet14NewerVersion {

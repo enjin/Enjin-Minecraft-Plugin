@@ -5,8 +5,8 @@ import java.io.BufferedInputStream;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import com.enjin.emp.bungee.EnjinConsole;
-import com.enjin.emp.bungee.EnjinPlugin;
+import com.enjin.officialplugin.EnjinConsole;
+import com.enjin.officialplugin.EnjinPlugin;
 
 /**
  * @author OverCaste (Enjin LTE PTD).

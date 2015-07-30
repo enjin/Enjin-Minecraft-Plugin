@@ -1,4 +1,4 @@
-package com.enjin.emp.bungee;
+package com.enjin.officialplugin;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;

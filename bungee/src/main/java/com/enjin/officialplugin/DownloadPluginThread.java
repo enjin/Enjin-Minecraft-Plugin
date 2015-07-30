@@ -1,4 +1,4 @@
-package com.enjin.emp.bungee;
+package com.enjin.officialplugin;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -17,7 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.enjin.emp.bungee.EnjinPlugin;
+import com.enjin.officialplugin.EnjinPlugin;
 import com.enjin.officialplugin.points.ErrorConnectingToEnjinException;
 import com.enjin.officialplugin.points.PlayerDoesNotExistException;
 import com.enjin.officialplugin.points.PointsAPI;

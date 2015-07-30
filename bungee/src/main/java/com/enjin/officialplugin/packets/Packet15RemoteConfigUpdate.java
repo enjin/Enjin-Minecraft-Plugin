@@ -2,8 +2,8 @@ package com.enjin.officialplugin.packets;
 
 import java.io.BufferedInputStream;
 
-import com.enjin.emp.bungee.ConfigValueTypes;
-import com.enjin.emp.bungee.EnjinPlugin;
+import com.enjin.officialplugin.ConfigValueTypes;
+import com.enjin.officialplugin.EnjinPlugin;
 
 /**
  * @author OverCaste (Enjin LTE PTD).

@@ -1,4 +1,4 @@
-package com.enjin.emp.bungee;
+package com.enjin.officialplugin;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -19,7 +19,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import com.enjin.emp.bungee.ServerListPing17.StatusResponse;
 import com.enjin.officialplugin.packets.Packet14NewerVersion;
 import com.enjin.officialplugin.packets.Packet15RemoteConfigUpdate;
 import com.enjin.officialplugin.packets.Packet16MultiUserNotice;
@@ -284,7 +283,7 @@ public class PeriodicEnjinTask implements Runnable {
             String name = info.getName();
             int maxplayers = -1;
             try {
-                StatusResponse serverdata = ServerListPing17.getServerDetails(server.getValue().getAddress(), 500);
+                ServerListPing17.StatusResponse serverdata = ServerListPing17.getServerDetails(server.getValue().getAddress(), 500);
 
                 if (serverdata == null) {
                     continue;
