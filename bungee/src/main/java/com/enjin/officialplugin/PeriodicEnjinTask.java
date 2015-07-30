@@ -6,12 +6,11 @@ import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -31,18 +30,26 @@ import com.enjin.officialplugin.packets.PacketUtilities;
  */
 
 public class PeriodicEnjinTask implements Runnable {
-
-    EnjinPlugin plugin;
-    ConcurrentHashMap<String, String> removedplayerperms = new ConcurrentHashMap<String, String>();
-    ConcurrentHashMap<String, String> removedplayervotes = new ConcurrentHashMap<String, String>();
-    HashMap<String, String> removedbans = new HashMap<String, String>();
-    HashMap<String, String> removedpardons = new HashMap<String, String>();
-    int numoffailedtries = 0;
-    int plugindelay = 60;
-    boolean firstrun = true;
+    private EnjinPlugin plugin;
+    private ConcurrentHashMap<String, String> removedplayerperms = new ConcurrentHashMap<String, String>();
+    private ConcurrentHashMap<String, String> removedplayervotes = new ConcurrentHashMap<String, String>();
+    private HashMap<String, String> removedbans = new HashMap<String, String>();
+    private HashMap<String, String> removedpardons = new HashMap<String, String>();
+    private int numoffailedtries = 0;
+    private int plugindelay = 60;
+    private boolean firstrun = true;
+    private boolean redisBungeeEnabled;
 
     public PeriodicEnjinTask(EnjinPlugin plugin) {
         this.plugin = plugin;
+
+        List<Plugin> plugins = new ArrayList<Plugin>(ProxyServer.getInstance().getPluginManager().getPlugins());
+        for (Plugin plug : plugins) {
+            if (plug.getDescription().getName().equalsIgnoreCase("RedisBungee")) {
+                EnjinPlugin.getInstance().getLogger().info("RedisBungee has been detected. Using RedisBungee to retrieve players.");
+                redisBungeeEnabled = true;
+            }
+        }
     }
 
     private URL getUrl() throws Throwable {
@@ -280,7 +287,7 @@ public class PeriodicEnjinTask implements Runnable {
         while (servers.hasNext()) {
             Entry<String, ServerInfo> server = servers.next();
             ServerInfo info = server.getValue();
-            String name = info.getName();
+            String serverName = info.getName();
             int maxplayers = -1;
             try {
                 ServerListPing17.StatusResponse serverdata = ServerListPing17.getServerDetails(server.getValue().getAddress(), 500);
@@ -298,21 +305,40 @@ public class PeriodicEnjinTask implements Runnable {
             if (builder.length() > 0) {
                 builder.append(",");
             }
-            builder.append("{" + name + "|");
+            builder.append("{" + serverName + "|");
             boolean first = true;
-            for (ProxiedPlayer player : players) {
-                if (first) {
-                    if (EnjinPlugin.supportsUUID()) {
-                        builder.append(player.getUniqueId().toString() + ":" + player.getName());
+            if (!redisBungeeEnabled) {
+                for (ProxiedPlayer player : players) {
+                    if (first) {
+                        if (EnjinPlugin.supportsUUID()) {
+                            builder.append(player.getUniqueId().toString() + ":" + player.getName());
+                        } else {
+                            builder.append(player.getName());
+                        }
+                        first = false;
                     } else {
-                        builder.append(player.getName());
+                        if (EnjinPlugin.supportsUUID()) {
+                            builder.append("," + player.getUniqueId().toString() + ":" + player.getName());
+                        } else {
+                            builder.append("," + player.getName());
+                        }
                     }
-                    first = false;
-                } else {
-                    if (EnjinPlugin.supportsUUID()) {
-                        builder.append("," + player.getUniqueId().toString() + ":" + player.getName());
-                    } else {
-                        builder.append("," + player.getName());
+                }
+            } else {
+                List<UUID> rbplayers = new ArrayList<UUID>(RedisBungee.getApi().getPlayersOnServer(info.getName()));
+                if (rbplayers != null && !rbplayers.isEmpty()) {
+                    for (UUID uuid : rbplayers) {
+                        String name = RedisBungee.getApi().getNameFromUuid(uuid);
+                        if (name == null || name.isEmpty()) {
+                            continue;
+                        }
+
+                        if (!first) {
+                            builder.append(",");
+                            first = false;
+                        }
+
+                        builder.append(uuid.toString() + ":" + name);
                     }
                 }
             }

@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 public class ServerListPing17 {
@@ -30,6 +31,8 @@ public class ServerListPing17 {
         try {
             socket.connect(host, timeout);
         } catch (ConnectException e) {
+            return null;
+        } catch (SocketTimeoutException e) {
             return null;
         }
 
