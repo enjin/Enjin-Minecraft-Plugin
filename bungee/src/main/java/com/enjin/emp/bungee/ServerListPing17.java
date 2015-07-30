@@ -18,7 +18,6 @@ public class ServerListPing17 {
     public static StatusResponse getServerDetails(InetSocketAddress host, int timeout) throws IOException {
         Gson gson = new Gson();
 
-
         Socket socket = new Socket();
         OutputStream outputStream;
         DataOutputStream dataOutputStream;

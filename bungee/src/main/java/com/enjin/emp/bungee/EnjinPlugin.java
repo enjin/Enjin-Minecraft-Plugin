@@ -22,7 +22,6 @@ import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.officialplugin.packets.PacketUtilities;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -76,7 +75,7 @@ public class EnjinPlugin extends Plugin {
     public void onEnable() {
         instance = this;
         logger = getLogger();
-        mcversion = BungeeCord.getInstance().getGameVersion();
+        mcversion = ProxyServer.getInstance().getGameVersion();
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new EnjinCommand(this));
 
@@ -102,7 +101,7 @@ public class EnjinPlugin extends Plugin {
             debug("Logger initialized.");
 
         } catch (Throwable t) {
-            BungeeCord.getInstance().getLogger().warning("[Enjin Bungee Plugin] Couldn't enable EnjinMinecraftPlugin logger! Reason: " + t.getMessage());
+            ProxyServer.getInstance().getLogger().warning("[Enjin Bungee Plugin] Couldn't enable EnjinMinecraftPlugin logger! Reason: " + t.getMessage());
             enjinlogger.warning("Couldn't enable EnjinMinecraftPlugin's logger! Reason: " + t.getMessage());
             t.printStackTrace();
         }
@@ -141,7 +140,7 @@ public class EnjinPlugin extends Plugin {
     }
 
     public void enableTasks() {
-        checkintask = BungeeCord.getInstance().getScheduler().schedule(this, new PeriodicEnjinTask(this), 1, 1, TimeUnit.MINUTES);
+        checkintask = ProxyServer.getInstance().getScheduler().schedule(this, new PeriodicEnjinTask(this), 1, 1, TimeUnit.MINUTES);
     }
 
     public void stopTask() {
@@ -152,7 +151,7 @@ public class EnjinPlugin extends Plugin {
     }
 
     public void initFiles() {
-        Iterator<ListenerInfo> listeners = BungeeCord.getInstance().config.getListeners().iterator();
+        Iterator<ListenerInfo> listeners = ProxyServer.getInstance().getConfig().getListeners().iterator();
         if (listeners.hasNext()) {
             ListenerInfo info = listeners.next();
             minecraftport = String.valueOf(info.getHost().getPort());
@@ -248,7 +247,7 @@ public class EnjinPlugin extends Plugin {
     public void noEnjinConnectionEvent() {
         if (!unabletocontactenjin) {
             unabletocontactenjin = true;
-            Collection<ProxiedPlayer> players = BungeeCord.getInstance().getPlayers();
+            Collection<ProxiedPlayer> players = ProxyServer.getInstance().getPlayers();
             for (ProxiedPlayer player : players) {
                 if (player.hasPermission("enjin.notify.connectionstatus")) {
                     TextComponent message = new TextComponent("[Enjin Bungee Plugin] Unable to connect to enjin, please check your settings.");
@@ -320,17 +319,17 @@ public class EnjinPlugin extends Plugin {
             return 0;
         } catch (SSLHandshakeException e) {
             enjinlogger.warning("SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
-            BungeeCord.getInstance().getLogger().warning("[Enjin Bungee Plugin] SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
+            ProxyServer.getInstance().getLogger().warning("[Enjin Bungee Plugin] SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
             usingSSL = false;
             return sendAPIQuery(urls, queryValues);
         } catch (SocketTimeoutException e) {
             enjinlogger.warning("Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-            BungeeCord.getInstance().getLogger().warning("[Enjin Bungee Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
+            ProxyServer.getInstance().getLogger().warning("[Enjin Bungee Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
             return 2;
         } catch (Throwable t) {
             t.printStackTrace();
             enjinlogger.warning("Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
-            BungeeCord.getInstance().getLogger().warning("[Enjin Bungee Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
+            ProxyServer.getInstance().getLogger().warning("[Enjin Bungee Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
             return 2;
         }
     }

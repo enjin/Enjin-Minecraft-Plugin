@@ -1,8 +1,8 @@
 package com.enjin.officialplugin.points;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import com.enjin.officialplugin.points.PointsAPI.Type;
@@ -41,7 +41,7 @@ public class EnjinPointsSyncClass implements Runnable {
                     toplayer = "set your points balance.";
             }
             sender.sendMessage(ChatColor.DARK_GREEN + "Successfully " + addremove + " " + points + " points to player " + playername + "! The player now has " + amount + " points.");
-            ProxiedPlayer p = BungeeCord.getInstance().getPlayer(playername);
+            ProxiedPlayer p = ProxyServer.getInstance().getPlayer(playername);
             if (p != null) {
                 p.sendMessage(ChatColor.GOLD + sender.getName() + ChatColor.YELLOW + " just " + toplayer + " You now have " + ChatColor.DARK_GREEN + amount + " points.");
             }

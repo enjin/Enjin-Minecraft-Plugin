@@ -12,8 +12,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -86,7 +86,7 @@ public class PeriodicEnjinTask implements Runnable {
                 builder.append("&maxplayers=" + encode(String.valueOf(plugin.getProxy().getConfig().getPlayerLimit()))); //max players
                 builder.append("&mc_version=" + encode(plugin.mcversion));
             }
-            builder.append("&players=" + encode(String.valueOf(BungeeCord.getInstance().getOnlineCount()))); //current players
+            builder.append("&players=" + encode(String.valueOf(ProxyServer.getInstance().getOnlineCount()))); //current players
             builder.append("&pluginversion=" + encode(plugin.getDescription().getVersion()));
             //We only want to send the list of plugins every hour
             if (plugindelay++ >= 59) {
@@ -104,7 +104,7 @@ public class PeriodicEnjinTask implements Runnable {
                 successful = true;
                 if (plugin.unabletocontactenjin) {
                     plugin.unabletocontactenjin = false;
-                    Collection<ProxiedPlayer> players = BungeeCord.getInstance().getPlayers();
+                    Collection<ProxiedPlayer> players = ProxyServer.getInstance().getPlayers();
                     for (ProxiedPlayer player : players) {
                         if (player.hasPermission("enjin.notify.connectionstatus")) {
                             TextComponent message = new TextComponent("[Enjin Bungee Plugin] Connection to Enjin re-established!");
@@ -119,7 +119,7 @@ public class PeriodicEnjinTask implements Runnable {
                 EnjinPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.stopTask();
-                Collection<ProxiedPlayer> players = BungeeCord.getInstance().getPlayers();
+                Collection<ProxiedPlayer> players = ProxyServer.getInstance().getPlayers();
                 for (ProxiedPlayer player : players) {
                     if (player.hasPermission("enjin.notify.invalidauthkey")) {
                         TextComponent message = new TextComponent("[Enjin Minecraft Plugin] Auth key is invalid. Please generate a new one.");
@@ -264,7 +264,7 @@ public class PeriodicEnjinTask implements Runnable {
 
     private String getPlugins() {
         StringBuilder builder = new StringBuilder();
-        Collection<Plugin> plugins = BungeeCord.getInstance().getPluginManager().getPlugins();
+        Collection<Plugin> plugins = ProxyServer.getInstance().getPluginManager().getPlugins();
         for (Plugin p : plugins) {
             builder.append(',');
             builder.append(p.getDescription().getName());
@@ -277,7 +277,7 @@ public class PeriodicEnjinTask implements Runnable {
 
     private String getServers() {
         StringBuilder builder = new StringBuilder();
-        Iterator<Entry<String, ServerInfo>> servers = BungeeCord.getInstance().getServers().entrySet().iterator();
+        Iterator<Entry<String, ServerInfo>> servers = ProxyServer.getInstance().getServers().entrySet().iterator();
         while (servers.hasNext()) {
             Entry<String, ServerInfo> server = servers.next();
             ServerInfo info = server.getValue();

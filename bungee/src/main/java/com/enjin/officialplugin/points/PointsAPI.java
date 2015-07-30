@@ -9,8 +9,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import net.md_5.bungee.BungeeCord;
-
+import net.md_5.bungee.api.ProxyServer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -34,7 +33,7 @@ public class PointsAPI {
      */
     public static void modifyPointsToPlayerAsynchronously(String player, int amount, Type type) {
         PointsSyncClass mthread = new PointsSyncClass(player, amount, type);
-        BungeeCord.getInstance().getScheduler().runAsync(EnjinPlugin.getInstance(), mthread);
+        ProxyServer.getInstance().getScheduler().runAsync(EnjinPlugin.getInstance(), mthread);
     }
 
     /**

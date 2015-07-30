@@ -2,7 +2,7 @@ package com.enjin.officialplugin.packets;
 
 import java.io.BufferedInputStream;
 
-import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import com.enjin.emp.bungee.EnjinConsole;
@@ -25,7 +25,7 @@ public class Packet16MultiUserNotice {
             message = EnjinConsole.translateColorCodes(message);
             String[] splitvalues = players.split(",");
             for (String playerstring : splitvalues) {
-                ProxiedPlayer player = BungeeCord.getInstance().getPlayer(playerstring);
+                ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerstring);
                 if (player != null) {
                     player.sendMessage(message);
                 }

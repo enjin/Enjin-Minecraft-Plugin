@@ -9,9 +9,9 @@ import com.enjin.officialplugin.points.EnjinPointsSyncClass;
 import com.enjin.officialplugin.points.PointsAPI;
 import com.enjin.officialplugin.points.RetrievePointsSyncClass;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -43,7 +43,7 @@ public class EnjinCommand extends Command {
                 //Make sure we don't have several verifier threads going at the same time.
                 if (plugin.verifier == null || plugin.verifier.completed) {
                     plugin.verifier = new NewKeyVerifier(plugin, args[1], sender, false);
-                    BungeeCord.getInstance().getScheduler().runAsync(plugin, plugin.verifier);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, plugin.verifier);
                 } else {
                     TextComponent message = new TextComponent("Please wait until we verify the key before you try again!");
                     message.setColor(ChatColor.RED);
@@ -77,12 +77,12 @@ public class EnjinCommand extends Command {
                 }
 
                 report.append("\nPlugins: \n");
-                Collection<Plugin> plugins = BungeeCord.getInstance().getPluginManager().getPlugins();
+                Collection<Plugin> plugins = ProxyServer.getInstance().getPluginManager().getPlugins();
                 for (Plugin p : plugins) {
                     report.append(p.getDescription().getName() + " version " + p.getDescription().getVersion() + "\n");
                 }
                 ReportMakerThread rmthread = new ReportMakerThread(plugin, report, sender);
-                BungeeCord.getInstance().getScheduler().runAsync(plugin, rmthread);
+                ProxyServer.getInstance().getScheduler().runAsync(plugin, rmthread);
                 return;
             } else if (args[0].equalsIgnoreCase("debug")) {
                 if (!sender.hasPermission("enjin.debug")) {
@@ -128,7 +128,7 @@ public class EnjinCommand extends Command {
                     message.setColor(ChatColor.GOLD);
                     sender.sendMessage(message);
                     EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.AddPoints);
-                    BungeeCord.getInstance().getScheduler().runAsync(plugin, mthread);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, mthread);
                 } else {
                     TextComponent message = new TextComponent("Usage: /benjin addpoints [player] [amount]");
                     message.setColor(ChatColor.DARK_RED);
@@ -163,7 +163,7 @@ public class EnjinCommand extends Command {
                     message.setColor(ChatColor.GOLD);
                     sender.sendMessage(message);
                     EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.RemovePoints);
-                    BungeeCord.getInstance().getScheduler().runAsync(plugin, mthread);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, mthread);
                 } else {
                     TextComponent message = new TextComponent("Usage: /benjin removepoints [player] [amount]");
                     message.setColor(ChatColor.DARK_RED);
@@ -192,7 +192,7 @@ public class EnjinCommand extends Command {
                     message.setColor(ChatColor.GOLD);
                     sender.sendMessage(message);
                     EnjinPointsSyncClass mthread = new EnjinPointsSyncClass(sender, playername, pointsamount, PointsAPI.Type.SetPoints);
-                    BungeeCord.getInstance().getScheduler().runAsync(plugin, mthread);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, mthread);
                 } else {
                     TextComponent message = new TextComponent("Usage: /benjin setpoints [player] [amount]");
                     message.setColor(ChatColor.DARK_RED);
@@ -206,13 +206,13 @@ public class EnjinCommand extends Command {
                     message.setColor(ChatColor.GOLD);
                     sender.sendMessage(message);
                     RetrievePointsSyncClass mthread = new RetrievePointsSyncClass(sender, playername, false);
-                    BungeeCord.getInstance().getScheduler().runAsync(plugin, mthread);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, mthread);
                 } else if (sender.hasPermission("enjin.points.getself")) {
                     TextComponent message = new TextComponent("Please wait as we retrieve your points balance...");
                     message.setColor(ChatColor.GOLD);
                     sender.sendMessage(message);
                     RetrievePointsSyncClass mthread = new RetrievePointsSyncClass(sender, sender.getName(), true);
-                    BungeeCord.getInstance().getScheduler().runAsync(plugin, mthread);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, mthread);
                 } else {
                     TextComponent message = new TextComponent("I'm sorry, you don't have permission to check points!");
                     message.setColor(ChatColor.DARK_RED);
@@ -232,7 +232,7 @@ public class EnjinCommand extends Command {
                     message.setColor(ChatColor.GOLD);
                     sender.sendMessage(message);
                     EnjinRetrievePlayerTags mthread = new EnjinRetrievePlayerTags(playername, sender, plugin);
-                    BungeeCord.getInstance().getScheduler().runAsync(plugin, mthread);
+                    ProxyServer.getInstance().getScheduler().runAsync(plugin, mthread);
                 } else {
                     TextComponent message = new TextComponent("Usage: /benjin tags <player>");
                     message.setColor(ChatColor.DARK_RED);
