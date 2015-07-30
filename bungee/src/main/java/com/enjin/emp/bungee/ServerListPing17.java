@@ -60,23 +60,27 @@ public class ServerListPing17 {
 
         if (id == -1) {
             socket.close();
-            throw new IOException("Premature end of stream.");
+            return null;
+            //throw new IOException("Premature end of stream.");
         }
 
         if (id != 0x00) { //we want a status response
             socket.close();
-            throw new IOException("Invalid packetID");
+            return null;
+            //throw new IOException("Invalid packetID");
         }
         int length = readVarInt(dataInputStream); //length of json string
 
         if (length == -1) {
             socket.close();
-            throw new IOException("Premature end of stream.");
+            return null;
+            //throw new IOException("Premature end of stream.");
         }
 
         if (length == 0) {
             socket.close();
-            throw new IOException("Invalid string length.");
+            return null;
+            //throw new IOException("Invalid string length.");
         }
 
         byte[] in = new byte[length];
