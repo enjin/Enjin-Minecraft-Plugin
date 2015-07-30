@@ -68,6 +68,11 @@ public class PlayerShopInstance {
     }
 
     public void updateCategory(int index) {
+        if (index < 0) {
+            activeCategory = null;
+            return;
+        }
+
         List<Category> categories = activeCategory == null ? (activeShop == null ? null : activeShop.getCategories()) : activeCategory.getCategories();
 
         if (categories == null || categories.isEmpty()) {
@@ -75,9 +80,7 @@ public class PlayerShopInstance {
             return;
         }
 
-        if (index < 0) {
-            activeCategory = null;
-        } else if (index < categories.size()) {
+        if (index < categories.size()) {
             activeCategory = categories.get(index);
         } else {
             activeCategory = categories.get(categories.size() - 1);

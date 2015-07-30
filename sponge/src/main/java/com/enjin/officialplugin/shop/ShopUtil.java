@@ -2,6 +2,7 @@ package com.enjin.officialplugin.shop;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.data.Category;
+import com.enjin.officialplugin.shop.data.Item;
 import com.enjin.officialplugin.shop.data.Shop;
 import com.enjin.officialplugin.utils.text.TextUtils;
 import com.google.common.collect.Lists;
@@ -12,11 +13,13 @@ import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
 public class ShopUtil {
     private static Gson gson = new GsonBuilder().create();
+    private static DecimalFormat priceFormat = new DecimalFormat("#.00");
 
     public static List<Shop> getShopsFromJSON(String json) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
@@ -53,7 +56,7 @@ public class ShopUtil {
                     sendAvailableCategories(player, instance, page < 1 ? 1 : page);
                 } else {
                     plugin.debug("Sending a list of items to " + player.getName());
-                    // TODO: Send Items
+                    sendAvailableItems(player, instance, page);
                 }
             }
         }
@@ -85,15 +88,33 @@ public class ShopUtil {
 
         if (instance.getActiveCategory() == null) {
             builder.append(buildHeader(shop.getName(), shop))
-                    .append(buildShopInfo(shop))
-                    .append(buildCategoryContent(shop, shop.getCategories(), page))
+                    .append(buildShopInfo(shop, false))
+                    .append(buildCategoryListContent(shop, shop.getCategories(), page))
                     .append(buildFooterInfo(shop))
                     .append(buildFooter("Type /buy page #", shop, page));
         } else {
             Category category = instance.getActiveCategory();
             builder.append(buildHeader(category.getName(), shop))
-                    .append(buildShopInfo(shop))
-                    .append(buildCategoryContent(shop, category.getCategories(), page))
+                    .append(buildShopInfo(shop, false))
+                    .append(buildCategoryListContent(shop, category.getCategories(), page))
+                    .append(buildFooterInfo(shop))
+                    .append(buildFooter("Type /buy page #", shop, page));
+        }
+
+        player.sendMessage(builder.build());
+    }
+
+    private static void sendAvailableItems(Player player, PlayerShopInstance instance, int page) {
+        TextBuilder builder = Texts.builder().color(TextColors.RED);
+        Shop shop = instance.getActiveShop();
+
+        if (instance.getActiveCategory() == null) {
+            builder.append(Texts.of("You must select a category before you can view the item list"));
+        } else {
+            Category category = instance.getActiveCategory();
+            builder.append(buildHeader(category.getName(), shop))
+                    .append(buildShopInfo(shop, true))
+                    .append(buildItemListContent(player, shop, category.getItems(), page))
                     .append(buildFooterInfo(shop))
                     .append(buildFooter("Type /buy page #", shop, page));
         }
@@ -126,7 +147,7 @@ public class ShopUtil {
         return Texts.builder(TextUtils.trim(header.toString(), null) + "\n").build();
     }
 
-    private static Text buildShopInfo(Shop shop) {
+    private static Text buildShopInfo(Shop shop, boolean items) {
         StringBuilder builder = new StringBuilder()
                 .append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
                 .append(shop.getBorderV())
@@ -135,7 +156,7 @@ public class ShopUtil {
                 .append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
                 .append(shop.getBorderV())
                 .append(Texts.replaceCodes("&" + shop.getColortext(), '&'))
-                .append(" " + "Prices are in " + shop.getCurrency() + ". Choose a category with ")
+                .append(" " + "Prices are in " + shop.getCurrency() + ". Choose " + (items ? "an item" : "a category") + " with ")
                 .append(Texts.replaceCodes("&" + shop.getColorbottom(), '&'))
                 .append("/buy #")
                 .append("\n");
@@ -143,7 +164,7 @@ public class ShopUtil {
         return Texts.builder(builder.toString()).build();
     }
 
-    private static Text buildCategoryContent(Shop shop, List<Category> categories, int page) {
+    private static Text buildCategoryListContent(Shop shop, List<Category> categories, int page) {
         if (page < 1) {
             page = 1;
         }
@@ -191,6 +212,76 @@ public class ShopUtil {
 
             if (descriptionBuilder.length() > 0) {
                 builder.append(TextUtils.trim(descriptionBuilder.toString(), null) + "\n");
+            }
+
+            builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                    .append(shop.getBorderV() + "\n");
+        }
+
+        return Texts.builder(builder.toString()).build();
+    }
+
+    private static Text buildItemListContent(Player player, Shop shop, List<Item> items, int page) {
+        int maxEntries = shop.isSimpleitems() ? 8 : 4;
+
+        if (page < 1) {
+            page = 1;
+        }
+
+        int pages = (int) Math.ceil((double) items.size() / maxEntries);
+        if (page > pages) {
+            page = pages;
+        }
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                .append(shop.getBorderV())
+                .append("\n");
+
+        int start = (page - 1) * maxEntries;
+        for (int i = start; i < start + maxEntries; i++) {
+            if (i >= items.size()) {
+                break;
+            }
+
+            Item item = items.get(i);
+
+            if (item == null) {
+                break;
+            }
+
+            builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                    .append(shop.getBorderV())
+                    .append(Texts.replaceCodes("&" + shop.getColorid(), '&'))
+                    .append(" " + (i + 1) + ". ")
+                    .append(Texts.replaceCodes("&" + shop.getColorname(), '&'))
+                    .append(item.getName().trim())
+                    .append(Texts.replaceCodes("&" + shop.getColorbracket(), '&'))
+                    .append(" (")
+                    .append(Texts.replaceCodes("&" + shop.getColorprice(), '&'))
+                    .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE")
+                    .append(Texts.replaceCodes("&" + shop.getColorbracket(), '&'))
+                    .append(")\n");
+
+            if (!shop.isSimpleitems()) {
+                /* TODO: Find best way to link url
+                builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                        .append(shop.getBorderV())
+                        .append(Texts.replaceCodes("&" + shop.getColorurl(), '&'))
+                        .append(shop.getBuyurl() + item.getId() + "?player=" + player.getName());
+                */
+
+                StringBuilder descriptionBuilder = new StringBuilder();
+                if (item.getInfo() != null && !item.getInfo().isEmpty()) {
+                    descriptionBuilder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                            .append(shop.getBorderV())
+                            .append(Texts.replaceCodes("&" + shop.getColorinfo(), '&'))
+                            .append(" " + item.getInfo().trim());
+                }
+
+                if (descriptionBuilder.length() > 0) {
+                    builder.append(TextUtils.trim(descriptionBuilder.toString(), null) + "\n");
+                }
             }
 
             builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
