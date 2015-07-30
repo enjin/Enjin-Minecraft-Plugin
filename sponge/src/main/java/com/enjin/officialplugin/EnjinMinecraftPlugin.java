@@ -83,6 +83,7 @@ public class EnjinMinecraftPlugin {
         CommandSpec.Builder buyCommandBuilder = CommandSpec.builder()
                 .description(Texts.of("/buy"))
                 .permission("enjin.buy")
+                .arguments(GenericArguments.optional(GenericArguments.integer(Texts.of("#"))))
                 .executor(new BuyCommand());
         buyCommandBuilder.child(CommandSpec.builder()
                 .description(Texts.of("/buy shop <#>"))

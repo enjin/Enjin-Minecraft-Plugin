@@ -37,13 +37,24 @@ public class ShopUtil {
     }
 
     public static void sendTextShop(Player player, PlayerShopInstance instance, int page) {
-        TextBuilder builder = Texts.builder();
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (instance.getActiveShop() == null) {
+            plugin.debug("Sending a list of shops to " + player.getName());
             sendAvailableShops(player, instance);
         } else {
             if (instance.getActiveCategory() == null) {
+                plugin.debug("Sending a list of categories to " + player.getName());
                 sendAvailableCategories(player, instance, page < 1 ? 1 : page);
+            } else {
+                Category category = instance.getActiveCategory();
+                if (category.getCategories() != null && !category.getCategories().isEmpty()) {
+                    plugin.debug("Sending " + category.getCategories().size() + " sub-categories to " + player.getName());
+                    sendAvailableCategories(player, instance, page < 1 ? 1 : page);
+                } else {
+                    plugin.debug("Sending a list of items to " + player.getName());
+                    // TODO: Send Items
+                }
             }
         }
     }
@@ -69,13 +80,24 @@ public class ShopUtil {
     }
 
     private static void sendAvailableCategories(Player player, PlayerShopInstance instance, int page) {
+        TextBuilder builder = Texts.builder();
         Shop shop = instance.getActiveShop();
-        TextBuilder builder = Texts.builder()
-                .append(buildHeader(shop.getName(), shop))
-                .append(buildShopInfo(shop))
-                .append(buildCategoryContent(shop, shop.getCategories(), page))
-                .append(buildFooterInfo(shop))
-                .append(buildFooter("Type /buy page #", shop, page));
+
+        if (instance.getActiveCategory() == null) {
+            builder.append(buildHeader(shop.getName(), shop))
+                    .append(buildShopInfo(shop))
+                    .append(buildCategoryContent(shop, shop.getCategories(), page))
+                    .append(buildFooterInfo(shop))
+                    .append(buildFooter("Type /buy page #", shop, page));
+        } else {
+            Category category = instance.getActiveCategory();
+            builder.append(buildHeader(category.getName(), shop))
+                    .append(buildShopInfo(shop))
+                    .append(buildCategoryContent(shop, category.getCategories(), page))
+                    .append(buildFooterInfo(shop))
+                    .append(buildFooter("Type /buy page #", shop, page));
+        }
+
         player.sendMessage(builder.build());
     }
 
@@ -138,6 +160,10 @@ public class ShopUtil {
 
         int start = (page - 1) * 4;
         for (int i = start; i < start + 4; i++) {
+            if (i >= categories.size()) {
+                break;
+            }
+
             Category category = categories.get(i);
 
             if (category == null) {

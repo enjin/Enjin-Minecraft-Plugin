@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.shop;
 
+import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.data.Category;
 import com.enjin.officialplugin.shop.data.Shop;
 import com.google.common.collect.Lists;
@@ -23,30 +24,42 @@ public class PlayerShopInstance {
     @Getter
     private long lastUpdated = System.currentTimeMillis();
 
+    private EnjinMinecraftPlugin plugin;
+
     public PlayerShopInstance(List<Shop> shops) {
+        plugin = EnjinMinecraftPlugin.getInstance();
         update(shops);
     }
 
     public void update(List<Shop> shops) {
+        plugin.debug("Updating instance shops");
         if (!this.shops.isEmpty()) {
+            plugin.debug("Clearing existing shops");
             this.shops.clear();
         }
 
+        plugin.debug("Adding shops to instance");
         this.shops.addAll(shops);
         updateShop(-1);
+
+        lastUpdated = System.currentTimeMillis();
     }
 
     public void updateShop(int index) {
         if (index < 0) {
             if (shops.size() != 1) {
+                plugin.debug("There is more or less than one shop. Unsetting active shop.");
                 activeShop = null;
             } else {
                 activeShop = shops.get(0);
+                plugin.debug("Set active shop to: " + activeShop.getName());
             }
         } else {
             if (index < shops.size()) {
                 activeShop = shops.get(index);
+                plugin.debug("Set active shop to: " + activeShop.getName());
             } else {
+                plugin.debug("Invalid index. Unsetting active shop.");
                 activeShop = null;
             }
         }
@@ -55,20 +68,24 @@ public class PlayerShopInstance {
     }
 
     public void updateCategory(int index) {
+        List<Category> categories = activeCategory == null ? (activeShop == null ? null : activeShop.getCategories()) : activeCategory.getCategories();
+
+        if (categories == null || categories.isEmpty()) {
+            plugin.debug("There are no categories available. Skipping category update.");
+            return;
+        }
+
         if (index < 0) {
-            if (activeShop != null) {
-                if (activeShop.getCategories().size() != 1) {
-                    activeCategory = null;
-                } else {
-                    activeCategory = activeShop.getCategories().get(0);
-                }
-            }
+            activeCategory = null;
+        } else if (index < categories.size()) {
+            activeCategory = categories.get(index);
         } else {
-            if (index < activeShop.getCategories().size()) {
-                activeCategory = activeShop.getCategories().get(index);
-            } else {
-                activeCategory = null;
-            }
+            activeCategory = categories.get(categories.size() - 1);
+        }
+
+        plugin.debug("Set active category to: " + (activeCategory == null ? "null" : activeCategory.getName()));
+        if (activeCategory != null) {
+            plugin.debug(activeCategory.toString());
         }
     }
 }
