@@ -285,6 +285,11 @@ public class PeriodicEnjinTask implements Runnable {
             int maxplayers = -1;
             try {
                 StatusResponse serverdata = ServerListPing17.getServerDetails(server.getValue().getAddress(), 500);
+
+                if (serverdata == null) {
+                    continue;
+                }
+
                 maxplayers = serverdata.getPlayers().getMax();
             } catch (IOException e) {
                 // TODO Auto-generated catch block

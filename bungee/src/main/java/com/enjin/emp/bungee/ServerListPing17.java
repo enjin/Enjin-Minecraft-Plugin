@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
@@ -26,7 +27,11 @@ public class ServerListPing17 {
 
         socket.setSoTimeout(timeout);
 
-        socket.connect(host, timeout);
+        try {
+            socket.connect(host, timeout);
+        } catch (ConnectException e) {
+            return null;
+        }
 
         outputStream = socket.getOutputStream();
         dataOutputStream = new DataOutputStream(outputStream);
