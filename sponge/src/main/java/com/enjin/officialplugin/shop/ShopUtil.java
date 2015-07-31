@@ -303,8 +303,11 @@ public class ShopUtil {
                 }
             }
 
-            textBuilder.append(Texts.of(Texts.replaceCodes("&" + shop.getColorborder(), '&')))
-                    .append(Texts.of(shop.getBorderV() + "\n"));
+            builder = new StringBuilder()
+                    .append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                    .append(shop.getBorderV() + "\n");
+
+            textBuilder.append(Texts.of(builder.toString()));
         }
 
         return textBuilder.build();
