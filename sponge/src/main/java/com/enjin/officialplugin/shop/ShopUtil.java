@@ -11,8 +11,11 @@ import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
@@ -238,6 +241,7 @@ public class ShopUtil {
                 .append(shop.getBorderV())
                 .append("\n");
 
+        TextBuilder textBuilder = Texts.builder(builder.toString());
         int start = (page - 1) * maxEntries;
         for (int i = start; i < start + maxEntries; i++) {
             if (i >= items.size()) {
@@ -250,6 +254,7 @@ public class ShopUtil {
                 break;
             }
 
+            builder = new StringBuilder();
             builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
                     .append(shop.getBorderV())
                     .append(Texts.replaceCodes("&" + shop.getColorid(), '&'))
@@ -262,14 +267,28 @@ public class ShopUtil {
                     .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE")
                     .append(Texts.replaceCodes("&" + shop.getColorbracket(), '&'))
                     .append(")\n");
+            textBuilder.append(Texts.of(builder.toString()));
 
             if (!shop.isSimpleitems()) {
-                /* TODO: Find best way to link url
-                builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
-                        .append(shop.getBorderV())
-                        .append(Texts.replaceCodes("&" + shop.getColorurl(), '&'))
-                        .append(shop.getBuyurl() + item.getId() + "?player=" + player.getName());
-                */
+                StringBuilder urlBuilder = new StringBuilder();
+
+                try {
+                    URL url = new URL(shop.getBuyurl() + item.getId() + "?player=" + player.getName());
+                    urlBuilder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                            .append(shop.getBorderV())
+                            .append(Texts.replaceCodes("&" + shop.getColorurl(), '&'))
+                            .append(" " + shop.getBuyurl() + item.getId() + "?player=" + player.getName());
+
+                    if (urlBuilder.length() > 0) {
+                        Text text = Texts.builder(TextUtils.trim(urlBuilder.toString(), null))
+                                .onClick(TextActions.openUrl(url))
+                                .build();
+                        textBuilder.append(text)
+                                .append(Texts.of("\n"));
+                    }
+                } catch (MalformedURLException e) {
+                    EnjinMinecraftPlugin.getInstance().debug("Malformed URL: " + shop.getBuyurl() + item.getId() + "?player=" + player.getName());
+                }
 
                 StringBuilder descriptionBuilder = new StringBuilder();
                 if (item.getInfo() != null && !item.getInfo().isEmpty()) {
@@ -280,15 +299,15 @@ public class ShopUtil {
                 }
 
                 if (descriptionBuilder.length() > 0) {
-                    builder.append(TextUtils.trim(descriptionBuilder.toString(), null) + "\n");
+                    textBuilder.append(Texts.of(TextUtils.trim(descriptionBuilder.toString(), null) + "\n"));
                 }
             }
 
-            builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
-                    .append(shop.getBorderV() + "\n");
+            textBuilder.append(Texts.of(Texts.replaceCodes("&" + shop.getColorborder(), '&')))
+                    .append(Texts.of(shop.getBorderV() + "\n"));
         }
 
-        return Texts.builder(builder.toString()).build();
+        return textBuilder.build();
     }
 
     private static Text buildFooterInfo(Shop shop) {
