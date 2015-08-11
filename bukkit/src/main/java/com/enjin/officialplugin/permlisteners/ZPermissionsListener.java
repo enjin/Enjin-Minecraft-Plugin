@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsRankChangeEvent;
 
 public class ZPermissionsListener implements Listener {
@@ -17,19 +18,51 @@ public class ZPermissionsListener implements Listener {
 
     @EventHandler
     public void onRankChange(ZPermissionsRankChangeEvent event) {
-        Player player = Bukkit.getPlayer(event.getPlayerName());
+        update(event.getPlayerName());
+    }
+
+    @EventHandler
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        String[] args = event.getMessage().replaceFirst("/", "").split(" ");
+        if (args.length >= 5 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("permissions"))) {
+            if (args[1].equalsIgnoreCase("player")) {
+                String name = args[2];
+
+                if (args[3].equalsIgnoreCase("setgroup") || args[3].equalsIgnoreCase("group")) {
+                    if (args[4].equalsIgnoreCase("-A") || args[4].equalsIgnoreCase("--add") || args[4].equalsIgnoreCase("--add-no-reset")) {
+                        if (args.length < 6) {
+                            return;
+                        } else {
+                            update(name);
+                        }
+                    } else {
+                        update(name);
+                    }
+                } else if (args[3].equalsIgnoreCase("removegroup") || args[3].equalsIgnoreCase("rmgroup") || args[3].equalsIgnoreCase("remove") || args[3].equalsIgnoreCase("rm")) {
+                    update(name);
+                }
+            }
+        }
+    }
+
+    public void update(String name) {
+        Player player = Bukkit.getPlayer(name);
 
         if (player != null) {
-            plugin.listener.updatePlayerRanks(player);
+            update(player);
         } else {
-            OfflinePlayer offline = Bukkit.getOfflinePlayer(event.getPlayerName());
+            OfflinePlayer offline = Bukkit.getOfflinePlayer(name);
             if (offline == null) {
                 return;
             } else {
-                plugin.listener.updatePlayerRanks(offline.getName(), offline.getUniqueId().toString());
+                update(offline);
             }
         }
 
-        EnjinMinecraftPlugin.debug(event.getPlayerName() + " just got a rank change... processing...");
+        plugin.debug(player.getName() + " just got a rank change... processing...");
+    }
+
+    public void update(OfflinePlayer player) {
+        plugin.listener.updatePlayerRanks(player.getName(), player.getUniqueId().toString());
     }
 }
