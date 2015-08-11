@@ -216,7 +216,7 @@ public class TicketsService implements Service {
         return null;
     }
 
-    public RPCResult createTicket(final String authkey, final int preset, final String subject, final String description, final String player, final List<ExtraQuestion> extraQuestions) {
+    public RPCData<Boolean> createTicket(final String authkey, final int preset, final String subject, final String description, final String player, final List<ExtraQuestion> extraQuestions) {
         String method = "Tickets.createTicket";
         final Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
@@ -235,33 +235,13 @@ public class TicketsService implements Service {
             session = EnjinRPC.getSession();
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
-
-            JsonElement resp = EnjinRPC.gson.toJsonTree(response.getResult());
-            if (resp.isJsonPrimitive()) {
-                JsonPrimitive primitive = resp.getAsJsonPrimitive();
-                if (primitive.isBoolean()) {
-                    if (primitive.getAsBoolean()) {
-                        return new RPCResult(ResultType.SUCCESS, "Your ticket was submitted successfully!", request, response);
-                    } else {
-                        return new RPCResult(ResultType.SUCCESS, "Your ticket was could not be submitted!", request, response);
-                    }
-                }
-            } else if (resp.isJsonObject()) {
-                JsonObject result = resp.getAsJsonObject();
-                if (result.get("reason").getAsString().equals("ticket_delay")) {
-                    String time = result.get("time_left").getAsString();
-                    return new RPCResult(ResultType.TICKET_DELAY, "You can submit another ticket " + time, request, response);
-                } else if (result.get("reason").getAsString().equals("invalid_params")) {
-                    return new RPCResult(ResultType.INVALID_PARAMS, "Invalid parameters", request, response);
-                }
-            }
-
-            return new RPCResult(ResultType.UNKNOWN_ERROR, "The error returned was not recognized.", request, response);
+            RPCData<Boolean> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>() {}.getType());
+            return data;
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return new RPCResult(ResultType.UNKNOWN_ERROR, "There was an error while sending your request to Enjin.", request, response);
+        return null;
     }
 
     public boolean sendReply(final String authkey, final int preset, final String code, final String text, final String mode, final TicketStatus status, final String player) {

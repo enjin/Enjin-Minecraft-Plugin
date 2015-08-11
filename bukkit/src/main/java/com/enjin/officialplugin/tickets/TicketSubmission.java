@@ -2,6 +2,7 @@ package com.enjin.officialplugin.tickets;
 
 import com.enjin.core.EnjinServices;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCResult;
 import com.enjin.rpc.mappings.mappings.general.ResultType;
 import com.enjin.rpc.mappings.mappings.tickets.ExtraQuestion;
@@ -57,13 +58,12 @@ public class TicketSubmission {
         }
 
         player.sendMessage("\n" + ChatColor.GOLD + "Your ticket is being submitted!");
-        RPCResult result = service.createTicket(EnjinMinecraftPlugin.getHash(), moduleId, (String) subject.getAnswer(), (String) description.getAnswer(), player.getName(), extra);
+        RPCData<Boolean> result = service.createTicket(EnjinMinecraftPlugin.getHash(), moduleId, (String) subject.getAnswer(), (String) description.getAnswer(), player.getName(), extra);
         if (player != null) {
-            player.sendMessage(result.getMessage());
-
-            if (!(result.getType() == ResultType.SUCCESS)) {
-                EnjinMinecraftPlugin.debug("Request: " + (result.getRequest() == null ? "null" : result.getRequest().toJSONString()));
-                EnjinMinecraftPlugin.debug("Response: " + (result.getResponse() == null ? "null" : result.getResponse().toJSONString()));
+            if (result.getError() != null) {
+                player.sendMessage(result.getError().getMessage());
+            } else {
+                player.sendMessage("Your ticket was submitted successfully!");
             }
         }
     }
