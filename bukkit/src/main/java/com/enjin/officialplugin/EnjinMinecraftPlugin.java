@@ -705,7 +705,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             apiurl = apiurl.concat("/");
         }
 
-        String rpcapiurl = (usingSSL ? "https" : "http") + apiurl + "v1/api.php/";
+        String rpcapiurl = (usingSSL ? "https" : "http") + apiurl + "v1/api.php";
         EnjinRPC.setHttps(usingSSL);
         EnjinRPC.setApiUrl(rpcapiurl);
         debug("RPC API Url: " + rpcapiurl);

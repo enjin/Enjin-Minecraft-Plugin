@@ -21,7 +21,7 @@ public class EnjinRPC {
     @Getter @Setter
     private static boolean https;
     @Getter @Setter
-    private static String apiUrl = "://api.enjin.com/api/v1/api.php/";
+    private static String apiUrl = "://api.enjin.com/api/v1/api.php";
     @Setter
     private static Logger logger;
     @Setter
@@ -29,7 +29,9 @@ public class EnjinRPC {
 
     private static URL getUrl() {
         try {
-            return new URL((https ? "https" : "http") + (apiUrl.startsWith("https") ? apiUrl.replaceFirst("https", "") : apiUrl.startsWith("http") ? apiUrl.replaceFirst("http", "") : apiUrl));
+            URL url =  new URL((https ? "https" : "http") + (apiUrl.startsWith("https") ? apiUrl.replaceFirst("https", "") : apiUrl.startsWith("http") ? apiUrl.replaceFirst("http", "") : apiUrl));
+            debug("Enjin API URL: " + url.toString());
+            return url;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
