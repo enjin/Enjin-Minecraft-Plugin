@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.core.EnjinServices;
+import com.enjin.officialplugin.permlisteners.*;
 import com.enjin.officialplugin.tickets.TicketListener;
 import com.enjin.officialplugin.tickets.TicketCreationSession;
 import com.enjin.officialplugin.tickets.TicketViewBuilder;
@@ -85,10 +86,6 @@ import com.enjin.officialplugin.listeners.EnjinStatsListener;
 import com.enjin.officialplugin.listeners.NewPlayerChatListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
 import com.enjin.officialplugin.packets.PacketUtilities;
-import com.enjin.officialplugin.permlisteners.GroupManagerListener;
-import com.enjin.officialplugin.permlisteners.PermissionsBukkitChangeListener;
-import com.enjin.officialplugin.permlisteners.PexChangeListener;
-import com.enjin.officialplugin.permlisteners.bPermsChangeListener;
 import com.enjin.officialplugin.points.EnjinPointsSyncClass;
 import com.enjin.officialplugin.points.PointsAPI;
 import com.enjin.officialplugin.points.RetrievePointsSyncClass;
@@ -116,6 +113,7 @@ import com.platymuus.bukkit.permissions.PermissionsPlugin;
 import com.vexsoftware.votifier.Votifier;
 
 import de.bananaco.bpermissions.imp.Permissions;
+import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsPlugin;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 /**
@@ -143,6 +141,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     public GroupManager groupmanager;
     public Permissions bpermissions;
     public PermissionsPlugin permissionsbukkit;
+    public ZPermissionsPlugin zPermissions;
     private VanishManager vanishmanager = null;
     private static boolean isMcMMOloaded = false;
     private boolean mcMMOSupported = false;
@@ -1973,6 +1972,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(new PexChangeListener(this), this);
             return;
         }
+
         Plugin bperm = this.getServer().getPluginManager().getPlugin("bPermissions");
         if (bperm != null) {
             bpermissions = (Permissions) bperm;
@@ -1981,6 +1981,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(new bPermsChangeListener(this), this);
             return;
         }
+
+        Plugin zPermissions = this.getServer().getPluginManager().getPlugin("zPermissions");
+        if (zPermissions != null) {
+            this.zPermissions = (ZPermissionsPlugin) zPermissions;
+            debug("zPermissions found, hooking custom events.");
+            supportsglobalgroups = true;
+            Bukkit.getPluginManager().registerEvents(new ZPermissionsListener(this), this);
+            return;
+        }
+
         Plugin groupmanager = this.getServer().getPluginManager().getPlugin("GroupManager");
         if (groupmanager != null) {
             this.groupmanager = (GroupManager) groupmanager;
@@ -2044,6 +2054,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     return;
                 }
             }
+
             supportsglobalgroups = false;
             Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
             return;
