@@ -19,7 +19,9 @@ public class EnjinRPC {
     private static final int CONNECT_TIMEOUT = 15000;
 
     @Getter @Setter
-    private static String apiUrl = "https://api.enjin.com/api/v1/api.php/";
+    private static boolean https;
+    @Getter @Setter
+    private static String apiUrl = "://api.enjin.com/api/v1/api.php/";
     @Setter
     private static Logger logger;
     @Setter
@@ -27,7 +29,7 @@ public class EnjinRPC {
 
     private static URL getUrl() {
         try {
-            return new URL(apiUrl);
+            return new URL((https ? "https" : "http") + (apiUrl.startsWith("https") ? apiUrl.replaceFirst("https", "") : apiUrl.startsWith("http") ? apiUrl.replaceFirst("http", "") : apiUrl));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -49,6 +51,7 @@ public class EnjinRPC {
         JSONRPC2SessionOptions options = new JSONRPC2SessionOptions();
         options.setReadTimeout(READ_TIMEOUT);
         options.setConnectTimeout(CONNECT_TIMEOUT);
+        options.ignoreVersion(true);
         return options;
     }
 
