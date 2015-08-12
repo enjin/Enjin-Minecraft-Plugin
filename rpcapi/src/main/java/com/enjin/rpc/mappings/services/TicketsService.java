@@ -244,7 +244,7 @@ public class TicketsService implements Service {
         return null;
     }
 
-    public boolean sendReply(final String authkey, final int preset, final String code, final String text, final String mode, final TicketStatus status, final String player) {
+    public RPCData<RPCSuccess> sendReply(final String authkey, final int preset, final String code, final String text, final String mode, final TicketStatus status, final String player) {
         String method = "Tickets.sendReply";
         final Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
@@ -261,13 +261,12 @@ public class TicketsService implements Service {
             JSONRPC2Session session = EnjinRPC.getSession();
             JSONRPC2Request request = new JSONRPC2Request(method, parameters, id);
             JSONRPC2Response response = session.send(request);
-            RPCData<RPCSuccess> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<RPCSuccess>>() {
-            }.getType());
-            return data.getResult().isSuccess();
+            RPCData<RPCSuccess> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<RPCSuccess>>() {}.getType());
+            return data;
         } catch (JSONRPC2SessionException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return null;
     }
 }

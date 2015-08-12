@@ -60,10 +60,14 @@ public class TicketSubmission {
         player.sendMessage("\n" + ChatColor.GOLD + "Your ticket is being submitted!");
         RPCData<Boolean> result = service.createTicket(EnjinMinecraftPlugin.getHash(), moduleId, (String) subject.getAnswer(), (String) description.getAnswer(), player.getName(), extra);
         if (player != null) {
-            if (result.getError() != null) {
-                player.sendMessage(result.getError().getMessage());
+            if (result != null) {
+                if (result.getError() != null) {
+                    player.sendMessage(result.getError().getMessage());
+                } else {
+                    player.sendMessage("Your ticket was submitted successfully!");
+                }
             } else {
-                player.sendMessage("Your ticket was submitted successfully!");
+                player.sendMessage("Unable to submit your ticket.");
             }
         }
     }

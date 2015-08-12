@@ -30,7 +30,9 @@ import com.enjin.officialplugin.tickets.TicketListener;
 import com.enjin.officialplugin.tickets.TicketCreationSession;
 import com.enjin.officialplugin.tickets.TicketViewBuilder;
 import com.enjin.rpc.EnjinRPC;
+import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCResult;
+import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
 import com.enjin.rpc.mappings.mappings.general.ResultType;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
 import com.enjin.rpc.mappings.mappings.tickets.Reply;
@@ -1775,11 +1777,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                boolean result = EnjinServices.getService(TicketsService.class).sendReply(getHash(), preset, ticket, finalMessage, "public", TicketStatus.open, ((Player) sender).getName());
-                                if (result) {
-                                    sender.sendMessage("You replied to the ticket successfully.");
+                                RPCData<RPCSuccess> result = EnjinServices.getService(TicketsService.class).sendReply(getHash(), preset, ticket, finalMessage, "public", TicketStatus.open, ((Player) sender).getName());
+                                if (result != null) {
+                                    if (result.getError() == null) {
+                                        sender.sendMessage("You replied to the ticket successfully.");
+                                    } else {
+                                        sender.sendMessage(result.getError().getMessage());
+                                    }
                                 } else {
-                                    sender.sendMessage("We were unable to send your reply.");
+                                    sender.sendMessage("Unable to submit your reply.");
                                 }
                             }
                         });
