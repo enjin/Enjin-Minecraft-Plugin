@@ -111,3 +111,9 @@ permissions:
   enjin.ticket.open:
     description: Allows the player to view open tickets.
     default: op
+  enjin.ticket.reply:
+    description: Allows the player to reply to tickets.
+    default: op
+  enjin.ticket.status:
+    description: Allows the player to set the status of tickets.
+    default: op

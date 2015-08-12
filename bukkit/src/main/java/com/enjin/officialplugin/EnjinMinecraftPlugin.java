@@ -1653,15 +1653,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketsService service = EnjinServices.getService(TicketsService.class);
-                                RPCResult result = service.getPlayerTickets(getHash(), -1, player.getName());
+                                RPCData<List<Ticket>> data = service.getPlayerTickets(getHash(), -1, player.getName());
 
-                                if (result.getType() == ResultType.SUCCESS) {
-                                    List<Ticket> tickets = (List<Ticket>) result.getData();
-                                    if (tickets.size() > 0) {
-                                        player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                                if (data != null) {
+                                    if (data.getError() != null) {
+                                        player.sendMessage(data.getError().getMessage());
                                     } else {
-                                        player.sendMessage("You do not have any tickets at this time!");
+                                        List<Ticket> tickets = data.getResult();
+                                        if (tickets.size() > 0) {
+                                            player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                                        } else {
+                                            player.sendMessage("You do not have any tickets at this time!");
+                                        }
                                     }
+                                } else {
+                                    player.sendMessage("Could not fetch your tickets.");
                                 }
                             }
                         });
@@ -1671,12 +1677,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketsService service = EnjinServices.getService(TicketsService.class);
-                                List<Reply> replies = service.getReplies(getHash(), -1, args[1], player.getName());
+                                RPCData<List<Reply>> data = service.getReplies(getHash(), -1, args[1], player.getName());
 
-                                if (replies.size() > 0) {
-                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[1], replies, player.hasPermission("enjin.ticket.private")));
+                                if (data != null) {
+                                    if (data.getError() != null) {
+                                        player.sendMessage(data.getError().getMessage());
+                                    } else {
+                                        List<Reply> replies = data.getResult();
+                                        if (replies.size() > 0) {
+                                            player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[1], replies, player.hasPermission("enjin.ticket.private")));
+                                        } else {
+                                            player.sendMessage("You entered an invalid ticket code!");
+                                        }
+                                    }
                                 } else {
-                                    player.sendMessage("You entered an invalid ticket code!");
+                                    player.sendMessage("Could not fetch ticket replies.");
                                 }
                             }
                         });
@@ -1705,19 +1720,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketsService service = EnjinServices.getService(TicketsService.class);
-                                List<Ticket> tickets = Lists.newArrayList();
+                                RPCData<List<Ticket>> data = service.getTickets(getHash(), -1, TicketStatus.open);
 
-                                RPCResult result = service.getTickets(getHash(), -1, TicketStatus.open);
-
-                                if (result.getType() == ResultType.SUCCESS) {
-                                    List<Ticket> ticks = (List<Ticket>) result.getData();
-                                    tickets.addAll(ticks);
-                                }
-
-                                if (tickets.size() > 0) {
-                                    player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                                if (data != null) {
+                                    if (data.getError() != null) {
+                                        player.sendMessage(data.getError().getMessage());
+                                    } else {
+                                        List<Ticket> tickets = data.getResult();
+                                        if (tickets.size() > 0) {
+                                            player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                                        } else {
+                                            player.sendMessage("There are no open tickets at this time.");
+                                        }
+                                    }
                                 } else {
-                                    player.sendMessage("There are no open tickets at this time.");
+                                    player.sendMessage("Could not fetch open tickets.");
                                 }
                             }
                         });
@@ -1727,12 +1744,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketsService service = EnjinServices.getService(TicketsService.class);
-                                List<Reply> replies = service.getReplies(getHash(), -1, args[1], player.getName());
+                                RPCData<List<Reply>> data = service.getReplies(getHash(), -1, args[1], player.getName());
 
-                                if (replies.size() > 0) {
-                                    player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[1], replies, player.hasPermission("enjin.ticket.private")));
+                                if (data != null) {
+                                    if (data.getError() != null) {
+                                        player.sendMessage(data.getError().getMessage());
+                                    } else {
+                                        List<Reply> replies = data.getResult();
+                                        if (replies.size() > 0) {
+                                            player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[1], replies, player.hasPermission("enjin.ticket.private")));
+                                        } else {
+                                            player.sendMessage("You entered an invalid ticket code!");
+                                        }
+                                    }
                                 } else {
-                                    player.sendMessage("You entered an invalid ticket code!");
+                                    player.sendMessage("Could not fetch ticket replies.");
                                 }
                             }
                         });
@@ -1829,9 +1855,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                boolean result = EnjinServices.getService(TicketsService.class).setStatus(getHash(), preset, ticket, status);
-                                if (result) {
-                                    sender.sendMessage("The tickets status was successfully changed to " + status.name());
+                                RPCData<Boolean> result = EnjinServices.getService(TicketsService.class).setStatus(getHash(), preset, ticket, status);
+                                if (result != null) {
+                                    if (result.getError() == null) {
+                                        if (result.getResult()) {
+                                            sender.sendMessage("The tickets status was successfully changed to " + status.name());
+                                        } else {
+                                            sender.sendMessage("The tickets status was unable to be changed to " + status.name());
+                                        }
+                                    } else {
+                                        sender.sendMessage(result.getError().getMessage());
+                                    }
                                 } else {
                                     sender.sendMessage("The tickets status was unable to be changed to " + status.name());
                                 }
@@ -1893,6 +1927,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                 if (sender.hasPermission("enjin.ticket.self"))
                     sender.sendMessage(ChatColor.GOLD + "/enjin ticket: "
                             + ChatColor.RESET + "Sends player a list of their tickets.");
+                if (sender.hasPermission("enjin.ticket.open"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin openticket: "
+                            + ChatColor.RESET + "Sends player a list of open tickets.");
+                if (sender.hasPermission("enjin.ticket.reply"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin reply <module #> <ticket id> <message>: "
+                            + ChatColor.RESET + "Sends a reply to a ticket.");
+                if (sender.hasPermission("enjin.ticket.status"))
+                    sender.sendMessage(ChatColor.GOLD + "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: "
+                            + ChatColor.RESET + "Sets the status of a ticket.");
 
                 // Shop buy commands
                 sender.sendMessage(ChatColor.GOLD + "/buy: "
@@ -2444,17 +2487,22 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
     private void pollModules() {
         if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
-            Map<Integer, Module> m = EnjinServices.getService(TicketsService.class).getModules(getHash());
+            modulesLastPolled = System.currentTimeMillis();
+            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketsService.class).getModules(getHash());
 
-            if (m.size() == 0) {
+            if (data == null || data.getError() != null) {
+                debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
+                modules.clear();
+                return;
+            }
+
+            if (data.getResult().size() == 0) {
                 modules.clear();
             }
 
-            for (Entry<Integer, Module> entry : m.entrySet()) {
+            for (Entry<Integer, Module> entry : data.getResult().entrySet()) {
                 modules.put(entry.getKey(), entry.getValue());
             }
-
-            modulesLastPolled = System.currentTimeMillis();
         }
     }
 }
