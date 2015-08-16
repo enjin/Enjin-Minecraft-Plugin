@@ -125,6 +125,24 @@ public class ShopUtil {
         player.sendMessage(builder.build());
     }
 
+    public static void sendItemInfo(Player player, PlayerShopInstance instance, int index) {
+        TextBuilder builder = Texts.builder().color(TextColors.RED);
+        Shop shop = instance.getActiveShop();
+
+        if (instance.getActiveCategory() == null) {
+            builder.append(Texts.of("You must select a category before you can view the item list"));
+        } else {
+            Category category = instance.getActiveCategory();
+            Item item = index < 0 ? category.getItems().get(0) : (index < category.getItems().size() ? category.getItems().get(index) : category.getItems().get(category.getItems().size() - 1));
+            builder.append(buildHeader(item.getName(), shop))
+                    .append(buildItemContent(player, shop, item))
+                    .append(buildFooterInfo(shop))
+                    .append(buildFooter("", shop, -1));
+        }
+
+        player.sendMessage(builder.build());
+    }
+
     private static Text buildHeader(String title, Shop shop) {
         StringBuilder header = new StringBuilder();
         String prefix = shop.getBorderC();
@@ -311,6 +329,59 @@ public class ShopUtil {
         }
 
         return textBuilder.build();
+    }
+
+    private static Text buildItemContent(Player player, Shop shop, Item item) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                .append(shop.getBorderV())
+                .append("\n")
+                .append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                .append(shop.getBorderV())
+                .append(Texts.replaceCodes("&f", '&'))
+                .append(Texts.replaceCodes(" Price: ", '&'))
+                .append(Texts.replaceCodes("&" + shop.getColorprice(), '&'))
+                .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE")
+                .append("\n")
+                .append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                .append(shop.getBorderV())
+                .append(Texts.replaceCodes("&f", '&'))
+                .append(Texts.replaceCodes(" Info:\n", '&'));
+        StringBuilder info = new StringBuilder()
+                .append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                .append(shop.getBorderV())
+                .append(Texts.replaceCodes("&" + shop.getColorinfo(), '&'))
+                .append(" " + item.getInfo());
+        TextBuilder textBuilder = Texts.builder(builder.toString())
+                .append(Texts.of(TextUtils.trim(info.toString(), "")))
+                .append(Texts.builder(Texts.replaceCodes("\n&" + shop.getColorborder() + shop.getBorderV(), '&')).build())
+                .append(Texts.builder(Texts.replaceCodes("\n&" + shop.getColorborder() + shop.getBorderV(), '&')).build())
+                .append(Texts.builder(" Click on the following link to checkout:\n").color(TextColors.RESET).build());
+
+        StringBuilder urlBuilder = new StringBuilder();
+        try {
+            URL url = new URL(shop.getBuyurl() + item.getId() + "?player=" + player.getName());
+            urlBuilder.append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                    .append(shop.getBorderV())
+                    .append(Texts.replaceCodes("&" + shop.getColorurl(), '&'))
+                    .append(" " + shop.getBuyurl() + item.getId() + "?player=" + player.getName());
+
+            if (urlBuilder.length() > 0) {
+                Text text = Texts.builder(TextUtils.trim(urlBuilder.toString(), null))
+                        .onClick(TextActions.openUrl(url))
+                        .build();
+                textBuilder.append(text)
+                        .append(Texts.of("\n"));
+            }
+        } catch (MalformedURLException e) {
+            EnjinMinecraftPlugin.getInstance().debug("Malformed URL: " + shop.getBuyurl() + item.getId() + "?player=" + player.getName());
+        }
+
+        StringBuilder spacer = new StringBuilder()
+                .append(Texts.replaceCodes("&" + shop.getColorborder(), '&'))
+                .append(shop.getBorderV())
+                .append("\n");
+        return textBuilder.append(Texts.of(spacer.toString())).build();
     }
 
     private static Text buildFooterInfo(Shop shop) {

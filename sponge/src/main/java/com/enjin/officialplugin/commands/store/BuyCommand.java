@@ -54,13 +54,13 @@ public class BuyCommand implements CommandExecutor {
                                 player.sendMessage(Texts.builder("There are no items in this category.").color(TextColors.RED).build());
                             } else if (number == 0) {
                                 plugin.debug("Sending first item to " + player.getName());
-                                // TODO: Send First Item
+                                ShopUtil.sendItemInfo(player, instance, 0);
                             } else if (instance.getActiveCategory().getItems().size() < number) {
                                 plugin.debug("Sending last item to " + player.getName());
-                                // TODO: Send Last Item
+                                ShopUtil.sendItemInfo(player, instance, category.getItems().size() - 1);
                             } else {
                                 plugin.debug("Sending item to " + player.getName());
-                                // TODO: Send Item
+                                ShopUtil.sendItemInfo(player, instance, number - 1);
                             }
 
                             return CommandResult.success();
