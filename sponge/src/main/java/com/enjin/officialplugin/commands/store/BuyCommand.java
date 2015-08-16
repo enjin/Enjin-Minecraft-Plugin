@@ -49,11 +49,21 @@ public class BuyCommand implements CommandExecutor {
                                 instance.updateCategory(number - 1);
                             }
                         } else {
-                            if (instance.getActiveCategory().getItems().size() < number) {
+                            if (instance.getActiveCategory().getItems().size() == 0) {
+                                plugin.debug("No items found in category: " + category.getName());
+                                player.sendMessage(Texts.builder("There are no items in this category.").color(TextColors.RED).build());
+                            } else if (number == 0) {
+                                plugin.debug("Sending first item to " + player.getName());
+                                // TODO: Send First Item
+                            } else if (instance.getActiveCategory().getItems().size() < number) {
+                                plugin.debug("Sending last item to " + player.getName());
                                 // TODO: Send Last Item
                             } else {
+                                plugin.debug("Sending item to " + player.getName());
                                 // TODO: Send Item
                             }
+
+                            return CommandResult.success();
                         }
                     } else {
                         plugin.debug("No active category has been set. Selecting category from shop.");
@@ -72,7 +82,9 @@ public class BuyCommand implements CommandExecutor {
                     }
                 }
             } else {
-                instance.updateShop(-1);
+                if (instance.getActiveCategory() != null) {
+                    instance.updateCategory(-1);
+                }
             }
 
             ShopUtil.sendTextShop(player, instances.get(player.getUniqueId()), -1);

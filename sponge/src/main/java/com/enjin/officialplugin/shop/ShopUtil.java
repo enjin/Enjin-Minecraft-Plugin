@@ -94,14 +94,14 @@ public class ShopUtil {
                     .append(buildShopInfo(shop, false))
                     .append(buildCategoryListContent(shop, shop.getCategories(), page))
                     .append(buildFooterInfo(shop))
-                    .append(buildFooter("Type /buy page #", shop, page));
+                    .append(buildFooter("Type /buy page #", shop, page < 1 ? 1 : page));
         } else {
             Category category = instance.getActiveCategory();
             builder.append(buildHeader(category.getName(), shop))
                     .append(buildShopInfo(shop, false))
                     .append(buildCategoryListContent(shop, category.getCategories(), page))
                     .append(buildFooterInfo(shop))
-                    .append(buildFooter("Type /buy page #", shop, page));
+                    .append(buildFooter("Type /buy page #", shop, page < 1 ? 1 : page));
         }
 
         player.sendMessage(builder.build());
@@ -119,7 +119,7 @@ public class ShopUtil {
                     .append(buildShopInfo(shop, true))
                     .append(buildItemListContent(player, shop, category.getItems(), page))
                     .append(buildFooterInfo(shop))
-                    .append(buildFooter("Type /buy page #", shop, page));
+                    .append(buildFooter("Type /buy page #", shop, page < 1 ? 1 : page));
         }
 
         player.sendMessage(builder.build());
