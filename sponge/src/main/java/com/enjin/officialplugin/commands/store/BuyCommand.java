@@ -114,7 +114,7 @@ public class BuyCommand implements CommandExecutor {
     }
 
     private static void fetchShop(Player player) {
-        EnjinMinecraftPlugin.getInstance().getGame().getScheduler().getTaskBuilder()
+        EnjinMinecraftPlugin.getInstance().getGame().getScheduler().createTaskBuilder()
                 .async()
                 .execute(new ShopFetcher(player))
                 .submit(EnjinMinecraftPlugin.getInstance());
