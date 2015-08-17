@@ -2,7 +2,7 @@ package com.enjin.officialplugin.threaded;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.utils.ConnectionUtil;
-import com.enjin.officialplugin.utils.EnjinAPI;
+import com.enjin.officialplugin.utils.WebAPI;
 import com.enjin.officialplugin.utils.packet.PacketUtilities;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -107,7 +107,7 @@ public class IncomingPacketManager implements Runnable {
     }
 
     private URL getUrl() throws MalformedURLException {
-        return new URL((plugin.getConfig().isHttps() ? "https" : "http") + EnjinAPI.getApiUrl() + "minecraft-sync");
+        return new URL((plugin.getConfig().isHttps() ? "https" : "http") + WebAPI.getApiUrl() + "minecraft-sync");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {

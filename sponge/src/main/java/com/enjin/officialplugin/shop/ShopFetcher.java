@@ -2,7 +2,7 @@ package com.enjin.officialplugin.shop;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.data.Shop;
-import com.enjin.officialplugin.utils.EnjinAPI;
+import com.enjin.officialplugin.utils.WebAPI;
 import com.google.common.base.Optional;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
@@ -114,7 +114,7 @@ public class ShopFetcher implements Runnable {
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((plugin.getConfig().isHttps() ? "https" : "http") + EnjinAPI.getApiUrl() + "minecraft-shop");
+        return new URL((plugin.getConfig().isHttps() ? "https" : "http") + WebAPI.getApiUrl() + "minecraft-shop");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {

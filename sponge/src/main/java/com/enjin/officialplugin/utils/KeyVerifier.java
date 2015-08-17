@@ -53,9 +53,9 @@ public class KeyVerifier implements Runnable {
             }
 
             if (save) {
-                return EnjinAPI.sendAPIQuery("minecraft-auth", "key=" + key, "port=" + plugin.getPort(), "save=1");
+                return WebAPI.sendAPIQuery("minecraft-auth", "key=" + key, "port=" + plugin.getPort(), "save=1");
             } else {
-                return EnjinAPI.sendAPIQuery("minecraft-auth", "key=" + key, "port=" + plugin.getPort());
+                return WebAPI.sendAPIQuery("minecraft-auth", "key=" + key, "port=" + plugin.getPort());
             }
         } catch (Throwable t) {
             plugin.getLogger().warn("There was an error synchronizing game data to the enjin server.");

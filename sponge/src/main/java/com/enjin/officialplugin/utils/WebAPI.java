@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-public class EnjinAPI {
+public class WebAPI {
     @Getter
     static private String apiUrl = "://api.enjin.com/api/";
 
