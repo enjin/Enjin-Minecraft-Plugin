@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sponge</artifactId>
+    <version>2.8.2-SNAPSHOT</version>
 
     <profiles>
         <profile>
@@ -112,7 +113,8 @@
 
         <dependency>
             <groupId>com.enjin</groupId>
-            <artifactId>Common</artifactId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
