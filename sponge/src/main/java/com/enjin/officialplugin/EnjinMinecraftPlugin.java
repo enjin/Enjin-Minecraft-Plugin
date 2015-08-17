@@ -6,6 +6,7 @@ import com.enjin.officialplugin.commands.configuration.SetKeyCommand;
 import com.enjin.officialplugin.commands.store.BuyCommand;
 import com.enjin.officialplugin.config.EnjinConfig;
 import com.enjin.officialplugin.shop.ShopListener;
+import com.enjin.officialplugin.threaded.IncomingPacketManager;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import lombok.Getter;
@@ -14,7 +15,9 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.InitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.config.ConfigDir;
+import org.spongepowered.api.service.scheduler.Task;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
@@ -23,11 +26,17 @@ import org.spongepowered.api.util.command.spec.CommandSpec;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "EnjinMinecraftPlugin", name = "Enjin Minecraft Plugin", version = "1.0")
 public class EnjinMinecraftPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
+    @Getter
+    private static List<CommandSpec> commands = Lists.newArrayList();
+    @Inject
+    @Getter
+    private PluginContainer container;
     @Inject
     @Getter
     private Logger logger;
@@ -40,8 +49,9 @@ public class EnjinMinecraftPlugin {
     @Inject
     @Getter
     private Game game;
+
     @Getter
-    private static List<CommandSpec> commands = Lists.newArrayList();
+    private Task syncTask;
 
     public EnjinMinecraftPlugin() {
         instance = this;
@@ -53,6 +63,7 @@ public class EnjinMinecraftPlugin {
         initConfig();
         initCommands();
         initListeners();
+        initTasks();
     }
 
     private void initConfig() {
@@ -105,6 +116,21 @@ public class EnjinMinecraftPlugin {
 
     private void initListeners() {
         game.getEventManager().register(this, new ShopListener());
+    }
+
+    public void initTasks() {
+        if (syncTask != null) {
+            stopTasks();
+        }
+
+        syncTask = game.getScheduler().createTaskBuilder().async().delay(60, TimeUnit.SECONDS).interval(60, TimeUnit.SECONDS)
+                .execute(new IncomingPacketManager(this))
+                .submit(this);
+    }
+
+    public void stopTasks() {
+        syncTask.cancel();
+        syncTask = null;
     }
 
     public String getAuthKey() {
