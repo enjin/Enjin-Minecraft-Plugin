@@ -123,8 +123,9 @@ public class EnjinMinecraftPlugin {
             stopTasks();
         }
 
-        syncTask = game.getScheduler().createTaskBuilder().async().delay(60, TimeUnit.SECONDS).interval(60, TimeUnit.SECONDS)
+        syncTask = game.getScheduler().createTaskBuilder()
                 .execute(new IncomingPacketManager(this))
+                .async().interval(60, TimeUnit.SECONDS)
                 .submit(this);
     }
 
