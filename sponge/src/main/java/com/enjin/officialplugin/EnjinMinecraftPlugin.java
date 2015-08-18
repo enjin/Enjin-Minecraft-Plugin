@@ -126,7 +126,7 @@ public class EnjinMinecraftPlugin {
         // TODO: Look for alternative as the scheduler does not appear reliable
         syncTask = game.getScheduler().createTaskBuilder()
                 .execute(new IncomingPacketManager(this))
-                .interval(60, TimeUnit.SECONDS)
+                .async().interval(60, TimeUnit.SECONDS)
                 .submit(this);
     }
 
