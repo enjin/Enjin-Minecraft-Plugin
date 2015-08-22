@@ -4,6 +4,7 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.threaded.data.Packet12ExecuteCommand;
 import com.enjin.officialplugin.utils.ConnectionUtil;
 import com.enjin.officialplugin.utils.WebAPI;
+import com.enjin.officialplugin.utils.commands.CommandWrapper;
 import com.enjin.officialplugin.utils.packet.PacketUtilities;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -17,6 +18,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class IncomingPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
@@ -62,6 +67,10 @@ public class IncomingPacketManager implements Runnable {
             // TODO: Look into existing permissions plugins in development for sponge
             builder.append("&hasranks=" + encode("FALSE"));
             builder.append("&pluginversion=" + encode(plugin.getContainer().getVersion()));
+
+            if (plugin.getProcessedCommands().size() > 0) {
+                builder.append("&executed_commands=" + encode(getCommands()));
+            }
 
             if (++pluginsReportDelay >= 59) {
                 builder.append("&mods=" + encode(getMods()));
@@ -113,6 +122,24 @@ public class IncomingPacketManager implements Runnable {
 
     private String encode(String in) throws UnsupportedEncodingException {
         return URLEncoder.encode(in, "UTF-8");
+    }
+
+    private String getCommands() {
+        StringBuilder sb = new StringBuilder();
+        List<CommandWrapper> processed = new ArrayList<CommandWrapper>(EnjinMinecraftPlugin.getProcessedCommands());
+        Iterator<CommandWrapper> iterator = processed.iterator();
+
+        while (iterator.hasNext() && sb.length() < 40 * 1024) {
+            CommandWrapper wrapper = iterator.next();
+
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+
+            sb.append(wrapper.getId() + ":" + wrapper.getHash());
+        }
+
+        return sb.toString();
     }
 
     private String getMods() {

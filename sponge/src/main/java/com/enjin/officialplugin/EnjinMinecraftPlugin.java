@@ -7,6 +7,7 @@ import com.enjin.officialplugin.commands.store.BuyCommand;
 import com.enjin.officialplugin.config.EnjinConfig;
 import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.threaded.IncomingPacketManager;
+import com.enjin.officialplugin.utils.commands.CommandWrapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import lombok.Getter;
@@ -25,6 +26,10 @@ import org.spongepowered.api.util.command.args.GenericArguments;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +39,9 @@ public class EnjinMinecraftPlugin {
     private static EnjinMinecraftPlugin instance;
     @Getter
     private static List<CommandSpec> commands = Lists.newArrayList();
+    @Getter
+    private static List<CommandWrapper> processedCommands = Lists.newArrayList();
+
     @Inject
     @Getter
     private PluginContainer container;
@@ -151,6 +159,31 @@ public class EnjinMinecraftPlugin {
             for (String message : messages) {
                 logger.info("[Debug] " + message);
             }
+        }
+    }
+
+    public void addProcessedCommand(CommandWrapper wrapper) {
+        if (wrapper.getId().isEmpty()) {
+            return;
+        }
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(wrapper.getCommand().getBytes("UTF-8"));
+
+            BigInteger bigInt = new BigInteger(1, digest);
+            String hash = bigInt.toString(16);
+
+            while (hash.length() < 32) {
+                hash = "0" + hash;
+            }
+
+            wrapper.setHash(hash);
+            processedCommands.add(wrapper);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
     }
 }
