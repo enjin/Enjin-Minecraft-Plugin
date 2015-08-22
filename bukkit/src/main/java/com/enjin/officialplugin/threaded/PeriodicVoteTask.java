@@ -24,7 +24,6 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
  */
 
 public class PeriodicVoteTask implements Runnable {
-
     EnjinMinecraftPlugin plugin;
     ConcurrentHashMap<String, String> removedplayervotes = new ConcurrentHashMap<String, String>();
     int numoffailedtries = 0;
@@ -40,10 +39,7 @@ public class PeriodicVoteTask implements Runnable {
 
     @Override
     public void run() {
-        //Only run if we have votes to send.
         if (plugin.playervotes.size() > 0) {
-
-            //Only run the ssl test on first run.
             if (firstrun && EnjinMinecraftPlugin.usingSSL) {
                 if (!plugin.testHTTPSconnection()) {
                     EnjinMinecraftPlugin.usingSSL = false;
@@ -168,23 +164,28 @@ public class PeriodicVoteTask implements Runnable {
 
     private String getVotes() {
         removedplayervotes.clear();
+
         StringBuilder votes = new StringBuilder();
         Set<Entry<String, String>> voteset = plugin.playervotes.entrySet();
+
         for (Entry<String, String> entry : voteset) {
             String player = entry.getKey();
             String lists = entry.getValue();
+
             if (votes.length() != 0) {
                 votes.append(";");
             }
+
             votes.append(player + ":" + lists);
+
             removedplayervotes.put(player, lists);
             plugin.playervotes.remove(player);
         }
+
         return votes.toString();
     }
 
     private String encode(String in) throws UnsupportedEncodingException {
         return URLEncoder.encode(in, "UTF-8");
-        //return in;
     }
 }
