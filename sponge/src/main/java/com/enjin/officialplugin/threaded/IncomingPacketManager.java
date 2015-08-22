@@ -2,6 +2,7 @@ package com.enjin.officialplugin.threaded;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.threaded.data.Packet12ExecuteCommand;
+import com.enjin.officialplugin.threaded.data.Packet1ECommandsReceived;
 import com.enjin.officialplugin.utils.ConnectionUtil;
 import com.enjin.officialplugin.utils.WebAPI;
 import com.enjin.officialplugin.utils.commands.CommandWrapper;
@@ -225,6 +226,9 @@ public class IncomingPacketManager implements Runnable {
                 case 0x1B:
                 case 0x1D:
                 case 0x1E:
+                    plugin.debug("Packet [0x1E] (Commands Received) received.");
+                    Packet1ECommandsReceived.handle(bin, plugin);
+                    break;
                 case 0x1F:
                     plugin.debug("Packet [" + Integer.toHexString(i) + "] received but not yet supported. Skipping packet.");
                     break;
