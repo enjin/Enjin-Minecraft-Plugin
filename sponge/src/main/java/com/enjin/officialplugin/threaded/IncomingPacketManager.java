@@ -2,6 +2,7 @@ package com.enjin.officialplugin.threaded;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.threaded.data.Packet12ExecuteCommand;
+import com.enjin.officialplugin.threaded.data.Packet13ExecuteCommandAsPlayer;
 import com.enjin.officialplugin.threaded.data.Packet1ECommandsReceived;
 import com.enjin.officialplugin.utils.ConnectionUtil;
 import com.enjin.officialplugin.utils.WebAPI;
@@ -218,6 +219,9 @@ public class IncomingPacketManager implements Runnable {
                     Packet12ExecuteCommand.handle(bin, plugin);
                     break;
                 case 0x13:
+                    plugin.debug("Packet [0x13] (Execute Command As Player) received.");
+                    Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
+                    break;
                 case 0x14:
                 case 0x15:
                 case 0x17:
