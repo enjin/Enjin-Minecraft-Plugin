@@ -212,8 +212,6 @@ public class IncomingPacketManager implements Runnable {
         while ((i = bin.read()) != -1) {
             input.append((char) i);
             switch (i) {
-                case 0x10:
-                case 0x11:
                 case 0x12:
                     plugin.debug("Packet [0x12] (Execute Command) received.");
                     Packet12ExecuteCommand.handle(bin, plugin);
@@ -222,6 +220,16 @@ public class IncomingPacketManager implements Runnable {
                     plugin.debug("Packet [0x13] (Execute Command As Player) received.");
                     Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
                     break;
+                case 0x1E:
+                    plugin.debug("Packet [0x1E] (Commands Received) received.");
+                    Packet1ECommandsReceived.handle(bin, plugin);
+                    break;
+                case 0x19:
+                    plugin.debug("Packet [0x19] (Enjin Status) received.");
+                    result = PacketUtilities.readString(bin);
+                    break;
+                case 0x10:
+                case 0x11:
                 case 0x14:
                 case 0x15:
                 case 0x17:
@@ -229,16 +237,8 @@ public class IncomingPacketManager implements Runnable {
                 case 0x1A:
                 case 0x1B:
                 case 0x1D:
-                case 0x1E:
-                    plugin.debug("Packet [0x1E] (Commands Received) received.");
-                    Packet1ECommandsReceived.handle(bin, plugin);
-                    break;
                 case 0x1F:
                     plugin.debug("Packet [" + Integer.toHexString(i) + "] received but not yet supported. Skipping packet.");
-                    break;
-                case 0x19:
-                    plugin.debug("Packet [0x19] (Enjin Status) received.");
-                    result = PacketUtilities.readString(bin);
                     break;
                 default:
                     plugin.debug("Received an invalid opcode: [" + Integer.toHexString(i) + "]");
