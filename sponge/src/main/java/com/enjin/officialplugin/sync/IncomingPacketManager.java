@@ -1,9 +1,9 @@
-package com.enjin.officialplugin.threaded;
+package com.enjin.officialplugin.sync;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.threaded.data.Packet12ExecuteCommand;
-import com.enjin.officialplugin.threaded.data.Packet13ExecuteCommandAsPlayer;
-import com.enjin.officialplugin.threaded.data.Packet1ECommandsReceived;
+import com.enjin.officialplugin.sync.data.Packet12ExecuteCommand;
+import com.enjin.officialplugin.sync.data.Packet13ExecuteCommandAsPlayer;
+import com.enjin.officialplugin.sync.data.Packet1ECommandsReceived;
 import com.enjin.officialplugin.utils.ConnectionUtil;
 import com.enjin.officialplugin.utils.WebAPI;
 import com.enjin.officialplugin.utils.commands.CommandWrapper;
@@ -23,7 +23,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class IncomingPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;

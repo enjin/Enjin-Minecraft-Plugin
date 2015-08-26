@@ -1,4 +1,4 @@
-package com.enjin.officialplugin.threaded.data;
+package com.enjin.officialplugin.sync.data;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.utils.packet.PacketUtilities;

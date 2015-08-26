@@ -6,7 +6,7 @@ import com.enjin.officialplugin.commands.configuration.SetKeyCommand;
 import com.enjin.officialplugin.commands.store.BuyCommand;
 import com.enjin.officialplugin.config.EnjinConfig;
 import com.enjin.officialplugin.shop.ShopListener;
-import com.enjin.officialplugin.threaded.IncomingPacketManager;
+import com.enjin.officialplugin.sync.IncomingPacketManager;
 import com.enjin.officialplugin.utils.commands.CommandWrapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -20,8 +20,6 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.scheduler.Task;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.util.command.args.GenericArguments;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
