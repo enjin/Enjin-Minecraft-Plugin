@@ -11,6 +11,7 @@ public class EnjinServices {
     public static void registerServices(Class<? extends Service>... clazzes) {
         for (Class<? extends Service> clazz : clazzes) {
             try {
+                System.out.println("Registering service: " + clazz.getSimpleName());
                 services.put(clazz, clazz.newInstance());
             } catch (InstantiationException e) {
                 e.printStackTrace();
@@ -21,6 +22,10 @@ public class EnjinServices {
     }
 
     public static <T extends Service> T getService(Class<T> clazz) {
+        if (!services.containsKey(clazz)) {
+            registerServices(clazz);
+        }
+
         return clazz.cast(services.get(clazz));
     }
 }

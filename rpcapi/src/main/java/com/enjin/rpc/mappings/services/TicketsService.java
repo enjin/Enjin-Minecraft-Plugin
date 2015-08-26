@@ -48,7 +48,7 @@ public class TicketsService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("api.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
@@ -80,7 +80,7 @@ public class TicketsService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("api.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
@@ -106,7 +106,7 @@ public class TicketsService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("api.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
@@ -135,7 +135,7 @@ public class TicketsService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("api.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
@@ -163,7 +163,7 @@ public class TicketsService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("api.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
@@ -196,7 +196,7 @@ public class TicketsService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("api.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
@@ -227,7 +227,7 @@ public class TicketsService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("api.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
@@ -259,7 +259,7 @@ public class TicketsService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("api.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 

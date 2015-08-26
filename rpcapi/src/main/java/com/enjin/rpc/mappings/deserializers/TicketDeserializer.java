@@ -2,7 +2,6 @@ package com.enjin.rpc.mappings.deserializers;
 
 import com.enjin.rpc.mappings.mappings.tickets.ExtraQuestion;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
-import com.enjin.rpc.mappings.mappings.tickets.TicketViewer;
 import com.enjin.rpc.mappings.services.TicketsService;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -16,19 +15,6 @@ public class TicketDeserializer implements JsonDeserializer<Ticket> {
     @Override
     public Ticket deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject object = jsonElement.getAsJsonObject();
-        /* Was List<TicketViewer> Now Boolean
-         if (object.has("viewers")) {
-            JsonElement element = object.get("viewers");
-            if (!(element instanceof JsonNull)) {
-                String json = element.getAsString();
-                List<TicketViewer> viewers = EnjinRPC.gson.fromJson(json, new TypeToken<ArrayList<TicketViewer>>() {
-                }.getType());
-                object.add("viewers", EnjinRPC.gson.toJsonTree(viewers));
-            } else {
-                object.add("viewers", EnjinRPC.gson.toJsonTree(new ArrayList<Ticket>()));
-            }
-        }
-        */
 
         if (object.has("extra_questions")) {
             JsonElement element = object.get("extra_questions");

@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ShopService implements Service {
     public RPCData<List<Shop>> get(final String authkey, final String player) {
-        String method = "Tickets.getPlayerTickets";
+        String method = "Shop.get";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
             put("player", player);
@@ -30,7 +30,7 @@ public class ShopService implements Service {
         JSONRPC2Response response = null;
 
         try {
-            session = EnjinRPC.getSession();
+            session = EnjinRPC.getSession("minecraft.php");
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 

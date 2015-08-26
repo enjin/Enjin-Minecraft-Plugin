@@ -257,10 +257,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     @Getter
     private static TicketListener ticketListener;
 
-    static {
-        EnjinServices.registerServices(TicketsService.class);
-    }
-
     public static void debug(String s) {
         if (debug) {
             System.out.println("Enjin Debug: " + s);

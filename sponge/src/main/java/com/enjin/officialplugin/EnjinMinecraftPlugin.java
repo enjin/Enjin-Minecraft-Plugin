@@ -8,6 +8,7 @@ import com.enjin.officialplugin.config.EnjinConfig;
 import com.enjin.officialplugin.shop.ShopListener;
 import com.enjin.officialplugin.sync.IncomingPacketManager;
 import com.enjin.officialplugin.utils.commands.CommandWrapper;
+import com.enjin.rpc.EnjinRPC;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import lombok.Getter;
@@ -31,7 +32,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "EnjinMinecraftPlugin", name = "Enjin Minecraft Plugin", version = "2.8.2-sponge")
+@Plugin(id = "EnjinMinecraftPlugin", name = "Enjin Minecraft Plugin", version = "2.8.3-sponge")
 public class EnjinMinecraftPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
@@ -46,6 +47,9 @@ public class EnjinMinecraftPlugin {
     @Inject
     @Getter
     private Logger logger;
+    @Inject
+    @Getter
+    private java.util.logging.Logger javaLogger;
     @Inject
     @ConfigDir(sharedRoot = false)
     @Getter
@@ -67,6 +71,7 @@ public class EnjinMinecraftPlugin {
     public void initialization(InitializationEvent event) {
         logger.info("Initializing Enjin Minecraft Plugin");
         initConfig();
+        initJsonRPC();
         initCommands();
         initListeners();
         initTasks();
@@ -138,6 +143,17 @@ public class EnjinMinecraftPlugin {
     public void stopTasks() {
         syncTask.cancel();
         syncTask = null;
+    }
+
+    private void initJsonRPC() {
+        if (javaLogger == null) {
+            debug("Java logger is null, skipping rpc logger initialization.");
+        } else {
+            debug("Initializing rpc logger.");
+            EnjinRPC.setLogger(javaLogger);
+        }
+
+        EnjinRPC.setDebug(config.isDebug());
     }
 
     public String getAuthKey() {

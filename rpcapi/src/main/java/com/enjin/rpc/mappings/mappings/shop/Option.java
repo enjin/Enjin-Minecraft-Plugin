@@ -6,7 +6,7 @@ public class Option {
     @Getter
     private String name;
     @Getter
-    private int value;
+    private String value;
     @Getter
     private double price;
     @Getter

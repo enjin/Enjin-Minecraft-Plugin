@@ -21,18 +21,16 @@ public class EnjinRPC {
     @Getter @Setter
     private static boolean https;
     @Getter @Setter
-    private static String apiUrl = "://api.enjin.com/api/v1/api.php";
-    @Getter @Setter
-    private static String minecraftUrl = "://api.enjin.com/api/v1/minecraft.php";
+    private static String apiUrl = "://api.enjin.com/api/v1/";
     @Setter
     private static Logger logger;
     @Setter
     private static boolean debug;
     private static int nextRequestId = 0;
 
-    private static URL getUrl() {
+    private static URL getUrl(String clazz) {
         try {
-            URL url =  new URL((https ? "https" : "http") + (apiUrl.startsWith("https") ? apiUrl.replaceFirst("https", "") : apiUrl.startsWith("http") ? apiUrl.replaceFirst("http", "") : apiUrl));
+            URL url =  new URL((https ? "https" : "http") + (apiUrl.startsWith("https") ? apiUrl.replaceFirst("https", "") : apiUrl.startsWith("http") ? apiUrl.replaceFirst("http", "") : apiUrl) + (apiUrl.endsWith("/") ? clazz : ("/" + clazz)));
             debug("Enjin API URL: " + url.toString());
             return url;
         } catch (MalformedURLException e) {
@@ -60,8 +58,8 @@ public class EnjinRPC {
         return options;
     }
 
-    public static JSONRPC2Session getSession() {
-        JSONRPC2Session session = new JSONRPC2Session(getUrl());
+    public static JSONRPC2Session getSession(String clazz) {
+        JSONRPC2Session session = new JSONRPC2Session(getUrl(clazz));
         session.setOptions(getOptions());
         return session;
     }
