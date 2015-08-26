@@ -67,22 +67,6 @@ public class ShopFetcher implements Runnable {
 
             PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
             ShopUtil.sendTextShop(player, instance, -1);
-
-            /*PlayerShopsInstance shops = ShopUtils.parseShopsJSON(json);
-            listener.activeshops.put(player.getName().toLowerCase(), shops);
-            listener.playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
-            if (EnjinMinecraftPlugin.USEBUYGUI) {
-                listener.openshops.put(player.getName().toLowerCase(), "");
-                if (shops.getServerShopCount() == 1) {
-                    shops.setActiveShop(0);
-                    shops.setActiveCategory(shops.getActiveShop());
-                    listener.sendPlayerShopChestData(player, shops, shops.getActiveShop(), 0);
-                } else {
-                    listener.sendPlayerShopChestData(player, shops, (ShopItemAdder) null, 0);
-                }
-            } else {
-                listener.sendPlayerInitialShopData(player, shops);
-            }*/
             return;
         } catch (SocketTimeoutException e) {
             p.get().sendMessage(Texts.builder("The request to the Enjin API timed out, please try again later.").color(TextColors.RED).build());
@@ -119,7 +103,6 @@ public class ShopFetcher implements Runnable {
 
     private String encode(String in) throws UnsupportedEncodingException {
         return URLEncoder.encode(in, "UTF-8");
-        //return in;
     }
 
 }
