@@ -20,8 +20,6 @@ import com.enjin.rpc.EnjinRPC;
 import java.util.*;
 
 public class TicketsService implements Service {
-    private int id = 0;
-
     public static final Gson GSON_TICKET = new GsonBuilder()
             .registerTypeAdapter(Ticket.class, new TicketDeserializer())
             .create();
@@ -43,7 +41,7 @@ public class TicketsService implements Service {
             parameters.put("preset_id", preset);
         }
 
-        int id = ++this.id;
+        int id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -75,7 +73,7 @@ public class TicketsService implements Service {
             parameters.put("preset_id", preset);
         }
 
-        int id = ++this.id;
+        int id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -101,7 +99,7 @@ public class TicketsService implements Service {
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
         }};
-        int id = ++this.id;
+        int id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -130,7 +128,7 @@ public class TicketsService implements Service {
             put("ticket_code", code);
             put("status", status.name());
         }};
-        int id = ++this.id;
+        int id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -158,7 +156,7 @@ public class TicketsService implements Service {
             put("preset_id", preset);
             put("minecraft_player", player);
         }};
-        int id = ++this.id;
+        int id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -191,7 +189,7 @@ public class TicketsService implements Service {
             parameters.put("preset_id", preset);
         }
 
-        int id = ++this.id;
+        int id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -222,7 +220,7 @@ public class TicketsService implements Service {
             put("minecraft_player", player);
             put("extra_questions", extraQuestions.toArray());
         }};
-        int id = ++this.id;
+        int id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -254,7 +252,7 @@ public class TicketsService implements Service {
             put("status", status.name());
             put("minecraft_player", player);
         }};
-        int id = ++this.id;
+        int id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;

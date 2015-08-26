@@ -22,10 +22,13 @@ public class EnjinRPC {
     private static boolean https;
     @Getter @Setter
     private static String apiUrl = "://api.enjin.com/api/v1/api.php";
+    @Getter @Setter
+    private static String minecraftUrl = "://api.enjin.com/api/v1/minecraft.php";
     @Setter
     private static Logger logger;
     @Setter
     private static boolean debug;
+    private static int nextRequestId = 0;
 
     private static URL getUrl() {
         try {
@@ -61,5 +64,9 @@ public class EnjinRPC {
         JSONRPC2Session session = new JSONRPC2Session(getUrl());
         session.setOptions(getOptions());
         return session;
+    }
+
+    public static int getNextRequestId() {
+        return ++nextRequestId;
     }
 }
