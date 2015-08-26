@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.mappings.shop;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 
 import java.util.Map;
@@ -13,4 +14,12 @@ public class Item {
     private String info;
     @Getter
     private Map<Integer, Variable> variables;
+    @Getter
+    @SerializedName(value = "icon_damage")
+    private int iconDamage;
+    @Getter
+    @SerializedName(value = "icon_item")
+    private String iconItem;
+    @Getter
+    private double price;
 }
