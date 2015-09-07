@@ -1,11 +1,11 @@
 package com.enjin.officialplugin.shop;
 
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 public class ShopListener {
-    @Subscribe
-    public void playerQuit(PlayerQuitEvent event) {
-        PlayerShopInstance.getInstances().remove(event.getEntity().getUniqueId());
+    @Listener
+    public void playerQuit(ClientConnectionEvent.Disconnect event) {
+        PlayerShopInstance.getInstances().remove(event.getTargetEntity().getUniqueId());
     }
 }

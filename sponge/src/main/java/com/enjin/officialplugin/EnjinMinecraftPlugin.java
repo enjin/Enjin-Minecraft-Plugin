@@ -14,8 +14,8 @@ import com.google.inject.Inject;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.state.InitializationEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.config.ConfigDir;
@@ -67,8 +67,8 @@ public class EnjinMinecraftPlugin {
         instance = this;
     }
 
-    @Subscribe
-    public void initialization(InitializationEvent event) {
+    @Listener
+    public void initialization(GameInitializationEvent event) {
         logger.info("Initializing Enjin Minecraft Plugin");
         initConfig();
         initJsonRPC();
@@ -126,7 +126,7 @@ public class EnjinMinecraftPlugin {
     }
 
     private void initListeners() {
-        game.getEventManager().register(this, new ShopListener());
+        game.getEventManager().registerListeners(this, new ShopListener());
     }
 
     public void initTasks() {

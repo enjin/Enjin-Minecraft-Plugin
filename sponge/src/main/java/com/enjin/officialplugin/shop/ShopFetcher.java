@@ -4,7 +4,7 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.data.Shop;
 import com.enjin.officialplugin.utils.WebAPI;
 import com.google.common.base.Optional;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 

@@ -8,7 +8,7 @@ import com.enjin.officialplugin.utils.ConnectionUtil;
 import com.enjin.officialplugin.utils.WebAPI;
 import com.enjin.officialplugin.utils.commands.CommandWrapper;
 import com.enjin.officialplugin.utils.packet.PacketUtilities;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
 

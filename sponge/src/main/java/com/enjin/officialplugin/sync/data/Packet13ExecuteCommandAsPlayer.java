@@ -3,7 +3,7 @@ package com.enjin.officialplugin.sync.data;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.utils.packet.PacketUtilities;
 import com.google.common.base.Optional;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

@@ -7,7 +7,7 @@ import com.enjin.officialplugin.shop.data.Shop;
 import com.enjin.officialplugin.utils.text.TextUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.*;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
