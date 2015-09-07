@@ -39,7 +39,7 @@ public class ShopService implements Service {
             RPCData<List<Shop>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Shop>>>() {}.getType());
             return data;
         } catch (JSONRPC2SessionException e) {
-            EnjinRPC.debug("Failed Request to " + EnjinRPC.getApiUrl() + ": " + request.toJSONString());
+            EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
     }

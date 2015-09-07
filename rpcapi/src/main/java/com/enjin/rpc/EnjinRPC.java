@@ -30,7 +30,21 @@ public class EnjinRPC {
 
     private static URL getUrl(String clazz) {
         try {
-            URL url =  new URL((https ? "https" : "http") + (apiUrl.startsWith("https") ? apiUrl.replaceFirst("https", "") : apiUrl.startsWith("http") ? apiUrl.replaceFirst("http", "") : apiUrl) + (apiUrl.endsWith("/") ? clazz : ("/" + clazz)));
+            StringBuilder builder = new StringBuilder(https ? "https" : "http");
+
+            if (apiUrl.startsWith("https")) {
+                builder.append(apiUrl.replaceFirst("https", ""));
+            } else if (apiUrl.startsWith("http")) {
+                builder.append(apiUrl.replaceFirst("http", ""));
+            }
+
+            if (!apiUrl.endsWith("/")) {
+                builder.append("/");
+            }
+
+            builder.append(clazz);
+
+            URL url =  new URL(builder.toString());
             debug("Enjin API URL: " + url.toString());
             return url;
         } catch (MalformedURLException e) {

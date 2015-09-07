@@ -37,7 +37,7 @@ public class VoteService implements Service {
             RPCData<String> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<String>>() {}.getType());
             return data;
         } catch (JSONRPC2SessionException e) {
-            EnjinRPC.debug("Failed Request to " + EnjinRPC.getApiUrl() + ": " + request.toJSONString());
+            EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
     }

@@ -1,6 +1,7 @@
 package com.enjin.officialplugin.listeners;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
@@ -44,12 +45,11 @@ public class VotifierListener implements Listener {
             userid = username + "|" + op.getUniqueId().toString();
         }
 
-        String lists = "";
-        if (plugin.playervotes.containsKey(userid)) {
-            lists = plugin.playervotes.get(userid);
-            lists = lists + "," + vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
+        if (plugin.playervotes.containsKey(username)) {
+            plugin.playervotes.get(userid).add(vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", ""));
         } else {
-            lists = vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
+            plugin.playervotes.put(userid, new ArrayList<String>());
+            plugin.playervotes.get(userid).add(vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", ""));
         }
 
         long realvotetime = System.currentTimeMillis();
@@ -59,7 +59,6 @@ public class VotifierListener implements Listener {
         String[] signdata = plugin.cachedItems.getSignData(username, voteday, HeadLocation.Type.RecentVoter, 0, svotetime);
         HeadData hd = new HeadData(username, signdata, HeadLocation.Type.RecentVoter, 0);
         plugin.headdata.addToHead(hd, true);
-        plugin.playervotes.put(userid, lists);
     }
 
 }

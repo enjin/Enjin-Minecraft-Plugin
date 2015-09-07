@@ -239,7 +239,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     NewKeyVerifier verifier = null;
     public ConcurrentHashMap<String, String> playerperms = new ConcurrentHashMap<String, String>();
     //Player, lists voted on.
-    public ConcurrentHashMap<String, String> playervotes = new ConcurrentHashMap<String, String>();
+    public ConcurrentHashMap<String, List<String>> playervotes = new ConcurrentHashMap<String, List<String>>();
 
     private ConcurrentHashMap<String, CommandWrapper> commandids = new ConcurrentHashMap<String, CommandWrapper>();
 
@@ -703,7 +703,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             apiurl = apiurl.concat("/");
         }
 
-        String rpcapiurl = (usingSSL ? "https" : "http") + apiurl + "v1/api.php";
+        String rpcapiurl = (usingSSL ? "https" : "http") + apiurl + (!apiurl.endsWith("/") ? "/" : "") + "v1/";
         EnjinRPC.setHttps(usingSSL);
         EnjinRPC.setApiUrl(rpcapiurl);
         debug("RPC API Url: " + rpcapiurl);
@@ -1170,15 +1170,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     return true;
                 } else if (apiurl.equals("://gamers.enjin.ca/api/") && args[0].equalsIgnoreCase("vote") && args.length > 2) {
                     String username = args[1];
-                    String lists = "";
                     String listname = args[2];
+
                     if (playervotes.containsKey(username)) {
-                        lists = playervotes.get(username);
-                        lists = lists + "," + listname.replaceAll("[^0-9A-Za-z.\\-]", "");
+                        playervotes.get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
                     } else {
-                        lists = listname.replaceAll("[^0-9A-Za-z.\\-]", "");
+                        playervotes.put(username, new ArrayList<String>());
+                        playervotes.get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
                     }
-                    playervotes.put(username, lists);
+
                     sender.sendMessage(ChatColor.GREEN + "You just added a vote for player " + username + " on list " + listname);
                 } else if (args[0].equalsIgnoreCase("inform")) {
                     if (!sender.hasPermission("enjin.inform")) {

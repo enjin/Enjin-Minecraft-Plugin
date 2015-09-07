@@ -6,13 +6,8 @@ import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 
@@ -39,7 +34,6 @@ public class PeriodicEnjinTask implements Runnable {
 
     EnjinMinecraftPlugin plugin;
     ConcurrentHashMap<String, String> removedplayerperms = new ConcurrentHashMap<String, String>();
-    ConcurrentHashMap<String, String> removedplayervotes = new ConcurrentHashMap<String, String>();
     HashMap<String, String> removedbans = new HashMap<String, String>();
     HashMap<String, String> removedpardons = new HashMap<String, String>();
     int numoffailedtries = 0;
@@ -65,12 +59,14 @@ public class PeriodicEnjinTask implements Runnable {
                 EnjinMinecraftPlugin.enjinlogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
             }
         }
+
         boolean successful = false;
         StringBuilder builder = new StringBuilder();
         try {
             EnjinMinecraftPlugin.debug("Connecting to Enjin...");
             URL enjinurl = getUrl();
             HttpURLConnection con;
+
             // Mineshafter creates a socks proxy, so we can safely bypass it
             // It does not reroute POST requests so we need to go around it
             if (EnjinMinecraftPlugin.isMineshafterPresent()) {
@@ -78,6 +74,7 @@ public class PeriodicEnjinTask implements Runnable {
             } else {
                 con = (HttpURLConnection) enjinurl.openConnection();
             }
+
             con.setRequestMethod("POST");
             con.setReadTimeout(15000);
             con.setConnectTimeout(15000);
@@ -85,37 +82,38 @@ public class PeriodicEnjinTask implements Runnable {
             con.setDoOutput(true);
             con.setRequestProperty("User-Agent", "Mozilla/4.0");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            //StringBuilder builder = new StringBuilder();
             builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+
             if (firstrun) {
                 builder.append("&maxplayers=" + encode(String.valueOf(Bukkit.getServer().getMaxPlayers()))); //max players
                 builder.append("&mc_version=" + encode(plugin.mcversion));
             }
+
             builder.append("&players=" + encode(String.valueOf(plugin.getPlayerGetter().getOnlinePlayers().length))); //current players
             builder.append("&hasranks=" + encode(((EnjinMinecraftPlugin.permission == null || EnjinMinecraftPlugin.permission.getName().equalsIgnoreCase("SuperPerms")) ? "FALSE" : "TRUE")));
             builder.append("&pluginversion=" + encode(plugin.getDescription().getVersion()));
+
             if (plugin.getCommandIDs().size() > 0) {
                 builder.append("&executed_commands=" + encode(getExecutedCommands()));
             }
+
             //We only want to send the list of plugins every hour
             if (plugindelay++ >= 59) {
                 builder.append("&plugins=" + encode(getPlugins()));
             }
+
             builder.append("&playerlist=" + encode(getPlayers()));
             builder.append("&worlds=" + encode(getWorlds()));
             builder.append("&tps=" + encode(getTPS()));
             builder.append("&time=" + encode(getTimes()));
+
             if (plugin.bannedplayers.size() > 0) {
                 builder.append("&banned=" + encode(getBans()));
             }
+
             if (plugin.pardonedplayers.size() > 0) {
                 builder.append("&unbanned=" + encode(getPardons()));
             }
-            //Don't add the votifier tag if no one has voted.
-            /* Votes are now handled in a separate thread.
-            if(plugin.playervotes.size() > 0) {
-				builder.append("&votifier=" + encode(getVotes()));
-			}*/
 
             //We don't want to throw any errors if they are using superperms
             //which doesn't support groups. Therefore we can't support it.
@@ -125,18 +123,18 @@ public class PeriodicEnjinTask implements Runnable {
                     builder.append("&playergroups=" + encode(getPlayerGroups()));
                 }
             }
+
             if (plugin.collectstats && (plugin.statssendinterval - 1) <= statdelay) {
                 builder.append("&stats=" + encode(getStats()));
             }
+
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
             EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
-            //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
-            //System.out.println("Handling input stream...");
             String success = handleInput(in);
-            //Schedule commands to execute regardless of success.
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, plugin.commandqueue);
+
             if (success.equalsIgnoreCase("ok")) {
                 successful = true;
                 if (plugin.unabletocontactenjin) {
@@ -185,6 +183,7 @@ public class PeriodicEnjinTask implements Runnable {
                 plugin.getLogger().info("Response code: " + success);
                 successful = false;
             }
+
             if (!successful) {
                 if (numoffailedtries++ > 5 && !plugin.unabletocontactenjin) {
                     numoffailedtries = 0;
@@ -217,10 +216,12 @@ public class PeriodicEnjinTask implements Runnable {
             plugin.lasterror = new EnjinErrorReport(t, "Regular synch. Information sent:\n" + builder.toString());
             EnjinMinecraftPlugin.enjinlogger.warning(plugin.lasterror.toString());
         }
+
         if (!successful) {
             EnjinMinecraftPlugin.debug("Synch unsuccessful.");
             statdelay++;
             Set<Entry<String, String>> es = removedplayerperms.entrySet();
+
             for (Entry<String, String> entry : es) {
                 //If the plugin has put a new set of player perms in for this player,
                 //let's not overwrite it.
@@ -230,33 +231,24 @@ public class PeriodicEnjinTask implements Runnable {
                 removedplayerperms.remove(entry.getKey());
             }
 
-            Set<Entry<String, String>> voteset = removedplayervotes.entrySet();
-            for (Entry<String, String> entry : voteset) {
-                //If the plugin has put new votes in, let's not overwrite them.
-                if (plugin.playervotes.containsKey(entry.getKey())) {
-                    //combine the lists.
-                    String lists = plugin.playervotes.get(entry.getKey()) + "," + entry.getValue();
-                    plugin.playervotes.put(entry.getKey(), lists);
-                } else {
-                    plugin.playervotes.put(entry.getKey(), entry.getValue());
-                }
-                removedplayervotes.remove(entry.getKey());
-            }
             Set<Entry<String, String>> banset = removedbans.entrySet();
             for (Entry<String, String> entry : banset) {
                 plugin.bannedplayers.put(entry.getKey(), entry.getValue());
             }
+
             banset.clear();
             Set<Entry<String, String>> pardonset = removedpardons.entrySet();
             for (Entry<String, String> entry : pardonset) {
                 plugin.pardonedplayers.put(entry.getKey(), entry.getValue());
             }
+
             pardonset.clear();
         } else {
             firstrun = false;
             removedbans.clear();
             removedpardons.clear();
             EnjinMinecraftPlugin.debug("Synch successful.");
+
             if (plugin.collectstats && (plugin.statssendinterval - 1) <= statdelay) {
                 statdelay = 0;
                 //Let's remove the old stats...
@@ -265,10 +257,12 @@ public class PeriodicEnjinTask implements Runnable {
             } else {
                 statdelay++;
             }
+
             if (plugindelay >= 59) {
                 plugindelay = 0;
             }
         }
+
         if (plugin.collectstats) {
             new WriteStats(plugin).write("enjin-stats.json");
             EnjinMinecraftPlugin.debug("Stats saved to enjin-stats.json.");
@@ -278,6 +272,7 @@ public class PeriodicEnjinTask implements Runnable {
     private String getExecutedCommands() {
         StringBuilder sb = new StringBuilder();
         Iterator<Entry<String, CommandWrapper>> es = plugin.getCommandIDs().entrySet().iterator();
+
         while (es.hasNext() && sb.length() < 40 * 1024) {
             Entry<String, CommandWrapper> element = es.next();
             if (sb.length() > 0) {
@@ -289,8 +284,8 @@ public class PeriodicEnjinTask implements Runnable {
                 sb.append(element.getKey() + ":" + element.getValue().getHash() + ":" + base64Encode(element.getValue().getResult()));
             }
         }
-        return sb.toString();
 
+        return sb.toString();
     }
 
     private String getTPS() {
@@ -300,36 +295,44 @@ public class PeriodicEnjinTask implements Runnable {
     private String getPardons() {
         StringBuilder pardons = new StringBuilder();
         Set<Entry<String, String>> pardonset = plugin.pardonedplayers.entrySet();
+
         for (Entry<String, String> pardon : pardonset) {
             if (pardons.length() > 0) {
                 pardons.append(",");
             }
+
             if (pardon.getValue().equals("")) {
                 pardons.append(pardon.getKey());
             } else {
                 pardons.append(pardon.getValue() + ":" + pardon.getKey());
             }
+
             plugin.pardonedplayers.remove(pardon.getKey());
             removedpardons.put(pardon.getKey(), pardon.getValue());
         }
+
         return pardons.toString();
     }
 
     private String getBans() {
         StringBuilder bans = new StringBuilder();
         Set<Entry<String, String>> banset = plugin.bannedplayers.entrySet();
+
         for (Entry<String, String> ban : banset) {
             if (bans.length() > 0) {
                 bans.append(",");
             }
+
             if (ban.getValue().equals("")) {
                 bans.append(ban.getKey());
             } else {
                 bans.append(ban.getValue() + ":" + ban.getKey());
             }
+
             plugin.bannedplayers.remove(ban.getKey());
             removedbans.put(ban.getKey(), ban.getValue());
         }
+
         return bans.toString();
     }
 
@@ -346,9 +349,9 @@ public class PeriodicEnjinTask implements Runnable {
         } catch (Error e) {
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
         return "";
     }
 
@@ -357,6 +360,7 @@ public class PeriodicEnjinTask implements Runnable {
         if (plugin.permissionsnotworking) {
             return "";
         }
+
         removedplayerperms.clear();
         Iterator<Entry<String, String>> es = plugin.playerperms.entrySet().iterator();
 
@@ -369,6 +373,7 @@ public class PeriodicEnjinTask implements Runnable {
             //Let's get global groups
             LinkedList<String> globalperms = new LinkedList<String>();
             //We don't want to get global groups with plugins that don't support it.
+
             try {
                 if (plugin.supportsglobalgroups) {
                     String[] tempperms;
@@ -393,6 +398,7 @@ public class PeriodicEnjinTask implements Runnable {
                         }
                     }
                 }
+
                 //Now let's get groups per world.
                 for (World w : Bukkit.getWorlds()) {
                     String[] tempperms;
