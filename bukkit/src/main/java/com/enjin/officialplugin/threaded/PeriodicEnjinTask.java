@@ -552,7 +552,7 @@ public class PeriodicEnjinTask implements Runnable {
                     EnjinMinecraftPlugin.debug("Packet [0x1F] (Notifications) received.");
                     Packet1FNotifications.handle(bin, plugin);
                 default:
-                    EnjinMinecraftPlugin.debug("[Enjin] Received an invalid opcode: " + code);
+                    EnjinMinecraftPlugin.debug("[Enjin] Received an invalid opcode: " + Integer.toHexString(code));
                     bin.reset();
                     StringBuilder input2 = new StringBuilder();
                     while ((code = bin.read()) != -1) {
