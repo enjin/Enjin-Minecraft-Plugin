@@ -117,3 +117,6 @@ permissions:
   enjin.ticket.status:
     description: Allows the player to set the status of tickets.
     default: op
+  enjin.test.vote:
+    description: Allows the player to add votes manually.
+    default: op

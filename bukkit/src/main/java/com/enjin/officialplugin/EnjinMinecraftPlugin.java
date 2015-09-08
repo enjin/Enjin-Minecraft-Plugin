@@ -1168,9 +1168,25 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     sender.sendMessage(ChatColor.DARK_GREEN + "Total number of kicks: " + ChatColor.GOLD + serverstats.getTotalkicks());
                     sender.sendMessage(ChatColor.DARK_GREEN + "Kicks per player: " + ChatColor.GOLD + serverstats.getPlayerkicks().toString());
                     return true;
-                } else if (apiurl.equals("://gamers.enjin.ca/api/") && args[0].equalsIgnoreCase("vote") && args.length > 2) {
+                } else if (args[0].equalsIgnoreCase("vote")) {
+                    if (!sender.hasPermission("enjin.test.vote")) {
+                        return false;
+                    }
+
+                    if (args.length != 3) {
+                        sender.sendMessage("Usage: /enjin vote <username> <listname>");
+                        return true;
+                    }
+
                     String username = args[1];
                     String listname = args[2];
+
+                    if (supportsUUID()) {
+                        OfflinePlayer player = Bukkit.getOfflinePlayer(username);
+                        if (player != null) {
+                            username = username.concat("|" + player.getUniqueId().toString());
+                        }
+                    }
 
                     if (playervotes.containsKey(username)) {
                         playervotes.get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
@@ -1180,6 +1196,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                     }
 
                     sender.sendMessage(ChatColor.GREEN + "You just added a vote for player " + username + " on list " + listname);
+                    return true;
                 } else if (args[0].equalsIgnoreCase("inform")) {
                     if (!sender.hasPermission("enjin.inform")) {
                         sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.inform\" permission or OP to run that command!");
