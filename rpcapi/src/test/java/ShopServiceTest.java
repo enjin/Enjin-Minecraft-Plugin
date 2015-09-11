@@ -1,6 +1,7 @@
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.shop.FilteredItem;
 import com.enjin.rpc.mappings.mappings.shop.Purchase;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
@@ -51,6 +52,24 @@ public class ShopServiceTest {
         System.out.println("# of purchases: " + purchases.size());
         for (Purchase purchase : purchases) {
             System.out.println(purchase.toString());
+        }
+    }
+
+    @Test
+    public void test3GetItems() {
+        ShopService service = EnjinServices.getService(ShopService.class);
+        RPCData<List<FilteredItem>> data = service.getItems(KEY, PLAYER);
+
+        Assert.assertNotNull(data);
+        Assert.assertNotNull(data.getResult());
+
+        List<FilteredItem> items = data.getResult();
+
+        Assert.assertNotNull(items);
+
+        System.out.println("# of items: " + items.size());
+        for (FilteredItem item : items) {
+            System.out.println(item.toString());
         }
     }
 

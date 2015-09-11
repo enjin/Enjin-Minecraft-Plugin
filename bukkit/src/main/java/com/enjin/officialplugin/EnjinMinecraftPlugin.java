@@ -1085,7 +1085,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
                     for (OfflinePlayer offlineplayer : allplayers) {
-                        if (supportsUUID()) {
+                        if (supportsUUID() && offlineplayer.getUniqueId() != null) {
                             playerperms.put(offlineplayer.getName(), offlineplayer.getUniqueId().toString());
                         } else {
                             playerperms.put(offlineplayer.getName(), "");
