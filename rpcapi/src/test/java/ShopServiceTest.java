@@ -13,12 +13,16 @@ import java.util.List;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class ShopServiceTest {
+    private static final String API_URL = "https://api.enjin.com/api/v1/";
+    private static final String KEY = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
+    private static final String PLAYER = "Favorlock";
+
     @Test
     public void test1Get() {
         prepare();
 
         ShopService service = EnjinServices.getService(ShopService.class);
-        RPCData<List<Shop>> data = service.get("cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e", "Favorlock");
+        RPCData<List<Shop>> data = service.get(KEY, PLAYER);
 
         Assert.assertNotNull(data);
         Assert.assertNotNull(data.getResult());
@@ -38,7 +42,7 @@ public class ShopServiceTest {
         prepare();
 
         ShopService service = EnjinServices.getService(ShopService.class);
-        RPCData<List<Purchase>> data = service.getPurchases("cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e", "Favorlock", true);
+        RPCData<List<Purchase>> data = service.getPurchases(KEY, PLAYER, true);
 
         Assert.assertNotNull(data);
         Assert.assertNotNull(data.getResult());
@@ -55,6 +59,6 @@ public class ShopServiceTest {
 
     private static void prepare() {
         EnjinRPC.setHttps(true);
-        EnjinRPC.setApiUrl("https://api.enjin.com/api/v1/");
+        EnjinRPC.setApiUrl(API_URL);
     }
 }
