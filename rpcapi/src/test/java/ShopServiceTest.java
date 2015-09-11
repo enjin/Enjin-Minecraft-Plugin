@@ -5,10 +5,7 @@ import com.enjin.rpc.mappings.mappings.shop.FilteredItem;
 import com.enjin.rpc.mappings.mappings.shop.Purchase;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
 
 import java.util.List;
@@ -73,8 +70,8 @@ public class ShopServiceTest {
         }
     }
 
-    @Before
-    public void prepare() {
+    @BeforeClass
+    public static void prepare() {
         EnjinRPC.setHttps(true);
         EnjinRPC.setApiUrl(API_URL);
     }
