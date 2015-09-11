@@ -5,6 +5,7 @@ import com.enjin.rpc.mappings.mappings.shop.Purchase;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -19,8 +20,6 @@ public class ShopServiceTest {
 
     @Test
     public void test1Get() {
-        prepare();
-
         ShopService service = EnjinServices.getService(ShopService.class);
         RPCData<List<Shop>> data = service.get(KEY, PLAYER);
 
@@ -39,8 +38,6 @@ public class ShopServiceTest {
 
     @Test
     public void test2GetPurchases() {
-        prepare();
-
         ShopService service = EnjinServices.getService(ShopService.class);
         RPCData<List<Purchase>> data = service.getPurchases(KEY, PLAYER, true);
 
@@ -57,7 +54,8 @@ public class ShopServiceTest {
         }
     }
 
-    private static void prepare() {
+    @Before
+    public void prepare() {
         EnjinRPC.setHttps(true);
         EnjinRPC.setApiUrl(API_URL);
     }
