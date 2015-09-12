@@ -55,12 +55,12 @@ public class EnjinRPC {
     }
 
     public static void debug(String s) {
-        if (logger == null) {
-            return;
-        }
-
         if (debug) {
-            logger.info("Enjin Debug: " + (s == null ? "null" : s));
+            if (logger == null) {
+                System.out.println("Enjin Debug: " + (s == null ? "null" : s));
+            } else {
+                logger.info("Enjin Debug: " + (s == null ? "null" : s));
+            }
         }
     }
 
