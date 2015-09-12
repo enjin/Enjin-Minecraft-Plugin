@@ -31,15 +31,12 @@ import com.enjin.officialplugin.tickets.TicketCreationSession;
 import com.enjin.officialplugin.tickets.TicketViewBuilder;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.general.RPCResult;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
-import com.enjin.rpc.mappings.mappings.general.ResultType;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
 import com.enjin.rpc.mappings.mappings.tickets.Reply;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
 import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
-import com.enjin.rpc.mappings.services.TicketsService;
-import com.google.common.collect.Lists;
+import com.enjin.rpc.mappings.services.TicketService;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -1669,7 +1666,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                TicketsService service = EnjinServices.getService(TicketsService.class);
+                                TicketService service = EnjinServices.getService(TicketService.class);
                                 RPCData<List<Ticket>> data = service.getPlayerTickets(getHash(), -1, player.getName());
 
                                 if (data != null) {
@@ -1693,7 +1690,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                TicketsService service = EnjinServices.getService(TicketsService.class);
+                                TicketService service = EnjinServices.getService(TicketService.class);
                                 RPCData<List<Reply>> data = service.getReplies(getHash(), -1, args[1], player.getName());
 
                                 if (data != null) {
@@ -1736,7 +1733,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                TicketsService service = EnjinServices.getService(TicketsService.class);
+                                TicketService service = EnjinServices.getService(TicketService.class);
                                 RPCData<List<Ticket>> data = service.getTickets(getHash(), -1, TicketStatus.open);
 
                                 if (data != null) {
@@ -1760,7 +1757,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                TicketsService service = EnjinServices.getService(TicketsService.class);
+                                TicketService service = EnjinServices.getService(TicketService.class);
                                 RPCData<List<Reply>> data = service.getReplies(getHash(), -1, args[1], player.getName());
 
                                 if (data != null) {
@@ -1820,7 +1817,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                RPCData<RPCSuccess> result = EnjinServices.getService(TicketsService.class).sendReply(getHash(), preset, ticket, finalMessage, "public", TicketStatus.open, ((Player) sender).getName());
+                                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(getHash(), preset, ticket, finalMessage, "public", TicketStatus.open, ((Player) sender).getName());
                                 if (result != null) {
                                     if (result.getError() == null) {
                                         sender.sendMessage("You replied to the ticket successfully.");
@@ -1872,7 +1869,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                RPCData<Boolean> result = EnjinServices.getService(TicketsService.class).setStatus(getHash(), preset, ticket, status);
+                                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(getHash(), preset, ticket, status);
                                 if (result != null) {
                                     if (result.getError() == null) {
                                         if (result.getResult()) {
@@ -2505,7 +2502,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     private void pollModules() {
         if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
             modulesLastPolled = System.currentTimeMillis();
-            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketsService.class).getModules(getHash());
+            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules(getHash());
 
             if (data == null || data.getError() != null) {
                 debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());

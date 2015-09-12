@@ -3,11 +3,9 @@ package com.enjin.officialplugin.tickets;
 import com.enjin.core.EnjinServices;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.general.RPCResult;
-import com.enjin.rpc.mappings.mappings.general.ResultType;
 import com.enjin.rpc.mappings.mappings.tickets.ExtraQuestion;
 import com.enjin.rpc.mappings.mappings.tickets.QuestionType;
-import com.enjin.rpc.mappings.services.TicketsService;
+import com.enjin.rpc.mappings.services.TicketService;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -16,7 +14,7 @@ import java.util.*;
 public class TicketSubmission {
     public static void submit(Player player, int moduleId, List<QuestionResponse> responses) {
         List<QuestionResponse> answers = new ArrayList<QuestionResponse>(responses);
-        TicketsService service = EnjinServices.getService(TicketsService.class);
+        TicketService service = EnjinServices.getService(TicketService.class);
 
         Collections.sort(responses, new Comparator<QuestionResponse>() {
             @Override

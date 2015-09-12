@@ -19,7 +19,7 @@ import com.enjin.rpc.EnjinRPC;
 
 import java.util.*;
 
-public class TicketsService implements Service {
+public class TicketService implements Service {
     public static final Gson GSON_TICKET = new GsonBuilder()
             .registerTypeAdapter(Ticket.class, new TicketDeserializer())
             .create();

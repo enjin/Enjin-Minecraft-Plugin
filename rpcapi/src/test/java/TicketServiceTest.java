@@ -3,7 +3,7 @@ import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
 import com.enjin.rpc.mappings.mappings.tickets.*;
-import com.enjin.rpc.mappings.services.TicketsService;
+import com.enjin.rpc.mappings.services.TicketService;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
@@ -21,7 +21,7 @@ public class TicketServiceTest {
 
     @Test
     public void test1GetModules() {
-        TicketsService service = EnjinServices.getService(TicketsService.class);
+        TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<Map<Integer, Module>> data = service.getModules(KEY);
 
         Assert.assertNotNull(data);
@@ -39,7 +39,7 @@ public class TicketServiceTest {
 
     @Test
     public void test2GetTickets() {
-        TicketsService service = EnjinServices.getService(TicketsService.class);
+        TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<List<Ticket>> data = service.getTickets(KEY, -1, TicketStatus.closed);
 
         Assert.assertNotNull(data);
@@ -54,7 +54,7 @@ public class TicketServiceTest {
 
     @Test
     public void test3GetPlayerTickets() {
-        TicketsService service = EnjinServices.getService(TicketsService.class);
+        TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<List<Ticket>> data = service.getPlayerTickets(KEY, -1, PLAYER);
 
         Assert.assertNotNull(data);
@@ -69,7 +69,7 @@ public class TicketServiceTest {
 
     @Test
     public void test4GetReplies() {
-        TicketsService service = EnjinServices.getService(TicketsService.class);
+        TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<List<Reply>> data = service.getReplies(KEY, PRESET_ID, TICKET_CODE, PLAYER);
 
         Assert.assertNotNull("data is null", data);
@@ -84,7 +84,7 @@ public class TicketServiceTest {
 
     @Test
     public void test5CreateTicket() {
-        TicketsService service = EnjinServices.getService(TicketsService.class);
+        TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<Boolean> data = service.createTicket(KEY, PRESET_ID, "This is my subject", "This is my description", "Favorlock", new ArrayList<ExtraQuestion>());
 
         Assert.assertNotNull("data is null", data);
@@ -105,7 +105,7 @@ public class TicketServiceTest {
 
     @Test
     public void test6SendReply() {
-        TicketsService service = EnjinServices.getService(TicketsService.class);
+        TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<RPCSuccess> data = service.sendReply(KEY, PRESET_ID, TICKET_CODE, "This is a reply", "public", TicketStatus.pending, "Favorlock");
 
         Assert.assertNotNull("data is null", data);
@@ -126,7 +126,7 @@ public class TicketServiceTest {
 
     @Test
     public void test7SetStatus() {
-        TicketsService service = EnjinServices.getService(TicketsService.class);
+        TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<Boolean> data = service.setStatus(KEY, PRESET_ID, TICKET_CODE, TicketStatus.closed);
 
         Assert.assertNotNull("data is null", data);
