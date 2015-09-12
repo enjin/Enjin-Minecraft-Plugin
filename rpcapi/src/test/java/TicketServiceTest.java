@@ -24,12 +24,12 @@ public class TicketServiceTest {
         TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<Map<Integer, Module>> data = service.getModules(KEY);
 
-        Assert.assertNotNull(data);
-        Assert.assertNotNull(data.getResult());
+        Assert.assertNotNull("data is null", data);
+        Assert.assertNotNull("data result is null", data.getResult());
 
         Map<Integer, Module> modules = data.getResult();
 
-        Assert.assertNotNull(modules);
+        Assert.assertNotNull("modules is null", modules);
 
         System.out.println("# of modules: " + modules.size());
         for (Module shop : modules.values()) {
@@ -42,12 +42,12 @@ public class TicketServiceTest {
         TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<List<Ticket>> data = service.getTickets(KEY, -1, TicketStatus.closed);
 
-        Assert.assertNotNull(data);
-        Assert.assertNotNull(data.getResult());
+        Assert.assertNotNull("data is null", data);
+        Assert.assertNotNull("data result is null", data.getResult());
 
         List<Ticket> tickets = data.getResult();
 
-        Assert.assertNotNull(tickets);
+        Assert.assertNotNull("tickets is null", tickets);
 
         System.out.println("# of tickets: " + tickets.size());
     }
@@ -57,12 +57,12 @@ public class TicketServiceTest {
         TicketService service = EnjinServices.getService(TicketService.class);
         RPCData<List<Ticket>> data = service.getPlayerTickets(KEY, -1, PLAYER);
 
-        Assert.assertNotNull(data);
-        Assert.assertNotNull(data.getResult());
+        Assert.assertNotNull("data is null", data);
+        Assert.assertNotNull("data result is null", data.getResult());
 
         List<Ticket> tickets = data.getResult();
 
-        Assert.assertNotNull(tickets);
+        Assert.assertNotNull("tickets is null", tickets);
 
         System.out.println("# of tickets: " + tickets.size());
     }

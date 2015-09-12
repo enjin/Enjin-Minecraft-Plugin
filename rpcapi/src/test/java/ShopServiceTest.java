@@ -21,12 +21,12 @@ public class ShopServiceTest {
         ShopService service = EnjinServices.getService(ShopService.class);
         RPCData<List<Shop>> data = service.get(KEY, PLAYER);
 
-        Assert.assertNotNull(data);
-        Assert.assertNotNull(data.getResult());
+        Assert.assertNotNull("data is null", data);
+        Assert.assertNotNull("data result is null", data.getResult());
 
         List<Shop> shops = data.getResult();
 
-        Assert.assertNotNull(shops);
+        Assert.assertNotNull("shops is null", shops);
 
         System.out.println("# of shops: " + shops.size());
         for (Shop shop : shops) {
@@ -39,12 +39,12 @@ public class ShopServiceTest {
         ShopService service = EnjinServices.getService(ShopService.class);
         RPCData<List<Purchase>> data = service.getPurchases(KEY, PLAYER, true);
 
-        Assert.assertNotNull(data);
-        Assert.assertNotNull(data.getResult());
+        Assert.assertNotNull("data is null", data);
+        Assert.assertNotNull("data result is null", data.getResult());
 
         List<Purchase> purchases = data.getResult();
 
-        Assert.assertNotNull(purchases);
+        Assert.assertNotNull("purchases is null", purchases);
 
         System.out.println("# of purchases: " + purchases.size());
         for (Purchase purchase : purchases) {
@@ -57,12 +57,12 @@ public class ShopServiceTest {
         ShopService service = EnjinServices.getService(ShopService.class);
         RPCData<List<FilteredItem>> data = service.getItems(KEY, PLAYER);
 
-        Assert.assertNotNull(data);
-        Assert.assertNotNull(data.getResult());
+        Assert.assertNotNull("data is null", data);
+        Assert.assertNotNull("data result is null", data.getResult());
 
         List<FilteredItem> items = data.getResult();
 
-        Assert.assertNotNull(items);
+        Assert.assertNotNull("items is null", items);
 
         System.out.println("# of items: " + items.size());
         for (FilteredItem item : items) {
