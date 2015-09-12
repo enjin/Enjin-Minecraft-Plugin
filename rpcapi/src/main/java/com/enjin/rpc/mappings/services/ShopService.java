@@ -39,8 +39,11 @@ public class ShopService implements Service {
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
 
             RPCData<List<Shop>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Shop>>>() {}.getType());
+            data.setRequest(request);
+            data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
+            EnjinRPC.debug(e.getMessage());
             EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
@@ -68,8 +71,11 @@ public class ShopService implements Service {
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
 
             RPCData<List<Purchase>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Purchase>>>() {}.getType());
+            data.setRequest(request);
+            data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
+            EnjinRPC.debug(e.getMessage());
             EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
@@ -96,8 +102,11 @@ public class ShopService implements Service {
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
 
             RPCData<List<FilteredItem>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<FilteredItem>>>() {}.getType());
+            data.setRequest(request);
+            data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
+            EnjinRPC.debug(e.getMessage());
             EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }

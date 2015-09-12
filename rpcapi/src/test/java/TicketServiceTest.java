@@ -69,10 +69,9 @@ public class TicketServiceTest {
     }
 
     @Test
-    @Ignore
     public void test4GetReplies() {
         TicketsService service = EnjinServices.getService(TicketsService.class);
-        RPCData<List<Reply>> data = service.getReplies(API_URL, PRESET_ID, TICKET_CODE, PLAYER);
+        RPCData<List<Reply>> data = service.getReplies(KEY, PRESET_ID, TICKET_CODE, PLAYER);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
