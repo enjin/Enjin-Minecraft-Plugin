@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class IncomingPacketManager implements Runnable {
+public class LegacyPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
     private boolean startup = true;
     private int pluginsReportDelay = 60;
 
-    public IncomingPacketManager(EnjinMinecraftPlugin plugin) {
+    public LegacyPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
     }
 
