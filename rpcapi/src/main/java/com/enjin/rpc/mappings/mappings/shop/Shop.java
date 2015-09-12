@@ -26,5 +26,36 @@ public class Shop {
     @SerializedName(value = "current_points")
     private int currentPoints;
     @Getter
+    private boolean simpleitems;
+    @Getter
+    private String colortext;
+    @Getter
+    private String colortitle;
+    @Getter
+    private String colorid;
+    @Getter
+    private String colorname;
+    @Getter
+    private String colorprice;
+    @Getter
+    private String colorbracket;
+    @Getter
+    private String colorurl;
+    @Getter
+    private String colorinfo;
+    @Getter
+    private String colorborder;
+    @Getter
+    private String colorbottom;
+    @SerializedName(value = "border_v")
+    @Getter
+    private String borderV;
+    @SerializedName(value = "border_h")
+    @Getter
+    private String borderH;
+    @SerializedName(value = "border_c")
+    @Getter
+    private String borderC;
+    @Getter
     private List<Category> categories;
 }
