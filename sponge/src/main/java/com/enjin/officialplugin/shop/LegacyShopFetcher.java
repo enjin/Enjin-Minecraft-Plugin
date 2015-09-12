@@ -1,8 +1,8 @@
 package com.enjin.officialplugin.shop;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.shop.data.Shop;
 import com.enjin.officialplugin.utils.WebAPI;
+import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.google.common.base.Optional;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Texts;
@@ -15,11 +15,11 @@ import java.net.*;
 import java.util.List;
 import java.util.UUID;
 
-public class ShopFetcher implements Runnable {
+public class LegacyShopFetcher implements Runnable {
     private EnjinMinecraftPlugin plugin;
     private UUID uuid;
 
-    public ShopFetcher(Player player) {
+    public LegacyShopFetcher(Player player) {
         this.plugin = EnjinMinecraftPlugin.getInstance();
         this.uuid = player.getUniqueId();
     }

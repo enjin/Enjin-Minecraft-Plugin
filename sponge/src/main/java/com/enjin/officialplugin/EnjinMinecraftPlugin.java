@@ -155,6 +155,8 @@ public class EnjinMinecraftPlugin {
         }
 
         EnjinRPC.setDebug(config.isDebug());
+        EnjinRPC.setHttps(config.isHttps());
+        EnjinRPC.setApiUrl("://api.enjin.com/api/v1/");
     }
 
     public String getAuthKey() {

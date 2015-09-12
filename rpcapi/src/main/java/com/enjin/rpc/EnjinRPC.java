@@ -36,6 +36,8 @@ public class EnjinRPC {
                 builder.append(apiUrl.replaceFirst("https", ""));
             } else if (apiUrl.startsWith("http")) {
                 builder.append(apiUrl.replaceFirst("http", ""));
+            } else {
+                builder.append(apiUrl);
             }
 
             if (!apiUrl.endsWith("/")) {
@@ -73,7 +75,14 @@ public class EnjinRPC {
     }
 
     public static JSONRPC2Session getSession(String clazz) {
-        JSONRPC2Session session = new JSONRPC2Session(getUrl(clazz));
+        URL url = getUrl(clazz);
+
+        if (url == null) {
+            debug("Api url is null.");
+            return null;
+        }
+
+        JSONRPC2Session session = new JSONRPC2Session(url);
         session.setOptions(getOptions());
         return session;
     }

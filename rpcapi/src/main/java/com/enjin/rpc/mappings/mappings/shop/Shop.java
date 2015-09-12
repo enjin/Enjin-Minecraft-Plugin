@@ -15,6 +15,8 @@ public class Shop {
     @Getter
     private String name;
     @Getter
+    private String info;
+    @Getter
     @SerializedName(value = "buyurl")
     private String buyUrl;
     @Getter
@@ -26,27 +28,38 @@ public class Shop {
     @SerializedName(value = "current_points")
     private int currentPoints;
     @Getter
-    private boolean simpleitems;
+    @SerializedName(value = "simpleitems")
+    private boolean simpleItems;
     @Getter
-    private String colortext;
+    @SerializedName("colortext")
+    private String colorText;
     @Getter
-    private String colortitle;
+    @SerializedName("colortitle")
+    private String colorTitle;
     @Getter
-    private String colorid;
+    @SerializedName("colorid")
+    private String colorId;
     @Getter
-    private String colorname;
+    @SerializedName("colorname")
+    private String colorName;
     @Getter
-    private String colorprice;
+    @SerializedName("colorprice")
+    private String colorPrice;
     @Getter
-    private String colorbracket;
+    @SerializedName("colorbracket")
+    private String colorBracket;
     @Getter
-    private String colorurl;
+    @SerializedName("colorurl")
+    private String colorUrl;
     @Getter
-    private String colorinfo;
+    @SerializedName("colorinfo")
+    private String colorInfo;
     @Getter
-    private String colorborder;
+    @SerializedName("colorborder")
+    private String colorBorder;
     @Getter
-    private String colorbottom;
+    @SerializedName("colorbottom")
+    private String colorBottom;
     @SerializedName(value = "border_v")
     @Getter
     private String borderV;

@@ -1,8 +1,8 @@
 package com.enjin.officialplugin.shop;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.shop.data.Category;
-import com.enjin.officialplugin.shop.data.Shop;
+import com.enjin.rpc.mappings.mappings.shop.Category;
+import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;

@@ -51,6 +51,13 @@ public class RPCShopFetcher implements Runnable {
             return;
         }
 
-        player.sendMessage(Texts.of("Everything is working!"));
+        if (!PlayerShopInstance.getInstances().containsKey(player.getUniqueId())) {
+            PlayerShopInstance.getInstances().put(player.getUniqueId(), new PlayerShopInstance(shops));
+        } else {
+            PlayerShopInstance.getInstances().get(player.getUniqueId()).update(shops);
+        }
+
+        PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
+        ShopUtil.sendTextShop(player, instance, -1);
     }
 }
