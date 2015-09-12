@@ -6,10 +6,7 @@ import com.enjin.rpc.mappings.mappings.tickets.Reply;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
 import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
 import com.enjin.rpc.mappings.services.TicketsService;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
 
 import java.util.List;
@@ -72,6 +69,7 @@ public class TicketServiceTest {
     }
 
     @Test
+    @Ignore
     public void test4GetReplies() {
         TicketsService service = EnjinServices.getService(TicketsService.class);
         RPCData<List<Reply>> data = service.getReplies(API_URL, PRESET_ID, TICKET_CODE, PLAYER);
