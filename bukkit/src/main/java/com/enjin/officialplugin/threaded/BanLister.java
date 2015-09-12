@@ -1,6 +1,7 @@
 package com.enjin.officialplugin.threaded;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,7 +12,7 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
 public class BanLister implements Runnable {
 
-    ConcurrentHashMap<String, String> currentbannedplayers = new ConcurrentHashMap<String, String>();
+    Map<String, String> currentbannedplayers = new ConcurrentHashMap<String, String>();
     EnjinMinecraftPlugin plugin;
     boolean firstrun = true;
 

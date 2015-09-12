@@ -15,6 +15,10 @@
         <module>common</module>
     </modules>
 
+    <properties>
+        <skipTests>true</skipTests>
+    </properties>
+
     <profiles>
         <profile>
             <id>bukkit</id>

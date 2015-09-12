@@ -170,7 +170,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     /**
      * Key is the config value, value is the type, string, boolean, etc.
      */
-    public ConcurrentHashMap<String, ConfigValueTypes> configvalues = new ConcurrentHashMap<String, ConfigValueTypes>();
+    public Map<String, ConfigValueTypes> configvalues = new ConcurrentHashMap<String, ConfigValueTypes>();
 
     public int statssendinterval = 5;
 
@@ -179,15 +179,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     public CommandExecuter commandqueue = new CommandExecuter(this);
 
     public StatsServer serverstats = new StatsServer(this);
-    public ConcurrentHashMap<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
+    public Map<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
     /**
      * Key is banned player, value is admin that banned the player or blank if the console banned
      */
-    public ConcurrentHashMap<String, String> bannedplayers = new ConcurrentHashMap<String, String>();
+    public Map<String, String> bannedplayers = new ConcurrentHashMap<String, String>();
     /**
      * Key is banned player, value is admin that pardoned the player or blank if the console pardoned
      */
-    public ConcurrentHashMap<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
+    public Map<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
 
     public ShopItems cachedItems = new ShopItems();
 
@@ -237,11 +237,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     public static String minecraftport;
     public static boolean usingSSL = true;
     NewKeyVerifier verifier = null;
-    public ConcurrentHashMap<String, String> playerperms = new ConcurrentHashMap<String, String>();
+    public Map<String, String> playerperms = new ConcurrentHashMap<String, String>();
     //Player, lists voted on.
-    public ConcurrentHashMap<String, List<String>> playervotes = new ConcurrentHashMap<String, List<String>>();
+    public Map<String, List<String>> playervotes = new ConcurrentHashMap<String, List<String>>();
 
-    private ConcurrentHashMap<String, CommandWrapper> commandids = new ConcurrentHashMap<String, CommandWrapper>();
+    private Map<String, CommandWrapper> commandids = new ConcurrentHashMap<String, CommandWrapper>();
 
     public EnjinErrorReport lasterror = null;
 
@@ -1085,6 +1085,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
                     for (OfflinePlayer offlineplayer : allplayers) {
+                        if (offlineplayer == null || offlineplayer.getName() == null || offlineplayer.getName().isEmpty()) {
+                            continue;
+                        }
+
                         if (supportsUUID() && offlineplayer.getUniqueId() != null) {
                             playerperms.put(offlineplayer.getName(), offlineplayer.getUniqueId().toString());
                         } else {
@@ -2332,7 +2336,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         }
     }
 
-    public ConcurrentHashMap<String, CommandWrapper> getCommandIDs() {
+    public Map<String, CommandWrapper> getCommandIDs() {
         return commandids;
     }
 
