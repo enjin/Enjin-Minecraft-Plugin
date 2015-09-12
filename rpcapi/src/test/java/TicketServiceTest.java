@@ -1,14 +1,13 @@
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.tickets.Module;
-import com.enjin.rpc.mappings.mappings.tickets.Reply;
-import com.enjin.rpc.mappings.mappings.tickets.Ticket;
-import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
+import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
+import com.enjin.rpc.mappings.mappings.tickets.*;
 import com.enjin.rpc.mappings.services.TicketsService;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -81,6 +80,69 @@ public class TicketServiceTest {
         Assert.assertNotNull("replies is null", replies);
 
         System.out.println("# of replies: " + replies.size());
+    }
+
+    @Test
+    public void test5CreateTicket() {
+        TicketsService service = EnjinServices.getService(TicketsService.class);
+        RPCData<Boolean> data = service.createTicket(KEY, PRESET_ID, "This is my subject", "This is my description", "Favorlock", new ArrayList<ExtraQuestion>());
+
+        Assert.assertNotNull("data is null", data);
+
+        if (data.getError() == null) {
+            Assert.assertNotNull("data result is null", data.getResult());
+        } else {
+            System.out.println("Error: " + data.getError().getMessage());
+            return;
+        }
+
+        Boolean success = data.getResult();
+
+        Assert.assertNotNull("success is null", success);
+
+        System.out.println("Created ticket: " + success.booleanValue());
+    }
+
+    @Test
+    public void test6SendReply() {
+        TicketsService service = EnjinServices.getService(TicketsService.class);
+        RPCData<RPCSuccess> data = service.sendReply(KEY, PRESET_ID, TICKET_CODE, "This is a reply", "public", TicketStatus.pending, "Favorlock");
+
+        Assert.assertNotNull("data is null", data);
+
+        if (data.getError() == null) {
+            Assert.assertNotNull("data result is null", data.getResult());
+        } else {
+            System.out.println("Error: " + data.getError().getMessage());
+            return;
+        }
+
+        RPCSuccess success = data.getResult();
+
+        Assert.assertNotNull("success is null", success);
+
+        System.out.println("Replied to ticket: " + success.isSuccess());
+    }
+
+    @Test
+    public void test7SetStatus() {
+        TicketsService service = EnjinServices.getService(TicketsService.class);
+        RPCData<Boolean> data = service.setStatus(KEY, PRESET_ID, TICKET_CODE, TicketStatus.closed);
+
+        Assert.assertNotNull("data is null", data);
+
+        if (data.getError() == null) {
+            Assert.assertNotNull("data result is null", data.getResult());
+        } else {
+            System.out.println("Error: " + data.getError().getMessage());
+            return;
+        }
+
+        Boolean success = data.getResult();
+
+        Assert.assertNotNull("success is null", success);
+
+        System.out.println("Set ticket status: " + success.booleanValue());
     }
 
     @BeforeClass
