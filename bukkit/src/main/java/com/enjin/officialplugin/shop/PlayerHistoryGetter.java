@@ -50,7 +50,7 @@ public class PlayerHistoryGetter implements Runnable {
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             //StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&player=" + encode(historyplayer)); //current player
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
             EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
@@ -87,7 +87,7 @@ public class PlayerHistoryGetter implements Runnable {
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-purchases");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "minecraft-purchases");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {

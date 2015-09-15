@@ -1,4 +1,4 @@
-package com.enjin.officialplugin.packets;
+package com.enjin.officialplugin.sync.data;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 

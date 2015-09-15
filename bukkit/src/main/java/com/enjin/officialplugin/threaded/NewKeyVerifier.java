@@ -66,7 +66,7 @@ public class NewKeyVerifier implements Runnable {
             }
             completed = true;
         } else {
-            if (key.equals(EnjinMinecraftPlugin.getHash())) {
+            if (key.equals(EnjinMinecraftPlugin.getAuthKey())) {
                 if (player == null || player.isOnline()) {
                     sender.sendMessage(ChatColor.YELLOW + "The specified key and the existing one are the same!");
                 }
@@ -92,9 +92,9 @@ public class NewKeyVerifier implements Runnable {
                 return;
             }
             plugin.authkeyinvalid = false;
-            EnjinMinecraftPlugin.setHash(key);
+            EnjinMinecraftPlugin.setAuthKey(key);
             EnjinMinecraftPlugin.debug("Writing hash to file.");
-            plugin.config.set("authkey", key);
+            plugin.config.setAuthKey(key);
             plugin.saveConfig();
             if (player == null || player.isOnline()) {
                 sender.sendMessage(ChatColor.GREEN + "Set the enjin key to " + key);

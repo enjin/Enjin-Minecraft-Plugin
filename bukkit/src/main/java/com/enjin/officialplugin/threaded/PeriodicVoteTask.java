@@ -36,7 +36,7 @@ public class PeriodicVoteTask implements Runnable {
             plugin.playervotes.clear();
 
             boolean successful;
-            RPCData<String> data = EnjinServices.getService(VoteService.class).get(EnjinMinecraftPlugin.getHash(), votes);
+            RPCData<String> data = EnjinServices.getService(VoteService.class).get(EnjinMinecraftPlugin.getAuthKey(), votes);
             String success;
 
             if (data == null) {

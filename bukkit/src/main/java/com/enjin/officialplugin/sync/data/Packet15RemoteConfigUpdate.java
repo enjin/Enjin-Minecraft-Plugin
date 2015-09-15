@@ -1,7 +1,8 @@
-package com.enjin.officialplugin.packets;
+package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
 
+import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 
 import com.enjin.officialplugin.ConfigValueTypes;
@@ -14,7 +15,6 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
  */
 
 public class Packet15RemoteConfigUpdate {
-
     String toReviewer = "The only time enjin will send these values is at" +
             "the request of the server owner in the Enjin control panel";
 
@@ -23,6 +23,8 @@ public class Packet15RemoteConfigUpdate {
             String values = PacketUtilities.readString(in);
             EnjinMinecraftPlugin.debug("Changing these values in the config: \"" + values);
             String[] splitvalues = values.split(",");
+
+            /* TODO: TODO: Update to work with json configuration
             for (String value : splitvalues) {
                 String[] split = value.split(":");
                 if (plugin.configvalues.containsKey(split[0].toLowerCase())) {
@@ -75,8 +77,8 @@ public class Packet15RemoteConfigUpdate {
                     plugin.getLogger().warning("Enjin tried setting the value " + split[0] + " to " + split[1] + " but it doesn't exist!");
                 }
             }
-            plugin.initFiles();
-            //Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PacketUtilities.readString(in));
+            */
+            plugin.initConfig();
         } catch (Throwable t) {
             Bukkit.getLogger().warning("Failed to set config variables via 0x15, " + t.getMessage());
             t.printStackTrace();

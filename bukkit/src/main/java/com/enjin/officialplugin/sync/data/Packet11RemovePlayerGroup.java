@@ -1,9 +1,10 @@
-package com.enjin.officialplugin.packets;
+package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;

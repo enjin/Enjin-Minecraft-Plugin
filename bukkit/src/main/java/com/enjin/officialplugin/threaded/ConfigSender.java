@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 import com.enjin.officialplugin.ConfigValueTypes;
 import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.packets.PacketUtilities;
+import com.enjin.officialplugin.util.PacketUtilities;
 
 public class ConfigSender implements Runnable {
 
@@ -58,8 +58,11 @@ public class ConfigSender implements Runnable {
             con.setRequestProperty("User-Agent", "Mozilla/4.0");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             //StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
+
+            /* TODO: Update to work with json configuration
             Set<Entry<String, ConfigValueTypes>> es = plugin.configvalues.entrySet();
+
             for (Entry<String, ConfigValueTypes> entry : es) {
                 switch (entry.getValue()) {
                     case FORBIDDEN:
@@ -74,6 +77,8 @@ public class ConfigSender implements Runnable {
                         builder.append("&" + entry.getKey().replaceAll("[.]", "_") + "=" + plugin.config.getString(entry.getKey()));
                 }
             }
+            */
+
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
             EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
@@ -137,7 +142,7 @@ public class ConfigSender implements Runnable {
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-config");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "minecraft-config");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {

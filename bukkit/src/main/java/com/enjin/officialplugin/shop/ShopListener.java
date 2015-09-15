@@ -48,7 +48,7 @@ public class ShopListener implements Listener {
             return;
         }
         String[] args = event.getMessage().split(" ");
-        if (args[0].equalsIgnoreCase("/" + EnjinMinecraftPlugin.BUY_COMMAND)) {
+        if (args[0].equalsIgnoreCase("/" + EnjinMinecraftPlugin.config.getBuyCommand())) {
             Player player = event.getPlayer();
             if (args.length > 1 && args[1].equalsIgnoreCase("history")) {
                 if (args.length > 2 && player.hasPermission("enjin.history")) {
@@ -80,7 +80,7 @@ public class ShopListener implements Listener {
                 if (args.length == 1) {
                     //If they haven't selected a shop yet, show them the shop selection screen again.
                     if (psi.getActiveShop() == null) {
-                        if (EnjinMinecraftPlugin.USEBUYGUI) {
+                        if (EnjinMinecraftPlugin.config.isUseBuyGUI()) {
                             sendPlayerShopChestData(player, psi, psi.getActiveShop(), 0);
                         } else {
                             sendPlayerInitialShopData(player, psi);
@@ -98,7 +98,7 @@ public class ShopListener implements Listener {
                             psi.setActiveCategory(selectedshop);
                             psi.setActiveItem(null);
                         }
-                        if (EnjinMinecraftPlugin.USEBUYGUI) {
+                        if (EnjinMinecraftPlugin.config.isUseBuyGUI()) {
                             sendPlayerShopChestData(player, psi, psi.getActiveCategory(), 0);
                         } else {
                             sendPlayerShopData(player, psi, psi.getActiveCategory(), 0);
@@ -167,7 +167,7 @@ public class ShopListener implements Listener {
                     } else if (args[1].equals("item")) {
                         if (args.length > 2) {
                             if (psi.getActiveShop() == null) {
-                                player.sendMessage(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.BUY_COMMAND + " to see the shops list.");
+                                player.sendMessage(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.config.getBuyCommand() + " to see the shops list.");
                             } else {
                                 try {
                                     ShopItemAdder category = psi.getActiveCategory();
@@ -224,7 +224,7 @@ public class ShopListener implements Listener {
                                 Thread buythread = new Thread(new SendItemPurchaseToEnjin(plugin, buying, player));
                                 buythread.start();
                             } else {
-                                player.sendMessage(ChatColor.RED + "You haven't filled out all the options yet! If you want you can cancel your purchase by doing /" + EnjinMinecraftPlugin.BUY_COMMAND + " cancel");
+                                player.sendMessage(ChatColor.RED + "You haven't filled out all the options yet! If you want you can cancel your purchase by doing /" + EnjinMinecraftPlugin.config.getBuyCommand() + " cancel");
                             }
                             event.setCancelled(true);
                             return;
@@ -243,7 +243,7 @@ public class ShopListener implements Listener {
                             //They can only confirm buying of an item after they've actually gone through the purchase part.
                             if (buyitem.getCurrentItemOption() != null) {
                                 if (buyitem.getCurrentItemOption().isRequired()) {
-                                    player.sendMessage(ChatColor.RED + "This field is required. If you want to cancel your purchase do /" + EnjinMinecraftPlugin.BUY_COMMAND + " cancel");
+                                    player.sendMessage(ChatColor.RED + "This field is required. If you want to cancel your purchase do /" + EnjinMinecraftPlugin.config.getBuyCommand() + " cancel");
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -253,10 +253,10 @@ public class ShopListener implements Listener {
                                 } else {
                                     buyitem.addPoints(buyitem.getItem().getPoints());
                                     event.getPlayer().sendMessage(ChatColor.GREEN + "The total purchase price is: " + ChatColor.GOLD + ShopUtils.formatPoints(String.valueOf(buyitem.totalpoints), true));
-                                    event.getPlayer().sendMessage(ChatColor.GREEN.toString() + "If you are sure you want to purchase this item do: /" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm");
+                                    event.getPlayer().sendMessage(ChatColor.GREEN.toString() + "If you are sure you want to purchase this item do: /" + EnjinMinecraftPlugin.config.getBuyCommand() + " confirm");
                                 }
                             } else {
-                                player.sendMessage(ChatColor.RED + "Nothing can be skipped! If you want to purchase the item do /" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm");
+                                player.sendMessage(ChatColor.RED + "Nothing can be skipped! If you want to purchase the item do /" + EnjinMinecraftPlugin.config.getBuyCommand() + " confirm");
                             }
                             player.sendMessage(ChatColor.GREEN + "Purchase canceled.");
                         }
@@ -264,7 +264,7 @@ public class ShopListener implements Listener {
                         return;
                     } else if (args.length > 1) {
                         if (psi.getActiveShop() == null) {
-                            player.sendMessage(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.BUY_COMMAND + " to see the shops list.");
+                            player.sendMessage(ChatColor.RED + "You need to select a shop first! Do /" + EnjinMinecraftPlugin.config.getBuyCommand() + " to see the shops list.");
                         } else {
                             try {
                                 ShopItemAdder category = psi.getActiveCategory();
@@ -308,15 +308,15 @@ public class ShopListener implements Listener {
     private void sendPlayerInitialBuyData(Player player, ShopItemBuyer buyer) {
         if (buyer.getCurrentItemOption() != null) {
             player.sendMessage(ChatColor.GREEN + "You chose item \"" + buyer.getItem().getName() + "\". Please answer the questions below to complete your purchase.");
-            player.sendMessage(ChatColor.GREEN + "You can do " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " cancel " + ChatColor.GREEN + "at any time to cancel.");
+            player.sendMessage(ChatColor.GREEN + "You can do " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.config.getBuyCommand() + " cancel " + ChatColor.GREEN + "at any time to cancel.");
 
             ShopItemOptions itemoption = buyer.getCurrentItemOption();
             sendShopItemOptionsForm(player, itemoption);
         } else {
             //There are no options, so let's let them confirm the purchase.
             player.sendMessage(ChatColor.GREEN + "You're about to purchase item \"" + buyer.getItem().getName() + "\" for " + ShopUtils.formatPoints(buyer.getItem().getPoints(), true));
-            player.sendMessage(ChatColor.GREEN + "If you are sure do " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm" + ChatColor.GREEN + " to confirm your purchase.");
-            player.sendMessage(ChatColor.GREEN + "or " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " cancel " + ChatColor.GREEN + "to cancel.");
+            player.sendMessage(ChatColor.GREEN + "If you are sure do " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.config.getBuyCommand() + " confirm" + ChatColor.GREEN + " to confirm your purchase.");
+            player.sendMessage(ChatColor.GREEN + "or " + ChatColor.GOLD + "/" + EnjinMinecraftPlugin.config.getBuyCommand() + " cancel " + ChatColor.GREEN + "to cancel.");
 
         }
     }
@@ -354,7 +354,7 @@ public class ShopListener implements Listener {
                 break;
         }
         if (!itemoption.isRequired()) {
-            player.sendMessage("This option is optional, if you would like to skip it just do /" + EnjinMinecraftPlugin.BUY_COMMAND + " skip");
+            player.sendMessage("This option is optional, if you would like to skip it just do /" + EnjinMinecraftPlugin.config.getBuyCommand() + " skip");
         }
     }
 
@@ -456,7 +456,7 @@ public class ShopListener implements Listener {
                         } else {
                             buyitem.addPoints(buyitem.getItem().getPoints());
                             event.getPlayer().sendMessage(ChatColor.GREEN + "The total purchase price is: " + ChatColor.GOLD + ShopUtils.formatPoints(String.valueOf(buyitem.totalpoints), true));
-                            event.getPlayer().sendMessage(ChatColor.GREEN.toString() + "If you are sure you want to purchase this item do: /" + EnjinMinecraftPlugin.BUY_COMMAND + " confirm");
+                            event.getPlayer().sendMessage(ChatColor.GREEN.toString() + "If you are sure you want to purchase this item do: /" + EnjinMinecraftPlugin.config.getBuyCommand() + " confirm");
                         }
                     }
                     event.setCancelled(true);
@@ -498,7 +498,7 @@ public class ShopListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         //If a player quits, let's reset the shop data and remove them from the list.
         String player = event.getPlayer().getName().toLowerCase();
-        if (plugin.USEBUYGUI && activeshops.containsKey(player)) {
+        if (plugin.config.isUseBuyGUI() && activeshops.containsKey(player)) {
             removeEnjinItems(event.getPlayer());
             activeshops.remove(player);
             openshops.remove(player);

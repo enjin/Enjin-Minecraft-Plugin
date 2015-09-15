@@ -55,7 +55,7 @@ public class SendItemPurchaseToEnjin implements Runnable {
             con.setRequestProperty("User-Agent", "Mozilla/4.0");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             //StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&item_id=" + encode(buyer.getItem().getId()));
             builder.append("&player=" + encode(player.getName()));
             if (EnjinMinecraftPlugin.supportsUUID()) {
@@ -97,7 +97,7 @@ public class SendItemPurchaseToEnjin implements Runnable {
         } catch (SocketTimeoutException e) {
             plugin.lasterror = new EnjinErrorReport(e, "In game purchase. Information sent:\n" + builder.toString());
         } catch (Throwable t) {
-            if (EnjinMinecraftPlugin.debug) {
+            if (EnjinMinecraftPlugin.config.isDebug()) {
                 t.printStackTrace();
             }
             plugin.lasterror = new EnjinErrorReport(t, "In game purchase. Information sent:\n" + builder.toString());
@@ -106,7 +106,7 @@ public class SendItemPurchaseToEnjin implements Runnable {
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-ingame-purchase");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "minecraft-ingame-purchase");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {

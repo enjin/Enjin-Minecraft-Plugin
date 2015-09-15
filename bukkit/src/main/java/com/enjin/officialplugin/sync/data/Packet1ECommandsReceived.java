@@ -1,12 +1,10 @@
-package com.enjin.officialplugin.packets;
+package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.events.HeadsUpdatedEvent;
-import com.enjin.officialplugin.heads.HeadData;
-import com.enjin.officialplugin.heads.HeadLocation.Type;
+import com.enjin.officialplugin.util.PacketUtilities;
 
 /**
  * @author OverCaste (Enjin LTE PTD).

@@ -1,4 +1,4 @@
-package com.enjin.officialplugin.threaded;
+package com.enjin.officialplugin.sync;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -11,7 +11,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 
-import com.enjin.officialplugin.packets.*;
+import com.enjin.officialplugin.sync.data.*;
+import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -30,8 +31,7 @@ import com.enjin.officialplugin.stats.WriteStats;
  * @copyright Enjin 2012.
  */
 
-public class PeriodicEnjinTask implements Runnable {
-
+public class LegacyPacketManager implements Runnable {
     EnjinMinecraftPlugin plugin;
     ConcurrentHashMap<String, String> removedplayerperms = new ConcurrentHashMap<String, String>();
     HashMap<String, String> removedbans = new HashMap<String, String>();
@@ -41,12 +41,12 @@ public class PeriodicEnjinTask implements Runnable {
     int plugindelay = 60;
     boolean firstrun = true;
 
-    public PeriodicEnjinTask(EnjinMinecraftPlugin plugin) {
+    public LegacyPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-sync");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "minecraft-sync");
     }
 
     @Override
@@ -82,7 +82,7 @@ public class PeriodicEnjinTask implements Runnable {
             con.setDoOutput(true);
             con.setRequestProperty("User-Agent", "Mozilla/4.0");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
 
             if (firstrun) {
                 builder.append("&maxplayers=" + encode(String.valueOf(Bukkit.getServer().getMaxPlayers()))); //max players
@@ -124,7 +124,7 @@ public class PeriodicEnjinTask implements Runnable {
                 }
             }
 
-            if (plugin.collectstats && (plugin.statssendinterval - 1) <= statdelay) {
+            if (plugin.config.isCollectPlayerStats() && (plugin.config.getSendStatsInterval() - 1) <= statdelay) {
                 builder.append("&stats=" + encode(getStats()));
             }
 
@@ -210,7 +210,7 @@ public class PeriodicEnjinTask implements Runnable {
                 numoffailedtries = 0;
                 plugin.noEnjinConnectionEvent();
             }
-            if (EnjinMinecraftPlugin.debug) {
+            if (EnjinMinecraftPlugin.config.isDebug()) {
                 t.printStackTrace();
             }
             plugin.lasterror = new EnjinErrorReport(t, "Regular synch. Information sent:\n" + builder.toString());
@@ -249,7 +249,7 @@ public class PeriodicEnjinTask implements Runnable {
             removedpardons.clear();
             EnjinMinecraftPlugin.debug("Synch successful.");
 
-            if (plugin.collectstats && (plugin.statssendinterval - 1) <= statdelay) {
+            if (plugin.config.isCollectPlayerStats() && (plugin.config.getSendStatsInterval() - 1) <= statdelay) {
                 statdelay = 0;
                 //Let's remove the old stats...
                 plugin.serverstats.reset();
@@ -263,7 +263,7 @@ public class PeriodicEnjinTask implements Runnable {
             }
         }
 
-        if (plugin.collectstats) {
+        if (plugin.config.isCollectPlayerStats()) {
             new WriteStats(plugin).write("enjin-stats.json");
             EnjinMinecraftPlugin.debug("Stats saved to enjin-stats.json.");
         }

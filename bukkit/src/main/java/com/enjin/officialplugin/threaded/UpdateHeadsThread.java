@@ -77,7 +77,7 @@ public class UpdateHeadsThread implements Runnable {
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash) + "&player=0");
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()) + "&player=0");
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
             EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
@@ -171,7 +171,7 @@ public class UpdateHeadsThread implements Runnable {
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             ArrayList<HeadLocation> itemdonators = plugin.headlocation.getHeads(HeadLocation.Type.RecentItemDonator);
             ArrayList<String> specificitems = new ArrayList<String>();
             for (HeadLocation loc : itemdonators) {
@@ -739,11 +739,11 @@ public class UpdateHeadsThread implements Runnable {
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-stats");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "minecraft-stats");
     }
 
     private URL getItemsUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "m-shopping-items");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "m-shopping-items");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {

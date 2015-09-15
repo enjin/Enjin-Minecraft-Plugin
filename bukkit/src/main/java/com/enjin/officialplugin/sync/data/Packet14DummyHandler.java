@@ -1,12 +1,11 @@
-package com.enjin.officialplugin.packets;
+package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 
+import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.threaded.DownloadPluginThread;
 
 public class Packet14DummyHandler {
 

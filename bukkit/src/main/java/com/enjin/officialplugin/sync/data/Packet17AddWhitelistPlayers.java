@@ -1,14 +1,15 @@
-package com.enjin.officialplugin.packets;
+package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.events.EnjinPardonPlayerEvent;
+import com.enjin.officialplugin.events.AddWhitelistPlayersEvent;
 
 /**
  * @author OverCaste (Enjin LTE PTD).
@@ -16,12 +17,12 @@ import com.enjin.officialplugin.events.EnjinPardonPlayerEvent;
  * @copyright Enjin 2012.
  */
 
-public class Packet1BPardonPlayers {
+public class Packet17AddWhitelistPlayers {
 
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String players = PacketUtilities.readString(in);
-            EnjinMinecraftPlugin.debug("Removing these players from the banlist: " + players);
+            EnjinMinecraftPlugin.debug("Adding these players to the whitelist: " + players);
             String[] msg = players.split(",");
             OfflinePlayer[] oplayers = new OfflinePlayer[msg.length];
             for (int i = 0; i < msg.length; i++) {
@@ -41,16 +42,10 @@ public class Packet1BPardonPlayers {
                     oplayers[i] = Bukkit.getOfflinePlayer(playername);
                 }
             }
-            EnjinPardonPlayerEvent event = new EnjinPardonPlayerEvent(oplayers);
-            plugin.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return;
-            }
-            oplayers = event.getPardonedPlayers();
+            plugin.getServer().getPluginManager().callEvent(new AddWhitelistPlayersEvent(oplayers));
             if ((oplayers.length > 0)) {
                 for (int i = 0; i < oplayers.length; i++) {
-                    plugin.banlistertask.pardonBannedPlayer(oplayers[i]);
-                    oplayers[i].setBanned(false);
+                    oplayers[i].setWhitelisted(true);
                 }
             }
         } catch (IOException e) {

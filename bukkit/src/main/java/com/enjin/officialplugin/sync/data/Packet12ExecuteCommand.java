@@ -1,11 +1,11 @@
-package com.enjin.officialplugin.packets;
+package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import com.enjin.officialplugin.CommandWrapper;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
@@ -16,26 +16,23 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
  * @copyright Enjin 2012.
  */
 
-public class Packet13ExecuteCommandAsPlayer {
+public class Packet12ExecuteCommand {
 
-    static Pattern idregex = Pattern.compile("^(\\d+):(.+)");
+    static Pattern idregex = Pattern.compile("^(\\d+):(.*)");
 
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
-            String name = PacketUtilities.readString(in);
             String command = PacketUtilities.readString(in);
-            Player p = Bukkit.getPlayerExact(name);
-
             Matcher commandmatcher = idregex.matcher(command);
             String commandid = "";
             if (commandmatcher.matches()) {
                 commandid = commandmatcher.group(1);
                 command = commandmatcher.group(2);
             }
-
-            //TODO: Add offline player support here
-            if (p == null) {
-                EnjinMinecraftPlugin.debug("Failed executing command \"" + command + "\" as player " + name + ". Player isn't online.");
+            if (command.equals("")) {
+                EnjinMinecraftPlugin.debug("Got a blank command from enjin!");
+                CommandWrapper executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), command, commandid);
+                plugin.addCommandID(executedcommand);
                 return;
             }
             String[] commandsplit = command.split("\0");
@@ -43,7 +40,7 @@ public class Packet13ExecuteCommandAsPlayer {
             if (commandsplit.length > 1) {
                 try {
                     long time = System.currentTimeMillis() + (Long.parseLong(commandsplit[1]) * 1000);
-                    EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + " in " + commandsplit[1] + " seconds.");
+                    EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as console in " + commandsplit[1] + " seconds.");
                     executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), commandsplit[0], time, commandid);
                     plugin.commexecuter.addCommand(executedcommand);
                 } catch (NumberFormatException e) {
@@ -52,14 +49,14 @@ public class Packet13ExecuteCommandAsPlayer {
                     plugin.commandqueue.addCommand(executedcommand);
                 }
             } else {
-                EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + ".");
+                EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as console.");
                 executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), command, commandid);
                 plugin.commandqueue.addCommand(executedcommand);
             }
-
+            //TODO: add in code for executed commands.
             plugin.addCommandID(executedcommand);
         } catch (Throwable t) {
-            Bukkit.getLogger().warning("Failed to dispatch command via 0x13, " + t.getMessage());
+            Bukkit.getLogger().warning("Failed to dispatch command via 0x12, " + t.getMessage());
             t.printStackTrace();
         }
     }

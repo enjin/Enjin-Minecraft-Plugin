@@ -141,7 +141,7 @@ public class ShopUtils {
                 }
             }
         } catch (ParseException e) {
-            if (EnjinMinecraftPlugin.debug) {
+            if (EnjinMinecraftPlugin.config.isDebug()) {
                 e.printStackTrace();
             }
         }
@@ -632,18 +632,18 @@ public class ShopUtils {
                         + "Prices are in " + shop.getCurrency()
                         + ". Choose a category with " + FORMATTING_CODE
                         + shop.getColorbottom() + "/"
-                        + EnjinMinecraftPlugin.BUY_COMMAND + " <#>");
+                        + EnjinMinecraftPlugin.config.getBuyCommand() + " <#>");
             } else if (itemcategory.getType() == Type.Item) {
                 header.add(FORMATTING_CODE + shop.getColortext()
                         + "Prices are in " + shop.getCurrency()
                         + ". Click a link or use " + FORMATTING_CODE
                         + shop.getColorbottom() + "/"
-                        + EnjinMinecraftPlugin.BUY_COMMAND + " <#>"
+                        + EnjinMinecraftPlugin.config.getBuyCommand() + " <#>"
                         + FORMATTING_CODE + shop.getColortext()
                         + " to see details.");
             }
             footer.add(FORMATTING_CODE + shop.getColortext() + "Type /"
-                    + EnjinMinecraftPlugin.BUY_COMMAND
+                    + EnjinMinecraftPlugin.config.getBuyCommand()
                     + " to go back, or type /ec to enable chat");
         } else {
             // Standard shop format
@@ -704,20 +704,20 @@ public class ShopUtils {
                         + shop.getColortext() + "Prices are in "
                         + shop.getCurrency() + ". Choose a category with "
                         + FORMATTING_CODE + shop.getColorbottom() + "/"
-                        + EnjinMinecraftPlugin.BUY_COMMAND + " <#>");
+                        + EnjinMinecraftPlugin.config.getBuyCommand() + " <#>");
             } else if (shop.getType() == Type.Item) {
                 header.add(verticalborder + FORMATTING_CODE
                         + shop.getColortext() + "Prices are in "
                         + shop.getCurrency() + ". Click a link or use "
                         + FORMATTING_CODE + shop.getColorbottom() + "/"
-                        + EnjinMinecraftPlugin.BUY_COMMAND + " <#>"
+                        + EnjinMinecraftPlugin.config.getBuyCommand() + " <#>"
                         + FORMATTING_CODE + shop.getColortext()
                         + " to see details.");
             }
             header.add(verticalborder);
             // Set the footer text
             footer.add(verticalborder + FORMATTING_CODE + shop.getColortext()
-                    + "Type /" + EnjinMinecraftPlugin.BUY_COMMAND
+                    + "Type /" + EnjinMinecraftPlugin.config.getBuyCommand()
                     + " to go back, or type /ec to enable chat");
         }
         // add together the header size, footer size, and the page line and the
@@ -781,13 +781,13 @@ public class ShopUtils {
             if (collapsed) {
                 currentpage.add(FORMATTING_CODE + shop.getColorbottom()
                         + "Page " + (i + 1) + " of " + numofpages + ", Type /"
-                        + EnjinMinecraftPlugin.BUY_COMMAND + " page #");
+                        + EnjinMinecraftPlugin.config.getBuyCommand() + " page #");
             } else {
                 StringBuilder bottomline = new StringBuilder(50);
                 bottomline.append(FORMATTING_CODE + shop.getColorborder());
                 bottomline.append(first4chars);
                 bottomline.append(FORMATTING_CODE + shop.getColorbottom()
-                        + " Type /" + EnjinMinecraftPlugin.BUY_COMMAND
+                        + " Type /" + EnjinMinecraftPlugin.config.getBuyCommand()
                         + " page # " + FORMATTING_CODE + shop.getColorborder());
                 for (int j = 0; j < 40; j++) {
                     bottomline.append(shop.getBorder_h());
@@ -909,13 +909,13 @@ public class ShopUtils {
 
         }
         itempage.add(verticalborder + " ");
-        itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Type /" + EnjinMinecraftPlugin.BUY_COMMAND
+        itempage.add(verticalborder + FORMATTING_CODE + shop.getColortext() + "Type /" + EnjinMinecraftPlugin.config.getBuyCommand()
                 + " to go back, or type /ec to enable chat");
         if (collapsed) {
             if (formattedpoints.equals("")) {
                 itempage.add(FORMATTING_CODE + shop.getColorbottom() + "Click the item link to purchase");
             } else {
-                itempage.add(FORMATTING_CODE + shop.getColorbottom() + "Click the item link or type /" + EnjinMinecraftPlugin.BUY_COMMAND + " item");
+                itempage.add(FORMATTING_CODE + shop.getColorbottom() + "Click the item link or type /" + EnjinMinecraftPlugin.config.getBuyCommand() + " item");
             }
         } else {
             // Standard shop format
@@ -925,7 +925,7 @@ public class ShopUtils {
             if (formattedpoints.equals("")) {
                 bottomline.append(" " + FORMATTING_CODE + shop.getColorbottom() + "Click the item link to purchase" + FORMATTING_CODE + shop.getColorborder() + " ");
             } else {
-                bottomline.append(" " + FORMATTING_CODE + shop.getColorbottom() + "Click the item link or type /" + EnjinMinecraftPlugin.BUY_COMMAND + " item" + FORMATTING_CODE + shop.getColorborder() + " ");
+                bottomline.append(" " + FORMATTING_CODE + shop.getColorbottom() + "Click the item link or type /" + EnjinMinecraftPlugin.config.getBuyCommand() + " item" + FORMATTING_CODE + shop.getColorborder() + " ");
             }
 
             bottomline.append(FORMATTING_CODE + shop.getColorborder() + " ");
@@ -942,7 +942,7 @@ public class ShopUtils {
         ArrayList<String> shopoutput = new ArrayList<String>();
         shopoutput.add(ChatColor.WHITE + "=== Choose Shop ===");
         shopoutput.add(ChatColor.WHITE + "Please type " + ChatColor.YELLOW
-                + "/" + EnjinMinecraftPlugin.BUY_COMMAND + " shop <#>");
+                + "/" + EnjinMinecraftPlugin.config.getBuyCommand() + " shop <#>");
         shopoutput.add(" ");
         for (int i = 0; i < shops.getServerShops().size() && i < 15; i++) {
             shopoutput.add(TrimText(ChatColor.YELLOW + String.valueOf(i + 1)

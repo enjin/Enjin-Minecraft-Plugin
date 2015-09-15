@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.core.EnjinServices;
+import com.enjin.core.config.JsonConfig;
+import com.enjin.officialplugin.config.EnjinConfig;
 import com.enjin.officialplugin.permlisteners.*;
 import com.enjin.officialplugin.tickets.TicketListener;
 import com.enjin.officialplugin.tickets.TicketCreationSession;
@@ -84,7 +86,7 @@ import com.enjin.officialplugin.heads.HeadLocations;
 import com.enjin.officialplugin.listeners.EnjinStatsListener;
 import com.enjin.officialplugin.listeners.NewPlayerChatListener;
 import com.enjin.officialplugin.listeners.VotifierListener;
-import com.enjin.officialplugin.packets.PacketUtilities;
+import com.enjin.officialplugin.util.PacketUtilities;
 import com.enjin.officialplugin.points.EnjinPointsSyncClass;
 import com.enjin.officialplugin.points.PointsAPI;
 import com.enjin.officialplugin.points.RetrievePointsSyncClass;
@@ -101,7 +103,7 @@ import com.enjin.officialplugin.threaded.ConfigSender;
 import com.enjin.officialplugin.threaded.DelayedCommandExecuter;
 import com.enjin.officialplugin.threaded.EnjinRetrievePlayerTags;
 import com.enjin.officialplugin.threaded.NewKeyVerifier;
-import com.enjin.officialplugin.threaded.PeriodicEnjinTask;
+import com.enjin.officialplugin.sync.LegacyPacketManager;
 import com.enjin.officialplugin.threaded.PeriodicVoteTask;
 import com.enjin.officialplugin.threaded.ReportMakerThread;
 import com.enjin.officialplugin.threaded.UpdateHeadsThread;
@@ -123,19 +125,12 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class EnjinMinecraftPlugin extends JavaPlugin {
     public static EnjinMinecraftPlugin instance;
-    public FileConfiguration config;
+    public static EnjinConfig config;
     public static boolean usingGroupManager = false;
-    public static String hash = "";
-    Server s;
-    Logger logger;
+    public Server s;
+    public Logger logger;
     public static Permission permission = null;
     public static Economy economy = null;
-    public static boolean debug = false;
-    private static boolean loggingenabled = true;
-    /**
-     * Whether the plugin has stats collecting enabled.
-     */
-    public boolean collectstats = true;
     public PermissionsEx permissionsex;
     public GroupManager groupmanager;
     public Permissions bpermissions;
@@ -154,27 +149,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     public String mcversion = "";
     boolean listenforbans = true;
     boolean tuxtwolibinstalled = false;
-
-    public static boolean USEBUYGUI = true;
-
     int signupdateinterval = 10;
-
     public HeadLocations headlocation = new HeadLocations();
     public CachedHeadData headdata = new CachedHeadData(this);
-
-    public static String BUY_COMMAND = "buy";
-
-    /**
-     * Key is the config value, value is the type, string, boolean, etc.
-     */
-    public Map<String, ConfigValueTypes> configvalues = new ConcurrentHashMap<String, ConfigValueTypes>();
-
-    public int statssendinterval = 5;
-
     public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
-
     public CommandExecuter commandqueue = new CommandExecuter(this);
-
     public StatsServer serverstats = new StatsServer(this);
     public Map<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
     /**
@@ -185,16 +164,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
      * Key is banned player, value is admin that pardoned the player or blank if the console pardoned
      */
     public Map<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
-
     public ShopItems cachedItems = new ShopItems();
-
     private EnjinLogInterface mcloglistener = null;
-
-    static public String apiurl = "://api.enjin.com/api/";
-
-    public boolean autoupdate = true;
     public String newversion = "";
-
     public boolean hasupdate = false;
     public boolean updatefailed = false;
     public boolean authkeyinvalid = false;
@@ -205,48 +177,41 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     public static boolean econcompatmode = false;
     static public boolean bukkitversion = false;
     private boolean isglowstone = false;
-
     private LinkedList<String> keywords = new LinkedList<String>();
-
-    OnlinePlayerGetter playergetter = null;
-
+    public OnlinePlayerGetter playergetter = null;
     public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
-
     public final EMPListener listener = new EMPListener(this);
 
     //------------Threaded tasks---------------
-    final PeriodicEnjinTask task = new PeriodicEnjinTask(this);
+    final Runnable task = new LegacyPacketManager(this);
     final PeriodicVoteTask votetask = new PeriodicVoteTask(this);
     public BanLister banlistertask;
     public DelayedCommandExecuter commexecuter = new DelayedCommandExecuter(this);
     //Initialize in the onEnable
     public MonitorTPS tpstask;
-    //-------------Thread IDS-------------------
-    int synctaskid = -1;
-    int votetaskid = -1;
-    int banlisttask = -1;
-    int tpstaskid = -1;
-    int commandexecutertask = -1;
-    int headsupdateid = -1;
-    int updatethread = -1;
 
-    static final ExecutorService exec = Executors.newCachedThreadPool();
+    //-------------Thread IDS-------------------
+    private int synctaskid = -1;
+    private int votetaskid = -1;
+    private int banlisttask = -1;
+    private int tpstaskid = -1;
+    private int commandexecutertask = -1;
+    private int headsupdateid = -1;
+    private int updatethread = -1;
+    public static final ExecutorService exec = Executors.newCachedThreadPool();
     public static String minecraftport;
     public static boolean usingSSL = true;
-    NewKeyVerifier verifier = null;
+    private NewKeyVerifier verifier = null;
     public Map<String, String> playerperms = new ConcurrentHashMap<String, String>();
     //Player, lists voted on.
     public Map<String, List<String>> playervotes = new ConcurrentHashMap<String, List<String>>();
-
     private Map<String, CommandWrapper> commandids = new ConcurrentHashMap<String, CommandWrapper>();
-
     public EnjinErrorReport lasterror = null;
-
     public EnjinStatsListener esl = null;
-
-    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+    public DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
     public ShopListener shoplistener;
 
+    //-------------Ticket Service---------------
     @Getter
     private static Map<Integer, Module> modules = new HashMap<Integer, Module>();
     @Getter
@@ -255,10 +220,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     private static TicketListener ticketListener;
 
     public static void debug(String s) {
-        if (debug) {
+        if (config.isDebug()) {
             System.out.println("Enjin Debug: " + s);
         }
-        if (loggingenabled) {
+        if (config.isLoggingEnabled()) {
             enjinlogger.fine(s);
         }
     }
@@ -293,7 +258,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
                 }
             }
-            initFiles();
+            initConfig();
             debug("Initializing internal logger");
             enjinlogger.setLevel(Level.FINEST);
             File logsfolder = new File(getDataFolder().getAbsolutePath() + File.separator + "logs");
@@ -426,7 +391,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             Thread configthread = new Thread(new ConfigSender(this));
             configthread.start();
 
-            if (collectstats) {
+            if (config.isCollectPlayerStats()) {
                 startStatsCollecting();
                 File stats = new File("enjin-stats.json");
                 if (stats.exists()) {
@@ -450,7 +415,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             //debug("Checking key valid.");
             //Bypass key checking, but only if the key looks valid
             registerEvents();
-            if (hash.length() == 50) {
+            if (config.getAuthKey().length() == 50) {
                 debug("Starting periodic tasks.");
                 startTask();
             } else {
@@ -477,7 +442,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
     private void prepareTicketService() {
         EnjinRPC.setLogger(logger);
-        EnjinRPC.setDebug(debug);
+        EnjinRPC.setDebug(config.isDebug());
 
         ticketListener = new TicketListener();
         Bukkit.getPluginManager().registerEvents(ticketListener, this);
@@ -497,34 +462,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         byte[] encoded = Files.readAllBytes(Paths.get(path.getAbsolutePath()));
         return new String(encoded, encoding);
     }
-
-    //Only needed for Java 1.6
-    /*
-    static String readFile(File path, Charset encoding) throws IOException {
-		byte[] encoded = readAllBytes(path);
-		return new String(encoded, encoding);
-	}
-	
-	public static byte[] readAllBytes(File path) throws IOException {
-        long size = path.length();
-        if (size > (long)Integer.MAX_VALUE)
-        {
-            throw new OutOfMemoryError("Required array size too large");
-        }
-        byte[] read = new byte[(int) size];
-        int totalBytesRead = 0;
-        BufferedInputStream input = new BufferedInputStream(new FileInputStream(path));
-        while(totalBytesRead < read.length){
-          int bytesRemaining = read.length - totalBytesRead;
-          //input.read() returns -1, 0, or more :
-          int bytesRead = input.read(read, totalBytesRead, bytesRemaining); 
-          if (bytesRead > 0){
-            totalBytesRead = totalBytesRead + bytesRead;
-          }
-        }
-        input.close();
-        return read;
-    }*/
 
     public static boolean isMcMMOEnabled() {
         return isMcMMOloaded;
@@ -560,30 +497,32 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         if (esl == null) {
             esl = new EnjinStatsListener(this);
         }
+
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(esl, this);
-        if (!config.getBoolean("statscollected.player.travel", true)) {
+
+        if (!config.getStatsCollected().getPlayer().isTravel()) {
             PlayerMoveEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getBoolean("statscollected.player.blocksbroken", true)) {
+        if (!config.getStatsCollected().getPlayer().isBlocksBroken()) {
             BlockBreakEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getBoolean("statscollected.player.blocksplaced", true)) {
+        if (!config.getStatsCollected().getPlayer().isBlocksPlaced()) {
             BlockPlaceEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getBoolean("statscollected.player.kills", true)) {
+        if (!config.getStatsCollected().getPlayer().isKills()) {
             EntityDeathEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getBoolean("statscollected.player.deaths", true)) {
+        if (!config.getStatsCollected().getPlayer().isDeaths()) {
             PlayerDeathEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getBoolean("statscollected.player.xp", true)) {
+        if (!config.getStatsCollected().getPlayer().isXp()) {
             PlayerExpChangeEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getBoolean("statscollected.server.creeperexplosions", true)) {
+        if (!config.getStatsCollected().getServer().isCreeperExplosions()) {
             EntityExplodeEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getBoolean("statscollected.server.playerkicks", true)) {
+        if (!config.getStatsCollected().getServer().isPlayerKicks()) {
             PlayerKickEvent.getHandlerList().unregister(esl);
         }
     }
@@ -591,8 +530,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         stopTask();
-        //unregisterEvents();
-        if (collectstats) {
+        if (config.isCollectPlayerStats()) {
             new WriteStats(this).write("enjin-stats.json");
             debug("Stats saved to enjin-stats.json.");
         }
@@ -632,107 +570,27 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         }
     }
 
-    public void initFiles() {
-        config = getConfig();
-        File configfile = new File(getDataFolder().toString() + "/config.yml");
-        if (!configfile.exists()) {
-            createConfig();
-        }
-        configvalues.put("debug", ConfigValueTypes.BOOLEAN);
-        debug = config.getBoolean("debug", false);
-        configvalues.put("authkey", ConfigValueTypes.FORBIDDEN);
-        hash = config.getString("authkey", "");
-        debug("Key value retrieved: " + hash);
-        configvalues.put("https", ConfigValueTypes.BOOLEAN);
-        usingSSL = config.getBoolean("https", true);
-        configvalues.put("autoupdate", ConfigValueTypes.BOOLEAN);
-        autoupdate = config.getBoolean("autoupdate", true);
-        apiurl = config.getString("apiurl", apiurl);
-        //Test to see if we need to update the config file.
-        String teststats = config.getString("collectplayerstats", "");
-        if (teststats.equals("")) {
-            createConfig();
-        }
-        configvalues.put("collectplayerstats", ConfigValueTypes.BOOLEAN);
-        collectstats = config.getBoolean("collectplayerstats", collectstats);
-        configvalues.put("sendstatsinterval", ConfigValueTypes.INT);
-        statssendinterval = config.getInt("sendstatsinterval", 5);
-        configvalues.put("statscollected.player.travel", ConfigValueTypes.BOOLEAN);
-        configvalues.put("statscollected.player.blocksbroken", ConfigValueTypes.BOOLEAN);
-        configvalues.put("statscollected.player.blocksplaced", ConfigValueTypes.BOOLEAN);
-        configvalues.put("statscollected.player.kills", ConfigValueTypes.BOOLEAN);
-        configvalues.put("statscollected.player.deaths", ConfigValueTypes.BOOLEAN);
-        configvalues.put("statscollected.player.xp", ConfigValueTypes.BOOLEAN);
-        configvalues.put("statscollected.player.creeperexplosions", ConfigValueTypes.BOOLEAN);
-        configvalues.put("statscollected.player.playerkicks", ConfigValueTypes.BOOLEAN);
-        configvalues.put("buycommand", ConfigValueTypes.STRING);
-        teststats = config.getString("statscollected.player.travel", "");
-        if (teststats.equals("")) {
-            createConfig();
-        }
-        teststats = config.getString("buycommand", null);
-        if (teststats == null) {
-            createConfig();
-        }
-        BUY_COMMAND = config.getString("buycommand", null);
-        teststats = config.getString("usebuygui", null);
-        if (teststats == null) {
-            createConfig();
-        }
-        configvalues.put("usebuygui", ConfigValueTypes.BOOLEAN);
-        USEBUYGUI = config.getBoolean("usebuygui");
+    public void initConfig() {
+        File configFile = new File(getDataFolder(), "config.json");
+        EnjinMinecraftPlugin.config = JsonConfig.load(configFile, EnjinConfig.class);
 
-        String logenabled = config.getString("loggingenabled", "");
-        if (logenabled == "") {
-            createConfig();
-        }
-        loggingenabled = config.getBoolean("loggingenabled", loggingenabled);
-
-        String banslisten = config.getString("listenforbans", "");
-        if (banslisten == "") {
-            createConfig();
-        }
-        listenforbans = config.getBoolean("listenforbans", listenforbans);
-        configvalues.put("listenforbans", ConfigValueTypes.BOOLEAN);
-        autoupdate = config.getBoolean("listenforbans", true);
-
-        if (!apiurl.endsWith("/")) {
-            apiurl = apiurl.concat("/");
+        if (!configFile.exists()) {
+            config.save(configFile);
         }
 
-        String rpcapiurl = (usingSSL ? "https" : "http") + apiurl + (!apiurl.endsWith("/") ? "/" : "") + "v1/";
-        EnjinRPC.setHttps(usingSSL);
-        EnjinRPC.setApiUrl(rpcapiurl);
-        debug("RPC API Url: " + rpcapiurl);
+        if (!config.getApiUrl().endsWith("/")) {
+            config.setApiUrl(config.getApiUrl().concat("/"));
+        }
+
+        String rpcApiUrl = (config.isHttps() ? "https" : "http") + config.getApiUrl() + "v1/";
+        EnjinRPC.setHttps(config.isHttps());
+        EnjinRPC.setApiUrl(rpcApiUrl);
+        debug("RPC API Url: " + rpcApiUrl);
     }
 
-    private void createConfig() {
-        config.set("debug", debug);
-        config.set("authkey", hash);
-        config.set("https", usingSSL);
-        config.set("autoupdate", autoupdate);
-        config.set("collectstats", null);
-        config.set("collectplayerstats", collectstats);
-        config.set("sendstatsinterval", statssendinterval);
-        config.set("listenforbans", listenforbans);
-        String teststats = config.getString("statscollected.player.travel", "");
-        if (teststats.equals("")) {
-            config.set("statscollected.player.travel", true);
-            config.set("statscollected.player.blocksbroken", true);
-            config.set("statscollected.player.blocksplaced", true);
-            config.set("statscollected.player.kills", true);
-            config.set("statscollected.player.deaths", true);
-            config.set("statscollected.player.xp", true);
-            config.set("statscollected.server.creeperexplosions", true);
-            config.set("statscollected.server.playerkicks", true);
-        }
-        teststats = config.getString("buycommand", null);
-        if (teststats == null) {
-            config.set("buycommand", BUY_COMMAND);
-        }
-        config.set("usebuygui", USEBUYGUI);
-        config.set("loggingenabled", loggingenabled);
-        saveConfig();
+    @Override
+    public void saveConfig() {
+        config.save(new File(getDataFolder(), "config.json"));
     }
 
     public void startTask() {
@@ -751,7 +609,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             debug("Starting votifier task.");
             votetaskid = scheduler.runTaskTimerAsynchronously(this, votetask, 80L, 80L).getTaskId();
         }
-        if (autoupdate && bukkitversion) {
+        if (config.isAutoUpdate() && bukkitversion) {
             updatethread = scheduler.runTaskTimerAsynchronously(this, new Updater(this, 44560, this.getFile(), Updater.UpdateType.DEFAULT, true), 20 * 60 * 5, 20 * 60 * 5).getTaskId();
         }
     }
@@ -764,7 +622,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         }
         //Listen for all the heads events.
         Bukkit.getPluginManager().registerEvents(new HeadListener(this), this);
-        if (BUY_COMMAND != null) {
+        if (config.getBuyCommand() != null) {
             shoplistener = new ShopListener(this);
             Bukkit.getPluginManager().registerEvents(shoplistener, this);
         }
@@ -1043,12 +901,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         sender.sendMessage(ChatColor.RED + "You need to have the \"enjin.debug\" permission or OP to run that command!");
                         return true;
                     }
-                    if (debug) {
-                        debug = false;
-                    } else {
-                        debug = true;
-                    }
-                    sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + debug);
+
+                    config.setDebug(!config.isDebug());
+                    saveConfig();
+
+                    sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + config.isDebug());
                     return true;
                 } else if (args[0].equalsIgnoreCase("updateheads") || args[0].equalsIgnoreCase("syncheads")) {
                     if (!sender.hasPermission("enjin.updateheads")) {
@@ -1573,7 +1430,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
 
-                    if (getHash() == null) {
+                    if (getAuthKey() == null) {
                         sender.sendMessage("Cannot use this command without setting your key.");
                         return true;
                     }
@@ -1651,7 +1508,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
 
-                    if (getHash() == null) {
+                    if (getAuthKey() == null) {
                         sender.sendMessage("Cannot use this command without setting your key.");
                         return true;
                     }
@@ -1667,7 +1524,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketService service = EnjinServices.getService(TicketService.class);
-                                RPCData<List<Ticket>> data = service.getPlayerTickets(getHash(), -1, player.getName());
+                                RPCData<List<Ticket>> data = service.getPlayerTickets(getAuthKey(), -1, player.getName());
 
                                 if (data != null) {
                                     if (data.getError() != null) {
@@ -1691,7 +1548,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketService service = EnjinServices.getService(TicketService.class);
-                                RPCData<List<Reply>> data = service.getReplies(getHash(), -1, args[1], player.getName());
+                                RPCData<List<Reply>> data = service.getReplies(getAuthKey(), -1, args[1], player.getName());
 
                                 if (data != null) {
                                     if (data.getError() != null) {
@@ -1718,7 +1575,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
 
-                    if (getHash() == null) {
+                    if (getAuthKey() == null) {
                         sender.sendMessage("Cannot use this command without setting your key.");
                         return true;
                     }
@@ -1734,7 +1591,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketService service = EnjinServices.getService(TicketService.class);
-                                RPCData<List<Ticket>> data = service.getTickets(getHash(), -1, TicketStatus.open);
+                                RPCData<List<Ticket>> data = service.getTickets(getAuthKey(), -1, TicketStatus.open);
 
                                 if (data != null) {
                                     if (data.getError() != null) {
@@ -1758,7 +1615,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                             @Override
                             public void run() {
                                 TicketService service = EnjinServices.getService(TicketService.class);
-                                RPCData<List<Reply>> data = service.getReplies(getHash(), -1, args[1], player.getName());
+                                RPCData<List<Reply>> data = service.getReplies(getAuthKey(), -1, args[1], player.getName());
 
                                 if (data != null) {
                                     if (data.getError() != null) {
@@ -1785,7 +1642,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
 
-                    if (getHash() == null) {
+                    if (getAuthKey() == null) {
                         sender.sendMessage("Cannot use this command without setting your key.");
                         return true;
                     }
@@ -1817,7 +1674,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(getHash(), preset, ticket, finalMessage, "public", TicketStatus.open, ((Player) sender).getName());
+                                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(getAuthKey(), preset, ticket, finalMessage, "public", TicketStatus.open, ((Player) sender).getName());
                                 if (result != null) {
                                     if (result.getError() == null) {
                                         sender.sendMessage("You replied to the ticket successfully.");
@@ -1837,7 +1694,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         return true;
                     }
 
-                    if (getHash() == null) {
+                    if (getAuthKey() == null) {
                         sender.sendMessage("Cannot use this command without setting your key.");
                         return true;
                     }
@@ -1869,7 +1726,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                         Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
                             @Override
                             public void run() {
-                                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(getHash(), preset, ticket, status);
+                                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(getAuthKey(), preset, ticket, status);
                                 if (result != null) {
                                     if (result.getError() == null) {
                                         if (result.getResult()) {
@@ -1977,7 +1834,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
      * @throws MalformedURLException
      */
     public static int sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
-        URL url = new URL((usingSSL ? "https" : "http") + apiurl + urls);
+        URL url = new URL((usingSSL ? "https" : "http") + config.getApiUrl() + urls);
         StringBuilder query = new StringBuilder();
         try {
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -2019,12 +1876,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         }
     }
 
-    public static synchronized void setHash(String hash) {
-        EnjinMinecraftPlugin.hash = hash;
+    public static synchronized void setAuthKey(String key) {
+        config.setAuthKey(key);
     }
 
-    public static synchronized String getHash() {
-        return EnjinMinecraftPlugin.hash;
+    public static synchronized String getAuthKey() {
+        return config.getAuthKey();
     }
 
     private void setupPermissions() {
@@ -2230,17 +2087,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             }
             return false;
         } catch (SSLHandshakeException e) {
-            if (debug) {
+            if (config.isDebug()) {
                 e.printStackTrace();
             }
             return false;
         } catch (SocketTimeoutException e) {
-            if (debug) {
+            if (config.isDebug()) {
                 e.printStackTrace();
             }
             return false;
         } catch (Throwable t) {
-            if (debug) {
+            if (config.isDebug()) {
                 t.printStackTrace();
             }
             return false;
@@ -2259,12 +2116,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             }
             return false;
         } catch (SocketTimeoutException e) {
-            if (debug) {
+            if (config.isDebug()) {
                 e.printStackTrace();
             }
             return false;
         } catch (Throwable t) {
-            if (debug) {
+            if (config.isDebug()) {
                 t.printStackTrace();
             }
             return false;
@@ -2283,12 +2140,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
             }
             return false;
         } catch (SocketTimeoutException e) {
-            if (debug) {
+            if (config.isDebug()) {
                 e.printStackTrace();
             }
             return false;
         } catch (Throwable t) {
-            if (debug) {
+            if (config.isDebug()) {
                 t.printStackTrace();
             }
             return false;
@@ -2304,7 +2161,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
         }
     }
 
-    public PeriodicEnjinTask getTask() {
+    public Runnable getTask() {
         return task;
     }
 
@@ -2502,7 +2359,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     private void pollModules() {
         if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
             modulesLastPolled = System.currentTimeMillis();
-            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules(getHash());
+            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules(getAuthKey());
 
             if (data == null || data.getError() != null) {
                 debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());

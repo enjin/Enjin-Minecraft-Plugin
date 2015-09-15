@@ -73,7 +73,7 @@ public class ReportMakerThread implements Runnable {
             }
             rfr.close();
         } catch (Exception e) {
-            if (EnjinMinecraftPlugin.debug) {
+            if (EnjinMinecraftPlugin.config.isDebug()) {
                 e.printStackTrace();
             }
         }

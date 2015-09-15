@@ -1,8 +1,9 @@
-package com.enjin.officialplugin.packets;
+package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 
+import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
@@ -13,7 +14,7 @@ public class Packet14NewerVersion {
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String newversion = PacketUtilities.readString(in);
-            if (plugin.autoupdate && !plugin.hasupdate) {
+            if (plugin.config.isAutoUpdate() && !plugin.hasupdate) {
                 if (plugin.updatefailed) {
                     return;
                 }

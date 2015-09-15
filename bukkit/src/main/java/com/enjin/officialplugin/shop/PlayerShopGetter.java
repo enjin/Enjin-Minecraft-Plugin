@@ -48,7 +48,7 @@ public class PlayerShopGetter implements Runnable {
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             //StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&player=" + encode(player.getName())); //current player
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
             EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
@@ -61,7 +61,7 @@ public class PlayerShopGetter implements Runnable {
             PlayerShopsInstance shops = ShopUtils.parseShopsJSON(json);
             listener.activeshops.put(player.getName().toLowerCase(), shops);
             listener.playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
-            if (EnjinMinecraftPlugin.USEBUYGUI) {
+            if (EnjinMinecraftPlugin.config.isUseBuyGUI()) {
                 listener.openshops.put(player.getName().toLowerCase(), "");
                 if (shops.getServerShopCount() == 1) {
                     shops.setActiveShop(0);
@@ -96,7 +96,7 @@ public class PlayerShopGetter implements Runnable {
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "minecraft-shop");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "minecraft-shop");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {

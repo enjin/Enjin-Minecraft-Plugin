@@ -88,7 +88,7 @@ public class PointsAPI {
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&points=" + amount);
             builder.append("&player=" + player);
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
@@ -159,7 +159,7 @@ public class PointsAPI {
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.hash));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&player=" + player);
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
             EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
@@ -198,19 +198,19 @@ public class PointsAPI {
     }
 
     private static URL getAddPointsUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "add-points");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "add-points");
     }
 
     private static URL getRemovePointsUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "remove-points");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "remove-points");
     }
 
     private static URL getSetPointsUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "set-points");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "set-points");
     }
 
     private static URL getPointsUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.apiurl + "get-points");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "get-points");
     }
 
     private static String encode(String in) throws UnsupportedEncodingException {
