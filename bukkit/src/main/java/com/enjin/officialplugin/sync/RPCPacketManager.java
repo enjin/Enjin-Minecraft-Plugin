@@ -2,10 +2,13 @@ package com.enjin.officialplugin.sync;
 
 import com.enjin.core.EnjinServices;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
+import com.enjin.officialplugin.sync.processors.Execute;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.Instruction;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
 import com.enjin.rpc.mappings.mappings.plugin.Status;
 import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
+import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.enjin.rpc.mappings.services.PluginService;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -13,11 +16,12 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
 
-    private RPCPacketManager(EnjinMinecraftPlugin plugin) {
+    public RPCPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -38,6 +42,7 @@ public class RPCPacketManager implements Runnable {
         RPCData<SyncResponse> data = service.sync(plugin.getAuthKey(), status);
 
         if (data == null) {
+            EnjinMinecraftPlugin.debug("Data is null while requesting sync update from Plugin.sync.");
             return;
         }
 
@@ -46,19 +51,45 @@ public class RPCPacketManager implements Runnable {
         } else {
             SyncResponse result = data.getResult();
             if (result != null && result.getStatus().equalsIgnoreCase("ok")) {
-                // TODO: Processe result
+                for (Instruction instruction : result.getInstructions()) {
+                    switch (instruction.getCode()) {
+                        case ADD_PLAYER_GROUP:
+                            break;
+                        case REMOVE_PLAYER_GROUP:
+                            break;
+                        case EXECUTE:
+                            Execute.handle((ExecuteData) instruction.getData());
+                            break;
+                        case EXECUTE_AS:
+                            break;
+                        case CONFIRMED_COMMANDS:
+                            break;
+                        case CONFIG:
+                            break;
+                        case ADD_PLAYER_WHITELIST:
+                            break;
+                        case REMOVE_PLAYER_WHITELIST:
+                            break;
+                        case RESPONSE_STATUS:
+                            break;
+                        case BAN_PLAYER:
+                            break;
+                        case UNBAN_PLAYER:
+                            break;
+                        case CLEAR_INGAME_CACHE:
+                            break;
+                        case NOTIFICATIONS:
+                            break;
+                        default:
+                            continue;
+                    }
+                }
             }
         }
     }
 
     private List<String> getWorlds() {
-        List<String> worlds = new ArrayList<String>();
-
-        for (World world : Bukkit.getWorlds()) {
-            worlds.add(world.getName());
-        }
-
-        return worlds;
+        return Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList());
     }
 
     private List<String> getGroups() {
@@ -74,12 +105,6 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<PlayerInfo> getOnlinePlayers() {
-        List<PlayerInfo> infos = new ArrayList<PlayerInfo>();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            infos.add(new PlayerInfo(player.getName(), player.getUniqueId()));
-        }
-
-        return infos;
+        return Bukkit.getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(), player.getUniqueId())).collect(Collectors.toList());
     }
 }

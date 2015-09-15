@@ -40,4 +40,6 @@ public class EnjinConfig extends JsonConfig {
     @Getter @Setter
     @SerializedName(value = "api-url")
     private String apiUrl = "://api.enjin.com/api";
+    @Getter @Setter
+    private boolean legacy = false;
 }

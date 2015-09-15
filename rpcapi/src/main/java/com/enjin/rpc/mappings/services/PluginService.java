@@ -2,10 +2,14 @@ package com.enjin.rpc.mappings.services;
 
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
+import com.enjin.rpc.mappings.deserializers.InstructionDeserializer;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.Instruction;
 import com.enjin.rpc.mappings.mappings.plugin.Status;
 import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.mappings.plugin.TagData;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
@@ -18,6 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 public class PluginService implements Service {
+    private static Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Instruction.class, new InstructionDeserializer())
+            .create();
+
     public RPCData<Boolean> auth(final String authkey, final int port, final boolean save) {
         String method = "Plugin.auth";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
@@ -70,7 +78,7 @@ public class PluginService implements Service {
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
 
-            RPCData<SyncResponse> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<SyncResponse>>() {}.getType());
+            RPCData<SyncResponse> data = PluginService.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<SyncResponse>>() {}.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;

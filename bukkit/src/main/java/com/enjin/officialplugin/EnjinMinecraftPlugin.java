@@ -28,6 +28,7 @@ import com.enjin.core.EnjinServices;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.officialplugin.config.EnjinConfig;
 import com.enjin.officialplugin.permlisteners.*;
+import com.enjin.officialplugin.sync.RPCPacketManager;
 import com.enjin.officialplugin.tickets.TicketListener;
 import com.enjin.officialplugin.tickets.TicketCreationSession;
 import com.enjin.officialplugin.tickets.TicketViewBuilder;
@@ -183,8 +184,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
     public final EMPListener listener = new EMPListener(this);
 
     //------------Threaded tasks---------------
-    final Runnable task = new LegacyPacketManager(this);
-    final PeriodicVoteTask votetask = new PeriodicVoteTask(this);
+    public Runnable task;
+    public PeriodicVoteTask votetask;
     public BanLister banlistertask;
     public DelayedCommandExecuter commexecuter = new DelayedCommandExecuter(this);
     //Initialize in the onEnable
@@ -258,7 +259,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
                 }
             }
+
             initConfig();
+
+            task = config.isLegacy() ? new LegacyPacketManager(this) : new RPCPacketManager(this);
+            votetask = new PeriodicVoteTask(this);
+
             debug("Initializing internal logger");
             enjinlogger.setLevel(Level.FINEST);
             File logsfolder = new File(getDataFolder().getAbsolutePath() + File.separator + "logs");
