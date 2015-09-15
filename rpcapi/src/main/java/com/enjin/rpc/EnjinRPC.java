@@ -12,8 +12,7 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 public class EnjinRPC {
-    public static Gson gson = new GsonBuilder()
-            .create();
+    public static Gson gson = new GsonBuilder().create();
 
     private static final int READ_TIMEOUT = 15000;
     private static final int CONNECT_TIMEOUT = 15000;

@@ -1,0 +1,17 @@
+package com.enjin.rpc.mappings.mappings.plugin;
+
+public enum InstructionCode {
+    ADD_PLAYER_GROUP,
+    REMOVE_PLAYER_GROUP,
+    EXECUTE,
+    EXECUTE_AS,
+    CONFIRMED_COMMANDS,
+    CONFIG,
+    ADD_PLAYER_WHITELIST,
+    REMOVE_PLAYER_WHITELIST,
+    RESPONSE_STATUS,
+    BAN_PLAYER,
+    UNBAN_PLAYER,
+    CLEAR_INGAME_CACHE,
+    NOTIFICATIONS;
+}

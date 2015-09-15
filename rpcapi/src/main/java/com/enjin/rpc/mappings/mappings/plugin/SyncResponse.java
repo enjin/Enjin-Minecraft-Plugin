@@ -10,9 +10,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class SyncResponse {
     @Getter
-    private List<Object> instructions;
-    @Getter
-    private List<Object> commands;
+    private List<Instruction> instructions;
     @Getter
     private String status;
 }

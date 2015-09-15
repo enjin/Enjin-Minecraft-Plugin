@@ -12,7 +12,7 @@ import java.util.List;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class ShopServiceTest {
-    private static final String API_URL = "https://api.enjin.com/api/v1/";
+    private static final String API_URL = "http://api.enjinpink.com/api/v1/";
     private static final String KEY = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
     private static final String PLAYER = "Favorlock";
 
@@ -72,7 +72,7 @@ public class ShopServiceTest {
 
     @BeforeClass
     public static void prepare() {
-        EnjinRPC.setHttps(true);
+        EnjinRPC.setHttps(false);
         EnjinRPC.setApiUrl(API_URL);
     }
 }
