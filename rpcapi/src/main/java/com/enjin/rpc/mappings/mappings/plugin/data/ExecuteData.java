@@ -8,7 +8,9 @@ import lombok.Getter;
 public class ExecuteData {
     @Getter
     @SerializedName(value = "command_id")
-    private long id;
+    private long id = -1;
     @Getter
-    private String command;
+    private String command = "";
+    @Getter
+    private long delay = 0;
 }
