@@ -3,6 +3,7 @@ package com.enjin.rpc.mappings.deserializers;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.plugin.Instruction;
 import com.enjin.rpc.mappings.mappings.plugin.InstructionCode;
+import com.enjin.rpc.mappings.mappings.plugin.data.ClearInGameCacheData;
 import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.google.gson.*;
 
@@ -39,7 +40,7 @@ public class InstructionDeserializer implements JsonDeserializer<Instruction> {
                 case UNBAN_PLAYER:
                     break;
                 case CLEAR_INGAME_CACHE:
-                    break;
+                    return new Instruction(code, EnjinRPC.gson.fromJson(object.get("data"), ClearInGameCacheData.class));
                 case NOTIFICATIONS:
                     break;
             }
