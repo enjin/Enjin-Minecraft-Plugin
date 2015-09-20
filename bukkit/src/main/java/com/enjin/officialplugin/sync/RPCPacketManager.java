@@ -80,6 +80,8 @@ public class RPCPacketManager implements Runnable {
                             break;
                         case NOTIFICATIONS:
                             break;
+                        case PLUGIN_VERSION:
+                            break;
                         default:
                             continue;
                     }

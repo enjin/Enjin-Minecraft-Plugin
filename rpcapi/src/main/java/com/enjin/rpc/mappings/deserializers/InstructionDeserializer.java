@@ -14,8 +14,8 @@ public class InstructionDeserializer implements JsonDeserializer<Instruction> {
         InstructionCode code = EnjinRPC.gson.fromJson(object.get("code"), InstructionCode.class);
         JsonElement data = object.get("data");
 
-        if (code != null && code.getDataClass() != null) {
-            return new Instruction(code, EnjinRPC.gson.fromJson(data, code.getDataClass()));
+        if (code != null && code.getType() != null) {
+            return new Instruction(code, EnjinRPC.gson.fromJson(data, code.getType()));
         }
 
         return null;
