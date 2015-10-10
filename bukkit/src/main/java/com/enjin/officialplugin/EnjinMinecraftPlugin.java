@@ -43,6 +43,7 @@ import com.enjin.rpc.mappings.mappings.tickets.Module;
 import com.enjin.rpc.mappings.mappings.tickets.Reply;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
 import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
+import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.rpc.mappings.services.TicketService;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
@@ -268,6 +269,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
             initConfig();
 
+            EnjinRPC.setLogger(logger);
+            EnjinRPC.setDebug(config.isDebug());
+
             task = config.isLegacy() ? new LegacyPacketManager(this) : new RPCPacketManager(this);
             votetask = new PeriodicVoteTask(this);
 
@@ -428,11 +432,23 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             //Bypass key checking, but only if the key looks valid
             registerEvents();
             if (config.getAuthKey().length() == 50) {
-                debug("Starting periodic tasks.");
-                startTask();
+                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(config.getAuthKey(), Bukkit.getPort(), true);
+                if (data == null) {
+                    authkeyinvalid = true;
+                    debug("Auth key is invalid. Data could not be retrieved.");
+                } else if (data.getError() != null) {
+                    authkeyinvalid = true;
+                    debug("Auth key is invalid. " + data.getError().getMessage());
+                } else if (!data.getResult()) {
+                    authkeyinvalid = true;
+                    debug("Auth key is invalid. Failed to authenticate.");
+                } else {
+                    debug("Starting periodic tasks.");
+                    startTask();
+                }
             } else {
                 authkeyinvalid = true;
-                debug("Auth key is invalid. Wrong length.");
+                debug("Auth key is invalid. Must be 50 characters in length.");
             }
 
             // Adding in metrics
@@ -453,9 +469,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void prepareTicketService() {
-        EnjinRPC.setLogger(logger);
-        EnjinRPC.setDebug(config.isDebug());
-
         ticketListener = new TicketListener();
         Bukkit.getPluginManager().registerEvents(ticketListener, this);
 
