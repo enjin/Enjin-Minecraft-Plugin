@@ -24,10 +24,14 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLHandshakeException;
 
+import com.enjin.core.Enjin;
+import com.enjin.core.EnjinPlugin;
 import com.enjin.core.EnjinServices;
+import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.officialplugin.config.EnjinConfig;
 import com.enjin.officialplugin.permlisteners.*;
+import com.enjin.officialplugin.sync.BukkitInstructionHandler;
 import com.enjin.officialplugin.sync.RPCPacketManager;
 import com.enjin.officialplugin.tickets.TicketListener;
 import com.enjin.officialplugin.tickets.TicketCreationSession;
@@ -124,9 +128,10 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  * @copyright Enjin 2013.
  */
 
-public class EnjinMinecraftPlugin extends JavaPlugin {
+public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public static EnjinMinecraftPlugin instance;
     public static EnjinConfig config;
+    private InstructionHandler instructionHandler = new BukkitInstructionHandler();
     public static boolean usingGroupManager = false;
     public Server s;
     public Logger logger;
@@ -231,6 +236,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Enjin.setPlugin(this);
         instance = this;
 
         //Add keywords for item giving
@@ -2381,5 +2387,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin {
                 modules.put(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+    @Override
+    public InstructionHandler getInstructionHandler() {
+        return instructionHandler;
     }
 }

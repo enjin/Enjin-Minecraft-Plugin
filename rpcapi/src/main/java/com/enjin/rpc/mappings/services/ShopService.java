@@ -37,6 +37,7 @@ public class ShopService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<Shop>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Shop>>>() {}.getType());
             data.setRequest(request);
@@ -69,6 +70,7 @@ public class ShopService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<Purchase>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Purchase>>>() {}.getType());
             data.setRequest(request);
@@ -100,6 +102,7 @@ public class ShopService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<FilteredItem>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<FilteredItem>>>() {}.getType());
             data.setRequest(request);

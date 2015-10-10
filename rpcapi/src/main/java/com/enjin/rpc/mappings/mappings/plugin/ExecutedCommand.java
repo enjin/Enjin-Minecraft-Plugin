@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.mappings.plugin;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -13,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 @EqualsAndHashCode
 public class ExecutedCommand {
     @Getter
+    @SerializedName(value = "command_id")
     private String id;
     @Getter
     private String hash;

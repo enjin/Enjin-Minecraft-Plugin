@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -57,5 +58,9 @@ public class Packet1BPardonPlayers {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void handle(String player) {
+        Enjin.getPlugin().getInstructionHandler().pardon(player);
     }
 }

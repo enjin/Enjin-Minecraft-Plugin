@@ -33,6 +33,7 @@ public class VoteService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<String> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<String>>() {}.getType());
             data.setRequest(request);

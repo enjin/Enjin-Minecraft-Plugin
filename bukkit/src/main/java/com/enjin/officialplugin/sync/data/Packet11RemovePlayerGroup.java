@@ -4,7 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.util.PacketUtilities;
+import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -20,7 +22,6 @@ import com.enjin.officialplugin.events.RemovePlayerGroupEvent;
  */
 
 public class Packet11RemovePlayerGroup {
-
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String instring = PacketUtilities.readString(in);
@@ -94,5 +95,9 @@ public class Packet11RemovePlayerGroup {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void handle(PlayerGroupUpdateData data) {
+        Enjin.getPlugin().getInstructionHandler().removeFromGroup(data.getPlayer(), data.getGroup(), data.getWorld());
     }
 }

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +19,6 @@ import com.enjin.officialplugin.events.EnjinBanPlayerEvent;
  */
 
 public class Packet1ABanPlayers {
-
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String players = PacketUtilities.readString(in);
@@ -57,5 +57,9 @@ public class Packet1ABanPlayers {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void handle(String player) {
+        Enjin.getPlugin().getInstructionHandler().ban(player);
     }
 }

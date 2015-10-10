@@ -4,7 +4,9 @@ import java.io.BufferedInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.util.PacketUtilities;
+import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import org.bukkit.Bukkit;
 
 import com.enjin.officialplugin.CommandWrapper;
@@ -17,7 +19,6 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
  */
 
 public class Packet12ExecuteCommand {
-
     static Pattern idregex = Pattern.compile("^(\\d+):(.*)");
 
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
@@ -59,5 +60,9 @@ public class Packet12ExecuteCommand {
             Bukkit.getLogger().warning("Failed to dispatch command via 0x12, " + t.getMessage());
             t.printStackTrace();
         }
+    }
+
+    public static void handle(ExecuteData data) {
+        Enjin.getPlugin().getInstructionHandler().execute(data.getId(), data.getCommand(), data.getDelay());
     }
 }

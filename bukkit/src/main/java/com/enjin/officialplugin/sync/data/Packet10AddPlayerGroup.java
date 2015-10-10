@@ -4,7 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.util.PacketUtilities;
+import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -20,7 +22,6 @@ import com.enjin.officialplugin.events.AddPlayerGroupEvent;
  */
 
 public class Packet10AddPlayerGroup {
-
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String[] msg = PacketUtilities.readString(in).split(",");
@@ -93,5 +94,9 @@ public class Packet10AddPlayerGroup {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void handle(PlayerGroupUpdateData data) {
+        Enjin.getPlugin().getInstructionHandler().addToGroup(data.getPlayer(), data.getGroup(), data.getWorld());
     }
 }

@@ -22,7 +22,7 @@ public enum InstructionCode {
     REMOVE_PLAYER_WHITELIST(String.class),
     RESPONSE_STATUS(String.class),
     BAN_PLAYER(String.class),
-    UNBAN_PLAYER(null),
+    UNBAN_PLAYER(String.class),
     CLEAR_INGAME_CACHE(ClearInGameCacheData.class),
     NOTIFICATIONS(NotificationData.class),
     PLUGIN_VERSION(String.class);

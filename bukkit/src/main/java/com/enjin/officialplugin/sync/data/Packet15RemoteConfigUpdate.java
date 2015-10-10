@@ -1,7 +1,9 @@
 package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
+import java.util.Map;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 
@@ -83,5 +85,9 @@ public class Packet15RemoteConfigUpdate {
             Bukkit.getLogger().warning("Failed to set config variables via 0x15, " + t.getMessage());
             t.printStackTrace();
         }
+    }
+
+    public static void handle(Map<String, Object> updates) {
+        Enjin.getPlugin().getInstructionHandler().configUpdated(updates);
     }
 }

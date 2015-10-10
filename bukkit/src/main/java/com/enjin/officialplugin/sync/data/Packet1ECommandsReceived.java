@@ -2,7 +2,9 @@ package com.enjin.officialplugin.sync.data;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.util.PacketUtilities;
 
@@ -13,7 +15,6 @@ import com.enjin.officialplugin.util.PacketUtilities;
  */
 
 public class Packet1ECommandsReceived {
-
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String commandsreceived = PacketUtilities.readString(in);
@@ -27,5 +28,13 @@ public class Packet1ECommandsReceived {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void handle(ArrayList<Long> confirmed) {
+        if (confirmed == null) {
+            return;
+        }
+
+        Enjin.getPlugin().getInstructionHandler().commandConfirmed(confirmed);
     }
 }

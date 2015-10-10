@@ -46,6 +46,7 @@ public class PluginService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<Boolean> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>() {}.getType());
             data.setRequest(request);
@@ -77,6 +78,7 @@ public class PluginService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<SyncResponse> data = PluginService.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<SyncResponse>>() {}.getType());
             data.setRequest(request);
@@ -108,6 +110,7 @@ public class PluginService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<TagData>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<TagData>>>() {}.getType());
             data.setRequest(request);

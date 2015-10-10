@@ -88,6 +88,7 @@ public class TicketService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {}.getType());
             data.setRequest(request);
@@ -117,6 +118,7 @@ public class TicketService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<Map<Integer, Module>> data = GSON_QUESTION.fromJson(response.toJSONString(), new TypeToken<RPCData<HashMap<Integer, Module>>>() {}.getType());
             data.setRequest(request);
@@ -149,6 +151,7 @@ public class TicketService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<Boolean> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>() {}.getType());
             data.setRequest(request);
@@ -180,6 +183,7 @@ public class TicketService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<PlayerAccess> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<PlayerAccess>>() {}.getType());
             data.setRequest(request);
@@ -216,6 +220,7 @@ public class TicketService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<Reply>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<List<Reply>>>() {}.getType());
             data.setRequest(request);
@@ -250,6 +255,7 @@ public class TicketService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<Boolean> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>() {}.getType());
             data.setRequest(request);
@@ -285,6 +291,7 @@ public class TicketService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<RPCSuccess> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<RPCSuccess>>() {}.getType());
             data.setRequest(request);
