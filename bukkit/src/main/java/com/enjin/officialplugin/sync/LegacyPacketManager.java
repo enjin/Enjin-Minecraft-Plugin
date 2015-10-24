@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.sync.data.*;
 import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
@@ -63,7 +64,7 @@ public class LegacyPacketManager implements Runnable {
         boolean successful = false;
         StringBuilder builder = new StringBuilder();
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin...");
+            Enjin.getPlugin().debug("Connecting to Enjin...");
             URL enjinurl = getUrl();
             HttpURLConnection con;
 
@@ -129,7 +130,7 @@ public class LegacyPacketManager implements Runnable {
             }
 
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             InputStream in = con.getInputStream();
             String success = handleInput(in);
@@ -218,7 +219,7 @@ public class LegacyPacketManager implements Runnable {
         }
 
         if (!successful) {
-            EnjinMinecraftPlugin.debug("Synch unsuccessful.");
+            Enjin.getPlugin().debug("Synch unsuccessful.");
             statdelay++;
             Set<Entry<String, String>> es = removedplayerperms.entrySet();
 
@@ -247,7 +248,7 @@ public class LegacyPacketManager implements Runnable {
             firstrun = false;
             removedbans.clear();
             removedpardons.clear();
-            EnjinMinecraftPlugin.debug("Synch successful.");
+            Enjin.getPlugin().debug("Synch successful.");
 
             if (plugin.config.isCollectPlayerStats() && (plugin.config.getSendStatsInterval() - 1) <= statdelay) {
                 statdelay = 0;
@@ -265,7 +266,7 @@ public class LegacyPacketManager implements Runnable {
 
         if (plugin.config.isCollectPlayerStats()) {
             new WriteStats(plugin).write("enjin-stats.json");
-            EnjinMinecraftPlugin.debug("Stats saved to enjin-stats.json.");
+            Enjin.getPlugin().debug("Stats saved to enjin-stats.json.");
         }
     }
 
@@ -453,7 +454,7 @@ public class LegacyPacketManager implements Runnable {
                     allperms.append(entry.getKey() + ";" + perms.toString());
                 }
             } catch (Exception e) {
-                EnjinMinecraftPlugin.debug("Unable to get permissions data for player " + entry.getKey());
+                Enjin.getPlugin().debug("Unable to get permissions data for player " + entry.getKey());
                 //Assume this plugin does not support offline players;
             }
             //remove that player from the list.
@@ -478,37 +479,37 @@ public class LegacyPacketManager implements Runnable {
             int code = bin.read();
             switch (code) {
                 case -1:
-                    EnjinMinecraftPlugin.debug("No more packets. End of stream. Update ended.");
+                    Enjin.getPlugin().debug("No more packets. End of stream. Update ended.");
                     bin.reset();
                     StringBuilder input = new StringBuilder();
                     while ((code = bin.read()) != -1) {
                         input.append((char) code);
                     }
-                    EnjinMinecraftPlugin.debug("Raw data received:\n" + input.toString());
+                    Enjin.getPlugin().debug("Raw data received:\n" + input.toString());
                     if (commandsrecieved) {
                         plugin.saveCommandIDs();
                     }
                     return tresult; //end of stream reached
                 case 0x10:
-                    EnjinMinecraftPlugin.debug("Packet [0x10](Add Player Group) received.");
+                    Enjin.getPlugin().debug("Packet [0x10](Add Player Group) received.");
                     Packet10AddPlayerGroup.handle(bin, plugin);
                     break;
                 case 0x11:
-                    EnjinMinecraftPlugin.debug("Packet [0x11](Remove Player Group) received.");
+                    Enjin.getPlugin().debug("Packet [0x11](Remove Player Group) received.");
                     Packet11RemovePlayerGroup.handle(bin, plugin);
                     break;
                 case 0x12:
-                    EnjinMinecraftPlugin.debug("Packet [0x12](Execute Command) received.");
+                    Enjin.getPlugin().debug("Packet [0x12](Execute Command) received.");
                     commandsrecieved = true;
                     Packet12ExecuteCommand.handle(bin, plugin);
                     break;
                 case 0x13:
-                    EnjinMinecraftPlugin.debug("Packet [0x13](Execute command as Player) received.");
+                    Enjin.getPlugin().debug("Packet [0x13](Execute command as Player) received.");
                     commandsrecieved = true;
                     Packet13ExecuteCommandAsPlayer.handle(bin, plugin);
                     break;
                 case 0x14:
-                    EnjinMinecraftPlugin.debug("Packet [0x14](Newer Version) received.");
+                    Enjin.getPlugin().debug("Packet [0x14](Newer Version) received.");
                     if (EnjinMinecraftPlugin.bukkitversion) {
                         Packet14DummyHandler.handle(bin, plugin);
                     } else {
@@ -516,49 +517,49 @@ public class LegacyPacketManager implements Runnable {
                     }
                     break;
                 case 0x15:
-                    EnjinMinecraftPlugin.debug("Packet [0x15](Remote Config Update) received.");
+                    Enjin.getPlugin().debug("Packet [0x15](Remote Config Update) received.");
                     Packet15RemoteConfigUpdate.handle(bin, plugin);
                     break;
                 case 0x17:
-                    EnjinMinecraftPlugin.debug("Packet [0x17](Add Whitelist Players) received.");
+                    Enjin.getPlugin().debug("Packet [0x17](Add Whitelist Players) received.");
                     Packet17AddWhitelistPlayers.handle(bin, plugin);
                     break;
                 case 0x18:
-                    EnjinMinecraftPlugin.debug("Packet [0x18](Remove Players From Whitelist) received.");
+                    Enjin.getPlugin().debug("Packet [0x18](Remove Players From Whitelist) received.");
                     Packet18RemovePlayersFromWhitelist.handle(bin, plugin);
                     break;
                 case 0x19:
-                    EnjinMinecraftPlugin.debug("Packet [0x19](Enjin Status) received.");
+                    Enjin.getPlugin().debug("Packet [0x19](Enjin Status) received.");
                     tresult = PacketUtilities.readString(bin);
                     break;
                 case 0x1A:
-                    EnjinMinecraftPlugin.debug("Packet [0x1A](Ban Player) received.");
+                    Enjin.getPlugin().debug("Packet [0x1A](Ban Player) received.");
                     Packet1ABanPlayers.handle(bin, plugin);
                     break;
                 case 0x1B:
-                    EnjinMinecraftPlugin.debug("Packet [0x1B](Pardon Player) received.");
+                    Enjin.getPlugin().debug("Packet [0x1B](Pardon Player) received.");
                     Packet1BPardonPlayers.handle(bin, plugin);
                     break;
                 case 0x1D:
-                    EnjinMinecraftPlugin.debug("Packet [0x1D](Player Purchase) received.");
+                    Enjin.getPlugin().debug("Packet [0x1D](Player Purchase) received.");
                     Packet1DPlayerPurchase.handle(bin, plugin);
                     break;
                 case 0x1E:
-                    EnjinMinecraftPlugin.debug("Packet [0x1E] (Commands Received) received.");
+                    Enjin.getPlugin().debug("Packet [0x1E] (Commands Received) received.");
                     Packet1ECommandsReceived.handle(bin, plugin);
                     commandsrecieved = true;
                     break;
                 case 0x1F:
-                    EnjinMinecraftPlugin.debug("Packet [0x1F] (Notifications) received.");
+                    Enjin.getPlugin().debug("Packet [0x1F] (Notifications) received.");
                     Packet1FNotifications.handle(bin, plugin);
                 default:
-                    EnjinMinecraftPlugin.debug("[Enjin] Received an invalid opcode: " + Integer.toHexString(code));
+                    Enjin.getPlugin().debug("[Enjin] Received an invalid opcode: " + Integer.toHexString(code));
                     bin.reset();
                     StringBuilder input2 = new StringBuilder();
                     while ((code = bin.read()) != -1) {
                         input2.append((char) code);
                     }
-                    EnjinMinecraftPlugin.debug("Raw data received:\n" + input2.toString());
+                    Enjin.getPlugin().debug("Raw data received:\n" + input2.toString());
                     return "invalid_op\nRaw data received:\n" + input2.toString();
             }
         }

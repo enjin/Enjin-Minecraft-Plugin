@@ -117,11 +117,6 @@
             <id>drtshock-repo</id>
             <url>https://ci.drtshock.net/plugin/repository/everything/</url>
         </repository>
-
-        <repository>
-            <id>fanciful-mvn-repo</id>
-            <url>http://repo.franga2000.com/artifactory/public</url>
-        </repository>
     </repositories>
 
     <dependencies>

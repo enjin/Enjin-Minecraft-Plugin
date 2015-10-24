@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.permlisteners;
 
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class PexChangeListener implements Listener {
                 if (p == null) {
                     return;
                 }
-                EnjinMinecraftPlugin.debug(p.getName() + " just got a rank change... processing...");
+                Enjin.getPlugin().debug(p.getName() + " just got a rank change... processing...");
                 plugin.listener.updatePlayerRanks(p);
             }
         }
@@ -65,7 +66,7 @@ public class PexChangeListener implements Listener {
                                 uuid = op.getUniqueId().toString();
                             }
                             //We need to make sure the command executes before we actually grab the data.
-                            EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
+                            Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
                             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
                         }
                     } else {
@@ -76,7 +77,7 @@ public class PexChangeListener implements Listener {
                             uuid = op.getUniqueId().toString();
                         }
                         //We need to make sure the command executes before we actually grab the data.
-                        EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
+                        Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
                         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
                     }
                 }
@@ -92,7 +93,7 @@ public class PexChangeListener implements Listener {
                         uuid = op.getUniqueId().toString();
                     }
                     //We need to make sure the command executes before we actually grab the data.
-                    EnjinMinecraftPlugin.debug(ep + " just got a rank change... processing...");
+                    Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
                 }
             }

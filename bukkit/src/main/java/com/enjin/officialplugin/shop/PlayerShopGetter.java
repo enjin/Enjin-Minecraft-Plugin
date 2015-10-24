@@ -9,6 +9,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -16,7 +17,6 @@ import com.enjin.officialplugin.EnjinErrorReport;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 
 public class PlayerShopGetter implements Runnable {
-
     Player player;
     ShopListener listener;
 
@@ -29,7 +29,7 @@ public class PlayerShopGetter implements Runnable {
     public void run() {
         StringBuilder builder = new StringBuilder();
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin for shop data for player...");
+            Enjin.getPlugin().debug("Connecting to Enjin for shop data for player...");
             URL enjinurl = getUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -51,13 +51,13 @@ public class PlayerShopGetter implements Runnable {
             builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&player=" + encode(player.getName())); //current player
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //System.out.println("Handling input stream...");
             String json = parseInput(in);
-            EnjinMinecraftPlugin.debug("Shop output:\n" + json);
+            Enjin.getPlugin().debug("Shop output:\n" + json);
             PlayerShopsInstance shops = ShopUtils.parseShopsJSON(json);
             listener.activeshops.put(player.getName().toLowerCase(), shops);
             listener.playersdisabledchat.put(player.getName().toLowerCase(), player.getName());
@@ -76,10 +76,10 @@ public class PlayerShopGetter implements Runnable {
             return;
         } catch (SocketTimeoutException e) {
             e.printStackTrace();
-            EnjinMinecraftPlugin.debug("Shop couldn't get json:\n" + EnjinErrorReport.getStackTrace(e));
+            Enjin.getPlugin().debug("Shop couldn't get json:\n" + EnjinErrorReport.getStackTrace(e));
         } catch (Throwable t) {
             t.printStackTrace();
-            EnjinMinecraftPlugin.debug("Shop couldn't get json:\n" + EnjinErrorReport.getStackTrace(t));
+            Enjin.getPlugin().debug("Shop couldn't get json:\n" + EnjinErrorReport.getStackTrace(t));
         }
         player.sendMessage(ChatColor.RED + "There was a problem loading the shop, please try again later.");
     }

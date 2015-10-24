@@ -18,7 +18,7 @@ public class Packet1ECommandsReceived {
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String commandsreceived = PacketUtilities.readString(in);
-            EnjinMinecraftPlugin.debug("Removing these command ids from the list: " + commandsreceived);
+            Enjin.getPlugin().debug("Removing these command ids from the list: " + commandsreceived);
             String[] msg = commandsreceived.split(",");
             if ((msg.length > 0)) {
                 for (int i = 0; i < msg.length; i++) {

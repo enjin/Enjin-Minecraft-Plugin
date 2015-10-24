@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -29,7 +30,7 @@ public class VotifierListener implements Listener {
     public void voteRecieved(VotifierEvent event) {
         Vote vote = event.getVote();
 
-        EnjinMinecraftPlugin.debug("Received vote from \"" + vote.getUsername() + "\" using \"" + vote.getServiceName());
+        Enjin.getPlugin().debug("Received vote from \"" + vote.getUsername() + "\" using \"" + vote.getServiceName());
         if (event.getVote().getUsername().equalsIgnoreCase("test") || event.getVote().getUsername().isEmpty()) {
             return;
         }

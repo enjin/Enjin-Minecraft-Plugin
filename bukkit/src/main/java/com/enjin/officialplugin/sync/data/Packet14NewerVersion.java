@@ -23,7 +23,7 @@ public class Packet14NewerVersion {
                 DownloadPluginThread downloader = new DownloadPluginThread(plugin.getDataFolder().getParent(), newversion, new File(plugin.getDataFolder().getParent() + File.separator + "EnjinMinecraftPlugin.jar"), plugin);
                 Thread downloaderthread = new Thread(downloader);
                 downloaderthread.start();
-                EnjinMinecraftPlugin.debug("Updating to new version " + newversion);
+                Enjin.getPlugin().debug("Updating to new version " + newversion);
             }
         } catch (Throwable t) {
             Bukkit.getLogger().warning("Failed to dispatch command via 0x14, " + t.getMessage());

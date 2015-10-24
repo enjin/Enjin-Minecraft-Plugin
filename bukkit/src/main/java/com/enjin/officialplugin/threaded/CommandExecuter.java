@@ -2,6 +2,7 @@ package com.enjin.officialplugin.threaded;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import com.enjin.officialplugin.CommandWrapper;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
@@ -25,10 +26,10 @@ public class CommandExecuter implements Runnable {
         boolean dirty = false;
         while ((comm = commandqueue.poll()) != null) {
             dirty = true;
-            EnjinMinecraftPlugin.debug("Executing queued command: " + comm.getCommand());
+            Enjin.getPlugin().debug("Executing queued command: " + comm.getCommand());
             Bukkit.getServer().dispatchCommand(comm.getSender(), comm.getCommand());
             comm.setResult(plugin.getLastLogLine());
-            EnjinMinecraftPlugin.debug("Result: " + comm.getResult());
+            Enjin.getPlugin().debug("Result: " + comm.getResult());
         }
         if (dirty) {
             plugin.saveCommandIDs();

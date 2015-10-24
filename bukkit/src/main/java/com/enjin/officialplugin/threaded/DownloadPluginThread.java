@@ -7,6 +7,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
@@ -32,7 +33,7 @@ public class DownloadPluginThread implements Runnable {
         try {
             URL website;
 
-            EnjinMinecraftPlugin.debug("Connecting to url " + updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
+            Enjin.getPlugin().debug("Connecting to url " + updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
             website = new URL(updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
 
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());

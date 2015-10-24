@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -40,7 +41,7 @@ public class ConfigSender implements Runnable {
         }
         StringBuilder builder = new StringBuilder();
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin to send config...");
+            Enjin.getPlugin().debug("Connecting to Enjin to send config...");
             URL enjinurl = getUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -80,7 +81,7 @@ public class ConfigSender implements Runnable {
             */
 
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();

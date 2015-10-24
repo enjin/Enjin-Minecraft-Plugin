@@ -23,7 +23,7 @@ public class Packet15RemoteConfigUpdate {
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String values = PacketUtilities.readString(in);
-            EnjinMinecraftPlugin.debug("Changing these values in the config: \"" + values);
+            Enjin.getPlugin().debug("Changing these values in the config: \"" + values);
             String[] splitvalues = values.split(",");
 
             /* TODO: TODO: Update to work with json configuration

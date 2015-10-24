@@ -31,7 +31,7 @@ public class Packet12ExecuteCommand {
                 command = commandmatcher.group(2);
             }
             if (command.equals("")) {
-                EnjinMinecraftPlugin.debug("Got a blank command from enjin!");
+                Enjin.getPlugin().debug("Got a blank command from enjin!");
                 CommandWrapper executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), command, commandid);
                 plugin.addCommandID(executedcommand);
                 return;
@@ -41,16 +41,16 @@ public class Packet12ExecuteCommand {
             if (commandsplit.length > 1) {
                 try {
                     long time = System.currentTimeMillis() + (Long.parseLong(commandsplit[1]) * 1000);
-                    EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as console in " + commandsplit[1] + " seconds.");
+                    Enjin.getPlugin().debug("Executing command \"" + command + "\" as console in " + commandsplit[1] + " seconds.");
                     executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), commandsplit[0], time, commandid);
                     plugin.commexecuter.addCommand(executedcommand);
                 } catch (NumberFormatException e) {
-                    EnjinMinecraftPlugin.debug("Failed to get the time on a timed command, adding as a regular command");
+                    Enjin.getPlugin().debug("Failed to get the time on a timed command, adding as a regular command");
                     executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), commandsplit[0], commandid);
                     plugin.commandqueue.addCommand(executedcommand);
                 }
             } else {
-                EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as console.");
+                Enjin.getPlugin().debug("Executing command \"" + command + "\" as console.");
                 executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), command, commandid);
                 plugin.commandqueue.addCommand(executedcommand);
             }

@@ -3,6 +3,7 @@ package com.enjin.officialplugin.sync.data;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.events.HeadsUpdatedEvent;
 import com.enjin.officialplugin.heads.HeadData;
@@ -20,7 +21,7 @@ public class Packet1DPlayerPurchase {
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String players = PacketUtilities.readString(in);
-            EnjinMinecraftPlugin.debug("Removing these player's buffered buy lists: " + players);
+            Enjin.getPlugin().debug("Removing these player's buffered buy lists: " + players);
             String[] msg = players.split(",");
             if ((msg.length > 0)) {
                 for (int i = 0; i < msg.length; i++) {

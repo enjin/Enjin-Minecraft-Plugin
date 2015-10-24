@@ -9,6 +9,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import com.enjin.core.Enjin;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -55,7 +56,7 @@ public class PointsAPI {
             if (amount < 1) {
                 throw new NumberFormatException("The amount cannot be negative or 0!");
             }
-            EnjinMinecraftPlugin.debug("Connecting to Enjin for action " + type.toString() + " for " + amount + " points for player " + player);
+            Enjin.getPlugin().debug("Connecting to Enjin for action " + type.toString() + " for " + amount + " points for player " + player);
             URL enjinurl;
             switch (type) {
                 case AddPoints:
@@ -92,14 +93,14 @@ public class PointsAPI {
             builder.append("&points=" + amount);
             builder.append("&player=" + player);
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //System.out.println("Handling input stream...");
             String json = UpdateHeadsThread.parseInput(in);
 
-            EnjinMinecraftPlugin.debug("Content of points query for type " + type.toString() + ":\n" + json);
+            Enjin.getPlugin().debug("Content of points query for type " + type.toString() + ":\n" + json);
             //Let's parse the json
             JSONParser parser = new JSONParser();
 
@@ -140,7 +141,7 @@ public class PointsAPI {
      */
     public static int getPointsForPlayer(String player) throws PlayerDoesNotExistException, ErrorConnectingToEnjinException {
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin to retrieve points balance for player " + player);
+            Enjin.getPlugin().debug("Connecting to Enjin to retrieve points balance for player " + player);
             URL enjinurl = getPointsUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -162,14 +163,14 @@ public class PointsAPI {
             builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&player=" + player);
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //System.out.println("Handling input stream...");
             String json = UpdateHeadsThread.parseInput(in);
 
-            EnjinMinecraftPlugin.debug("Content of points query:\n" + json);
+            Enjin.getPlugin().debug("Content of points query:\n" + json);
             //Let's parse the json
             JSONParser parser = new JSONParser();
 

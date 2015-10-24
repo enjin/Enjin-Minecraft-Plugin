@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.threaded;
 
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -52,7 +53,7 @@ public class NewKeyVerifier implements Runnable {
             int validation = keyValid(false, key);
             if (validation == 1) {
                 plugin.authkeyinvalid = false;
-                EnjinMinecraftPlugin.debug("Key valid.");
+                Enjin.getPlugin().debug("Key valid.");
                 plugin.startTask();
                 plugin.registerEvents();
             } else if (validation == 0) {
@@ -93,7 +94,7 @@ public class NewKeyVerifier implements Runnable {
             }
             plugin.authkeyinvalid = false;
             EnjinMinecraftPlugin.setAuthKey(key);
-            EnjinMinecraftPlugin.debug("Writing hash to file.");
+            Enjin.getPlugin().debug("Writing hash to file.");
             plugin.config.setAuthKey(key);
             plugin.saveConfig();
             if (player == null || player.isOnline()) {

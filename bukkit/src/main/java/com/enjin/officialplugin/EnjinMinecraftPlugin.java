@@ -226,7 +226,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
     private static TicketListener ticketListener;
 
-    public static void debug(String s) {
+    @Override
+    public void debug(String s) {
         if (config.isDebug()) {
             System.out.println("Enjin Debug: " + s);
         }
@@ -1494,15 +1495,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                                     return;
                                 }
 
-                                EnjinMinecraftPlugin.debug("Checking if module with id \"" + moduleId + "\" exists.");
+                                debug("Checking if module with id \"" + moduleId + "\" exists.");
                                 final Module module = modules.get(moduleId);
                                 if (module != null) {
                                     new TicketCreationSession((Player) sender, moduleId, module);
                                 } else {
                                     sender.sendMessage("No module with id \"" + moduleId + "\" exists.");
-                                    EnjinMinecraftPlugin.debug("Existing modules:");
+                                    debug("Existing modules:");
                                     for (Integer id : modules.keySet()) {
-                                        EnjinMinecraftPlugin.debug(String.valueOf(id));
+                                        debug(String.valueOf(id));
                                     }
                                 }
                             } else {
@@ -1515,7 +1516,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                                         }
                                     });
                                 } else {
-                                    EnjinMinecraftPlugin.debug(String.valueOf(modules.size()));
+                                    debug(String.valueOf(modules.size()));
                                     for (Entry<Integer, Module> entry : modules.entrySet()) {
                                         int id = entry.getKey();
                                         Module module = entry.getValue();
@@ -1879,7 +1880,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             con.setRequestProperty("Content-length", String.valueOf(query.length()));
             con.getOutputStream().write(query.toString().getBytes());
             String read = PacketUtilities.readString(new BufferedInputStream(con.getInputStream()));
-            debug("Reply from enjin on Enjin Key for url " + url.toString() + " and query " + query.toString() + ": " + read);
+            instance.debug("Reply from enjin on Enjin Key for url " + url.toString() + " and query " + query.toString() + ": " + read);
             if (read.charAt(0) == '1') {
                 return 1;
             }

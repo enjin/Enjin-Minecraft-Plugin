@@ -42,10 +42,10 @@ public class Packet10AddPlayerGroup {
                     try {
                         OfflinePlayer oplayer = Bukkit.getOfflinePlayer(UUID.fromString(playername));
 
-                        EnjinMinecraftPlugin.debug("Adding player " + playername + " from group " + groupname + " in world " + world + " world");
+                        Enjin.getPlugin().debug("Adding player " + playername + " from group " + groupname + " in world " + world + " world");
                         //Check to see if we have PermissionsBukkit. If we do we have to do something special
                         if (plugin.permissionsbukkit != null) {
-                            EnjinMinecraftPlugin.debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);
+                            Enjin.getPlugin().debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);
                             plugin.commandqueue.addCommand(new CommandWrapper(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname, ""));
                             //Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname));
                         } else {
@@ -68,10 +68,10 @@ public class Packet10AddPlayerGroup {
                     }
                 } else {
                     OfflinePlayer oplayer = Bukkit.getOfflinePlayer(playername);
-                    EnjinMinecraftPlugin.debug("Adding player " + playername + " from group " + groupname + " in world " + world + " world");
+                    Enjin.getPlugin().debug("Adding player " + playername + " from group " + groupname + " in world " + world + " world");
                     //Check to see if we have PermissionsBukkit. If we do we have to do something special
                     if (plugin.permissionsbukkit != null) {
-                        EnjinMinecraftPlugin.debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);
+                        Enjin.getPlugin().debug("Adding rank " + groupname + " for PermissionsBukkit for user " + playername);
                         plugin.commandqueue.addCommand(new CommandWrapper(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname, ""));
                         //Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player addgroup " + playername + " " + groupname));
                     } else {

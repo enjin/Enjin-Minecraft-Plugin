@@ -9,6 +9,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONObject;
@@ -37,7 +38,7 @@ public class SendItemPurchaseToEnjin implements Runnable {
         boolean successful = false;
         StringBuilder builder = new StringBuilder();
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin to send item purchase...");
+            Enjin.getPlugin().debug("Connecting to Enjin to send item purchase...");
             URL enjinurl = getUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -66,13 +67,13 @@ public class SendItemPurchaseToEnjin implements Runnable {
                 builder.append("&" + option);
             }
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //Let's get all the input, then parse it.
             String json = parseInput(in);
-            EnjinMinecraftPlugin.debug("Returned content for purchase:\n" + json);
+            Enjin.getPlugin().debug("Returned content for purchase:\n" + json);
             //Let's parse the json
             JSONParser parser = new JSONParser();
             try {

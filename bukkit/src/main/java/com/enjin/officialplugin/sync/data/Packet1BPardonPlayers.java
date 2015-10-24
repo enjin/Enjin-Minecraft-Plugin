@@ -23,7 +23,7 @@ public class Packet1BPardonPlayers {
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String players = PacketUtilities.readString(in);
-            EnjinMinecraftPlugin.debug("Removing these players from the banlist: " + players);
+            Enjin.getPlugin().debug("Removing these players from the banlist: " + players);
             String[] msg = players.split(",");
             OfflinePlayer[] oplayers = new OfflinePlayer[msg.length];
             for (int i = 0; i < msg.length; i++) {

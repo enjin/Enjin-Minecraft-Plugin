@@ -22,7 +22,7 @@ public class Packet17AddWhitelistPlayers {
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String players = PacketUtilities.readString(in);
-            EnjinMinecraftPlugin.debug("Adding these players to the whitelist: " + players);
+            Enjin.getPlugin().debug("Adding these players to the whitelist: " + players);
             String[] msg = players.split(",");
             OfflinePlayer[] oplayers = new OfflinePlayer[msg.length];
             for (int i = 0; i < msg.length; i++) {

@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -31,7 +32,7 @@ public class PlayerHistoryGetter implements Runnable {
     public void run() {
         StringBuilder builder = new StringBuilder();
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin for shop history data for player...");
+            Enjin.getPlugin().debug("Connecting to Enjin for shop history data for player...");
             URL enjinurl = getUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -53,13 +54,13 @@ public class PlayerHistoryGetter implements Runnable {
             builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&player=" + encode(historyplayer)); //current player
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //System.out.println("Handling input stream...");
             String json = parseInput(in);
-            EnjinMinecraftPlugin.debug("Output of history:\n" + json);
+            Enjin.getPlugin().debug("Output of history:\n" + json);
             ArrayList<String> page = ShopUtils.parseHistoryJSON(json, historyplayer);
             if (page == null) {
                 player.sendMessage(ChatColor.RED + "There was a problem loading the player history, please try again later.");

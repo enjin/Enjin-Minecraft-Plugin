@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -383,7 +384,7 @@ public class ShopListener implements Listener {
                         case AllTextNoQuotes:
                             //We don't know what it is, so maybe, just maybe we can get it right?
                         case Undefined:
-                            EnjinMinecraftPlugin.debug("Testing string...");
+                            Enjin.getPlugin().debug("Testing string...");
                             if (option.getMaxLength() == 0) {
                                 option.setMaxLength(Integer.MAX_VALUE);
                             }
@@ -392,7 +393,7 @@ public class ShopListener implements Listener {
                                     String formattedtext = "item_variables[" + option.getID() + "]=" + encode(event.getMessage());
                                     buyitem.addOption(formattedtext);
                                     cont = true;
-                                    EnjinMinecraftPlugin.debug("String passed!...");
+                                    Enjin.getPlugin().debug("String passed!...");
                                 } else {
                                     event.getPlayer().sendMessage(ChatColor.RED + "I'm sorry, you added invalid characters, please try again.");
                                 }
@@ -401,13 +402,13 @@ public class ShopListener implements Listener {
                             }
                             break;
                         case Numeric:
-                            EnjinMinecraftPlugin.debug("Testing number...");
+                            Enjin.getPlugin().debug("Testing number...");
                             if (ShopUtils.isInputValid(option, event.getMessage())) {
                                 String formattedtext = "item_variables[" + option.getID() + "]=" + encode(event.getMessage().trim());
                                 buyitem.addOption(formattedtext);
                                 cont = true;
 
-                                EnjinMinecraftPlugin.debug("Number passed!...");
+                                Enjin.getPlugin().debug("Number passed!...");
                             } else {
                                 event.getPlayer().sendMessage(ChatColor.RED + "I'm sorry, that number is outside the allowed value, please try again.");
                             }

@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.sync;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
@@ -73,7 +74,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
     @Override
     public void commandConfirmed(List<Long> executed) {
         for (long id : executed) {
-            EnjinMinecraftPlugin.debug("Confirming Command ID: " + id);
+            Enjin.getPlugin().debug("Confirming Command ID: " + id);
             new ArrayList<>(RPCPacketManager.getExecutedCommands()).stream().filter(command -> Long.parseLong(command.getId()) == id).forEach(command -> RPCPacketManager.getExecutedCommands().remove(command));
         }
     }
@@ -85,7 +86,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void statusReceived(String status) {
-        EnjinMinecraftPlugin.debug("Enjin Status: " + status);
+        Enjin.getPlugin().debug("Enjin Status: " + status);
     }
 
     @Override

@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.enjin.core.Enjin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -36,7 +37,7 @@ public class EnjinAPI {
     public static ConcurrentHashMap<String, PlayerTag> getPlayerTags(String player) throws PlayerDoesNotExistException, ErrorConnectingToEnjinException {
         ConcurrentHashMap<String, PlayerTag> tags = new ConcurrentHashMap<String, PlayerTag>();
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin to retrieve tags for player " + player);
+            Enjin.getPlugin().debug("Connecting to Enjin to retrieve tags for player " + player);
             URL enjinurl = getPlayerTagsUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -58,14 +59,14 @@ public class EnjinAPI {
             builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&player=" + player);
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //System.out.println("Handling input stream...");
             String json = UpdateHeadsThread.parseInput(in);
 
-            EnjinMinecraftPlugin.debug("Content of player tags query:\n" + json);
+            Enjin.getPlugin().debug("Content of player tags query:\n" + json);
             //Let's parse the json
             JSONParser parser = new JSONParser();
 
@@ -135,7 +136,7 @@ public class EnjinAPI {
     public static ConcurrentHashMap<String, PlayerTag> getPlayerTags(UUID uuid) throws PlayerDoesNotExistException, ErrorConnectingToEnjinException {
         ConcurrentHashMap<String, PlayerTag> tags = new ConcurrentHashMap<String, PlayerTag>();
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin to retrieve tags for UUID " + uuid.toString());
+            Enjin.getPlugin().debug("Connecting to Enjin to retrieve tags for UUID " + uuid.toString());
             URL enjinurl = getPlayerTagsUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -157,14 +158,14 @@ public class EnjinAPI {
             builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
             builder.append("&player_uuid=" + encode(uuid.toString()));
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //System.out.println("Handling input stream...");
             String json = UpdateHeadsThread.parseInput(in);
 
-            EnjinMinecraftPlugin.debug("Content of player tags query:\n" + json);
+            Enjin.getPlugin().debug("Content of player tags query:\n" + json);
             //Let's parse the json
             JSONParser parser = new JSONParser();
 

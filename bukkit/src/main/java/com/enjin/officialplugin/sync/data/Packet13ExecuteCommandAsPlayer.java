@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.enjin.core.Enjin;
 import com.enjin.officialplugin.util.PacketUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -36,7 +37,7 @@ public class Packet13ExecuteCommandAsPlayer {
 
             //TODO: Add offline player support here
             if (p == null) {
-                EnjinMinecraftPlugin.debug("Failed executing command \"" + command + "\" as player " + name + ". Player isn't online.");
+                Enjin.getPlugin().debug("Failed executing command \"" + command + "\" as player " + name + ". Player isn't online.");
                 return;
             }
             String[] commandsplit = command.split("\0");
@@ -44,16 +45,16 @@ public class Packet13ExecuteCommandAsPlayer {
             if (commandsplit.length > 1) {
                 try {
                     long time = System.currentTimeMillis() + (Long.parseLong(commandsplit[1]) * 1000);
-                    EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + " in " + commandsplit[1] + " seconds.");
+                    Enjin.getPlugin().debug("Executing command \"" + command + "\" as player " + name + " in " + commandsplit[1] + " seconds.");
                     executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), commandsplit[0], time, commandid);
                     plugin.commexecuter.addCommand(executedcommand);
                 } catch (NumberFormatException e) {
-                    EnjinMinecraftPlugin.debug("Failed to get the time on a timed command, adding as a regular command");
+                    Enjin.getPlugin().debug("Failed to get the time on a timed command, adding as a regular command");
                     executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), commandsplit[0], commandid);
                     plugin.commandqueue.addCommand(executedcommand);
                 }
             } else {
-                EnjinMinecraftPlugin.debug("Executing command \"" + command + "\" as player " + name + ".");
+                Enjin.getPlugin().debug("Executing command \"" + command + "\" as player " + name + ".");
                 executedcommand = new CommandWrapper(Bukkit.getConsoleSender(), command, commandid);
                 plugin.commandqueue.addCommand(executedcommand);
             }

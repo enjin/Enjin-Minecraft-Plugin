@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -58,7 +59,7 @@ public class UpdateHeadsThread implements Runnable {
         }
         //Let's update all the packages before updating the heads...
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin for package data for heads...");
+            Enjin.getPlugin().debug("Connecting to Enjin for package data for heads...");
             URL enjinurl = getItemsUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -79,14 +80,14 @@ public class UpdateHeadsThread implements Runnable {
             StringBuilder builder = new StringBuilder();
             builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()) + "&player=0");
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //System.out.println("Handling input stream...");
             String json = parseInput(in);
 
-            EnjinMinecraftPlugin.debug("Content of package data update:\n" + json);
+            Enjin.getPlugin().debug("Content of package data update:\n" + json);
             //Let's parse the json
             JSONParser parser = new JSONParser();
             try {
@@ -140,19 +141,19 @@ public class UpdateHeadsThread implements Runnable {
                 plugin.lasterror = new EnjinErrorReport(e, "Error parsing shop data");
             }
         } catch (SocketTimeoutException e) {
-            EnjinMinecraftPlugin.debug(EnjinErrorReport.getStackTrace(e));
+            Enjin.getPlugin().debug(EnjinErrorReport.getStackTrace(e));
             if (sender != null) {
                 sender.sendMessage(ChatColor.DARK_RED + "There was an error connecting to enjin, please try again later.");
             }
         } catch (Throwable t) {
-            EnjinMinecraftPlugin.debug(EnjinErrorReport.getStackTrace(t));
+            Enjin.getPlugin().debug(EnjinErrorReport.getStackTrace(t));
             if (sender != null) {
                 sender.sendMessage(ChatColor.DARK_RED + "There was an error syncing the shop's packages, please fill out a support ticket at http://enjin.com/support and include the results of your /enjin report");
             }
         }
         //Let's retrieve all the heads!
         try {
-            EnjinMinecraftPlugin.debug("Connecting to Enjin for stats data for heads...");
+            Enjin.getPlugin().debug("Connecting to Enjin for stats data for heads...");
             URL enjinurl = getUrl();
             HttpURLConnection con;
             // Mineshafter creates a socks proxy, so we can safely bypass it
@@ -189,14 +190,14 @@ public class UpdateHeadsThread implements Runnable {
                 }
             }
             con.setRequestProperty("Content-Length", String.valueOf(builder.length()));
-            EnjinMinecraftPlugin.debug("Sending content: \n" + builder.toString());
+            Enjin.getPlugin().debug("Sending content: \n" + builder.toString());
             con.getOutputStream().write(builder.toString().getBytes());
             //System.out.println("Getting input stream...");
             InputStream in = con.getInputStream();
             //System.out.println("Handling input stream...");
             String json = parseInput(in);
 
-            EnjinMinecraftPlugin.debug("Content of heads update:\n" + json);
+            Enjin.getPlugin().debug("Content of heads update:\n" + json);
             //Let's parse the json
             JSONParser parser = new JSONParser();
             try {

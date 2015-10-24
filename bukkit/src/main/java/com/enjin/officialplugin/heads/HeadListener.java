@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -282,7 +283,7 @@ public class HeadListener implements Listener {
             }
             plugin.headlocation.addHead(hl);
             plugin.headlocation.saveHeads();
-            EnjinMinecraftPlugin.debug("Grabbing head data");
+            Enjin.getPlugin().debug("Grabbing head data");
             HeadData headdata = plugin.headdata.getHead(hl.getType(), hl.getPosition(), hl.getItemid());
             if (headdata == null) {
                 //If it's null, we should force a heads update in the background.

@@ -25,7 +25,7 @@ public class Packet11RemovePlayerGroup {
     public static void handle(BufferedInputStream in, EnjinMinecraftPlugin plugin) {
         try {
             String instring = PacketUtilities.readString(in);
-            EnjinMinecraftPlugin.debug("Read string: " + instring);
+            Enjin.getPlugin().debug("Read string: " + instring);
             String[] msg = instring.split(",");
             if ((msg.length == 2) || (msg.length == 3)) {
                 String playername = msg[0];
@@ -44,9 +44,9 @@ public class Packet11RemovePlayerGroup {
                     try {
                         OfflinePlayer oplayer = Bukkit.getOfflinePlayer(UUID.fromString(playername));
 
-                        EnjinMinecraftPlugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
+                        Enjin.getPlugin().debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
                         if (plugin.permissionsbukkit != null) {
-                            EnjinMinecraftPlugin.debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
+                            Enjin.getPlugin().debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
                             plugin.commandqueue.addCommand(new CommandWrapper(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname, ""));
                             //Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname));
                         } else {
@@ -70,9 +70,9 @@ public class Packet11RemovePlayerGroup {
                 } else {
                     OfflinePlayer oplayer = Bukkit.getOfflinePlayer(playername);
 
-                    EnjinMinecraftPlugin.debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
+                    Enjin.getPlugin().debug("Removing player " + playername + " from group " + groupname + " in world " + world + " world");
                     if (plugin.permissionsbukkit != null) {
-                        EnjinMinecraftPlugin.debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
+                        Enjin.getPlugin().debug("Removing rank " + groupname + " for PermissionsBukkit for user " + playername);
                         plugin.commandqueue.addCommand(new CommandWrapper(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname, ""));
                         //Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CommandExecuter(Bukkit.getConsoleSender(), "permissions player removegroup " + playername + " " + groupname));
                     } else {

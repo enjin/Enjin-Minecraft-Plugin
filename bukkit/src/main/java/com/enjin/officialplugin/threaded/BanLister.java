@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -35,7 +36,7 @@ public class BanLister implements Runnable {
             }
             firstrun = false;
         } else {
-            EnjinMinecraftPlugin.debug("Scanning banned player list");
+            Enjin.getPlugin().debug("Scanning banned player list");
             Set<OfflinePlayer> bannedplayerlist = Bukkit.getServer().getBannedPlayers();
             HashMap<String, String> lowercasebans = new HashMap<String, String>();
             //Checking for bans being added by console or plugin
@@ -45,7 +46,7 @@ public class BanLister implements Runnable {
                     if (!currentbannedplayers.containsKey(player.getName().toLowerCase())) {
                         currentbannedplayers.put(player.getName().toLowerCase(), "");
                         plugin.bannedplayers.put(player.getName().toLowerCase(), "");
-                        EnjinMinecraftPlugin.debug("Adding banned player " + player.getName());
+                        Enjin.getPlugin().debug("Adding banned player " + player.getName());
                     }
                 }
             }
@@ -55,7 +56,7 @@ public class BanLister implements Runnable {
                 if (!lowercasebans.containsKey(player)) {
                     currentbannedplayers.remove(player);
                     plugin.pardonedplayers.put(player, "");
-                    EnjinMinecraftPlugin.debug(player + " was pardoned. Adding to pardoned list.");
+                    Enjin.getPlugin().debug(player + " was pardoned. Adding to pardoned list.");
                 }
             }
         }

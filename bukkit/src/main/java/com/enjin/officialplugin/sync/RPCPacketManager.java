@@ -47,7 +47,7 @@ public class RPCPacketManager implements Runnable {
         RPCData<SyncResponse> data = service.sync(plugin.getAuthKey(), status);
 
         if (data == null) {
-            EnjinMinecraftPlugin.debug("Data is null while requesting sync update from Plugin.sync.");
+            Enjin.getPlugin().debug("Data is null while requesting sync update from Plugin.sync.");
             return;
         }
 

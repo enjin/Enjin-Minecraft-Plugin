@@ -1,5 +1,6 @@
 package com.enjin.officialplugin.permlisteners;
 
+import com.enjin.core.Enjin;
 import org.anjocaido.groupmanager.events.GMUserEvent;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class GroupManagerListener implements Listener {
                 uuid = event.getUser().getBukkitPlayer().getUniqueId().toString();
             }
             if (player != null) {
-                EnjinMinecraftPlugin.debug(event.getUserName() + " just got a rank change... processing...");
+                Enjin.getPlugin().debug(event.getUserName() + " just got a rank change... processing...");
                 plugin.listener.updatePlayerRanks(player, uuid);
             }
         }

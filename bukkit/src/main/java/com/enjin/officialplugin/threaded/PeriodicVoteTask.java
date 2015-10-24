@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.VoteService;
@@ -98,10 +99,10 @@ public class PeriodicVoteTask implements Runnable {
             }
 
             if (!successful) {
-                EnjinMinecraftPlugin.debug("Vote sync unsuccessful.");
+                Enjin.getPlugin().debug("Vote sync unsuccessful.");
                 plugin.playervotes.putAll(votes);
             } else {
-                EnjinMinecraftPlugin.debug("Vote sync successful.");
+                Enjin.getPlugin().debug("Vote sync successful.");
                 firstrun = false;
             }
         }
