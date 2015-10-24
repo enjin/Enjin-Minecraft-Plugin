@@ -21,26 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ShopUtil {
-    private static Gson gson = new GsonBuilder().create();
     private static DecimalFormat priceFormat = new DecimalFormat("#.00");
-
-    public static List<Shop> getShopsFromJSON(String json) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-        JsonParser parser = new JsonParser();
-        JsonElement element = parser.parse(json);
-
-        List<Shop> shops = Lists.newArrayList();
-        for (JsonElement elem : element.getAsJsonArray()) {
-            try {
-                Shop shop = gson.fromJson(elem, Shop.class);
-                shops.add(shop);
-            } catch (JsonSyntaxException e) {
-                plugin.getLogger().error("", e);
-            }
-        }
-
-        return shops;
-    }
 
     public static void sendTextShop(Player player, PlayerShopInstance instance, int page) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
