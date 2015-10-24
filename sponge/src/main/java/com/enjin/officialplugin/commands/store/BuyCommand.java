@@ -2,11 +2,9 @@ package com.enjin.officialplugin.commands.store;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.officialplugin.shop.PlayerShopInstance;
-import com.enjin.officialplugin.shop.LegacyShopFetcher;
 import com.enjin.officialplugin.shop.RPCShopFetcher;
 import com.enjin.officialplugin.shop.ShopUtil;
 import com.enjin.rpc.mappings.mappings.shop.Category;
-import com.google.common.base.Optional;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
@@ -18,6 +16,7 @@ import org.spongepowered.api.util.command.spec.CommandExecutor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -129,7 +128,7 @@ public class BuyCommand implements CommandExecutor {
     private static void fetchShop(Player player) {
         EnjinMinecraftPlugin.getInstance().getGame().getScheduler().createTaskBuilder()
                 .async()
-                .execute(EnjinMinecraftPlugin.getInstance().getConfig().isLegacy() ? new LegacyShopFetcher(player) : new RPCShopFetcher(player))
+                .execute(new RPCShopFetcher(player))
                 .submit(EnjinMinecraftPlugin.getInstance());
     }
 }

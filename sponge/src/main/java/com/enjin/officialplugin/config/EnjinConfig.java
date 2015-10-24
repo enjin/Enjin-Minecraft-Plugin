@@ -11,6 +11,4 @@ public class EnjinConfig extends JsonConfig {
     private String authkey = "";
     @Getter @Setter
     private boolean https = false;
-    @Getter @Setter
-    private boolean legacy = false;
 }

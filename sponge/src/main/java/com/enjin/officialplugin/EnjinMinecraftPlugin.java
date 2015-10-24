@@ -6,7 +6,6 @@ import com.enjin.officialplugin.commands.configuration.SetKeyCommand;
 import com.enjin.officialplugin.commands.store.BuyCommand;
 import com.enjin.officialplugin.config.EnjinConfig;
 import com.enjin.officialplugin.shop.ShopListener;
-import com.enjin.officialplugin.sync.LegacyPacketManager;
 import com.enjin.officialplugin.sync.RPCPacketManager;
 import com.enjin.officialplugin.utils.commands.CommandWrapper;
 import com.enjin.rpc.EnjinRPC;
@@ -136,7 +135,7 @@ public class EnjinMinecraftPlugin {
         }
 
         syncTask = game.getScheduler().createTaskBuilder()
-                .execute(config.isLegacy() ? new LegacyPacketManager(this) : new RPCPacketManager(this))
+                .execute(new RPCPacketManager(this))
                 .async().interval(60, TimeUnit.SECONDS)
                 .submit(this);
     }

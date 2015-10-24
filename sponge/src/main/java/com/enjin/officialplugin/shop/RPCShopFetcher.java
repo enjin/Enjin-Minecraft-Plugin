@@ -5,12 +5,12 @@ import com.enjin.officialplugin.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
-import com.google.common.base.Optional;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class RPCShopFetcher implements Runnable {

@@ -12,6 +12,7 @@ import org.spongepowered.api.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
@@ -45,19 +46,13 @@ public class RPCPacketManager implements Runnable {
         } else {
             SyncResponse result = data.getResult();
             if (result != null && result.getStatus().equalsIgnoreCase("ok")) {
-                // TODO: Processe result
+                // TODO: Process result
             }
         }
     }
 
     private List<String> getWorlds() {
-        List<String> worlds = new ArrayList<String>();
-
-        for (World world : plugin.getGame().getServer().getWorlds()) {
-            worlds.add(world.getName());
-        }
-
-        return worlds;
+        return plugin.getGame().getServer().getWorlds().stream().map(World::getName).collect(Collectors.toList());
     }
 
     private List<String> getGroups() {
@@ -73,12 +68,6 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<PlayerInfo> getOnlinePlayers() {
-        List<PlayerInfo> infos = new ArrayList<PlayerInfo>();
-
-        for (Player player : plugin.getGame().getServer().getOnlinePlayers()) {
-            infos.add(new PlayerInfo(player.getName(), player.getUniqueId()));
-        }
-
-        return infos;
+        return plugin.getGame().getServer().getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(), player.getUniqueId())).collect(Collectors.toList());
     }
 }
