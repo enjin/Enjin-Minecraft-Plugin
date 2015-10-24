@@ -12,8 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.heads.HeadData;
-import com.enjin.officialplugin.heads.HeadLocation;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
@@ -57,9 +55,5 @@ public class VotifierListener implements Listener {
         Date votedate = new Date(realvotetime);
         String voteday = date.format(votedate);
         String svotetime = time.format(votedate);
-        String[] signdata = plugin.cachedItems.getSignData(username, voteday, HeadLocation.Type.RecentVoter, 0, svotetime);
-        HeadData hd = new HeadData(username, signdata, HeadLocation.Type.RecentVoter, 0);
-        plugin.headdata.addToHead(hd, true);
     }
-
 }

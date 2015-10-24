@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.enjin.officialplugin.util.PrimitiveUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
@@ -16,7 +17,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.enjin.officialplugin.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.shop.ShopUtils;
 import com.gmail.nossr50.api.ExperienceAPI;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 
@@ -255,32 +255,32 @@ public class StatsPlayer {
     public StatsPlayer(JSONObject playerstats) {
         name = playerstats.get("username").toString();
         uuid = playerstats.get("uuid").toString();
-        firsttimeplayer = ShopUtils.getBoolean(playerstats.get("firsttimeplayer"));
-        deaths = StatsUtils.getInt(playerstats.get("deaths"));
-        killed = StatsUtils.getInt(playerstats.get("killed"));
-        pvekills = StatsUtils.getInt(playerstats.get("pvekills"));
-        pvpkills = StatsUtils.getInt(playerstats.get("pvpkills"));
-        totalxp = StatsUtils.getInt(playerstats.get("totalxp"));
-        xplevel = StatsUtils.getInt(playerstats.get("xplevel"));
+        firsttimeplayer = PrimitiveUtils.getBoolean(playerstats.get("firsttimeplayer"));
+        deaths = PrimitiveUtils.getInt(playerstats.get("deaths"));
+        killed = PrimitiveUtils.getInt(playerstats.get("killed"));
+        pvekills = PrimitiveUtils.getInt(playerstats.get("pvekills"));
+        pvpkills = PrimitiveUtils.getInt(playerstats.get("pvpkills"));
+        totalxp = PrimitiveUtils.getInt(playerstats.get("totalxp"));
+        xplevel = PrimitiveUtils.getInt(playerstats.get("xplevel"));
         Object odistance = playerstats.get("distance");
         if (odistance instanceof JSONObject) {
             JSONObject distance = (JSONObject) odistance;
-            footdistance = StatsUtils.getDouble(distance.get("foot"));
+            footdistance = PrimitiveUtils.getDouble(distance.get("foot"));
             footdistance *= footdistance;
-            boatdistance = StatsUtils.getDouble(distance.get("boat"));
+            boatdistance = PrimitiveUtils.getDouble(distance.get("boat"));
             boatdistance *= boatdistance;
-            pigdistance = StatsUtils.getDouble(distance.get("pig"));
+            pigdistance = PrimitiveUtils.getDouble(distance.get("pig"));
             pigdistance *= pigdistance;
-            minecartdistance = StatsUtils.getDouble(distance.get("minecart"));
+            minecartdistance = PrimitiveUtils.getDouble(distance.get("minecart"));
             minecartdistance *= minecartdistance;
-            horsedistance = StatsUtils.getDouble(distance.get("horse"));
+            horsedistance = PrimitiveUtils.getDouble(distance.get("horse"));
             horsedistance *= horsedistance;
         }
         Object oblocks = playerstats.get("blocks");
         if (oblocks instanceof JSONObject) {
             JSONObject blocks = (JSONObject) oblocks;
-            brokenblocks = StatsUtils.getInt(blocks.get("broken"));
-            placedblocks = StatsUtils.getInt(blocks.get("placed"));
+            brokenblocks = PrimitiveUtils.getInt(blocks.get("broken"));
+            placedblocks = PrimitiveUtils.getInt(blocks.get("placed"));
             Object obrokenblocks = blocks.get("brokenblocklist");
             Object oplacedblocks = blocks.get("placedblocklist");
             if (obrokenblocks instanceof JSONObject) {
@@ -288,7 +288,7 @@ public class StatsPlayer {
                 Set<Map.Entry> eblocks = jbrokenblocks.entrySet();
                 for (Map.Entry block : eblocks) {
                     String id = block.getKey().toString();
-                    int count = StatsUtils.getInt(block.getValue());
+                    int count = PrimitiveUtils.getInt(block.getValue());
                     brokenblocktypes.put(id, count);
                 }
             }
@@ -297,7 +297,7 @@ public class StatsPlayer {
                 Set<Map.Entry> eblocks = jplacedblocks.entrySet();
                 for (Map.Entry block : eblocks) {
                     String id = block.getKey().toString();
-                    int count = StatsUtils.getInt(block.getValue());
+                    int count = PrimitiveUtils.getInt(block.getValue());
                     placedblocktypes.put(id, count);
                 }
             }

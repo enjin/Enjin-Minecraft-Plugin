@@ -59,44 +59,44 @@ public class RPCPacketManager implements Runnable {
                 for (Instruction instruction : result.getInstructions()) {
                     switch (instruction.getCode()) {
                         case ADD_PLAYER_GROUP:
-                            Packet10AddPlayerGroup.handle((PlayerGroupUpdateData) instruction.getData());
+                            AddPlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
                             break;
                         case REMOVE_PLAYER_GROUP:
-                            Packet11RemovePlayerGroup.handle((PlayerGroupUpdateData) instruction.getData());
+                            RemovePlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
                             break;
                         case EXECUTE:
-                            Packet12ExecuteCommand.handle((ExecuteData) instruction.getData());
+                            ExecuteCommandInstruction.handle((ExecuteData) instruction.getData());
                             break;
                         case EXECUTE_AS:
                             break;
                         case CONFIRMED_COMMANDS:
-                            Packet1ECommandsReceived.handle((ArrayList<Long>) instruction.getData());
+                            CommandsReceivedInstruction.handle((ArrayList<Long>) instruction.getData());
                             break;
                         case CONFIG:
-                            Packet15RemoteConfigUpdate.handle((Map<String, Object>) instruction.getData());
+                            RemoteConfigUpdateInstruction.handle((Map<String, Object>) instruction.getData());
                             break;
                         case ADD_PLAYER_WHITELIST:
-                            Packet17AddWhitelistPlayers.handle((String) instruction.getData());
+                            AddWhitelistPlayerInstruction.handle((String) instruction.getData());
                             break;
                         case REMOVE_PLAYER_WHITELIST:
-                            Packet18RemovePlayersFromWhitelist.handle((String) instruction.getData());
+                            RemoveWhitelistPlayerInstruction.handle((String) instruction.getData());
                             break;
                         case RESPONSE_STATUS:
                             Enjin.getPlugin().getInstructionHandler().statusReceived((String) instruction.getData());
                             break;
                         case BAN_PLAYER:
-                            Packet1ABanPlayers.handle((String) instruction.getData());
+                            BanPlayersInstruction.handle((String) instruction.getData());
                             break;
                         case UNBAN_PLAYER:
-                            Packet1BPardonPlayers.handle((String) instruction.getData());
+                            PardonPlayersInstruction.handle((String) instruction.getData());
                             break;
                         case CLEAR_INGAME_CACHE:
                             break;
                         case NOTIFICATIONS:
-                            Packet1FNotifications.handle((NotificationData) instruction.getData());
+                            NotificationsInstruction.handle((NotificationData) instruction.getData());
                             break;
                         case PLUGIN_VERSION:
-                            Packet14NewerVersion.handle((String) instruction.getData());
+                            NewerVersionInstruction.handle((String) instruction.getData());
                             break;
                         default:
                             continue;

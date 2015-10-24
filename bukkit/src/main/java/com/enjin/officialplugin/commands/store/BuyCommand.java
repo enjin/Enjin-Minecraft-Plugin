@@ -5,33 +5,30 @@ import com.enjin.officialplugin.shop.PlayerShopInstance;
 import com.enjin.officialplugin.shop.RPCShopFetcher;
 import com.enjin.officialplugin.shop.ShopUtil;
 import com.enjin.rpc.mappings.mappings.shop.Category;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class BuyCommand implements CommandExecutor {
-    @Override
-    public CommandResult execute(CommandSource source, CommandContext context) throws CommandException {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+public class BuyCommand {
+    public static void buy(Player player, String[] args) {
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
-        if (!(source instanceof Player)) {
-            return CommandResult.empty();
+        if (args.length > 0 && args[0].equalsIgnoreCase("shop")) {
+            BuyCommand.shop(player, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[]{});
+            return;
         }
 
-        Optional<Integer> selection = context.getOne("#");
+        Optional<Integer> selection;
+        try {
+            selection = args.length == 0 ? Optional.empty() : Optional.ofNullable(Integer.parseInt(args[0]));
+        } catch (NumberFormatException e) {
+            player.sendMessage(ChatColor.RED + "USAGE: /buy #");
+            return;
+        }
 
-        Player player = (Player) source;
         Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
         if (!instances.containsKey(player.getUniqueId()) || shouldUpdate(instances.get(player.getUniqueId()))) {
             fetchShop(player);
@@ -51,7 +48,7 @@ public class BuyCommand implements CommandExecutor {
                         } else {
                             if (instance.getActiveCategory().getItems().size() == 0) {
                                 plugin.debug("No items found in category: " + category.getName());
-                                player.sendMessage(Texts.builder("There are no items in this category.").color(TextColors.RED).build());
+                                player.sendMessage(ChatColor.RED.toString() + "There are no items in this category.");
                             } else if (number == 0) {
                                 plugin.debug("Sending first item to " + player.getName());
                                 ShopUtil.sendItemInfo(player, instance, 0);
@@ -63,7 +60,7 @@ public class BuyCommand implements CommandExecutor {
                                 ShopUtil.sendItemInfo(player, instance, number - 1);
                             }
 
-                            return CommandResult.success();
+                            return;
                         }
                     } else {
                         plugin.debug("No active category has been set. Selecting category from shop.");
@@ -89,46 +86,42 @@ public class BuyCommand implements CommandExecutor {
 
             ShopUtil.sendTextShop(player, instances.get(player.getUniqueId()), -1);
         }
+    }
 
-        return CommandResult.success();
+    public static void shop(Player player, String[] args){
+        Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
+        if (!instances.containsKey(player.getUniqueId())) {
+            fetchShop(player);
+            return;
+        }
+
+        Optional<Integer> selection;
+        try {
+            selection = args.length == 0 ? Optional.empty() : Optional.ofNullable(Integer.parseInt(args[0]));
+        } catch (NumberFormatException e) {
+            player.sendMessage(ChatColor.RED + "USAGE: /buy #");
+            return;
+        }
+
+        PlayerShopInstance instance = instances.get(player.getUniqueId());
+        if (!selection.isPresent()) {
+            instance.updateShop(-1);
+            ShopUtil.sendTextShop(player, instance, -1);
+            return;
+        } else {
+            int value = selection.get() < 1 ? -1 : selection.get() - 1;
+            instance.updateShop(value);
+            ShopUtil.sendTextShop(player, instance, -1);
+        }
+
+        return;
     }
 
     private static boolean shouldUpdate(PlayerShopInstance instance) {
         return (System.currentTimeMillis() - instance.getLastUpdated()) > TimeUnit.MINUTES.toMillis(10);
     }
 
-    public static class ShopCommand implements CommandExecutor {
-        @Override
-        public CommandResult execute(CommandSource source, CommandContext context) throws CommandException {
-            if (!(source instanceof Player)) {
-                return CommandResult.empty();
-            }
-
-            Player player = (Player) source;
-            Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
-            if (!instances.containsKey(player.getUniqueId())) {
-                fetchShop(player);
-                return CommandResult.empty();
-            }
-
-            Optional<Integer> index = context.getOne("#");
-            if (!index.isPresent()) {
-                return CommandResult.empty();
-            } else {
-                int value = index.get() < 1 ? -1 : index.get() - 1;
-                PlayerShopInstance instance = instances.get(player.getUniqueId());
-                instance.updateShop(value);
-                ShopUtil.sendTextShop(player, instance, -1);
-            }
-
-            return CommandResult.success();
-        }
-    }
-
     private static void fetchShop(Player player) {
-        EnjinMinecraftPlugin.getInstance().getGame().getScheduler().createTaskBuilder()
-                .async()
-                .execute(new RPCShopFetcher(player))
-                .submit(EnjinMinecraftPlugin.getInstance());
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.instance, new RPCShopFetcher(player));
     }
 }

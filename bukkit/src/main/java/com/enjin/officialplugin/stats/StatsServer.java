@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.enjin.officialplugin.util.PrimitiveUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.json.simple.JSONObject;
@@ -28,14 +29,14 @@ public class StatsServer {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public StatsServer(EnjinMinecraftPlugin plugin, JSONObject serverstats) {
         this.plugin = plugin;
-        totalkicks = StatsUtils.getInt(serverstats.get("totalkicks"));
-        creeperexplosions = StatsUtils.getInt(serverstats.get("creeperexplosions"));
+        totalkicks = PrimitiveUtils.getInt(serverstats.get("totalkicks"));
+        creeperexplosions = PrimitiveUtils.getInt(serverstats.get("creeperexplosions"));
         Object okicks = serverstats.get("playerskickedlist");
         if (okicks instanceof JSONObject) {
             JSONObject kicks = (JSONObject) okicks;
             Set<Map.Entry> skicks = kicks.entrySet();
             for (Map.Entry kick : skicks) {
-                playerkicks.put(kick.getKey().toString(), StatsUtils.getInt(kick.getValue()));
+                playerkicks.put(kick.getKey().toString(), PrimitiveUtils.getInt(kick.getValue()));
             }
         }
     }
