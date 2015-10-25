@@ -1,7 +1,7 @@
 package com.enjin.bukkit.commands.store;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.shop.PlayerShopInstance;
+import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.bukkit.shop.RPCShopFetcher;
 import com.enjin.bukkit.shop.ShopUtil;
 import com.enjin.rpc.mappings.mappings.shop.Category;

@@ -1,6 +1,6 @@
 package com.enjin.bukkit.shop;
 
-import com.enjin.officialplugin.shop.PlayerShopInstance;
+import com.enjin.common.shop.PlayerShopInstance;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;

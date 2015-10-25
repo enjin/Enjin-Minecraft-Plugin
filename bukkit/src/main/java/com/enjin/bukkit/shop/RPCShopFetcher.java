@@ -3,7 +3,7 @@ package com.enjin.bukkit.shop;
 import com.enjin.bukkit.util.OptionalUtil;
 import com.enjin.core.EnjinServices;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.shop.PlayerShopInstance;
+import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;

@@ -3,7 +3,7 @@ package com.enjin.bukkit.shop;
 import com.enjin.bukkit.util.TextUtils;
 import com.enjin.core.Enjin;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.officialplugin.shop.PlayerShopInstance;
+import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
