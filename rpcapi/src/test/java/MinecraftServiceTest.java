@@ -1,7 +1,7 @@
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.minecraft.PlayerInfo;
+import com.enjin.rpc.mappings.mappings.minecraft.MinecraftPlayerInfo;
 import com.enjin.rpc.mappings.mappings.minecraft.ServerInfo;
 import com.enjin.rpc.mappings.services.MinecraftService;
 import org.junit.Assert;
@@ -38,7 +38,7 @@ public class MinecraftServiceTest {
     public void test2GetPlayers() {
         MinecraftService service = EnjinServices.getService(MinecraftService.class);
 
-        RPCData<List<PlayerInfo>> data = service.getPlayers(KEY, SERVER,
+        RPCData<List<MinecraftPlayerInfo>> data = service.getPlayers(KEY, SERVER,
                 Optional.of(new ArrayList<String>(){{
                     add("Favorlock");
                     add("AlmightyToaster");
@@ -49,7 +49,7 @@ public class MinecraftServiceTest {
         Assert.assertNotNull(data.getResult());
         Assert.assertTrue(data.getResult().size() > 0);
 
-        List<PlayerInfo> players = data.getResult();
+        List<MinecraftPlayerInfo> players = data.getResult();
 
         System.out.println(players.toString());
     }

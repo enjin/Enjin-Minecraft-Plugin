@@ -18,10 +18,11 @@ import java.util.Map;
 public class BungeeCordService implements Service {
     public RPCData<SyncResponse> get(final String authkey, final Status status, final Map<String, NodeState> servers) {
         String method = "Bungeecord.get";
+
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
             put("status", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(status), Object.class));
-            put("servers", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(servers), Object.class));
+            put("servers", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(servers, new TypeToken<HashMap<String, NodeState>>(){}.getType()), Object.class));
         }};
 
         int id = EnjinRPC.getNextRequestId();

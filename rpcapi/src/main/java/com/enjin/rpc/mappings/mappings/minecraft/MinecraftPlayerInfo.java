@@ -9,7 +9,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class PlayerInfo {
+public class MinecraftPlayerInfo {
     @Getter
     private String name;
     @Getter

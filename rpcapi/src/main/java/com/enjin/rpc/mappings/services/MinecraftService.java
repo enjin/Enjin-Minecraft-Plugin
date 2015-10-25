@@ -4,7 +4,7 @@ import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.minecraft.ServerInfo;
-import com.enjin.rpc.mappings.mappings.minecraft.PlayerInfo;
+import com.enjin.rpc.mappings.mappings.minecraft.MinecraftPlayerInfo;
 import com.google.gson.reflect.TypeToken;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
@@ -48,7 +48,7 @@ public class MinecraftService implements Service {
         }
     }
 
-    public RPCData<List<PlayerInfo>> getPlayers(final String authkey, final int serverId, final Optional<List<String>> names, final Optional<List<String>> uuids) {
+    public RPCData<List<MinecraftPlayerInfo>> getPlayers(final String authkey, final int serverId, final Optional<List<String>> names, final Optional<List<String>> uuids) {
         String method = "Minecraft.getPlayers";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
@@ -77,7 +77,7 @@ public class MinecraftService implements Service {
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
             EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<PlayerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<List<PlayerInfo>>>() {}.getType());
+            RPCData<List<MinecraftPlayerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<List<MinecraftPlayerInfo>>>() {}.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
