@@ -1,10 +1,14 @@
 package com.enjin.rpc.mappings.mappings.minecraft;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class ServerInfo {
     @Getter
     @SerializedName(value = "server_id")

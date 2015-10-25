@@ -4,7 +4,7 @@ import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.minecraft.ServerInfo;
-import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
+import com.enjin.rpc.mappings.mappings.minecraft.PlayerInfo;
 import com.google.gson.reflect.TypeToken;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
