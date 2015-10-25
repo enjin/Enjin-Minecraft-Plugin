@@ -1,5 +1,5 @@
 name: EnjinMinecraftPlugin
-main: com.enjin.officialplugin.EnjinMinecraftPlugin
+main: com.enjin.bukkit.EnjinMinecraftPlugin
 version: ${version}-bukkit
 website: www.enjin.com
 author: www.Enjin.com
