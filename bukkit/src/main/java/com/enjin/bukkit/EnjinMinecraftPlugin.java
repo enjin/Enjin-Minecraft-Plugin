@@ -25,9 +25,7 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.bukkit.command.CommandBank;
-import com.enjin.bukkit.command.commands.BuyCommand;
-import com.enjin.bukkit.command.commands.CoreCommands;
-import com.enjin.bukkit.command.commands.StatCommands;
+import com.enjin.bukkit.command.commands.*;
 import com.enjin.bukkit.compatibility.NewPlayerGetter;
 import com.enjin.bukkit.compatibility.OldPlayerGetter;
 import com.enjin.bukkit.config.EnjinConfig;
@@ -598,10 +596,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     private void initCommands() {
         CommandBank.setup(this);
-        CommandBank.register(BuyCommand.class, CoreCommands.class, StatCommands.class);
+        CommandBank.register(BuyCommand.class, CoreCommands.class, StatCommands.class, HeadCommands.class, SupportCommands.class);
 
         if (Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
-            CommandBank.register(BuyCommand.class);
+            CommandBank.register(VoteCommands.class);
         }
 
         if (configuration.getBuyCommand() != null && !configuration.getBuyCommand().isEmpty()) {
@@ -1315,7 +1313,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         return is;
     }
 
-    private void pollModules() {
+    public void pollModules() {
         if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
             modulesLastPolled = System.currentTimeMillis();
             RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules(getAuthKey());

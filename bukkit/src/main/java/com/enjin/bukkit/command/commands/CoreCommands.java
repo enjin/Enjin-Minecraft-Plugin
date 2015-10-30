@@ -126,6 +126,8 @@ public class CoreCommands {
         sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + config.isDebug());
     }
 
+    @Permission(value = "enjin.give")
+    @Directive(parent = "enjin", directive = "give")
     public static void give(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
