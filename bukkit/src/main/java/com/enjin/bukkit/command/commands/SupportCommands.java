@@ -239,7 +239,7 @@ public class SupportCommands {
     public static void ticketStatus(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
-        if (plugin.getAuthKey() == null) {
+        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
             sender.sendMessage("Cannot use this command without setting your key.");
             return;
         }
