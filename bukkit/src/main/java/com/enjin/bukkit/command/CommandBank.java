@@ -97,18 +97,18 @@ public class CommandBank implements Listener {
     }
 
     /**
-     * Registers command nodes.
+     * Registers value nodes.
      * @param nodes
      */
     private static void registerCommandNodes(CommandNode ... nodes) {
         for (CommandNode node : nodes) {
-            if (CommandBank.nodes.containsKey(node.getData().command())) {
+            if (CommandBank.nodes.containsKey(node.getData().value())) {
                 continue;
             }
 
-            Enjin.getPlugin().debug("Registering command: " + node.getData().command());
-            CommandBank.nodes.put(node.getData().command(), node);
-            registerCommandAlias(node.getData().command(), node.getData().aliases());
+            Enjin.getPlugin().debug("Registering value: " + node.getData().value());
+            CommandBank.nodes.put(node.getData().value(), node);
+            registerCommandAlias(node.getData().value(), node.getData().aliases());
         }
     }
 
@@ -121,20 +121,20 @@ public class CommandBank implements Listener {
             CommandNode command = CommandBank.getNodes().get(node.getData().parent());
 
             if (command != null) {
-                if (command.getDirectives().containsKey(node.getData().directive())) {
+                if (command.getDirectives().containsKey(node.getData().value())) {
                     continue;
                 }
 
-                Enjin.getPlugin().debug("Registering directive: " + node.getData().directive() + " for command: " + node.getData().parent());
-                command.getDirectives().put(node.getData().directive(), node);
-                registerDirectiveAlias(node.getData().parent(), node.getData().directive(), node.getData().aliases());
+                Enjin.getPlugin().debug("Registering value: " + node.getData().value() + " for value: " + node.getData().parent());
+                command.getDirectives().put(node.getData().value(), node);
+                registerDirectiveAlias(node.getData().parent(), node.getData().value(), node.getData().aliases());
             }
         }
     }
 
     public static void registerCommandAlias(String command, String ... alias) {
         if (nodes.containsKey(alias)) {
-            Enjin.getPlugin().debug("That alias has already been registered by another command.");
+            Enjin.getPlugin().debug("That alias has already been registered by another value.");
             return;
         }
 
@@ -150,7 +150,7 @@ public class CommandBank implements Listener {
         CommandNode node = nodes.get(command);
         if (node != null) {
             if (node.getDirectives().containsKey(alias)) {
-                Enjin.getPlugin().debug("That alias has already been registered by another directive.");
+                Enjin.getPlugin().debug("That alias has already been registered by another value.");
                 return;
             }
 

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface Directive {
     public String parent();
 
-    public String directive();
+    public String value();
 
     public String[] aliases() default {};
 }

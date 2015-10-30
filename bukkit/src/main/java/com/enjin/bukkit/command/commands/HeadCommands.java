@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 
 public class HeadCommands {
     @Permission("enjin.sign.set")
-    @Directive(parent = "enjin", directive = "head", aliases = {"heads"})
+    @Directive(parent = "enjin", value = "head", aliases = {"heads"})
     public static void head(CommandSender sender, String[] args) {
         sender.sendMessage(EnjinConsole.header());
         sender.sendMessage(ChatColor.AQUA + "To set a sign with a head, just place the head, then place the sign either above or below it.");

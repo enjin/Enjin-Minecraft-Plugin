@@ -4,23 +4,29 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.tickets.TicketCreationSession;
-import com.enjin.core.Enjin;
+import com.enjin.bukkit.tickets.TicketViewBuilder;
+import com.enjin.core.EnjinServices;
+import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
+import com.enjin.rpc.mappings.mappings.tickets.Reply;
+import com.enjin.rpc.mappings.mappings.tickets.Ticket;
+import com.enjin.rpc.mappings.services.TicketService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 
 public class SupportCommands {
     @Permission(value = "enjin.support")
-    @Directive(parent = "enjin", directive = "support")
+    @Directive(parent = "enjin", value = "support")
     public static void support(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
         Map<Integer, Module> modules = EnjinMinecraftPlugin.getModules();
 
-        if (plugin.getAuthKey() == null) {
-            sender.sendMessage("Cannot use this command without setting your key.");
+        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
+            sender.sendMessage("Cannot use this value without setting your key.");
             return;
         }
 
@@ -67,5 +73,65 @@ public class SupportCommands {
                 }
             }
         });
+    }
+
+    @Permission(value = "enjin.ticket")
+    @Directive(parent = "enjin", value = "ticket")
+    public static void ticket(Player sender, String[] args) {
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+
+        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
+            sender.sendMessage("Cannot use this value without setting your key.");
+            return;
+        }
+
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("Only players can view their own tickets.");
+            return;
+        }
+
+        if (args.length == 1) {
+            final Player player = sender;
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                TicketService service = EnjinServices.getService(TicketService.class);
+                RPCData<List<Ticket>> data = service.getPlayerTickets(plugin.getAuthKey(), -1, player.getName());
+
+                if (data != null) {
+                    if (data.getError() != null) {
+                        player.sendMessage(data.getError().getMessage());
+                    } else {
+                        List<Ticket> tickets = data.getResult();
+                        if (tickets.size() > 0) {
+                            player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                        } else {
+                            player.sendMessage("You do not have any tickets at this time!");
+                        }
+                    }
+                } else {
+                    player.sendMessage("Could not fetch your tickets.");
+                }
+            });
+        } else {
+            final Player player = sender;
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                TicketService service = EnjinServices.getService(TicketService.class);
+                RPCData<List<Reply>> data = service.getReplies(plugin.getAuthKey(), -1, args[1], player.getName());
+
+                if (data != null) {
+                    if (data.getError() != null) {
+                        player.sendMessage(data.getError().getMessage());
+                    } else {
+                        List<Reply> replies = data.getResult();
+                        if (replies.size() > 0) {
+                            player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[1], replies, player.hasPermission("enjin.ticket.private")));
+                        } else {
+                            player.sendMessage("You entered an invalid ticket code!");
+                        }
+                    }
+                } else {
+                    player.sendMessage("Could not fetch ticket replies.");
+                }
+            });
+        }
     }
 }

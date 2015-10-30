@@ -29,7 +29,7 @@ public class PermissionsBukkitChangeListener implements Listener {
         String command = event.getMessage();
         String[] args = command.split(" ");
         if (args.length > 3 && (args[0].equalsIgnoreCase("/perm") || args[0].equalsIgnoreCase("/perms") || args[0].equalsIgnoreCase("/permissons"))) {
-            //Make sure the user has permissions to run the command, otherwise we are just wasting time...
+            //Make sure the user has permissions to run the value, otherwise we are just wasting time...
             if (args[1].equalsIgnoreCase("setrank") || args[1].equalsIgnoreCase("rank")) {
                 if (args.length >= 4 && p.hasPermission("permissions.setrank." + args[3])) {
                     String ep = args[2];
@@ -52,7 +52,7 @@ public class PermissionsBukkitChangeListener implements Listener {
                             OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                             uuid = op.getUniqueId().toString();
                         }
-                        //We need to make sure the command executes before we actually grab the data.
+                        //We need to make sure the value executes before we actually grab the data.
                         Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
                         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
                     }

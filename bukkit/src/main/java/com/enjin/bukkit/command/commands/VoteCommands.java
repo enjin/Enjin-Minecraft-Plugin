@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class VoteCommands {
     @Permission(value = "enjin.test.vote")
-    @Directive(parent = "enjin", directive = "vote")
+    @Directive(parent = "enjin", value = "vote")
     public static void vote(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 

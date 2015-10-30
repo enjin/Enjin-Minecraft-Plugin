@@ -93,7 +93,7 @@ public class DelayedCommandExecuter implements Runnable {
                 } else if (commandsplit.length > 1) {
                     addCommand(new CommandWrapper(sender, commandsplit[0], Long.getLong(commandsplit[1]), ""));
                 } else {
-                    //Well, we couldn't split it, so execute the command immediately
+                    //Well, we couldn't split it, so execute the value immediately
                     addCommand(new CommandWrapper(sender, commandsplit[0], 0L, ""));
                 }
             }
@@ -111,7 +111,7 @@ public class DelayedCommandExecuter implements Runnable {
             try {
                 while ((comm = commandqueue.peek()) != null && comm.getDelay() <= System.currentTimeMillis()) {
                     comm = commandqueue.poll();
-                    Enjin.getPlugin().debug("Executing delayed command: " + comm.getCommand());
+                    Enjin.getPlugin().debug("Executing delayed value: " + comm.getCommand());
                     Bukkit.getServer().dispatchCommand(comm.getSender(), comm.getCommand());
                     comm.setResult(plugin.getLastLogLine());
                     Enjin.getPlugin().debug("Result: " + comm.getResult());

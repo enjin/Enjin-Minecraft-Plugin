@@ -18,10 +18,10 @@ public class CommandWrapper implements Comparable<CommandWrapper> {
     }
 
     /**
-     * Sets up a command that has a delay.
+     * Sets up a value that has a delay.
      *
-     * @param sender  The command sender.
-     * @param command The actual command to execute
+     * @param sender  The value sender.
+     * @param command The actual value to execute
      * @param delay   The time, in milliseconds, when it should execute.
      */
     public CommandWrapper(CommandSender sender, String command, long delay, String id) {
@@ -40,7 +40,7 @@ public class CommandWrapper implements Comparable<CommandWrapper> {
     }
 
     /**
-     * Gets the time in milliseconds when we need to execute the command.
+     * Gets the time in milliseconds when we need to execute the value.
      *
      * @return
      */

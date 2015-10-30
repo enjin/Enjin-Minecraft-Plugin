@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class BuyCommand {
-    @Command(command = "buy")
+    @Command(value = "buy")
     public static void buy(Player player, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
@@ -86,7 +86,7 @@ public class BuyCommand {
         }
     }
 
-    @Directive(parent = "buy", directive = "shop")
+    @Directive(parent = "buy", value = "shop")
     public static void shop(Player player, String[] args){
         Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
         if (!instances.containsKey(player.getUniqueId())) {

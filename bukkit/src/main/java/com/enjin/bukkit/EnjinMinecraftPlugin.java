@@ -616,7 +616,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         BukkitScheduler scheduler = Bukkit.getScheduler();
         synctaskid = scheduler.runTaskTimerAsynchronously(this, task, 1200L, 1200L).getTaskId();
         banlisttask = scheduler.runTaskTimerAsynchronously(this, banlistertask, 40L, 1800L).getTaskId();
-        //execute the command executer task every 10 ticks, which should vary between .5 and 1 second on servers.
+        //execute the value executer task every 10 ticks, which should vary between .5 and 1 second on servers.
         commandexecutertask = scheduler.runTaskTimer(this, commexecuter, 20L, 10L).getTaskId();
         commexecuter.loadCommands(Bukkit.getConsoleSender());
         //Only start the vote task if votifier is installed.
@@ -1164,7 +1164,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             Entry<String, CommandWrapper> code = thecodes.next();
             headsconfig.set(code.getKey() + ".hash", code.getValue().getHash());
             headsconfig.set(code.getKey() + ".result", code.getValue().getResult());
-            headsconfig.set(code.getKey() + ".command", code.getValue().getCommand());
+            headsconfig.set(code.getKey() + ".value", code.getValue().getCommand());
         }
         try {
             headsconfig.save(headsfile);
@@ -1202,7 +1202,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 Set<String> keys = commandconfig.getValues(false).keySet();
                 for (String key : keys) {
                     String hash = commandconfig.getString(key + ".hash");
-                    String command = commandconfig.getString(key + ".command");
+                    String command = commandconfig.getString(key + ".value");
                     String result = commandconfig.getString(key + ".result");
                     CommandWrapper comm = new CommandWrapper(Bukkit.getConsoleSender(), command, key);
                     comm.setHash(hash);

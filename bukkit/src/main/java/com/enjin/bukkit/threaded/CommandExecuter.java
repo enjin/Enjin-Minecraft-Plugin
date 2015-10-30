@@ -26,7 +26,7 @@ public class CommandExecuter implements Runnable {
         boolean dirty = false;
         while ((comm = commandqueue.poll()) != null) {
             dirty = true;
-            Enjin.getPlugin().debug("Executing queued command: " + comm.getCommand());
+            Enjin.getPlugin().debug("Executing queued value: " + comm.getCommand());
             Bukkit.getServer().dispatchCommand(comm.getSender(), comm.getCommand());
             comm.setResult(plugin.getLastLogLine());
             Enjin.getPlugin().debug("Result: " + comm.getResult());

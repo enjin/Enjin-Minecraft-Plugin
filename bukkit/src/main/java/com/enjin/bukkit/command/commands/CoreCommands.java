@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CoreCommands {
-    @Command(command = "enjin", aliases = "e")
+    @Command(value = "enjin", aliases = "e")
     public static void enjin(CommandSender sender, String[] args) {
         sender.sendMessage(EnjinConsole.header());
 
@@ -97,7 +97,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.value")
-    @Directive(parent = "enjin", directive = "broadcast")
+    @Directive(parent = "enjin", value = "broadcast")
     public static void broadcast(CommandSender sender, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(ChatColor.RED + "To broadcast a message do: /enjin broadcast <message>");
@@ -117,7 +117,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.debug")
-    @Directive(parent = "enjin", directive = "debug")
+    @Directive(parent = "enjin", value = "debug")
     public static void debug(CommandSender sender, String[] args) {
         EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
         config.setDebug(!config.isDebug());
@@ -127,7 +127,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.give")
-    @Directive(parent = "enjin", directive = "give")
+    @Directive(parent = "enjin", value = "give")
     public static void give(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
@@ -298,7 +298,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.inform")
-    @Directive(parent = "enjin", directive = "inform")
+    @Directive(parent = "enjin", value = "inform")
     public static void inform(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "To send a message do: /enjin inform <player> <message>");
@@ -324,8 +324,8 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.setkey")
-    @Command(command = "enjinkey", aliases = "ek")
-    @Directive(parent = "enjin", directive = "key", aliases = {"setkey", "sk", "enjinkey", "ek"})
+    @Command(value = "enjinkey", aliases = "ek")
+    @Directive(parent = "enjin", value = "key", aliases = {"setkey", "sk", "enjinkey", "ek"})
     public static void key(CommandSender sender, String[] args) {
         if (args.length != 1) {
             return;
@@ -343,7 +343,7 @@ public class CoreCommands {
         }
     }
     @Permission(value = "enjin.lag")
-    @Directive(parent = "enjin", directive = "lag")
+    @Directive(parent = "enjin", value = "lag")
     public static void lag(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
@@ -358,7 +358,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.push")
-    @Directive(parent = "enjin", directive = "push")
+    @Directive(parent = "enjin", value = "push")
     public static void push(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
@@ -404,7 +404,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.report")
-    @Directive(parent = "enjin", directive = "report")
+    @Directive(parent = "enjin", value = "report")
     public static void report(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
         Date date = new Date();

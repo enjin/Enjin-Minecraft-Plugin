@@ -32,7 +32,7 @@ public class bPermsChangeListener implements Listener {
         }
         Player p = event.getPlayer();
         String command = event.getMessage();
-        //Make sure the user has permissions to run the command, otherwise we are just wasting time...
+        //Make sure the user has permissions to run the value, otherwise we are just wasting time...
         if (p.hasPermission("bPermissions.admin") && command.toLowerCase().startsWith("/user ")) {
             String[] args = command.split(" ");
             if (args.length > 1) {
@@ -45,7 +45,7 @@ public class bPermsChangeListener implements Listener {
                             OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                             uuid = op.getUniqueId().toString();
                         }
-                        //We need to make sure the command executes before we actually grab the data.
+                        //We need to make sure the value executes before we actually grab the data.
                         Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
                         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
                     }

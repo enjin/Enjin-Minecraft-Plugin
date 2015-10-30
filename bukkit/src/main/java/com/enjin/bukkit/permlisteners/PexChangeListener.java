@@ -50,12 +50,12 @@ public class PexChangeListener implements Listener {
         }
         Player p = event.getPlayer();
         String command = event.getMessage();
-        //Make sure the user has permissions to run the command, otherwise we are just wasting time...
+        //Make sure the user has permissions to run the value, otherwise we are just wasting time...
         if (command.toLowerCase().startsWith("/pex group ")) {
             String[] args = command.split(" ");
             if (args.length > 5 && p.hasPermission("permissions.manage.membership." + args[2])) {
                 if (args[3].equalsIgnoreCase("user") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
-                    //This command accepts csv lists of players
+                    //This value accepts csv lists of players
                     if (args[5].contains(",")) {
                         String[] players = args[5].split(",");
                         for (int i = 0; i < players.length; i++) {
@@ -65,7 +65,7 @@ public class PexChangeListener implements Listener {
                                 OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                                 uuid = op.getUniqueId().toString();
                             }
-                            //We need to make sure the command executes before we actually grab the data.
+                            //We need to make sure the value executes before we actually grab the data.
                             Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
                             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
                         }
@@ -76,7 +76,7 @@ public class PexChangeListener implements Listener {
                             OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                             uuid = op.getUniqueId().toString();
                         }
-                        //We need to make sure the command executes before we actually grab the data.
+                        //We need to make sure the value executes before we actually grab the data.
                         Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
                         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
                     }
@@ -92,7 +92,7 @@ public class PexChangeListener implements Listener {
                         OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                         uuid = op.getUniqueId().toString();
                     }
-                    //We need to make sure the command executes before we actually grab the data.
+                    //We need to make sure the value executes before we actually grab the data.
                     Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
                 }

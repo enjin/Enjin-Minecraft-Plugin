@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class StatCommands {
     @Permission("enjin.customstat")
-    @Directive(parent = "enjin", directive = "customstat")
+    @Directive(parent = "enjin", value = "customstat")
     public static void customStat(CommandSender sender, String[] args) {
         if (args.length > 4) {
             String player = args[1].trim();
@@ -41,7 +41,7 @@ public class StatCommands {
     }
 
     @Permission(value = "enjin.playerstats")
-    @Directive(parent = "enjin", directive = "playerstats")
+    @Directive(parent = "enjin", value = "playerstats")
     public static void playerStats(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
@@ -80,14 +80,14 @@ public class StatCommands {
     }
 
     @Permission(value = "enjin.savestats")
-    @Directive(parent = "enjin", directive = "savestats")
+    @Directive(parent = "enjin", value = "savestats")
     public static void saveStats(CommandSender sender, String[] args) {
         new WriteStats(EnjinMinecraftPlugin.instance).write("stats.stats");
         sender.sendMessage(ChatColor.GREEN + "Stats saved to stats.stats.");
     }
 
     @Permission(value = "enjin.serverstats")
-    @Directive(parent = "enjin", directive = "serverstats")
+    @Directive(parent = "enjin", value = "serverstats")
     public static void serverStats(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
         Date date = new Date(plugin.serverstats.getLastserverstarttime());

@@ -29,7 +29,7 @@ public class EnjinConfig extends JsonConfig {
     @SerializedName(value = "stats-collected")
     private Stats statsCollected = new Stats();
     @Getter @Setter
-    @SerializedName(value = "buy-command")
+    @SerializedName(value = "buy-value")
     private String buyCommand = "buy";
     @Getter @Setter
     @SerializedName(value = "use-buy-gui")
