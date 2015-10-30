@@ -1,0 +1,51 @@
+package com.enjin.bukkit.command;
+
+import com.google.common.collect.Maps;
+import lombok.Getter;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Map;
+
+public class CommandNode {
+    @Getter
+    private Command data;
+    private Method method;
+    @Getter
+    private Map<String, DirectiveNode> directives = Maps.newHashMap();
+
+    public CommandNode(Command data, Method method) {
+        this.data = data;
+        this.method = method;
+    }
+
+    public void invoke(CommandSender sender, String[] args) {
+        if (method == null) {
+            return;
+        }
+
+        if (!data.permission().equals("") && !sender.hasPermission(data.permission())) {
+            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            return;
+        }
+
+        if (args.length > 0) {
+            DirectiveNode directive = directives.get(args[0]);
+            if (directive != null) {
+                directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[]{});
+                return;
+            }
+        }
+
+        try {
+            method.invoke(null, sender, args);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+}

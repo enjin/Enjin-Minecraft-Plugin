@@ -1,9 +1,11 @@
-package com.enjin.bukkit.commands.store;
+package com.enjin.bukkit.command.commands;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.common.shop.PlayerShopInstance;
+import com.enjin.bukkit.command.Command;
+import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.shop.RPCShopFetcher;
 import com.enjin.bukkit.shop.ShopUtil;
+import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,13 +15,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class BuyCommand {
+    @Command(command = "buy", permission = "enjin.store.buy")
     public static void buy(Player player, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
-
-        if (args.length > 0 && args[0].equalsIgnoreCase("shop")) {
-            BuyCommand.shop(player, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[]{});
-            return;
-        }
 
         Optional<Integer> selection;
         try {
@@ -88,6 +86,7 @@ public class BuyCommand {
         }
     }
 
+    @Directive(parent = "buy", directive = "shop")
     public static void shop(Player player, String[] args){
         Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
         if (!instances.containsKey(player.getUniqueId())) {
