@@ -95,8 +95,8 @@ public class NewKeyVerifier implements Runnable {
             plugin.authkeyinvalid = false;
             EnjinMinecraftPlugin.setAuthKey(key);
             Enjin.getPlugin().debug("Writing hash to file.");
-            plugin.config.setAuthKey(key);
-            plugin.saveConfig();
+            plugin.configuration.setAuthKey(key);
+            plugin.saveConfiguration();
             if (player == null || player.isOnline()) {
                 sender.sendMessage(ChatColor.GREEN + "Set the enjin key to " + key);
             }

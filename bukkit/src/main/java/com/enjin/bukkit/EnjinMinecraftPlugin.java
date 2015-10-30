@@ -27,6 +27,7 @@ import javax.net.ssl.SSLHandshakeException;
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.BuyCommand;
 import com.enjin.bukkit.command.commands.CoreCommands;
+import com.enjin.bukkit.command.commands.StatCommands;
 import com.enjin.bukkit.compatibility.NewPlayerGetter;
 import com.enjin.bukkit.compatibility.OldPlayerGetter;
 import com.enjin.bukkit.config.EnjinConfig;
@@ -38,9 +39,7 @@ import com.enjin.bukkit.stats.StatsUtils;
 import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.BukkitInstructionHandler;
 import com.enjin.bukkit.sync.RPCPacketManager;
-import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketListener;
-import com.enjin.bukkit.tickets.TicketViewBuilder;
 import com.enjin.bukkit.tpsmeter.MonitorTPS;
 import com.enjin.bukkit.util.PacketUtilities;
 import com.enjin.core.Enjin;
@@ -50,11 +49,7 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
-import com.enjin.rpc.mappings.mappings.tickets.Reply;
-import com.enjin.rpc.mappings.mappings.tickets.Ticket;
-import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.rpc.mappings.services.TicketService;
 import lombok.Getter;
@@ -67,10 +62,7 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.bukkit.*;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -94,8 +86,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.kitteh.vanish.VanishManager;
 import org.kitteh.vanish.VanishPlugin;
 
-import Tux2.TuxTwoLib.TuxTwoPlayer;
-
 import com.enjin.bukkit.compatibility.OnlinePlayerGetter;
 import com.enjin.bukkit.listeners.EnjinStatsListener;
 import com.enjin.bukkit.listeners.NewPlayerChatListener;
@@ -103,11 +93,9 @@ import com.enjin.bukkit.listeners.VotifierListener;
 import com.enjin.bukkit.threaded.AsyncToSyncEventThrower;
 import com.enjin.bukkit.threaded.BanLister;
 import com.enjin.bukkit.threaded.CommandExecuter;
-import com.enjin.bukkit.threaded.ConfigSender;
 import com.enjin.bukkit.threaded.DelayedCommandExecuter;
 import com.enjin.bukkit.threaded.NewKeyVerifier;
 import com.enjin.bukkit.threaded.PeriodicVoteTask;
-import com.enjin.bukkit.threaded.ReportMakerThread;
 import com.enjin.bukkit.threaded.Updater;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
@@ -125,7 +113,8 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public static EnjinMinecraftPlugin instance;
-    public static EnjinConfig config;
+    @Getter
+    public static EnjinConfig configuration;
     private InstructionHandler instructionHandler = new BukkitInstructionHandler();
     public static boolean usingGroupManager = false;
     public Server s;
@@ -218,10 +207,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     @Override
     public void debug(String s) {
-        if (config.isDebug()) {
+        if (configuration.isDebug()) {
             System.out.println("Enjin Debug: " + s);
         }
-        if (config.isLoggingEnabled()) {
+        if (configuration.isLoggingEnabled()) {
             enjinlogger.fine(s);
         }
     }
@@ -261,12 +250,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             initConfig();
 
             EnjinRPC.setLogger(logger);
-            EnjinRPC.setDebug(config.isDebug());
+            EnjinRPC.setDebug(configuration.isDebug());
 
             CommandBank.setup(this);
-            CommandBank.register(BuyCommand.class, CoreCommands.class);
-            if (config.getBuyCommand() != null && !config.getBuyCommand().isEmpty()) {
-                CommandBank.registerCommandAlias("buy", config.getBuyCommand());
+            CommandBank.register(BuyCommand.class, CoreCommands.class, StatCommands.class);
+            if (configuration.getBuyCommand() != null && !configuration.getBuyCommand().isEmpty()) {
+                CommandBank.registerCommandAlias("buy", configuration.getBuyCommand());
             }
 
             task = new RPCPacketManager(this);
@@ -400,10 +389,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             //------We should do TPS even if we have an invalid auth key
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, tpstask = new MonitorTPS(this), 40, 40);
 
-            Thread configthread = new Thread(new ConfigSender(this));
-            configthread.start();
+            //Thread configthread = new Thread(new ConfigSender(this));
+            //configthread.start();
 
-            if (config.isCollectPlayerStats()) {
+            if (configuration.isCollectPlayerStats()) {
                 startStatsCollecting();
                 File stats = new File("enjin-stats.json");
                 if (stats.exists()) {
@@ -427,8 +416,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             //debug("Checking key valid.");
             //Bypass key checking, but only if the key looks valid
             registerEvents();
-            if (config.getAuthKey().length() == 50) {
-                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(config.getAuthKey(), Bukkit.getPort(), true);
+            if (configuration.getAuthKey().length() == 50) {
+                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(configuration.getAuthKey(), Bukkit.getPort(), true);
                 if (data == null) {
                     authkeyinvalid = true;
                     debug("Auth key is invalid. Data could not be retrieved.");
@@ -522,28 +511,28 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(esl, this);
 
-        if (!config.getStatsCollected().getPlayer().isTravel()) {
+        if (!configuration.getStatsCollected().getPlayer().isTravel()) {
             PlayerMoveEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getStatsCollected().getPlayer().isBlocksBroken()) {
+        if (!configuration.getStatsCollected().getPlayer().isBlocksBroken()) {
             BlockBreakEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getStatsCollected().getPlayer().isBlocksPlaced()) {
+        if (!configuration.getStatsCollected().getPlayer().isBlocksPlaced()) {
             BlockPlaceEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getStatsCollected().getPlayer().isKills()) {
+        if (!configuration.getStatsCollected().getPlayer().isKills()) {
             EntityDeathEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getStatsCollected().getPlayer().isDeaths()) {
+        if (!configuration.getStatsCollected().getPlayer().isDeaths()) {
             PlayerDeathEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getStatsCollected().getPlayer().isXp()) {
+        if (!configuration.getStatsCollected().getPlayer().isXp()) {
             PlayerExpChangeEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getStatsCollected().getServer().isCreeperExplosions()) {
+        if (!configuration.getStatsCollected().getServer().isCreeperExplosions()) {
             EntityExplodeEvent.getHandlerList().unregister(esl);
         }
-        if (!config.getStatsCollected().getServer().isPlayerKicks()) {
+        if (!configuration.getStatsCollected().getServer().isPlayerKicks()) {
             PlayerKickEvent.getHandlerList().unregister(esl);
         }
     }
@@ -551,7 +540,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Override
     public void onDisable() {
         stopTask();
-        if (config.isCollectPlayerStats()) {
+        if (configuration.isCollectPlayerStats()) {
             new WriteStats(this).write("enjin-stats.json");
             debug("Stats saved to enjin-stats.json.");
         }
@@ -593,25 +582,24 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public void initConfig() {
         File configFile = new File(getDataFolder(), "config.json");
-        EnjinMinecraftPlugin.config = JsonConfig.load(configFile, EnjinConfig.class);
+        EnjinMinecraftPlugin.configuration = JsonConfig.load(configFile, EnjinConfig.class);
 
         if (!configFile.exists()) {
-            config.save(configFile);
+            configuration.save(configFile);
         }
 
-        if (!config.getApiUrl().endsWith("/")) {
-            config.setApiUrl(config.getApiUrl().concat("/"));
+        if (!configuration.getApiUrl().endsWith("/")) {
+            configuration.setApiUrl(configuration.getApiUrl().concat("/"));
         }
 
-        String rpcApiUrl = (config.isHttps() ? "https" : "http") + config.getApiUrl() + "v1/";
-        EnjinRPC.setHttps(config.isHttps());
+        String rpcApiUrl = (configuration.isHttps() ? "https" : "http") + configuration.getApiUrl() + "v1/";
+        EnjinRPC.setHttps(configuration.isHttps());
         EnjinRPC.setApiUrl(rpcApiUrl);
         debug("RPC API Url: " + rpcApiUrl);
     }
 
-    @Override
-    public void saveConfig() {
-        config.save(new File(getDataFolder(), "config.json"));
+    public static void saveConfiguration() {
+        configuration.save(new File(instance.getDataFolder(), "config.json"));
     }
 
     public void startTask() {
@@ -627,7 +615,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             debug("Starting votifier task.");
             votetaskid = scheduler.runTaskTimerAsynchronously(this, votetask, 80L, 80L).getTaskId();
         }
-        if (config.isAutoUpdate() && bukkitversion) {
+        if (configuration.isAutoUpdate() && bukkitversion) {
             updatethread = scheduler.runTaskTimerAsynchronously(this, new Updater(this, 44560, this.getFile(), Updater.UpdateType.DEFAULT, true), 20 * 60 * 5, 20 * 60 * 5).getTaskId();
         }
     }
@@ -794,7 +782,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
      * @throws MalformedURLException
      */
     public static int sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
-        URL url = new URL((usingSSL ? "https" : "http") + config.getApiUrl() + urls);
+        URL url = new URL((usingSSL ? "https" : "http") + configuration.getApiUrl() + urls);
         StringBuilder query = new StringBuilder();
         try {
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -837,11 +825,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public static synchronized void setAuthKey(String key) {
-        config.setAuthKey(key);
+        configuration.setAuthKey(key);
     }
 
     public static synchronized String getAuthKey() {
-        return config.getAuthKey();
+        return configuration.getAuthKey();
     }
 
     private void setupPermissions() {
@@ -1047,17 +1035,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
             return false;
         } catch (SSLHandshakeException e) {
-            if (config.isDebug()) {
+            if (configuration.isDebug()) {
                 e.printStackTrace();
             }
             return false;
         } catch (SocketTimeoutException e) {
-            if (config.isDebug()) {
+            if (configuration.isDebug()) {
                 e.printStackTrace();
             }
             return false;
         } catch (Throwable t) {
-            if (config.isDebug()) {
+            if (configuration.isDebug()) {
                 t.printStackTrace();
             }
             return false;
@@ -1076,12 +1064,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
             return false;
         } catch (SocketTimeoutException e) {
-            if (config.isDebug()) {
+            if (configuration.isDebug()) {
                 e.printStackTrace();
             }
             return false;
         } catch (Throwable t) {
-            if (config.isDebug()) {
+            if (configuration.isDebug()) {
                 t.printStackTrace();
             }
             return false;
@@ -1100,12 +1088,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
             return false;
         } catch (SocketTimeoutException e) {
-            if (config.isDebug()) {
+            if (configuration.isDebug()) {
                 e.printStackTrace();
             }
             return false;
         } catch (Throwable t) {
-            if (config.isDebug()) {
+            if (configuration.isDebug()) {
                 t.printStackTrace();
             }
             return false;

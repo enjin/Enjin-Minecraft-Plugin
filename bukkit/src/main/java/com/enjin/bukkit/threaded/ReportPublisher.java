@@ -22,13 +22,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.ReverseFileReader;
 
-public class ReportMakerThread implements Runnable {
+public class ReportPublisher implements Runnable {
 
     EnjinMinecraftPlugin plugin;
     StringBuilder builder;
     CommandSender sender;
 
-    public ReportMakerThread(EnjinMinecraftPlugin plugin, StringBuilder builder, CommandSender sender) {
+    public ReportPublisher(EnjinMinecraftPlugin plugin, StringBuilder builder, CommandSender sender) {
         this.plugin = plugin;
         this.builder = builder;
         this.sender = sender;
@@ -74,7 +74,7 @@ public class ReportMakerThread implements Runnable {
             }
             rfr.close();
         } catch (Exception e) {
-            if (EnjinMinecraftPlugin.config.isDebug()) {
+            if (EnjinMinecraftPlugin.configuration.isDebug()) {
                 e.printStackTrace();
             }
         }

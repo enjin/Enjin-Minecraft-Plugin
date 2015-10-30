@@ -56,7 +56,7 @@ public class ConfigSender implements Runnable {
             con.setRequestProperty("User-Agent", "Mozilla/4.0");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             //StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.config.getAuthKey()));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.configuration.getAuthKey()));
 
             /* TODO: Update to work with json configuration
             Set<Entry<String, ConfigValueTypes>> es = plugin.configvalues.entrySet();
@@ -140,7 +140,7 @@ public class ConfigSender implements Runnable {
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.config.getApiUrl() + "minecraft-config");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.configuration.getApiUrl() + "minecraft-config");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {
