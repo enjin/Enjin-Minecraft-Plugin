@@ -8,15 +8,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -26,9 +23,9 @@ import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
-import com.enjin.bukkit.compatibility.NewPlayerGetter;
-import com.enjin.bukkit.compatibility.OldPlayerGetter;
+import com.enjin.bukkit.compatibility.PlayerGetter;
 import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.permlisteners.*;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.stats.StatsPlayer;
@@ -51,12 +48,7 @@ import com.enjin.rpc.mappings.mappings.tickets.Module;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.rpc.mappings.services.TicketService;
 import lombok.Getter;
-import lombok.Setter;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
-import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.bukkit.*;
@@ -78,7 +70,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.kitteh.vanish.VanishManager;
@@ -90,40 +81,20 @@ import com.enjin.bukkit.listeners.NewPlayerChatListener;
 import com.enjin.bukkit.listeners.VotifierListener;
 import com.enjin.bukkit.threaded.AsyncToSyncEventThrower;
 import com.enjin.bukkit.threaded.BanLister;
-import com.enjin.bukkit.threaded.CommandExecuter;
 import com.enjin.bukkit.threaded.DelayedCommandExecuter;
-import com.enjin.bukkit.threaded.NewKeyVerifier;
 import com.enjin.bukkit.threaded.PeriodicVoteTask;
 import com.enjin.bukkit.threaded.Updater;
 import com.gmail.nossr50.datatypes.skills.SkillType;
-import com.platymuus.bukkit.permissions.PermissionsPlugin;
 import com.vexsoftware.votifier.Votifier;
 
-import de.bananaco.bpermissions.imp.Permissions;
-import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsPlugin;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
-
-/**
- * @author OverCaste (Enjin LTE PTD).
- *         This software is released under an Open Source license.
- * @copyright Enjin 2013.
- */
-
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
-    public static EnjinMinecraftPlugin instance;
     @Getter
-    public static EnjinConfig configuration;
+    private static EnjinMinecraftPlugin instance;
+    @Getter
+    private static EnjinConfig configuration;
+    @Getter
     private InstructionHandler instructionHandler = new BukkitInstructionHandler();
-    public static boolean usingGroupManager = false;
-    public Server s;
-    public Logger logger;
-    public static Permission permission = null;
-    public static Economy economy = null;
-    public PermissionsEx permissionsex;
-    public GroupManager groupmanager;
-    public Permissions bpermissions;
-    public PermissionsPlugin permissionsbukkit;
-    public ZPermissionsPlugin zPermissions;
+
     private VanishManager vanishmanager = null;
     private static boolean isMcMMOloaded = false;
     private boolean mcMMOSupported = false;
@@ -131,16 +102,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public boolean votifierinstalled = false;
     protected boolean votifiererrored = false;
     public int xpversion = 0;
-    private static int logversion = 1;
     private static boolean supportsuuid = false;
     @Getter
     private static boolean mcmmoOutdated = false;
-    public String mcversion = "";
     private boolean listenforbans = true;
     @Getter
     private boolean tuxtwolibinstalled = false;
-    public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
-    public CommandExecuter commandqueue = new CommandExecuter(this);
+    public final static Logger enjinLogger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
+    private EnjinLogInterface mcLogListener = new EnjinLogAppender();
     public StatsServer serverstats = new StatsServer(this);
     public Map<String, StatsPlayer> playerstats = new ConcurrentHashMap<String, StatsPlayer>();
     /**
@@ -151,7 +120,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
      * Key is banned player, value is admin that pardoned the player or blank if the console pardoned
      */
     public Map<String, String> pardonedplayers = new ConcurrentHashMap<String, String>();
-    private EnjinLogInterface mcloglistener = null;
     public String newversion = "";
     public boolean hasupdate = false;
     public boolean updatefailed = false;
@@ -160,11 +128,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public boolean permissionsnotworking = false;
     public static boolean vaultneedsupdating = false;
     public boolean gmneedsupdating = false;
-    public static boolean econcompatmode = false;
-    static public boolean bukkitversion = false;
-    private boolean isglowstone = false;
     private LinkedList<String> keywords = new LinkedList<String>();
-    public OnlinePlayerGetter playergetter = null;
+    public OnlinePlayerGetter playergetter = new PlayerGetter();
     public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
     public final EMPListener listener = new EMPListener(this);
 
@@ -180,22 +145,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private int synctaskid = -1;
     private int votetaskid = -1;
     private int banlisttask = -1;
-    private int tpstaskid = -1;
     private int commandexecutertask = -1;
     private int headsupdateid = -1;
     private int updatethread = -1;
     public static final ExecutorService exec = Executors.newCachedThreadPool();
-    public static String minecraftport;
     public static boolean usingSSL = true;
-    @Getter @Setter
-    private NewKeyVerifier verifier = null;
     public Map<String, String> playerperms = new ConcurrentHashMap<String, String>();
     //Player, lists voted on.
     public Map<String, List<String>> playervotes = new ConcurrentHashMap<String, List<String>>();
     private Map<String, CommandWrapper> commandids = new ConcurrentHashMap<String, CommandWrapper>();
     public EnjinErrorReport lasterror = null;
     public EnjinStatsListener esl = null;
-    public DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
     //-------------Ticket Service---------------
     @Getter
@@ -211,7 +171,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             System.out.println("Enjin Debug: " + s);
         }
         if (configuration.isLoggingEnabled()) {
-            enjinlogger.fine(s);
+            enjinLogger.fine(s);
         }
     }
 
@@ -229,28 +189,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         keywords.add("--r");
 
         try {
-            File oldnewdatafolder = new File(getDataFolder().getParent(), "Enjin_Minecraft_Plugin");
-            File olddatafolder = new File(getDataFolder().getParent(), "Enjin Minecraft Plugin");
-            if (oldnewdatafolder.exists()) {
-                try {
-                    oldnewdatafolder.renameTo(getDataFolder());
-                    reloadConfig();
-                } catch (Exception e) {
-
-                }
-            } else if (olddatafolder.exists()) {
-                try {
-                    olddatafolder.renameTo(getDataFolder());
-                    reloadConfig();
-                } catch (Exception e) {
-
-                }
-            }
-
             initConfig();
 
-            EnjinRPC.setLogger(logger);
+            EnjinRPC.setLogger(getLogger());
             EnjinRPC.setDebug(configuration.isDebug());
+
+            VaultManager.init(this);
 
             initCommands();
 
@@ -258,7 +202,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             votetask = new PeriodicVoteTask(this);
 
             debug("Initializing internal logger");
-            enjinlogger.setLevel(Level.FINEST);
+            enjinLogger.setLevel(Level.FINEST);
             File logsfolder = new File(getDataFolder().getAbsolutePath() + File.separator + "logs");
             if (!logsfolder.exists()) {
                 logsfolder.mkdirs();
@@ -273,102 +217,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             FileHandler fileTxt = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
             EnjinLogFormatter formatterTxt = new EnjinLogFormatter();
             fileTxt.setFormatter(formatterTxt);
-            enjinlogger.addHandler(fileTxt);
-            enjinlogger.setUseParentHandlers(false);
+            enjinLogger.addHandler(fileTxt);
+            enjinLogger.setUseParentHandlers(false);
             debug("Logger initialized.");
-            debug("Begin init");
-            initVariables();
-            debug("Init vars done.");
-
-            //Let's get the minecraft version.
-            debug("Minecraft version: " + getServer().getVersion());
-            Matcher mcmatch;
-            if (isglowstone) {
-                Pattern pmcversion = Pattern.compile("(\\d+)\\.(\\d+)\\.?(\\d*)");
-                mcmatch = pmcversion.matcher(getServer().getVersion());
-            } else {
-                String[] cbversionstring = getServer().getVersion().split(":");
-                Pattern pmcversion = Pattern.compile("(\\d+)\\.(\\d+)\\.?(\\d*)");
-                mcmatch = pmcversion.matcher(cbversionstring[1]);
-            }
-            if (mcmatch.find()) {
-                try {
-                    int majorversion = Integer.parseInt(mcmatch.group(1));
-                    int minorversion = Integer.parseInt(mcmatch.group(2));
-                    int buildnumber = 0;
-                    if (mcmatch.group(3) != null && !mcmatch.group(3).equals("")) {
-                        try {
-                            buildnumber = Integer.parseInt(mcmatch.group(3));
-                        } catch (NumberFormatException e) {
-
-                        }
-                    }
-                    boolean newplayergetterversion = false;
-                    mcversion = majorversion + "." + minorversion + "." + buildnumber;
-                    debug("MC Version string: " + mcversion);
-                    if (majorversion == 1) {
-                        if (minorversion > 2) {
-                            xpversion = 1;
-                            logger.info("[EnjinMinecraftPlugin] MC 1.3 or above found, enabling version 2 XP handling.");
-                        } else {
-                            logger.info("[EnjinMinecraftPlugin] MC 1.2 or below found, enabling version 1 XP handling.");
-                        }
-                        if (minorversion > 5) {
-                            mcMMOSupported = true;
-                        }
-                        if (minorversion > 6) {
-                            logversion = 2;
-                            if (minorversion == 7) {
-                                if (buildnumber > 8) {
-                                    supportsuuid = true;
-                                }
-                                if (buildnumber > 9) {
-                                    newplayergetterversion = true;
-                                }
-                            } else if (minorversion > 7) {
-                                supportsuuid = true;
-                                newplayergetterversion = true;
-                            }
-                            logger.info("[EnjinMinecraftPlugin] MC 1.7.2 or above found, enabling version 2 log handling.");
-                        } else {
-                            logger.info("[EnjinMinecraftPlugin] MC 1.6.4 or below found, enabling version 1 log handling.");
-                        }
-                    } else if (majorversion > 1) {
-                        xpversion = 1;
-                        logger.info("[EnjinMinecraftPlugin] MC 1.3 or above found, enabling version 2 XP handling.");
-                        logversion = 2;
-                        logger.info("[EnjinMinecraftPlugin] MC 1.7.2 or above found, enabling version 2 log handling.");
-                        supportsuuid = true;
-                        mcMMOSupported = true;
-                        newplayergetterversion = true;
-                    }
-                    if (newplayergetterversion) {
-                        logger.info("[EnjinMinecraftPlugin] MC 1.7.10 or above found, enabling version 2 player handling.");
-                        playergetter = new NewPlayerGetter();
-                    } else {
-                        logger.info("[EnjinMinecraftPlugin] MC 1.7.9 or below found, enabling version 1 player handling.");
-                        playergetter = new OldPlayerGetter();
-                    }
-                } catch (Exception e) {
-                    logger.severe("[EnjinMinecraftPlugin] Unable to get server version! Inaccurate XP and log handling may occurr!");
-                    logger.severe("[EnjinMinecraftPlugin] Server Version String: " + getServer().getVersion());
-                }
-            } else {
-                logger.severe("[EnjinMinecraftPlugin] Unable to get server version! Inaccurate XP and log handling may occurr!");
-                logger.severe("[EnjinMinecraftPlugin] Server Version String: " + getServer().getVersion());
-            }
-
-
-            if (logversion == 2 && !isglowstone) {
-                org.apache.logging.log4j.core.Logger jlogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-                mcloglistener = new EnjinLogAppender();
-                jlogger.addAppender((Appender) mcloglistener);
-            } else {
-                Logger logger2 = getLogger().getParent();
-                debug("Top logger: " + logger2.getName());
-                mcloglistener = new EnjinLogHandler();
-                logger2.addHandler((Handler) mcloglistener);
-            }
+            /*
+            Append MC log listener to the root logger.
+             */
+            org.apache.logging.log4j.core.Logger log = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+            log.addAppender((Appender) mcLogListener);
 
             debug("Get the ban list");
             banlistertask = new BanLister(this);
@@ -408,7 +264,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                     Bukkit.getPluginManager().registerEvents(new NewPlayerChatListener(this), this);
                 }
             }
-            usingGroupManager = (permission instanceof Permission_GroupManager);
             //debug("Checking key valid.");
             //Bypass key checking, but only if the key looks valid
             registerEvents();
@@ -441,7 +296,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
         } catch (Throwable t) {
             Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
-            enjinlogger.warning("Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
+            enjinLogger.warning("Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
             t.printStackTrace();
             this.setEnabled(false);
         }
@@ -542,40 +397,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
     }
 
-    private void initVariables() throws Throwable {
-        s = Bukkit.getServer();
-        logger = Bukkit.getLogger();
-        File bukkitproperties = new File("server.properties");
-        File glowstoneproperties = new File("config/glowstone.yml");
-        if (bukkitproperties.exists()) {
-            try {
-                Properties serverProperties = new Properties();
-                FileInputStream in = new FileInputStream(new File("server.properties"));
-                serverProperties.load(in);
-                in.close();
-                minecraftport = serverProperties.getProperty("server-port");
-            } catch (Throwable t) {
-                t.printStackTrace();
-                enjinlogger.severe("Couldn't find a localhost ip! Please report this problem!");
-                throw new Exception("[Enjin Minecraft Plugin] Couldn't find a localhost ip! Please report this problem!");
-            }
-        } else if (glowstoneproperties.exists()) {
-            isglowstone = true;
-            YamlConfiguration glowstoneconfig = new YamlConfiguration();
-            try {
-                glowstoneconfig.load(glowstoneproperties);
-                minecraftport = glowstoneconfig.getString("server.port", "25565");
-            } catch (Exception e) {
-                e.printStackTrace();
-                enjinlogger.severe("Couldn't find a localhost ip! Please report this problem!");
-                throw new Exception("[Enjin Minecraft Plugin] Couldn't find a localhost ip! Please report this problem!");
-            }
-        } else {
-            enjinlogger.severe("Couldn't find the server configuration file! Please report this problem!");
-            throw new Exception("[Enjin Minecraft Plugin] Couldn't find the server configuration file! Please report this problem!");
-        }
-    }
-
     public void initConfig() {
         File configFile = new File(getDataFolder(), "config.json");
         EnjinMinecraftPlugin.configuration = JsonConfig.load(configFile, EnjinConfig.class);
@@ -620,13 +441,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         commandexecutertask = scheduler.runTaskTimer(this, commexecuter, 20L, 10L).getTaskId();
         commexecuter.loadCommands(Bukkit.getConsoleSender());
         //Only start the vote task if votifier is installed.
+
         if (votifierinstalled) {
             debug("Starting votifier task.");
             votetaskid = scheduler.runTaskTimerAsynchronously(this, votetask, 80L, 80L).getTaskId();
         }
-        if (configuration.isAutoUpdate() && bukkitversion) {
-            updatethread = scheduler.runTaskTimerAsynchronously(this, new Updater(this, 44560, this.getFile(), Updater.UpdateType.DEFAULT, true), 20 * 60 * 5, 20 * 60 * 5).getTaskId();
-        }
+
+        updatethread = scheduler.runTaskTimerAsynchronously(this, new Updater(this, 44560, this.getFile(), Updater.UpdateType.DEFAULT, true), 20 * 60 * 5, 20 * 60 * 5).getTaskId();
     }
 
     public void registerEvents() {
@@ -673,15 +494,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         //Bukkit.getScheduler().cancelTasks(this);
     }
 
-    public void unregisterEvents() {
-        debug("Unregistering events.");
-        HandlerList.unregisterAll(listener);
-    }
-
     private void setupVotifierListener() {
         if (Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
             System.out.println("[Enjin Minecraft Plugin] Votifier plugin found, enabling Votifier support.");
-            enjinlogger.info("Votifier plugin found, enabling Votifier support.");
+            enjinLogger.info("Votifier plugin found, enabling Votifier support.");
             Bukkit.getPluginManager().registerEvents(new VotifierListener(this), this);
             votifierinstalled = true;
 
@@ -700,43 +516,41 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void initPlugins() throws Throwable {
-        if (!Bukkit.getPluginManager().isPluginEnabled("TuxTwoLib")) {
-            tuxtwolibinstalled = false;
-            enjinlogger.info("Couldn't find the TuxTwoLib plugin. Only able to give items to online players only.");
-            getLogger().info("Couldn't find the TuxTwoLib plugin. Only able to give items to online players only.");
-        } else {
+        if (Bukkit.getPluginManager().isPluginEnabled("TuxTwoLib")) {
             tuxtwolibinstalled = true;
+            enjinLogger.info("TuxTwoLib is installed. Offline players can be given items.");
+            getLogger().info("TuxTwoLib is installed. Offline players can be given items.");
         }
+
         if (!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-            enjinlogger.warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
+            enjinLogger.warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
             getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
             return;
         }
+
         Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
-        if (supportsUUID()) {
-            boolean vaultupdated = false;
-            if (vault != null) {
-                String[] version = vault.getDescription().getVersion().split("\\.");
-                int majorver = Integer.parseInt(version[0]);
-                int minorver = Integer.parseInt(version[1]);
-                if (majorver > 1) {
-                    vaultupdated = true;
-                } else if (minorver > 3) {
-                    vaultupdated = true;
-                }
-            }
-            if (!vaultupdated) {
-                vaultneedsupdating = true;
-                enjinlogger.severe("This version of vault doesn't support UUID! Please update to the latest version here: http://dev.bukkit.org/bukkit-plugins/vault/files/");
-                enjinlogger.severe("Disabling vault integration until Vault is updated.");
-                getLogger().severe("This version of vault doesn't support UUID! Please update to the latest version here: http://dev.bukkit.org/bukkit-plugins/vault/files/");
-                getLogger().severe("Disabling vault integration until Vault is updated.");
-                return;
+        boolean vaultupdated = false;
+
+        if (vault != null) {
+            String[] version = vault.getDescription().getVersion().split("\\.");
+            int majorver = Integer.parseInt(version[0]);
+            int minorver = Integer.parseInt(version[1]);
+            if (majorver > 1) {
+                vaultupdated = true;
+            } else if (minorver > 3) {
+                vaultupdated = true;
             }
         }
-        debug("Initializing permissions.");
-        initPermissions();
-        setupEconomy();
+
+        if (!vaultupdated) {
+            vaultneedsupdating = true;
+            enjinLogger.severe("This version of vault doesn't support UUID! Please update to the latest version here: http://dev.bukkit.org/bukkit-plugins/vault/files/");
+            enjinLogger.severe("Disabling vault integration until Vault is updated.");
+            getLogger().severe("This version of vault doesn't support UUID! Please update to the latest version here: http://dev.bukkit.org/bukkit-plugins/vault/files/");
+            getLogger().severe("Disabling vault integration until Vault is updated.");
+            return;
+        }
+
         setupVanishNoPacket();
     }
 
@@ -747,139 +561,37 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
     }
 
-    private void setupEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
-            getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-
-                @Override
-                public void run() {
-                    if (supportsUUID() && !vaultneedsupdating) {
-                        try {
-                            economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
-                        } catch (AbstractMethodError e) {
-                            econcompatmode = true;
-                            enjinlogger.warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
-                            getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
-                        }
-                    }
-                }
-            }, 20 * 20);
-        }
-    }
-
-    private void initPermissions() throws Throwable {
-        RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
-        if (provider == null) {
-            enjinlogger.warning("Couldn't find a vault compatible value plugin! Please install one before using the Enjin Minecraft Plugin.");
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible value plugin! Please install one before using the Enjin Minecraft Plugin.");
-            return;
-        }
-        permission = provider.getProvider();
-        if (permission == null) {
-            enjinlogger.warning("Couldn't find a vault compatible value plugin! Please install one before using the Enjin Minecraft Plugin.");
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible value plugin! Please install one before using the Enjin Minecraft Plugin.");
-            return;
-        }
-    }
-
-    /**
-     * @param urls
-     * @param queryValues
-     * @return 0 = Invalid key, 1 = OK, 2 = Exception encountered.
-     * @throws MalformedURLException
-     */
-    public static int sendAPIQuery(String urls, String... queryValues) throws MalformedURLException {
-        URL url = new URL((usingSSL ? "https" : "http") + configuration.getApiUrl() + urls);
-        StringBuilder query = new StringBuilder();
-        try {
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.setReadTimeout(3000);
-            con.setConnectTimeout(3000);
-            con.setDoOutput(true);
-            con.setDoInput(true);
-            for (String val : queryValues) {
-                query.append('&');
-                query.append(val);
-            }
-            if (queryValues.length > 0) {
-                query.deleteCharAt(0); //remove first &
-            }
-
-            con.setRequestProperty("Content-length", String.valueOf(query.length()));
-            con.getOutputStream().write(query.toString().getBytes());
-            String read = PacketUtilities.readString(new BufferedInputStream(con.getInputStream()));
-            instance.debug("Reply from enjin on Enjin Key for url " + url.toString() + " and query " + query.toString() + ": " + read);
-            if (read.charAt(0) == '1') {
-                return 1;
-            }
-            return 0;
-        } catch (SSLHandshakeException e) {
-            enjinlogger.warning("SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] SSLHandshakeException, The plugin will use http without SSL. This may be less secure.");
-            usingSSL = false;
-            return sendAPIQuery(urls, queryValues);
-        } catch (SocketTimeoutException e) {
-            enjinlogger.warning("Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Timeout, the enjin server didn't respond within the required time. Please be patient and report this bug to enjin.");
-            return 2;
-        } catch (Throwable t) {
-            t.printStackTrace();
-            enjinlogger.warning("Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Failed to send query to enjin server! " + t.getClass().getName() + ". Data: " + url + "?" + query.toString());
-            return 2;
-        }
-    }
-
-    public static synchronized void setAuthKey(String key) {
-        configuration.setAuthKey(key);
-    }
-
-    public static synchronized String getAuthKey() {
-        return configuration.getAuthKey();
-    }
-
     private void setupPermissions() {
-        Plugin pex = this.getServer().getPluginManager().getPlugin("PermissionsEx");
-        if (pex != null) {
-            permissionsex = (PermissionsEx) pex;
+        if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
             debug("PermissionsEx found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(new PexChangeListener(this), this);
             return;
-        }
-
-        Plugin bperm = this.getServer().getPluginManager().getPlugin("bPermissions");
-        if (bperm != null) {
-            bpermissions = (Permissions) bperm;
+        } else if (Bukkit.getPluginManager().isPluginEnabled("bPermissions")) {
             debug("bPermissions found, hooking custom events.");
-            supportsglobalgroups = false;
-            Bukkit.getPluginManager().registerEvents(new bPermsChangeListener(this), this);
+            Bukkit.getPluginManager().registerEvents(new BPermissionsListener(this), this);
             return;
-        }
-
-        Plugin zPermissions = this.getServer().getPluginManager().getPlugin("zPermissions");
-        if (zPermissions != null) {
-            this.zPermissions = (ZPermissionsPlugin) zPermissions;
+        } else if (Bukkit.getPluginManager().isPluginEnabled("zPermissions")) {
             debug("zPermissions found, hooking custom events.");
-            supportsglobalgroups = true;
             Bukkit.getPluginManager().registerEvents(new ZPermissionsListener(this), this);
             return;
-        }
-
-        Plugin groupmanager = this.getServer().getPluginManager().getPlugin("GroupManager");
-        if (groupmanager != null) {
-            this.groupmanager = (GroupManager) groupmanager;
+        } else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
+            debug("PermissionsBukkit found, hooking custom events.");
+            Bukkit.getPluginManager().registerEvents(new PermissionsBukkitChangeListener(this), this);
+            return;
+        } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
             debug("GroupManager found, hooking custom events.");
+
+            Plugin plugin = Bukkit.getPluginManager().getPlugin("GroupManager");
             if (supportsUUID()) {
                 boolean gmupdated = false;
                 Pattern devbuild = Pattern.compile("\\(Dev(\\d+)\\.(\\d+)\\.(\\d+)\\)");
-                Matcher devmatch = devbuild.matcher(groupmanager.getDescription().getVersion());
+                Matcher devmatch = devbuild.matcher(plugin.getDescription().getVersion());
+
                 if (devmatch.find()) {
                     int majorver = Integer.parseInt(devmatch.group(1));
                     int minorver = Integer.parseInt(devmatch.group(2));
                     int buildver = Integer.parseInt(devmatch.group(3));
+
                     if (majorver > 2) {
                         gmupdated = true;
                     } else if (majorver == 2) {
@@ -889,30 +601,36 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                             gmupdated = true;
                         }
                     }
+
                     debug("GroupManager dev version: " + majorver + "." + minorver + "." + buildver);
                 } else {
-                    String[] version = groupmanager.getDescription().getVersion().split("\\.");
+                    String[] version = plugin.getDescription().getVersion().split("\\.");
                     int majorver = Integer.parseInt(version[0]);
                     Pattern numberpattern = Pattern.compile("\\d+");
                     int minorver = 0;
+
                     if (version.length > 1) {
                         Matcher match = numberpattern.matcher(version[1]);
+
                         if (match.find()) {
                             minorver = Integer.parseInt(match.group());
                         }
                     }
+
                     int revver = 0;
+
                     if (version.length > 2) {
                         Matcher match = numberpattern.matcher(version[2]);
+
                         try {
                             if (match.find()) {
                                 revver = Integer.parseInt(match.group());
                             }
-                        } catch (Exception e) {
-
-                        }
+                        } catch (Exception e) {}
                     }
+
                     debug("GroupManager version: " + majorver + "." + minorver + "." + revver);
+
                     if (majorver > 2) {
                         gmupdated = true;
                     } else if (majorver == 2 && minorver > 1) {
@@ -924,8 +642,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
                 if (!gmupdated) {
                     gmneedsupdating = true;
-                    enjinlogger.severe("This version of GroupManager doesn't support UUID! Please update to the latest version here: http://tiny.cc/EssentialsGMZip");
-                    enjinlogger.severe("Disabling GroupManager integration until GroupManager is updated.");
+                    enjinLogger.severe("This version of GroupManager doesn't support UUID! Please update to the latest version here: http://tiny.cc/EssentialsGMZip");
+                    enjinLogger.severe("Disabling GroupManager integration until GroupManager is updated.");
                     getLogger().severe("This version of GroupManager doesn't support UUID! Please update to the latest version here: http://tiny.cc/EssentialsGMZip");
                     getLogger().severe("Disabling GroupManager integration until GroupManager is updated.");
                     return;
@@ -935,87 +653,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             supportsglobalgroups = false;
             Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
             return;
-        }
-        Plugin bukkitperms = this.getServer().getPluginManager().getPlugin("PermissionsBukkit");
-        if (bukkitperms != null) {
-            this.permissionsbukkit = (PermissionsPlugin) bukkitperms;
-            debug("PermissionsBukkit found, hooking custom events.");
-            Bukkit.getPluginManager().registerEvents(new PermissionsBukkitChangeListener(this), this);
-            return;
-        }
-        debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
-        debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
-
-    }
-
-    public int getTotalXP(int level, float xp) {
-        int atlevel = 0;
-        int totalxp = 0;
-        int xpneededforlevel = 0;
-        if (xpversion == 1) {
-            xpneededforlevel = 17;
-            while (atlevel < level) {
-                atlevel++;
-                totalxp += xpneededforlevel;
-                if (atlevel >= 16) {
-                    xpneededforlevel += 3;
-                }
-            }
-            //We only have 2 versions at the moment
         } else {
-            xpneededforlevel = 7;
-            boolean odd = true;
-            while (atlevel < level) {
-                atlevel++;
-                totalxp += xpneededforlevel;
-                if (odd) {
-                    xpneededforlevel += 3;
-                    odd = false;
-                } else {
-                    xpneededforlevel += 4;
-                    odd = true;
-                }
-            }
-        }
-        totalxp = (int) (totalxp + (xp * xpneededforlevel));
-        return totalxp;
-    }
-
-    /**
-     * Use this to get any player's stats, whether they are online or offline.
-     *
-     * @param player the player you want to get stats for.
-     * @return the StatsPlayer object. This function always returns a StatsPlayer.
-     */
-    public StatsPlayer getPlayerStats(OfflinePlayer player) {
-        if (supportsUUID()) {
-            String uuid = player.getUniqueId().toString().toLowerCase();
-            StatsPlayer stats = playerstats.get(uuid);
-            if (stats == null) {
-                stats = new StatsPlayer(player);
-                playerstats.put(uuid, stats);
-            }
-            return stats;
-        } else {
-            StatsPlayer stats = playerstats.get(player.getName().toLowerCase());
-            if (stats == null) {
-                stats = new StatsPlayer(player);
-                playerstats.put(player.getName().toLowerCase(), stats);
-            }
-            return stats;
-        }
-    }
-
-    /**
-     * Please don't use this for your plugins as this is only for internal use.
-     *
-     * @param player
-     */
-    public void setPlayerStats(StatsPlayer player) {
-        if (supportsUUID()) {
-            playerstats.put(player.getUUID().toLowerCase(), player);
-        } else {
-            playerstats.put(player.getName(), player);
+            debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
+            debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
         }
     }
 
@@ -1164,7 +804,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             Entry<String, CommandWrapper> code = thecodes.next();
             headsconfig.set(code.getKey() + ".hash", code.getValue().getHash());
             headsconfig.set(code.getKey() + ".result", code.getValue().getResult());
-            headsconfig.set(code.getKey() + ".value", code.getValue().getCommand());
+            headsconfig.set(code.getKey() + ".command", code.getValue().getCommand());
         }
         try {
             headsconfig.save(headsfile);
@@ -1202,7 +842,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 Set<String> keys = commandconfig.getValues(false).keySet();
                 for (String key : keys) {
                     String hash = commandconfig.getString(key + ".hash");
-                    String command = commandconfig.getString(key + ".value");
+                    String command = commandconfig.getString(key + ".command");
                     String result = commandconfig.getString(key + ".result");
                     CommandWrapper comm = new CommandWrapper(Bukkit.getConsoleSender(), command, key);
                     comm.setHash(hash);
@@ -1217,19 +857,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public EnjinLogInterface getMcLogListener() {
-        return mcloglistener;
+        return mcLogListener;
     }
 
     public String getLastLogLine() {
-        return mcloglistener.getLastLine();
+        return mcLogListener.getLine();
     }
 
     public static boolean supportsUUID() {
         return supportsuuid;
-    }
-
-    public static boolean econUpdated() {
-        return !econcompatmode;
     }
 
     public boolean isVanished(Player player) {
@@ -1316,7 +952,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void pollModules() {
         if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
             modulesLastPolled = System.currentTimeMillis();
-            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules(getAuthKey());
+            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules(EnjinMinecraftPlugin.getConfiguration().getAuthKey());
 
             if (data == null || data.getError() != null) {
                 debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
@@ -1332,10 +968,5 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 modules.put(entry.getKey(), entry.getValue());
             }
         }
-    }
-
-    @Override
-    public InstructionHandler getInstructionHandler() {
-        return instructionHandler;
     }
 }

@@ -33,22 +33,22 @@ public class DirectiveNode {
         }
 
         if (!sender.isOp() && permission != null && permission.value().equals("") && !sender.hasPermission(permission.value())) {
-            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.value() + "\" or OP to run that value.");
+            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.value() + "\" or OP to run that directive.");
             return;
         }
 
         try {
             if (method.getParameters()[0].getType() == Player.class && !(sender instanceof Player)) {
-                sender.sendMessage("This value can only be used in-game by a player.");
+                sender.sendMessage("This directive can only be used in-game by a player.");
                 return;
             }
 
             if (method.getParameters()[0].getType() == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
-                sender.sendMessage("This value can only be used by the console.");
+                sender.sendMessage("This directive can only be used by the console.");
                 return;
             }
 
-            Enjin.getPlugin().debug("Executing value: " + data.parent() + "-" + data.value());
+            Enjin.getPlugin().debug("Executing directive: " + data.parent() + "-" + data.value());
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
             e.printStackTrace();

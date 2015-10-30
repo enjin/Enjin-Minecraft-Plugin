@@ -111,7 +111,7 @@ public class DelayedCommandExecuter implements Runnable {
             try {
                 while ((comm = commandqueue.peek()) != null && comm.getDelay() <= System.currentTimeMillis()) {
                     comm = commandqueue.poll();
-                    Enjin.getPlugin().debug("Executing delayed value: " + comm.getCommand());
+                    Enjin.getPlugin().debug("Executing delayed command: " + comm.getCommand());
                     Bukkit.getServer().dispatchCommand(comm.getSender(), comm.getCommand());
                     comm.setResult(plugin.getLastLogLine());
                     Enjin.getPlugin().debug("Result: " + comm.getResult());

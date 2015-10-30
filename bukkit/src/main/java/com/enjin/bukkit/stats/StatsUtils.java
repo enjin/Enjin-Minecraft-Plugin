@@ -1,5 +1,6 @@
 package com.enjin.bukkit.stats;
 
+import com.enjin.bukkit.managers.StatsManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -19,7 +20,7 @@ public class StatsUtils {
                 if (oitem instanceof JSONObject) {
                     JSONObject item = (JSONObject) oitem;
                     StatsPlayer splayer = new StatsPlayer(item);
-                    plugin.setPlayerStats(splayer);
+                    StatsManager.setPlayerStats(splayer);
                 }
             }
         } catch (ParseException e) {

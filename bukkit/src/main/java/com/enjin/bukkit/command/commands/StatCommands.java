@@ -3,6 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.managers.StatsManager;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.WriteStats;
 import org.bukkit.Bukkit;
@@ -27,7 +28,7 @@ public class StatCommands {
             String cumulative = args[4].trim();
             boolean existing = cumulative.equalsIgnoreCase("true");
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
-            StatsPlayer statsPlayer = EnjinMinecraftPlugin.instance.getPlayerStats(offlinePlayer);
+            StatsPlayer statsPlayer = StatsManager.getPlayerStats(offlinePlayer);
 
             try {
                 statsPlayer.addCustomStat(plugin, statName, statValue.indexOf(".") > -1 ? Double.parseDouble(statValue) : Integer.parseInt(statValue), existing);
@@ -43,20 +44,15 @@ public class StatCommands {
     @Permission(value = "enjin.playerstats")
     @Directive(parent = "enjin", value = "playerstats")
     public static void playerStats(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (args.length == 1) {
             StatsPlayer player = null;
             String index = args[0].toLowerCase();
-            if (plugin.supportsUUID()) {
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(index);
-                UUID uuid = offlinePlayer.getUniqueId();
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(index);
 
-                if (plugin.playerstats.containsKey(uuid.toString().toLowerCase())) {
-                    player = plugin.playerstats.get(uuid.toString());
-                }
-            } else if (plugin.playerstats.containsKey(index)) {
-                player = plugin.playerstats.get(index);
+            if (plugin.playerstats.containsKey(offlinePlayer.getUniqueId().toString().toLowerCase())) {
+                player = plugin.playerstats.get(offlinePlayer.getUniqueId().toString());
             }
 
             if (player != null) {
@@ -82,14 +78,14 @@ public class StatCommands {
     @Permission(value = "enjin.savestats")
     @Directive(parent = "enjin", value = "savestats")
     public static void saveStats(CommandSender sender, String[] args) {
-        new WriteStats(EnjinMinecraftPlugin.instance).write("stats.stats");
+        new WriteStats(EnjinMinecraftPlugin.getInstance()).write("stats.stats");
         sender.sendMessage(ChatColor.GREEN + "Stats saved to stats.stats.");
     }
 
     @Permission(value = "enjin.serverstats")
     @Directive(parent = "enjin", value = "serverstats")
     public static void serverStats(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
         Date date = new Date(plugin.serverstats.getLastserverstarttime());
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 

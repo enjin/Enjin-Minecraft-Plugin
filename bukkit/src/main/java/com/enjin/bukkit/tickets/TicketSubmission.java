@@ -56,7 +56,7 @@ public class TicketSubmission {
         }
 
         player.sendMessage("\n" + ChatColor.GOLD + "Your ticket is being submitted!");
-        RPCData<Boolean> result = service.createTicket(EnjinMinecraftPlugin.getAuthKey(), moduleId, (String) subject.getAnswer(), (String) description.getAnswer(), player.getName(), extra);
+        RPCData<Boolean> result = service.createTicket(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), moduleId, (String) subject.getAnswer(), (String) description.getAnswer(), player.getName(), extra);
         if (player != null) {
             if (result != null) {
                 if (result.getError() != null) {

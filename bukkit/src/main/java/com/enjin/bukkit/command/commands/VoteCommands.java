@@ -14,7 +14,7 @@ public class VoteCommands {
     @Permission(value = "enjin.test.vote")
     @Directive(parent = "enjin", value = "vote")
     public static void vote(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (args.length != 2) {
             sender.sendMessage("Usage: /enjin vote <username> <list>");

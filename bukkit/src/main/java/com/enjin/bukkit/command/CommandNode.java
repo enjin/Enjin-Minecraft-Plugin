@@ -38,7 +38,7 @@ public class CommandNode {
         }
 
         if (!sender.isOp() && permission != null && permission.value().equals("") && !sender.hasPermission(permission.value())) {
-            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.value() + "\" or OP to run that value.");
+            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.value() + "\" or OP to run that command.");
             return;
         }
 
@@ -52,16 +52,16 @@ public class CommandNode {
 
         try {
             if (method.getParameters()[0].getType() == Player.class && !(sender instanceof Player)) {
-                sender.sendMessage("This value can only be used in-game by a player.");
+                sender.sendMessage("This command can only be used in-game by a player.");
                 return;
             }
 
             if (method.getParameters()[0].getType() == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
-                sender.sendMessage("This value can only be used by the console.");
+                sender.sendMessage("This command can only be used by the console.");
                 return;
             }
 
-            Enjin.getPlugin().debug("Executing value: " + data.value());
+            Enjin.getPlugin().debug("Executing command: " + data.value());
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
             e.printStackTrace();

@@ -25,7 +25,7 @@ public class GlyphUtil {
             loadGlyphSizes();
         } catch (IOException e) {
             glyphWidth = null;
-            EnjinMinecraftPlugin.instance.getLogger().severe("Unable to read width of unicode glyphs.");
+            EnjinMinecraftPlugin.getInstance().getLogger().severe("Unable to read width of unicode glyphs.");
             return 15;
         }
 
@@ -71,7 +71,7 @@ public class GlyphUtil {
         if (glyphWidth == null) {
             glyphWidth = new byte[65536];
 
-            InputStream is = EnjinMinecraftPlugin.instance.getResource("glyph_sizes.bin");
+            InputStream is = EnjinMinecraftPlugin.getInstance().getResource("glyph_sizes.bin");
             is.read(glyphWidth);
         }
     }

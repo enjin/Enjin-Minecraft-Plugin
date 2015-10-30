@@ -7,8 +7,11 @@ import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.config.EnjinConfig;
-import com.enjin.bukkit.threaded.NewKeyVerifier;
+import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.threaded.ReportPublisher;
+import com.enjin.core.EnjinServices;
+import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.services.PluginService;
 import com.vexsoftware.votifier.Votifier;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
@@ -96,7 +99,7 @@ public class CoreCommands {
                 + ChatColor.RESET + "Purchase the specified item ID in the server shop.");
     }
 
-    @Permission(value = "enjin.value")
+    @Permission(value = "enjin.broadcast")
     @Directive(parent = "enjin", value = "broadcast")
     public static void broadcast(CommandSender sender, String[] args) {
         if (args.length < 1) {
@@ -129,7 +132,7 @@ public class CoreCommands {
     @Permission(value = "enjin.give")
     @Directive(parent = "enjin", value = "give")
     public static void give(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "Syntax: /enjin give <player|uuid> <material>");
@@ -332,22 +335,22 @@ public class CoreCommands {
             return;
         }
 
-        EnjinMinecraftPlugin.enjinlogger.info("Checking if key is valid");
-        EnjinMinecraftPlugin.instance.getLogger().info("Checking if key is valid");
+        EnjinMinecraftPlugin.enjinLogger.info("Checking if key is valid");
+        EnjinMinecraftPlugin.getInstance().getLogger().info("Checking if key is valid");
 
-        NewKeyVerifier verifier = EnjinMinecraftPlugin.instance.getVerifier();
-        if (verifier == null || verifier.completed) {
-            verifier = new NewKeyVerifier(EnjinMinecraftPlugin.instance, args[0], sender, false);
-            EnjinMinecraftPlugin.instance.setVerifier(verifier);
-            Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.instance, verifier);
-        } else {
-            sender.sendMessage(ChatColor.RED + "Please wait until we verify the key before you try again!");
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
+            PluginService service = EnjinServices.getService(PluginService.class);
+            RPCData<Boolean> data = service.auth(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), Bukkit.getPort(), false);
+
+            if (data.getError() != null) {
+                sender.sendMessage(ChatColor.RED + data.getError().getMessage());
+            }
+        });
     }
     @Permission(value = "enjin.lag")
     @Directive(parent = "enjin", value = "lag")
     public static void lag(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + plugin.tpstask.getTPSAverage());
         sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + plugin.tpstask.getLastTPSMeasurement());
@@ -362,7 +365,7 @@ public class CoreCommands {
     @Permission(value = "enjin.push")
     @Directive(parent = "enjin", value = "push")
     public static void push(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         OfflinePlayer[] players = Bukkit.getOfflinePlayers();
         Map<String, String> perms = plugin.playerperms;
@@ -408,7 +411,7 @@ public class CoreCommands {
     @Permission(value = "enjin.report")
     @Directive(parent = "enjin", value = "report")
     public static void report(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
         Date date = new Date();
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
@@ -418,22 +421,24 @@ public class CoreCommands {
         report.append("Enjin Debug Report generated on " + format.format(date) + "\n");
         report.append("Enjin plugin version: " + plugin.getDescription().getVersion() + "\n");
 
-        Plugin permissions = null;
-        if (plugin.permission != null) {
-            permissions = Bukkit.getPluginManager().getPlugin(plugin.permission.getName());
-        }
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            Plugin permissions = null;
+            if (VaultManager.getPermission() != null) {
+                permissions = Bukkit.getPluginManager().getPlugin(VaultManager.getPermission().getName());
+            }
 
-        if (permissions != null) {
-            report.append("Permissions plugin used: " + permissions.getDescription().getName() + " version " + permissions.getDescription().getVersion() + "\n");
-            report.append("Vault permissions system reported: " + plugin.permission.getName() + "\n");
-        }
+            if (permissions != null) {
+                report.append("Permissions plugin used: " + permissions.getDescription().getName() + " version " + permissions.getDescription().getVersion() + "\n");
+            }
 
-        if (plugin.economy != null) {
-            report.append("Vault economy system reported: " + plugin.economy.getName() + "\n");
-        }
+            Plugin economy = null;
+            if (VaultManager.getEconomy() != null) {
+                economy = Bukkit.getPluginManager().getPlugin(VaultManager.getEconomy().getName());
+            }
 
-        if (plugin.econcompatmode) {
-            report.append("WARNING! Economy plugin doesn't support UUID, needs update.\n");
+            if (economy != null) {
+                report.append("Economy plugin used: " + economy.getDescription().getName() + " version " + economy.getDescription().getVersion() + "\n");
+            }
         }
 
         Plugin v = Bukkit.getPluginManager().getPlugin("Votifier");

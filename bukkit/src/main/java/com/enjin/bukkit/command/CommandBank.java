@@ -106,7 +106,7 @@ public class CommandBank implements Listener {
                 continue;
             }
 
-            Enjin.getPlugin().debug("Registering value: " + node.getData().value());
+            Enjin.getPlugin().debug("Registering command: " + node.getData().value());
             CommandBank.nodes.put(node.getData().value(), node);
             registerCommandAlias(node.getData().value(), node.getData().aliases());
         }
@@ -125,7 +125,7 @@ public class CommandBank implements Listener {
                     continue;
                 }
 
-                Enjin.getPlugin().debug("Registering value: " + node.getData().value() + " for value: " + node.getData().parent());
+                Enjin.getPlugin().debug("Registering directive: " + node.getData().value() + " for command: " + node.getData().parent());
                 command.getDirectives().put(node.getData().value(), node);
                 registerDirectiveAlias(node.getData().parent(), node.getData().value(), node.getData().aliases());
             }
@@ -134,7 +134,7 @@ public class CommandBank implements Listener {
 
     public static void registerCommandAlias(String command, String ... alias) {
         if (nodes.containsKey(alias)) {
-            Enjin.getPlugin().debug("That alias has already been registered by another value.");
+            Enjin.getPlugin().debug("That alias has already been registered by another command.");
             return;
         }
 
@@ -150,7 +150,7 @@ public class CommandBank implements Listener {
         CommandNode node = nodes.get(command);
         if (node != null) {
             if (node.getDirectives().containsKey(alias)) {
-                Enjin.getPlugin().debug("That alias has already been registered by another value.");
+                Enjin.getPlugin().debug("That alias has already been registered by another directive.");
                 return;
             }
 

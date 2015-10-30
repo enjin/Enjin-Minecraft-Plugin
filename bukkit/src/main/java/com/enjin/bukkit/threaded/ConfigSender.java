@@ -33,7 +33,7 @@ public class ConfigSender implements Runnable {
             if (!plugin.testHTTPSconnection()) {
                 EnjinMinecraftPlugin.usingSSL = false;
                 plugin.getLogger().warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
-                EnjinMinecraftPlugin.enjinlogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+                EnjinMinecraftPlugin.enjinLogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
             }
         }
         StringBuilder builder = new StringBuilder();
@@ -56,7 +56,8 @@ public class ConfigSender implements Runnable {
             con.setRequestProperty("User-Agent", "Mozilla/4.0");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             //StringBuilder builder = new StringBuilder();
-            builder.append("authkey=" + encode(EnjinMinecraftPlugin.configuration.getAuthKey()));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.getConfiguration().getAuthKey()));
+            builder.append("authkey=" + encode(EnjinMinecraftPlugin.getConfiguration().getAuthKey()));
 
             /* TODO: Update to work with json configuration
             Set<Entry<String, ConfigValueTypes>> es = plugin.configvalues.entrySet();
@@ -96,7 +97,7 @@ public class ConfigSender implements Runnable {
                 }
             } else if (success.equalsIgnoreCase("auth_error")) {
                 plugin.authkeyinvalid = true;
-                EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
+                EnjinMinecraftPlugin.enjinLogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.stopTask();
                 Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
@@ -106,17 +107,17 @@ public class ConfigSender implements Runnable {
                     }
                 }
             } else if (success.equalsIgnoreCase("bad_data")) {
-                EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+                EnjinMinecraftPlugin.enjinLogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
                 plugin.getLogger().warning("Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
             } else if (success.equalsIgnoreCase("retry_later")) {
-                EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin said to wait, will retry at next boot.");
+                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Enjin said to wait, will retry at next boot.");
                 plugin.getLogger().info("Enjin said to wait, will retry at next boot.");
             } else if (success.equalsIgnoreCase("connect_error")) {
-                EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
                 plugin.getLogger().info("Enjin is having something going on, if you continue to see this error please report it to enjin.");
             } else {
-                EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
-                EnjinMinecraftPlugin.enjinlogger.info("Response code: " + success);
+                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Something happened on sync, if you continue to see this error please report it to enjin.");
+                EnjinMinecraftPlugin.enjinLogger.info("Response code: " + success);
                 plugin.getLogger().info("Something happened on sync, if you continue to see this error please report it to enjin.");
                 plugin.getLogger().info("Response code: " + success);
             }
@@ -125,7 +126,7 @@ public class ConfigSender implements Runnable {
             plugin.lasterror = new EnjinErrorReport(e, "Config sender. Information sent:\n" + builder.toString());
         } catch (Throwable t) {
             plugin.lasterror = new EnjinErrorReport(t, "config sender. Information sent:\n" + builder.toString());
-            EnjinMinecraftPlugin.enjinlogger.warning(plugin.lasterror.toString());
+            EnjinMinecraftPlugin.enjinLogger.warning(plugin.lasterror.toString());
         }
     }
 
@@ -140,7 +141,7 @@ public class ConfigSender implements Runnable {
     }
 
     private URL getUrl() throws Throwable {
-        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.configuration.getApiUrl() + "minecraft-config");
+        return new URL((EnjinMinecraftPlugin.usingSSL ? "https" : "http") + EnjinMinecraftPlugin.getConfiguration().getApiUrl() + "minecraft-config");
     }
 
     private String encode(String in) throws UnsupportedEncodingException {

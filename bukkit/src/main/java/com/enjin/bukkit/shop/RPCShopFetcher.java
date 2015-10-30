@@ -20,7 +20,7 @@ public class RPCShopFetcher implements Runnable {
     private UUID uuid;
 
     public RPCShopFetcher(Player player) {
-        this.plugin = EnjinMinecraftPlugin.instance;
+        this.plugin = EnjinMinecraftPlugin.getInstance();
         this.uuid = player.getUniqueId();
     }
 
@@ -34,7 +34,7 @@ public class RPCShopFetcher implements Runnable {
         }
 
         Player player = p.get();
-        RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(plugin.getAuthKey(), player.getName());
+        RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), player.getName());
 
         if (data == null) {
             player.spigot().sendMessage(new ComponentBuilder("Failed to fetch shop data.").color(ChatColor.RED).create());

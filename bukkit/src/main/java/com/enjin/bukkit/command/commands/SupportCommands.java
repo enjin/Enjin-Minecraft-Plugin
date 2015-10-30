@@ -25,11 +25,11 @@ public class SupportCommands {
     @Permission(value = "enjin.support")
     @Directive(parent = "enjin", value = "support")
     public static void support(Player sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
         Map<Integer, Module> modules = EnjinMinecraftPlugin.getModules();
 
-        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
-            sender.sendMessage("Cannot use this value without setting your key.");
+        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
+            sender.sendMessage("Cannot use this command without setting your key.");
             return;
         }
 
@@ -81,10 +81,10 @@ public class SupportCommands {
     @Permission(value = "enjin.ticket")
     @Directive(parent = "enjin", value = "ticket")
     public static void ticket(Player sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
-        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
-            sender.sendMessage("Cannot use this value without setting your key.");
+        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
+            sender.sendMessage("Cannot use this command without setting your key.");
             return;
         }
 
@@ -92,7 +92,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Ticket>> data = service.getPlayerTickets(plugin.getAuthKey(), -1, player.getName());
+                RPCData<List<Ticket>> data = service.getPlayerTickets(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), -1, player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -113,7 +113,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Reply>> data = service.getReplies(plugin.getAuthKey(), -1, args[0], player.getName());
+                RPCData<List<Reply>> data = service.getReplies(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), -1, args[0], player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -136,9 +136,9 @@ public class SupportCommands {
     @Permission(value = "enjin.ticket.open")
     @Directive(parent = "enjin", value = "openticket")
     public static void openTicket(Player sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
-        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
+        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
             sender.sendMessage("Cannot use this command without setting your key.");
             return;
         }
@@ -147,7 +147,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Ticket>> data = service.getTickets(plugin.getAuthKey(), -1, TicketStatus.open);
+                RPCData<List<Ticket>> data = service.getTickets(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), -1, TicketStatus.open);
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -168,7 +168,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Reply>> data = service.getReplies(plugin.getAuthKey(), -1, args[0], player.getName());
+                RPCData<List<Reply>> data = service.getReplies(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), -1, args[0], player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -191,9 +191,9 @@ public class SupportCommands {
     @Permission(value = "enjin.ticket.reply")
     @Directive(parent = "enjin", value = "reply")
     public static void reply(Player sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
-        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
+        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
             sender.sendMessage("Cannot use this command without setting your key.");
             return;
         }
@@ -220,7 +220,7 @@ public class SupportCommands {
             final String finalMessage = message;
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(plugin.getAuthKey(), preset, ticket, finalMessage, "public", TicketStatus.open, sender.getName());
+                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), preset, ticket, finalMessage, "public", TicketStatus.open, sender.getName());
                 if (result != null) {
                     if (result.getError() == null) {
                         sender.sendMessage("You replied to the ticket successfully.");
@@ -237,9 +237,9 @@ public class SupportCommands {
     @Permission(value = "enjin.ticket.status")
     @Directive(parent = "enjin", value = "ticketstatus")
     public static void ticketStatus(Player sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
-        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
+        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
             sender.sendMessage("Cannot use this command without setting your key.");
             return;
         }
@@ -265,7 +265,7 @@ public class SupportCommands {
             }
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(plugin.getAuthKey(), preset, ticket, status);
+                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), preset, ticket, status);
                 if (result != null) {
                     if (result.getError() == null) {
                         if (result.getResult()) {

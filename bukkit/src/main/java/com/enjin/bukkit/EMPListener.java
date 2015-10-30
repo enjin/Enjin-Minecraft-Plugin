@@ -1,5 +1,6 @@
 package com.enjin.bukkit;
 
+import com.enjin.bukkit.managers.VaultManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,8 +55,8 @@ public class EMPListener implements Listener {
             p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Your version of GroupManager is outdated. Groups and permissions will not update correctly.");
             p.sendMessage(ChatColor.DARK_RED + "Download the latest version here: " + ChatColor.GOLD + "http://tiny.cc/EssentialsGMZip");
         }
-        if (EnjinMinecraftPlugin.econcompatmode && p.hasPermission("enjin.notify.econoutdated")) {
-            p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + plugin.economy.getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
+        if (VaultManager.isVaultEnabled() && VaultManager.getEconomy() != null && !VaultManager.isEconomyUpToDate() && p.hasPermission("enjin.notify.econoutdated")) {
+            p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + VaultManager.getEconomy().getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
         }
         if (EnjinMinecraftPlugin.isMcmmoOutdated() && p.hasPermission("enjin.notify.mcmmooutdated")) {
             p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] Your version of mcMMO is out of date! Please update to collect mcMMO stats:");

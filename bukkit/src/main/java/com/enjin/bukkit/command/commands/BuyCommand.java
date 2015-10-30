@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class BuyCommand {
     @Command(value = "buy")
     public static void buy(Player player, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         Optional<Integer> selection;
         try {
@@ -121,6 +121,6 @@ public class BuyCommand {
     }
 
     private static void fetchShop(Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.instance, new RPCShopFetcher(player));
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new RPCShopFetcher(player));
     }
 }

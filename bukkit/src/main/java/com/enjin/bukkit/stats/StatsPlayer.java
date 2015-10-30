@@ -8,7 +8,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.util.PrimitiveUtils;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
@@ -398,34 +400,37 @@ public class StatsPlayer {
         player.put("pvpkills", new Integer(pvpkills));
         player.put("totalxp", new Integer(totalxp));
         player.put("xplevel", new Integer(xplevel));
-        if (EnjinMinecraftPlugin.economy != null) {
-            if (EnjinMinecraftPlugin.supportsUUID() && EnjinMinecraftPlugin.econUpdated()) {
-                OfflinePlayer oplayer = null;
-                try {
-                    oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUUID()));
-                } catch (IllegalArgumentException e) {
 
-                }
-                if (oplayer == null || oplayer.getName() == null || oplayer.getName().equals("")) {
-                    oplayer = Bukkit.getOfflinePlayer(getName());
-                }
-                try {
-                    if (EnjinMinecraftPlugin.economy.hasAccount(oplayer)) {
-                        player.put("moneyamount", EnjinMinecraftPlugin.economy.getBalance(oplayer));
+        if (VaultManager.isVaultEnabled()) {
+            Economy economy = VaultManager.getEconomy();
+            if (economy != null) {
+                if (EnjinMinecraftPlugin.supportsUUID() && VaultManager.isEconomyUpToDate()) {
+                    OfflinePlayer oplayer = null;
+                    try {
+                        oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUUID()));
+                    } catch (IllegalArgumentException e) {
+
                     }
-                } catch (Exception e) {
 
-                }
-            } else {
-                try {
-                    if (EnjinMinecraftPlugin.economy.hasAccount(getName())) {
-                        player.put("moneyamount", EnjinMinecraftPlugin.economy.getBalance(getName()));
+                    if (oplayer == null || oplayer.getName() == null || oplayer.getName().equals("")) {
+                        oplayer = Bukkit.getOfflinePlayer(getName());
                     }
-                } catch (Exception e) {
 
+                    try {
+                        if (economy.hasAccount(oplayer)) {
+                            player.put("moneyamount", economy.getBalance(oplayer));
+                        }
+                    } catch (Exception e) {}
+                } else {
+                    try {
+                        if (economy.hasAccount(getName())) {
+                            player.put("moneyamount", economy.getBalance(getName()));
+                        }
+                    } catch (Exception e) {}
                 }
             }
         }
+
         JSONObject pveentitykills = new JSONObject();
         for (Entry<EntityType, Integer> ent : creaturekills.entrySet()) {
             try {

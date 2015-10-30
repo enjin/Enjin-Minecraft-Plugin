@@ -23,7 +23,7 @@ public class TicketCreationSession {
     private List<Question> conditional = new ArrayList<Question>();
     private Map<Integer, QuestionResponse> responses = new HashMap<Integer, QuestionResponse>();
 
-    private EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+    private EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
     private UUID uuid;
     private Conversation conversation;
 
@@ -63,7 +63,7 @@ public class TicketCreationSession {
         }
 
         if (factory == null) {
-            factory = new ConversationFactory(EnjinMinecraftPlugin.instance);
+            factory = new ConversationFactory(EnjinMinecraftPlugin.getInstance());
             factory.addConversationAbandonedListener(new ConversationAbandonedListener() {
                 @Override
                 public void conversationAbandoned(ConversationAbandonedEvent event) {

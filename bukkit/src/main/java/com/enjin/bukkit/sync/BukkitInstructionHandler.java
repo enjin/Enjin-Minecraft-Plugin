@@ -1,5 +1,6 @@
 package com.enjin.bukkit.sync;
 
+import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
@@ -34,27 +35,27 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void addToGroup(String player, String group, String world) {
-        if (!Bukkit.getPluginManager().isPluginEnabled("Vault") || EnjinMinecraftPlugin.permission == null) {
+        if (!VaultManager.isVaultEnabled() || VaultManager.getPermission() == null) {
             return;
         }
 
         if (world == null || world.isEmpty() || world.equals("*") || Bukkit.getWorld(world) == null) {
-            EnjinMinecraftPlugin.permission.playerAddGroup((World) null, player, group);
+            VaultManager.getPermission().playerAddGroup((World) null, player, group);
         } else {
-            EnjinMinecraftPlugin.permission.playerAddGroup(Bukkit.getWorld(world), player, group);
+            VaultManager.getPermission().playerAddGroup(Bukkit.getWorld(world), player, group);
         }
     }
 
     @Override
     public void removeFromGroup(String player, String group, String world) {
-        if (!Bukkit.getPluginManager().isPluginEnabled("Vault") || EnjinMinecraftPlugin.permission == null) {
+        if (!VaultManager.isVaultEnabled() || VaultManager.getPermission() == null) {
             return;
         }
 
         if (world == null || world.isEmpty() || world.equals("*") || Bukkit.getWorld(world) == null) {
-            EnjinMinecraftPlugin.permission.playerAddGroup((World) null, player, group);
+            VaultManager.getPermission().playerAddGroup((World) null, player, group);
         } else {
-            EnjinMinecraftPlugin.permission.playerAddGroup(Bukkit.getWorld(world), player, group);
+            VaultManager.getPermission().playerAddGroup(Bukkit.getWorld(world), player, group);
         }
     }
 
@@ -66,7 +67,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
             }
         }
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.instance, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command), delay <= 0 ? 0 : delay * 20);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command), delay <= 0 ? 0 : delay * 20);
 
         RPCPacketManager.getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, ""));
     }

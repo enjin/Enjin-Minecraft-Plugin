@@ -1,6 +1,7 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.managers.StatsManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,7 +20,8 @@ public class NewPlayerChatListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        plugin.getPlayerStats(event.getPlayer()).addChatLine();
+
+        StatsManager.getPlayerStats(event.getPlayer()).addChatLine();
     }
 
 }

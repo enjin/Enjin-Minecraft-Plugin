@@ -21,7 +21,7 @@ public class ShopUtil {
     private static DecimalFormat priceFormat = new DecimalFormat("#.00");
 
     public static void sendTextShop(Player player, PlayerShopInstance instance, int page) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (instance.getActiveShop() == null) {
             plugin.debug("Sending a list of shops to " + player.getName());

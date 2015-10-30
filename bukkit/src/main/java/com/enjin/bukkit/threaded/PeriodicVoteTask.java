@@ -28,7 +28,7 @@ public class PeriodicVoteTask implements Runnable {
                 if (!plugin.testHTTPSconnection()) {
                     EnjinMinecraftPlugin.usingSSL = false;
                     plugin.getLogger().warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
-                    EnjinMinecraftPlugin.enjinlogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+                    EnjinMinecraftPlugin.enjinLogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
                 }
             }
 
@@ -36,7 +36,7 @@ public class PeriodicVoteTask implements Runnable {
             plugin.playervotes.clear();
 
             boolean successful;
-            RPCData<String> data = EnjinServices.getService(VoteService.class).get(EnjinMinecraftPlugin.getAuthKey(), votes);
+            RPCData<String> data = EnjinServices.getService(VoteService.class).get(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), votes);
             String success;
 
             if (data == null) {
@@ -65,7 +65,7 @@ public class PeriodicVoteTask implements Runnable {
                 }
             } else if (success.equalsIgnoreCase("auth_error")) {
                 plugin.authkeyinvalid = true;
-                EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
+                EnjinMinecraftPlugin.enjinLogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.stopTask();
                 Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
@@ -76,22 +76,22 @@ public class PeriodicVoteTask implements Runnable {
                 }
                 successful = false;
             } else if (success.equalsIgnoreCase("bad_data")) {
-                EnjinMinecraftPlugin.enjinlogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+                EnjinMinecraftPlugin.enjinLogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
                 plugin.lasterror = new EnjinErrorReport("Enjin reported bad data", "Vote synch.");
                 successful = false;
             } else if (success.equalsIgnoreCase("retry_later")) {
-                EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
+                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
                 successful = false;
             } else if (success.equalsIgnoreCase("connect_error")) {
-                EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
                 plugin.lasterror = new EnjinErrorReport("Enjin reported a connection issue.", "Vote synch.");
                 successful = false;
             } else if (success.startsWith("invalid_op")) {
                 plugin.lasterror = new EnjinErrorReport(success, "Vote synch.");
                 successful = false;
             } else {
-                EnjinMinecraftPlugin.enjinlogger.info("[Enjin Minecraft Plugin] Something happened on vote sync, if you continue to see this error please report it to enjin.");
-                EnjinMinecraftPlugin.enjinlogger.info("Response code: " + success);
+                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Something happened on vote sync, if you continue to see this error please report it to enjin.");
+                EnjinMinecraftPlugin.enjinLogger.info("Response code: " + success);
                 plugin.getLogger().info("Something happened on sync, if you continue to see this error please report it to enjin.");
                 plugin.getLogger().info("Response code: " + success);
                 successful = false;

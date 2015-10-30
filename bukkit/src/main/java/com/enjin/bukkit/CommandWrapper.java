@@ -3,7 +3,6 @@ package com.enjin.bukkit;
 import org.bukkit.command.CommandSender;
 
 public class CommandWrapper implements Comparable<CommandWrapper> {
-
     private String command;
     private CommandSender sender;
     private String id;
@@ -82,5 +81,4 @@ public class CommandWrapper implements Comparable<CommandWrapper> {
     public String getId() {
         return id;
     }
-
 }

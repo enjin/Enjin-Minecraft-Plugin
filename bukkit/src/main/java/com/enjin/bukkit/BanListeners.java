@@ -32,14 +32,14 @@ public class BanListeners implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        if (event.getMessage().toLowerCase().startsWith("/ban ") && event.getPlayer().hasPermission("bukkit.value.ban.player")) {
+        if (event.getMessage().toLowerCase().startsWith("/ban ") && event.getPlayer().hasPermission("bukkit.permission.ban.player")) {
             String[] args = event.getMessage().split(" ");
             if (args.length > 1) {
                 OfflinePlayer oplayer = Bukkit.getOfflinePlayer(args[1]);
                 plugin.banlistertask.addBannedPlayer(oplayer);
                 plugin.bannedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
             }
-        } else if (event.getMessage().toLowerCase().startsWith("/pardon ") && event.getPlayer().hasPermission("bukkit.value.unban.player")) {
+        } else if (event.getMessage().toLowerCase().startsWith("/pardon ") && event.getPlayer().hasPermission("bukkit.permission.unban.player")) {
             String[] args = event.getMessage().split(" ");
             if (args.length > 1) {
                 OfflinePlayer oplayer = Bukkit.getOfflinePlayer(args[1]);

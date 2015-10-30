@@ -1,7 +1,7 @@
 package com.enjin.bukkit.permlisteners;
 
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.threaded.DelayedPlayerPermsUpdate;
 import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -12,21 +12,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.threaded.DelayedPlayerPermsUpdate;
+import java.util.concurrent.ConcurrentHashMap;
 
-
-public class bPermsChangeListener implements Listener {
-
+public class BPermissionsListener implements Listener {
     EnjinMinecraftPlugin plugin;
     ConcurrentHashMap<String, String> usereditingwhatplayer = new ConcurrentHashMap<String, String>();
 
-    public bPermsChangeListener(EnjinMinecraftPlugin plugin) {
+    public BPermissionsListener(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void preCommandListener(PlayerCommandPreprocessEvent event) {
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -66,5 +63,4 @@ public class bPermsChangeListener implements Listener {
             usereditingwhatplayer.remove(e.getPlayer().getName());
         }
     }
-
 }
