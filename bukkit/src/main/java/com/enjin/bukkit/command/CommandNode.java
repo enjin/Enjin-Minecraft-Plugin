@@ -1,5 +1,6 @@
 package com.enjin.bukkit.command;
 
+import com.enjin.core.Enjin;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -36,8 +37,8 @@ public class CommandNode {
             return;
         }
 
-        if (permission != null && permission.permission().equals("") && !sender.hasPermission(permission.permission())) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+        if (!sender.isOp() && permission != null && permission.permission().equals("") && !sender.hasPermission(permission.permission())) {
+            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.permission() + "\" or OP to run that command.");
             return;
         }
 
@@ -60,6 +61,7 @@ public class CommandNode {
                 return;
             }
 
+            Enjin.getPlugin().debug("Executing command: " + data.command());
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
             e.printStackTrace();

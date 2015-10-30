@@ -26,6 +26,7 @@ import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.BuyCommand;
+import com.enjin.bukkit.command.commands.CoreCommands;
 import com.enjin.bukkit.compatibility.NewPlayerGetter;
 import com.enjin.bukkit.compatibility.OldPlayerGetter;
 import com.enjin.bukkit.config.EnjinConfig;
@@ -57,6 +58,7 @@ import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.rpc.mappings.services.TicketService;
 import lombok.Getter;
+import lombok.Setter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
@@ -196,6 +198,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public static final ExecutorService exec = Executors.newCachedThreadPool();
     public static String minecraftport;
     public static boolean usingSSL = true;
+    @Getter @Setter
     private NewKeyVerifier verifier = null;
     public Map<String, String> playerperms = new ConcurrentHashMap<String, String>();
     //Player, lists voted on.
@@ -261,7 +264,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             EnjinRPC.setDebug(config.isDebug());
 
             CommandBank.setup(this);
-            CommandBank.register(BuyCommand.class);
+            CommandBank.register(BuyCommand.class, CoreCommands.class);
             if (config.getBuyCommand() != null && !config.getBuyCommand().isEmpty()) {
                 CommandBank.registerCommandAlias("buy", config.getBuyCommand());
             }

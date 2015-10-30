@@ -102,8 +102,13 @@ public class CommandBank implements Listener {
      */
     private static void registerCommandNodes(CommandNode ... nodes) {
         for (CommandNode node : nodes) {
+            if (CommandBank.nodes.containsKey(node.getData().command())) {
+                continue;
+            }
+
             Enjin.getPlugin().debug("Registering command: " + node.getData().command());
             CommandBank.nodes.put(node.getData().command(), node);
+            registerCommandAlias(node.getData().command(), node.getData().aliases());
         }
     }
 
@@ -116,13 +121,18 @@ public class CommandBank implements Listener {
             CommandNode command = CommandBank.getNodes().get(node.getData().parent());
 
             if (command != null) {
+                if (command.getDirectives().containsKey(node.getData().directive())) {
+                    continue;
+                }
+
                 Enjin.getPlugin().debug("Registering directive: " + node.getData().directive() + " for command: " + node.getData().parent());
                 command.getDirectives().put(node.getData().directive(), node);
+                registerDirectiveAlias(node.getData().parent(), node.getData().directive(), node.getData().aliases());
             }
         }
     }
 
-    public static void registerCommandAlias(String command, String alias) {
+    public static void registerCommandAlias(String command, String ... alias) {
         if (nodes.containsKey(alias)) {
             Enjin.getPlugin().debug("That alias has already been registered by another command.");
             return;
@@ -130,11 +140,13 @@ public class CommandBank implements Listener {
 
         CommandNode node = nodes.get(command);
         if (node != null) {
-            nodes.put(alias, node);
+            for (String a : alias) {
+                nodes.put(a, node);
+            }
         }
     }
 
-    public static void registerDirectiveAlias(String command, String directive, String alias) {
+    public static void registerDirectiveAlias(String command, String directive, String ... alias) {
         CommandNode node = nodes.get(command);
         if (node != null) {
             if (node.getDirectives().containsKey(alias)) {
@@ -144,7 +156,9 @@ public class CommandBank implements Listener {
 
             DirectiveNode n = node.getDirectives().get(directive);
             if (n != null) {
-                node.getDirectives().put(alias, n);
+                for (String a : alias) {
+                    node.getDirectives().put(a, n);
+                }
             }
         }
     }

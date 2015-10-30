@@ -1,5 +1,6 @@
 package com.enjin.bukkit.command;
 
+import com.enjin.core.Enjin;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -31,8 +32,8 @@ public class DirectiveNode {
             return;
         }
 
-        if (permission != null && permission.permission().equals("") && !sender.hasPermission(permission.permission())) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+        if (!sender.isOp() && permission != null && permission.permission().equals("") && !sender.hasPermission(permission.permission())) {
+            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.permission() + "\" or OP to run that command.");
             return;
         }
 
@@ -47,6 +48,7 @@ public class DirectiveNode {
                 return;
             }
 
+            Enjin.getPlugin().debug("Executing directive: " + data.parent() + "-" + data.directive());
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
