@@ -133,12 +133,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public boolean votifierinstalled = false;
     protected boolean votifiererrored = false;
     public int xpversion = 0;
-    static int logversion = 1;
-    static boolean supportsuuid = false;
-    static boolean mcmmoOutdated = false;
+    private static int logversion = 1;
+    private static boolean supportsuuid = false;
+    @Getter
+    private static boolean mcmmoOutdated = false;
     public String mcversion = "";
-    boolean listenforbans = true;
-    boolean tuxtwolibinstalled = false;
+    private boolean listenforbans = true;
+    @Getter
+    private boolean tuxtwolibinstalled = false;
     public final static Logger enjinlogger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
     public CommandExecuter commandqueue = new CommandExecuter(this);
     public StatsServer serverstats = new StatsServer(this);
@@ -252,11 +254,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             EnjinRPC.setLogger(logger);
             EnjinRPC.setDebug(configuration.isDebug());
 
-            CommandBank.setup(this);
-            CommandBank.register(BuyCommand.class, CoreCommands.class, StatCommands.class);
-            if (configuration.getBuyCommand() != null && !configuration.getBuyCommand().isEmpty()) {
-                CommandBank.registerCommandAlias("buy", configuration.getBuyCommand());
-            }
+            initCommands();
 
             task = new RPCPacketManager(this);
             votetask = new PeriodicVoteTask(this);
@@ -598,6 +596,19 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         debug("RPC API Url: " + rpcApiUrl);
     }
 
+    private void initCommands() {
+        CommandBank.setup(this);
+        CommandBank.register(BuyCommand.class, CoreCommands.class, StatCommands.class);
+
+        if (Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
+            CommandBank.register(BuyCommand.class);
+        }
+
+        if (configuration.getBuyCommand() != null && !configuration.getBuyCommand().isEmpty()) {
+            CommandBank.registerCommandAlias("buy", configuration.getBuyCommand());
+        }
+    }
+
     public static void saveConfiguration() {
         configuration.save(new File(instance.getDataFolder(), "config.json"));
     }
@@ -763,14 +774,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private void initPermissions() throws Throwable {
         RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
         if (provider == null) {
-            enjinlogger.warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
+            enjinlogger.warning("Couldn't find a vault compatible value plugin! Please install one before using the Enjin Minecraft Plugin.");
+            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible value plugin! Please install one before using the Enjin Minecraft Plugin.");
             return;
         }
         permission = provider.getProvider();
         if (permission == null) {
-            enjinlogger.warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
+            enjinlogger.warning("Couldn't find a vault compatible value plugin! Please install one before using the Enjin Minecraft Plugin.");
+            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible value plugin! Please install one before using the Enjin Minecraft Plugin.");
             return;
         }
     }
@@ -1236,7 +1247,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
     }
 
-    private void addCustomData(ItemStack is, String[] args, OfflinePlayer reciever, int startingpos) {
+    public void addCustomData(ItemStack is, String[] args, OfflinePlayer reciever, int startingpos) {
         for (int i = startingpos; i < args.length; i++) {
             if (args[i].equalsIgnoreCase("-name") || args[i].equalsIgnoreCase("--n")) {
                 boolean noflags = true;

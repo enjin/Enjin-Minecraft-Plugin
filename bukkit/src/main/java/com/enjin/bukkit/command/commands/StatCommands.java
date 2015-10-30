@@ -16,7 +16,31 @@ import java.util.Date;
 import java.util.UUID;
 
 public class StatCommands {
-    @Permission(permission = "enjin.playerstats")
+    @Permission("enjin.customstat")
+    @Directive(parent = "enjin", directive = "customstat")
+    public static void customStat(CommandSender sender, String[] args) {
+        if (args.length > 4) {
+            String player = args[1].trim();
+            String plugin = args[2].trim();
+            String statName = args[3].trim();
+            String statValue = args[4].trim();
+            String cumulative = args[5].trim();
+            boolean existing = cumulative.equalsIgnoreCase("true");
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
+            StatsPlayer statsPlayer = EnjinMinecraftPlugin.instance.getPlayerStats(offlinePlayer);
+
+            try {
+                statsPlayer.addCustomStat(plugin, statName, statValue.indexOf(".") > -1 ? Double.parseDouble(statValue) : Integer.parseInt(statValue), existing);
+                sender.sendMessage(ChatColor.GREEN + "Successfully set the custom value!");
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED + "I'm sorry, custom values can only be numerical.");
+            }
+        } else {
+            sender.sendMessage(ChatColor.DARK_RED + "Usage: /enjin customstat <player> <plugin> <stat-name> <stat-value> <cumulative>");
+        }
+    }
+
+    @Permission(value = "enjin.playerstats")
     @Directive(parent = "enjin", directive = "playerstats")
     public static void playerStats(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
@@ -55,14 +79,14 @@ public class StatCommands {
         }
     }
 
-    @Permission(permission = "enjin.savestats")
+    @Permission(value = "enjin.savestats")
     @Directive(parent = "enjin", directive = "savestats")
     public static void saveStats(CommandSender sender, String[] args) {
         new WriteStats(EnjinMinecraftPlugin.instance).write("stats.stats");
         sender.sendMessage(ChatColor.GREEN + "Stats saved to stats.stats.");
     }
 
-    @Permission(permission = "enjin.serverstats")
+    @Permission(value = "enjin.serverstats")
     @Directive(parent = "enjin", directive = "serverstats")
     public static void serverStats(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;

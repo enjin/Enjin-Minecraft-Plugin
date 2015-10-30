@@ -37,8 +37,8 @@ public class CommandNode {
             return;
         }
 
-        if (!sender.isOp() && permission != null && permission.permission().equals("") && !sender.hasPermission(permission.permission())) {
-            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.permission() + "\" or OP to run that command.");
+        if (!sender.isOp() && permission != null && permission.value().equals("") && !sender.hasPermission(permission.value())) {
+            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.value() + "\" or OP to run that command.");
             return;
         }
 

@@ -57,7 +57,7 @@ public class EMPListener implements Listener {
         if (EnjinMinecraftPlugin.econcompatmode && p.hasPermission("enjin.notify.econoutdated")) {
             p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + plugin.economy.getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
         }
-        if (EnjinMinecraftPlugin.mcmmoOutdated && p.hasPermission("enjin.notify.mcmmooutdated")) {
+        if (EnjinMinecraftPlugin.isMcmmoOutdated() && p.hasPermission("enjin.notify.mcmmooutdated")) {
             p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] Your version of mcMMO is out of date! Please update to collect mcMMO stats:");
             p.sendMessage(ChatColor.RED + "http://dev.bukkit.org/bukkit-plugins/mcmmo/");
         }

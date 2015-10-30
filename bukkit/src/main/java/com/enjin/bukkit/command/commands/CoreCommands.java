@@ -1,5 +1,7 @@
 package com.enjin.bukkit.command.commands;
 
+import Tux2.TuxTwoLib.TuxTwoPlayer;
+import com.enjin.bukkit.EnjinConsole;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
@@ -8,26 +10,113 @@ import com.enjin.bukkit.config.EnjinConfig;
 import com.enjin.bukkit.threaded.NewKeyVerifier;
 import com.enjin.bukkit.threaded.ReportPublisher;
 import com.vexsoftware.votifier.Votifier;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CoreCommands {
     @Command(command = "enjin", aliases = "e")
     public static void enjin(CommandSender sender, String[] args) {
-        // TODO: Enjin Help
+        sender.sendMessage(EnjinConsole.header());
+
+        if (sender.hasPermission("enjin.setkey"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin key <KEY>: "
+                    + ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
+        if (sender.hasPermission("enjin.broadcast"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin broadcast <MESSAGE>: "
+                    + ChatColor.RESET + "Broadcast a message to all players.");
+        if (sender.hasPermission("enjin.push"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin push: "
+                    + ChatColor.RESET + "Sync your website tags with the current ranks.");
+        if (sender.hasPermission("enjin.lag"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin lag: "
+                    + ChatColor.RESET + "Display TPS average and memory usage.");
+        if (sender.hasPermission("enjin.debug"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin debug: "
+                    + ChatColor.RESET + "Enable debug mode and display extra information in console.");
+        if (sender.hasPermission("enjin.report"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin report: "
+                    + ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.");
+        if (sender.hasPermission("enjin.sign.set"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin heads: "
+                    + ChatColor.RESET + "Shows in game help for the heads and sign stats part of the plugin.");
+        if (sender.hasPermission("enjin.tags.view"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin tags <player>: "
+                    + ChatColor.RESET + "Shows the tags on the website for the player.");
+
+        // Points commands
+        if (sender.hasPermission("enjin.points.getself"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin points: "
+                    + ChatColor.RESET + "Shows your current website points.");
+        if (sender.hasPermission("enjin.points.getothers"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin points <NAME>: "
+                    + ChatColor.RESET + "Shows another player's current website points.");
+        if (sender.hasPermission("enjin.points.add"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin addpoints <NAME> <AMOUNT>: "
+                    + ChatColor.RESET + "Add points to a player.");
+        if (sender.hasPermission("enjin.points.remove"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin removepoints <NAME> <AMOUNT>: "
+                    + ChatColor.RESET + "Remove points from a player.");
+        if (sender.hasPermission("enjin.points.set"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin setpoints <NAME> <AMOUNT>: "
+                    + ChatColor.RESET + "Set a player's total points.");
+        if (sender.hasPermission("enjin.support"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin support: "
+                    + ChatColor.RESET + "Starts ticket session or informs player of available modules.");
+        if (sender.hasPermission("enjin.ticket.self"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin ticket: "
+                    + ChatColor.RESET + "Sends player a list of their tickets.");
+        if (sender.hasPermission("enjin.ticket.open"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin openticket: "
+                    + ChatColor.RESET + "Sends player a list of open tickets.");
+        if (sender.hasPermission("enjin.ticket.reply"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin reply <module #> <ticket id> <message>: "
+                    + ChatColor.RESET + "Sends a reply to a ticket.");
+        if (sender.hasPermission("enjin.ticket.status"))
+            sender.sendMessage(ChatColor.GOLD + "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: "
+                    + ChatColor.RESET + "Sets the status of a ticket.");
+
+        // Shop buy commands
+        sender.sendMessage(ChatColor.GOLD + "/buy: "
+                + ChatColor.RESET + "Display items available for purchase.");
+        sender.sendMessage(ChatColor.GOLD + "/buy page <#>: "
+                + ChatColor.RESET + "View the next page of results.");
+        sender.sendMessage(ChatColor.GOLD + "/buy <ID>: "
+                + ChatColor.RESET + "Purchase the specified item ID in the server shop.");
     }
 
-    @Permission(permission = "enjin.debug")
+    @Permission(value = "enjin.value")
+    @Directive(parent = "enjin", directive = "broadcast")
+    public static void broadcast(CommandSender sender, String[] args) {
+        if (args.length < 1) {
+            sender.sendMessage(ChatColor.RED + "To broadcast a message do: /enjin broadcast <message>");
+            return;
+        }
+
+        StringBuilder message = new StringBuilder();
+        for (int i = 0; i < args.length; i++) {
+            if (i > 0) {
+                message.append(" ");
+            }
+
+            message.append(args[i]);
+        }
+
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message.toString()));
+    }
+
+    @Permission(value = "enjin.debug")
     @Directive(parent = "enjin", directive = "debug")
     public static void debug(CommandSender sender, String[] args) {
         EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
@@ -37,7 +126,202 @@ public class CoreCommands {
         sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + config.isDebug());
     }
 
-    @Permission(permission = "enjin.setkey")
+    public static void give(CommandSender sender, String[] args) {
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "Syntax: /enjin give <player|uuid> <material>");
+            return;
+        }
+
+        Player player;
+        String index = args[0].trim();
+        UUID uuid = null;
+
+        if (index.length() > 20) {
+            if (index.length() == 32) {
+                index = index.substring(0, 8) + "-" + index.substring(8, 12) + "-" + index.substring(12, 16) + "-" + index.substring(16, 20) + "-" + index.substring(20, 32);
+            } else if (index.length() != 36) {
+                sender.sendMessage(ChatColor.RED + "Invalid UUID");
+                return;
+            }
+
+            try {
+                uuid = UUID.fromString(index);
+                player = Bukkit.getPlayer(uuid);
+            } catch (IllegalArgumentException e) {
+                sender.sendMessage(ChatColor.RED + "Invalid UUID");
+                return;
+            }
+        } else {
+            player = Bukkit.getPlayer(index);
+        }
+
+        boolean online = true;
+        if (player == null || !player.isOnline()) {
+            if (!plugin.isTuxtwolibinstalled()) {
+                sender.sendMessage(ChatColor.RED + "This player is not online. In order to give items to players not online please install TuxTwoLib");
+                return;
+            }
+
+            OfflinePlayer offlinePlayer;
+
+            if (uuid != null) {
+                offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+            } else {
+                offlinePlayer = Bukkit.getOfflinePlayer(index);
+            }
+
+            Player target = TuxTwoPlayer.getOfflinePlayer(offlinePlayer);
+
+            if (target != null) {
+                target.loadData();
+                online = false;
+                player = target;
+            } else {
+                sender.sendMessage(ChatColor.DARK_RED + "[Enjin] Player not found. Item not given.");
+                return;
+            }
+        }
+
+        try {
+            int extradatastart = 3;
+            Pattern digits = Pattern.compile("\\d+");
+            if (args[2].contains(":")) {
+                String[] split = args[2].split(":");
+                ItemStack is;
+                Pattern pattern = Pattern.compile("\\d+:\\d+");
+                Matcher match = pattern.matcher(args[2]);
+
+                if (match.find()) {
+                    try {
+                        int itemid = Integer.parseInt(split[0]);
+                        int damage = Integer.parseInt(split[1]);
+                        int quantity = 1;
+
+                        if (args.length > 3 && digits.matcher(args[3]).find()) {
+                            quantity = Integer.parseInt(args[3]);
+                            extradatastart = 4;
+                        }
+
+                        is = new ItemStack(itemid, quantity, (short) damage);
+                        sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+                        return;
+                    }
+                } else {
+                    try {
+                        Material itemid = Material.getMaterial(split[0].trim().toUpperCase());
+
+                        if (itemid == null) {
+                            sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
+                            return;
+                        }
+
+                        int damage = Integer.parseInt(split[1]);
+                        int quantity = 1;
+
+                        if (args.length > 3 && digits.matcher(args[3]).find()) {
+                            quantity = Integer.parseInt(args[3]);
+                            extradatastart = 4;
+                        }
+
+                        is = new ItemStack(itemid, quantity, (short) damage);
+                    } catch (NumberFormatException ex) {
+                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+                        return;
+                    }
+                }
+
+                if (args.length > extradatastart) {
+                    plugin.addCustomData(is, args, player, extradatastart);
+                }
+
+                player.getInventory().addItem(is);
+
+                if (!online) {
+                    player.saveData();
+                }
+
+                String itemname = is.getType().toString().toLowerCase();
+                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[1] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+            } else {
+                ItemStack is;
+                try {
+                    int itemid = Integer.parseInt(args[2]);
+                    int quantity = 1;
+
+                    if (args.length > 3 && digits.matcher(args[3]).find()) {
+                        quantity = Integer.parseInt(args[3]);
+                        extradatastart = 4;
+                    }
+
+                    is = new ItemStack(itemid, quantity);
+                    sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
+                } catch (NumberFormatException e) {
+                    Material material = Material.getMaterial(args[2].trim().toUpperCase());
+
+                    if (material == null) {
+                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
+                        return;
+                    }
+
+                    int quantity = 1;
+
+                    if (args.length > 3 && digits.matcher(args[3]).find()) {
+                        quantity = Integer.parseInt(args[3]);
+                        extradatastart = 4;
+                    }
+
+                    is = new ItemStack(material, quantity);
+                }
+
+                if (args.length > extradatastart) {
+                    plugin.addCustomData(is, args, player, extradatastart);
+                }
+
+                player.getInventory().addItem(is);
+
+                if (!online) {
+                    player.saveData();
+                }
+
+                String itemname = is.getType().toString().toLowerCase();
+                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[1] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+            }
+        } catch (Exception e) {
+            sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+        }
+    }
+
+    @Permission(value = "enjin.inform")
+    @Directive(parent = "enjin", directive = "inform")
+    public static void inform(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "To send a message do: /enjin inform <player> <message>");
+            return;
+        }
+
+        Player player = Bukkit.getPlayer(args[1]);
+        if (player == null) {
+            sender.sendMessage(ChatColor.RED + "That player isn't on the server at the moment.");
+            return;
+        }
+
+        StringBuilder message = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+            if (i > 1) {
+                message.append(" ");
+            }
+
+            message.append(args[i]);
+        }
+
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', message.toString()));
+    }
+
+    @Permission(value = "enjin.setkey")
     @Command(command = "enjinkey", aliases = "ek")
     @Directive(parent = "enjin", directive = "key", aliases = {"setkey", "sk", "enjinkey", "ek"})
     public static void key(CommandSender sender, String[] args) {
@@ -56,8 +340,22 @@ public class CoreCommands {
             sender.sendMessage(ChatColor.RED + "Please wait until we verify the key before you try again!");
         }
     }
+    @Permission(value = "enjin.lag")
+    @Directive(parent = "enjin", directive = "lag")
+    public static void lag(CommandSender sender, String[] args) {
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 
-    @Permission(permission = "enjin.push")
+        sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + plugin.tpstask.getTPSAverage());
+        sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + plugin.tpstask.getLastTPSMeasurement());
+
+        Runtime runtime = Runtime.getRuntime();
+        long memused = (runtime.maxMemory() - runtime.freeMemory()) / (1024 * 1024);
+        long maxmemory = runtime.maxMemory() / (1024 * 1024);
+
+        sender.sendMessage(ChatColor.GOLD + "Memory Used: " + ChatColor.GREEN + memused + "MB/" + maxmemory + "MB");
+    }
+
+    @Permission(value = "enjin.push")
     @Directive(parent = "enjin", directive = "push")
     public static void push(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
@@ -103,7 +401,7 @@ public class CoreCommands {
         sender.sendMessage(ChatColor.GREEN + Integer.toString(perms.size()) + " players have been queued for synchronization. This should take approximately " + Integer.toString(minutes) + " minute" + (minutes > 1 ? "s." : "."));
     }
 
-    @Permission(permission = "enjin.report")
+    @Permission(value = "enjin.report")
     @Directive(parent = "enjin", directive = "report")
     public static void report(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
