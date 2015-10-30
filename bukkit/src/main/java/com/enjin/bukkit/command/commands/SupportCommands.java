@@ -7,14 +7,17 @@ import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketViewBuilder;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
 import com.enjin.rpc.mappings.mappings.tickets.Reply;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
+import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
 import com.enjin.rpc.mappings.services.TicketService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +41,11 @@ public class SupportCommands {
                 return;
             }
 
-            if (args.length > 1) {
+            if (args.length > 0) {
                 int moduleId;
 
                 try {
-                    moduleId = Integer.parseInt(args[1]);
+                    moduleId = Integer.parseInt(args[0]);
                 } catch (NumberFormatException e) {
                     sender.sendMessage("You must enter the numeric id of the module!");
                     return;
@@ -85,12 +88,7 @@ public class SupportCommands {
             return;
         }
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can view their own tickets.");
-            return;
-        }
-
-        if (args.length == 1) {
+        if (args.length == 0) {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
@@ -115,7 +113,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Reply>> data = service.getReplies(plugin.getAuthKey(), -1, args[1], player.getName());
+                RPCData<List<Reply>> data = service.getReplies(plugin.getAuthKey(), -1, args[0], player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -123,13 +121,163 @@ public class SupportCommands {
                     } else {
                         List<Reply> replies = data.getResult();
                         if (replies.size() > 0) {
-                            player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[1], replies, player.hasPermission("enjin.ticket.private")));
+                            player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")));
                         } else {
                             player.sendMessage("You entered an invalid ticket code!");
                         }
                     }
                 } else {
                     player.sendMessage("Could not fetch ticket replies.");
+                }
+            });
+        }
+    }
+
+    @Permission(value = "enjin.ticket.open")
+    @Directive(parent = "enjin", value = "openticket")
+    public static void openTicket(Player sender, String[] args) {
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+
+        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
+            sender.sendMessage("Cannot use this command without setting your key.");
+            return;
+        }
+
+        if (args.length == 0) {
+            final Player player = sender;
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                TicketService service = EnjinServices.getService(TicketService.class);
+                RPCData<List<Ticket>> data = service.getTickets(plugin.getAuthKey(), -1, TicketStatus.open);
+
+                if (data != null) {
+                    if (data.getError() != null) {
+                        player.sendMessage(data.getError().getMessage());
+                    } else {
+                        List<Ticket> tickets = data.getResult();
+                        if (tickets.size() > 0) {
+                            player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                        } else {
+                            player.sendMessage("There are no open tickets at this time.");
+                        }
+                    }
+                } else {
+                    player.sendMessage("Could not fetch open tickets.");
+                }
+            });
+        } else {
+            final Player player = sender;
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                TicketService service = EnjinServices.getService(TicketService.class);
+                RPCData<List<Reply>> data = service.getReplies(plugin.getAuthKey(), -1, args[0], player.getName());
+
+                if (data != null) {
+                    if (data.getError() != null) {
+                        player.sendMessage(data.getError().getMessage());
+                    } else {
+                        List<Reply> replies = data.getResult();
+                        if (replies.size() > 0) {
+                            player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")));
+                        } else {
+                            player.sendMessage("You entered an invalid ticket code!");
+                        }
+                    }
+                } else {
+                    player.sendMessage("Could not fetch ticket replies.");
+                }
+            });
+        }
+    }
+
+    @Permission(value = "enjin.ticket.reply")
+    @Directive(parent = "enjin", value = "reply")
+    public static void reply(Player sender, String[] args) {
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+
+        if (plugin.getAuthKey() == null || plugin.getAuthKey().isEmpty()) {
+            sender.sendMessage("Cannot use this command without setting your key.");
+            return;
+        }
+
+        if (args.length < 3) {
+            sender.sendMessage("Usage: /e reply <#> <message>");
+            return;
+        } else {
+            final int preset;
+
+            try {
+                preset = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage("Usage: /e reply <#> <message>");
+                return;
+            }
+
+            final String ticket = args[1];
+            String message = "";
+            for (String arg : Arrays.copyOfRange(args, 2, args.length)) {
+                message = message.concat(arg + " ");
+            }
+            message.trim();
+            final String finalMessage = message;
+
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(plugin.getAuthKey(), preset, ticket, finalMessage, "public", TicketStatus.open, sender.getName());
+                if (result != null) {
+                    if (result.getError() == null) {
+                        sender.sendMessage("You replied to the ticket successfully.");
+                    } else {
+                        sender.sendMessage(result.getError().getMessage());
+                    }
+                } else {
+                    sender.sendMessage("Unable to submit your reply.");
+                }
+            });
+        }
+    }
+
+    @Permission(value = "enjin.ticket.status")
+    @Directive(parent = "enjin", value = "ticketstatus")
+    public static void ticketStatus(Player sender, String[] args) {
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
+
+        if (plugin.getAuthKey() == null) {
+            sender.sendMessage("Cannot use this command without setting your key.");
+            return;
+        }
+
+        if (args.length != 3) {
+            sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+        } else {
+            final int preset;
+
+            try {
+                preset = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+                return;
+            }
+
+            final String ticket = args[1];
+            final TicketStatus status = TicketStatus.valueOf(args[2].toLowerCase());
+
+            if (status == null) {
+                sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+                return;
+            }
+
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(plugin.getAuthKey(), preset, ticket, status);
+                if (result != null) {
+                    if (result.getError() == null) {
+                        if (result.getResult()) {
+                            sender.sendMessage("The tickets status was successfully changed to " + status.name());
+                        } else {
+                            sender.sendMessage("The tickets status was unable to be changed to " + status.name());
+                        }
+                    } else {
+                        sender.sendMessage(result.getError().getMessage());
+                    }
+                } else {
+                    sender.sendMessage("The tickets status was unable to be changed to " + status.name());
                 }
             });
         }
