@@ -21,8 +21,8 @@ public class VoteCommands {
             return;
         }
 
-        String username = args[1];
-        String listname = args[2];
+        String username = args[0];
+        String listname = args[1];
 
         if (plugin.supportsUUID()) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(username);
@@ -34,7 +34,7 @@ public class VoteCommands {
         if (plugin.playervotes.containsKey(username)) {
             plugin.playervotes.get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
         } else {
-            plugin.playervotes.put(username, new ArrayList<String>());
+            plugin.playervotes.put(username, new ArrayList<>());
             plugin.playervotes.get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
         }
 
