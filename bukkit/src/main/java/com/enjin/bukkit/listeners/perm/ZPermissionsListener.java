@@ -1,6 +1,7 @@
-package com.enjin.bukkit.permlisteners;
+package com.enjin.bukkit.listeners.perm;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.listeners.ConnectionListener;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -63,6 +64,6 @@ public class ZPermissionsListener implements Listener {
     }
 
     public void update(OfflinePlayer player) {
-        plugin.listener.updatePlayerRanks(player.getName(), player.getUniqueId().toString());
+        ConnectionListener.getInstance().updatePlayerRanks(player.getName(), player.getUniqueId().toString());
     }
 }

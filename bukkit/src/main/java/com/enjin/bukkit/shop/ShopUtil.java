@@ -1,6 +1,6 @@
 package com.enjin.bukkit.shop;
 
-import com.enjin.bukkit.util.TextUtils;
+import com.enjin.bukkit.util.text.TextUtils;
 import com.enjin.core.Enjin;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.common.shop.PlayerShopInstance;

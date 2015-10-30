@@ -24,11 +24,9 @@ public class VoteCommands {
         String username = args[0];
         String listname = args[1];
 
-        if (plugin.supportsUUID()) {
-            OfflinePlayer player = Bukkit.getOfflinePlayer(username);
-            if (player != null) {
-                username = username.concat("|" + player.getUniqueId().toString());
-            }
+        OfflinePlayer player = Bukkit.getOfflinePlayer(username);
+        if (player != null) {
+            username = username.concat("|" + player.getUniqueId().toString());
         }
 
         if (plugin.playervotes.containsKey(username)) {

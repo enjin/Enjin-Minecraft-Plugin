@@ -1,6 +1,7 @@
-package com.enjin.bukkit.permlisteners;
+package com.enjin.bukkit.listeners.perm;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.threaded.DelayedPlayerPermsUpdate;
 import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
@@ -15,8 +16,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BPermissionsListener implements Listener {
-    EnjinMinecraftPlugin plugin;
-    ConcurrentHashMap<String, String> usereditingwhatplayer = new ConcurrentHashMap<String, String>();
+    private EnjinMinecraftPlugin plugin;
+    private ConcurrentHashMap<String, String> usereditingwhatplayer = new ConcurrentHashMap<String, String>();
 
     public BPermissionsListener(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -37,14 +38,10 @@ public class BPermissionsListener implements Listener {
                         args[1].trim().equalsIgnoreCase("setgroup"))) {
                     if (usereditingwhatplayer.containsKey(p.getName())) {
                         String ep = usereditingwhatplayer.get(p.getName());
-                        String uuid = "";
-                        if (EnjinMinecraftPlugin.supportsUUID()) {
-                            OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
-                            uuid = op.getUniqueId().toString();
-                        }
+                        OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                         //We need to make sure the value executes before we actually grab the data.
                         Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(ConnectionListener.getInstance(), ep, op.getUniqueId().toString()), 2);
                     }
                 } else {
                     usereditingwhatplayer.put(p.getName(), args[1].trim());

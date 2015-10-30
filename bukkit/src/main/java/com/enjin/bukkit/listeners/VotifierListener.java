@@ -38,11 +38,7 @@ public class VotifierListener implements Listener {
             return;
         }
 
-        String userid = username;
-        if (EnjinMinecraftPlugin.supportsUUID()) {
-            OfflinePlayer op = Bukkit.getOfflinePlayer(username);
-            userid = username + "|" + op.getUniqueId().toString();
-        }
+        String userid = username + "|" + Bukkit.getOfflinePlayer(username).getUniqueId();
 
         if (plugin.playervotes.containsKey(username)) {
             plugin.playervotes.get(userid).add(vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", ""));

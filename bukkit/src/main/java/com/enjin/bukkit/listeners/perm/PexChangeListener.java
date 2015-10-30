@@ -1,5 +1,6 @@
-package com.enjin.bukkit.permlisteners;
+package com.enjin.bukkit.listeners.perm;
 
+import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,8 +19,7 @@ import ru.tehkode.permissions.events.PermissionEntityEvent;
 import ru.tehkode.permissions.events.PermissionEntityEvent.Action;
 
 public class PexChangeListener implements Listener {
-
-    EnjinMinecraftPlugin plugin;
+    private EnjinMinecraftPlugin plugin;
 
     public PexChangeListener(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -37,7 +37,7 @@ public class PexChangeListener implements Listener {
                     return;
                 }
                 Enjin.getPlugin().debug(p.getName() + " just got a rank change... processing...");
-                plugin.listener.updatePlayerRanks(p);
+                ConnectionListener.getInstance().updatePlayerRanks(p);
             }
         }
 
@@ -60,25 +60,17 @@ public class PexChangeListener implements Listener {
                         String[] players = args[5].split(",");
                         for (int i = 0; i < players.length; i++) {
                             String ep = players[i];
-                            String uuid = "";
-                            if (EnjinMinecraftPlugin.supportsUUID()) {
-                                OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
-                                uuid = op.getUniqueId().toString();
-                            }
+                            OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                             //We need to make sure the value executes before we actually grab the data.
                             Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(ConnectionListener.getInstance(), ep, op.getUniqueId().toString()), 2);
                         }
                     } else {
                         String ep = args[5];
-                        String uuid = "";
-                        if (EnjinMinecraftPlugin.supportsUUID()) {
-                            OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
-                            uuid = op.getUniqueId().toString();
-                        }
+                        OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                         //We need to make sure the value executes before we actually grab the data.
                         Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(ConnectionListener.getInstance(), ep, op.getUniqueId().toString()), 2);
                     }
                 }
             }
@@ -87,14 +79,10 @@ public class PexChangeListener implements Listener {
             if (args.length > 5 && p.hasPermission("permissions.manage.membership." + args[5])) {
                 if (args[3].equalsIgnoreCase("group") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
                     String ep = args[2];
-                    String uuid = "";
-                    if (EnjinMinecraftPlugin.supportsUUID()) {
-                        OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
-                        uuid = op.getUniqueId().toString();
-                    }
+                    OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                     //We need to make sure the value executes before we actually grab the data.
                     Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(plugin.listener, ep, uuid), 2);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(ConnectionListener.getInstance(), ep, op.getUniqueId().toString()), 2);
                 }
             }
         }

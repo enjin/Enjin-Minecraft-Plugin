@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
+import com.enjin.common.utils.ConnectionUtil;
 import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +21,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.ReverseFileReader;
+import com.enjin.bukkit.util.io.ReverseFileReader;
 
 public class ReportPublisher implements Runnable {
 
@@ -96,10 +97,10 @@ public class ReportPublisher implements Runnable {
             builder.append("\nLast Enjin Plugin Severe error message: \n");
             builder.append(plugin.lasterror.toString());
         }
-        builder.append("\n=========================================\nEnjin HTTPS test: " + (plugin.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Enjin HTTP test: " + (plugin.testHTTPconnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Enjin web connectivity test: " + (plugin.testWebConnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Is mineshafter present: " + (EnjinMinecraftPlugin.isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
+        builder.append("\n=========================================\nEnjin HTTPS test: " + (ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
+        builder.append("Enjin HTTP test: " + (ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
+        builder.append("Enjin web connectivity test: " + (ConnectionUtil.testWebConnection() ? "passed" : "FAILED!") + "\n");
+        builder.append("Is mineshafter present: " + (ConnectionUtil.isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
         File bukkityml = new File(serverloglocation + File.separator + "bukkit.yml");
         YamlConfiguration ymlbukkit = new YamlConfiguration();
         if (bukkityml.exists()) {

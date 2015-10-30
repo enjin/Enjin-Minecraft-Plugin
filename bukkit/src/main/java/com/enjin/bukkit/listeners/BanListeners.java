@@ -1,5 +1,6 @@
-package com.enjin.bukkit;
+package com.enjin.bukkit.listeners;
 
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -9,7 +10,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 
 public class BanListeners implements Listener {
-
     EnjinMinecraftPlugin plugin;
 
     public BanListeners(EnjinMinecraftPlugin plugin) {
@@ -17,7 +17,7 @@ public class BanListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerBan(PlayerKickEvent event) {
+    public void onPlayerKick(PlayerKickEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -28,22 +28,25 @@ public class BanListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void banAndPardonListener(PlayerCommandPreprocessEvent event) {
+    public void onPlayerCommandPreProcess(PlayerCommandPreprocessEvent event) {
         if (event.isCancelled()) {
             return;
         }
-        if (event.getMessage().toLowerCase().startsWith("/ban ") && event.getPlayer().hasPermission("bukkit.permission.ban.player")) {
+
+        if (event.getMessage().toLowerCase().startsWith("/ban") && event.getPlayer().hasPermission("bukkit.permission.ban.player")) {
             String[] args = event.getMessage().split(" ");
+
             if (args.length > 1) {
-                OfflinePlayer oplayer = Bukkit.getOfflinePlayer(args[1]);
-                plugin.banlistertask.addBannedPlayer(oplayer);
+                OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
+                plugin.banlistertask.addBannedPlayer(player);
                 plugin.bannedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
             }
-        } else if (event.getMessage().toLowerCase().startsWith("/pardon ") && event.getPlayer().hasPermission("bukkit.permission.unban.player")) {
+        } else if (event.getMessage().toLowerCase().startsWith("/pardon") && event.getPlayer().hasPermission("bukkit.permission.unban.player")) {
             String[] args = event.getMessage().split(" ");
+
             if (args.length > 1) {
-                OfflinePlayer oplayer = Bukkit.getOfflinePlayer(args[1]);
-                plugin.banlistertask.pardonBannedPlayer(oplayer);
+                OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
+                plugin.banlistertask.pardonBannedPlayer(player);
                 plugin.pardonedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
             }
         }

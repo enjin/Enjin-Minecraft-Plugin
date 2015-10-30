@@ -26,14 +26,12 @@ public class VaultManager {
         if (economyProvider != null) {
             economy = economyProvider.getProvider();
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                if (plugin.supportsUUID() && !plugin.vaultneedsupdating) {
-                    try {
-                        economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
-                    } catch (AbstractMethodError e) {
-                        economyCompatibilityMode = true;
-                        plugin.enjinLogger.warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
-                        plugin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
-                    }
+                try {
+                    economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
+                } catch (AbstractMethodError e) {
+                    economyCompatibilityMode = true;
+                    plugin.enjinLogger.warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+                    plugin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
                 }
             });
         }

@@ -63,9 +63,7 @@ public class StatsPlayer {
 
     public StatsPlayer(OfflinePlayer player) {
         name = player.getName();
-        if (EnjinMinecraftPlugin.supportsUUID()) {
-            uuid = player.getUniqueId().toString();
-        }
+        uuid = player.getUniqueId().toString();
     }
 
     public void addDeath() {
@@ -404,7 +402,7 @@ public class StatsPlayer {
         if (VaultManager.isVaultEnabled()) {
             Economy economy = VaultManager.getEconomy();
             if (economy != null) {
-                if (EnjinMinecraftPlugin.supportsUUID() && VaultManager.isEconomyUpToDate()) {
+                if (VaultManager.isEconomyUpToDate()) {
                     OfflinePlayer oplayer = null;
                     try {
                         oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUUID()));

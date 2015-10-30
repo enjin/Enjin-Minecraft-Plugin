@@ -1,7 +1,7 @@
 package com.enjin.bukkit.command.commands;
 
 import Tux2.TuxTwoLib.TuxTwoPlayer;
-import com.enjin.bukkit.EnjinConsole;
+import com.enjin.bukkit.util.io.EnjinConsole;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
@@ -389,11 +389,7 @@ public class CoreCommands {
                 continue;
             }
 
-            if (plugin.supportsUUID() && player.getUniqueId() != null) {
-                perms.put(player.getName(), player.getUniqueId().toString());
-            } else {
-                perms.put(player.getName(), "");
-            }
+            perms.put(player.getName(), player.getUniqueId().toString());
         }
 
         int minutes = perms.size() / 3000;

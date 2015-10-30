@@ -1,4 +1,4 @@
-package com.enjin.bukkit.util;
+package com.enjin.bukkit.util.text;
 
 import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;

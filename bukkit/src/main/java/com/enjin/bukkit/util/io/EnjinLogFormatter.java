@@ -1,4 +1,4 @@
-package com.enjin.bukkit;
+package com.enjin.bukkit.util.io;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,7 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 //This custom formatter formats parts of a log record to a single line
-class EnjinLogFormatter extends Formatter {
+public class EnjinLogFormatter extends Formatter {
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
     // This method is called for every log records

@@ -12,10 +12,9 @@ import org.bukkit.OfflinePlayer;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 
 public class BanLister implements Runnable {
-
-    Map<String, String> currentbannedplayers = new ConcurrentHashMap<String, String>();
-    EnjinMinecraftPlugin plugin;
-    boolean firstrun = true;
+    private Map<String, String> currentbannedplayers = new ConcurrentHashMap<String, String>();
+    private EnjinMinecraftPlugin plugin;
+    private boolean firstrun = true;
 
     public BanLister(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -27,11 +26,7 @@ public class BanLister implements Runnable {
             Set<OfflinePlayer> bannedplayerlist = Bukkit.getServer().getBannedPlayers();
             for (OfflinePlayer player : bannedplayerlist) {
                 if (player != null && player.getName() != null) {
-                    if (EnjinMinecraftPlugin.supportsUUID()) {
-                        currentbannedplayers.put(player.getUniqueId().toString(), "");
-                    } else {
-                        currentbannedplayers.put(player.getName().toLowerCase(), "");
-                    }
+                    currentbannedplayers.put(player.getUniqueId().toString(), "");
                 }
             }
             firstrun = false;
@@ -69,11 +64,7 @@ public class BanLister implements Runnable {
      * @param name Name of the player that got banned.
      */
     public synchronized void addBannedPlayer(OfflinePlayer name) {
-        if (EnjinMinecraftPlugin.supportsUUID()) {
-            currentbannedplayers.put(name.getUniqueId().toString(), "");
-        } else {
-            currentbannedplayers.put(name.getName().toLowerCase(), "");
-        }
+        currentbannedplayers.put(name.getUniqueId().toString(), "");
     }
 
 
@@ -84,11 +75,7 @@ public class BanLister implements Runnable {
      * @param name Name of the player that got pardoned.
      */
     public synchronized void pardonBannedPlayer(OfflinePlayer name) {
-        if (EnjinMinecraftPlugin.supportsUUID()) {
-            currentbannedplayers.remove(name.getUniqueId().toString());
-        } else {
-            currentbannedplayers.remove(name.getName().toLowerCase());
-        }
+        currentbannedplayers.remove(name.getUniqueId().toString());
     }
 
     /**
@@ -98,11 +85,7 @@ public class BanLister implements Runnable {
      * @return true if the player is banned, false otherwise.
      */
     public synchronized boolean playerIsBanned(OfflinePlayer name) {
-        if (EnjinMinecraftPlugin.supportsUUID()) {
-            return currentbannedplayers.containsKey(name.getUniqueId().toString());
-        } else {
-            return currentbannedplayers.containsKey(name.getName().toLowerCase());
-        }
+        return currentbannedplayers.containsKey(name.getUniqueId().toString());
     }
 
 }

@@ -1,27 +1,13 @@
 package com.enjin.bukkit.threaded;
 
-import com.enjin.bukkit.EnjinMinecraftPlugin;
-import org.bukkit.entity.Player;
-
-import com.enjin.bukkit.EMPListener;
+import com.enjin.bukkit.listeners.ConnectionListener;
 
 public class DelayedPlayerPermsUpdate implements Runnable {
+    private ConnectionListener listener;
+    private String player;
+    private String uuid;
 
-    EMPListener listener;
-    String player;
-    String uuid;
-
-    @Deprecated
-    public DelayedPlayerPermsUpdate(EMPListener listener, Player player) {
-        this.player = player.getName();
-        uuid = "";
-        if (EnjinMinecraftPlugin.supportsUUID()) {
-            uuid = player.getUniqueId().toString();
-        }
-        this.listener = listener;
-    }
-
-    public DelayedPlayerPermsUpdate(EMPListener listener, String player, String uuid) {
+    public DelayedPlayerPermsUpdate(ConnectionListener listener, String player, String uuid) {
         this.player = player;
         this.listener = listener;
         this.uuid = uuid;
@@ -31,5 +17,4 @@ public class DelayedPlayerPermsUpdate implements Runnable {
     public void run() {
         listener.updatePlayerRanks(player, uuid);
     }
-
 }

@@ -1,4 +1,4 @@
-package com.enjin.bukkit;
+package com.enjin.bukkit.util.io;
 
 public interface EnjinLogInterface {
 

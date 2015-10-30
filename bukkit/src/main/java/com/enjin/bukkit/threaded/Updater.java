@@ -10,6 +10,7 @@ import java.util.zip.ZipFile;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -33,7 +34,7 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
  * @version 2.0
  */
 
-public class Updater implements Runnable {
+public class Updater extends BukkitRunnable {
 
     private Plugin plugin;
     private UpdateType type;
@@ -243,7 +244,7 @@ public class Updater implements Runnable {
             if (plugin instanceof EnjinMinecraftPlugin) {
                 ((EnjinMinecraftPlugin) plugin).hasupdate = true;
                 //No need to check for updates now.
-                ((EnjinMinecraftPlugin) plugin).stopUpdateTask();
+                this.cancel();
             }
         } catch (final Exception ex) {
             this.plugin.getLogger().warning("The auto-updater tried to download a new update, but was unsuccessful.");

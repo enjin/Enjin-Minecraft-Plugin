@@ -1,6 +1,6 @@
 package com.enjin.bukkit.command.commands;
 
-import com.enjin.bukkit.EnjinConsole;
+import com.enjin.bukkit.util.io.EnjinConsole;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
 import org.bukkit.ChatColor;

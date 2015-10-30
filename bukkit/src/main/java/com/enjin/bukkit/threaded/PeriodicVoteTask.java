@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.enjin.bukkit.EnjinErrorReport;
+import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.common.utils.ConnectionUtil;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.VoteService;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -25,7 +27,7 @@ public class PeriodicVoteTask implements Runnable {
     public void run() {
         if (plugin.playervotes.size() > 0) {
             if (firstrun && EnjinMinecraftPlugin.usingSSL) {
-                if (!plugin.testHTTPSconnection()) {
+                if (!ConnectionUtil.testHTTPSconnection()) {
                     EnjinMinecraftPlugin.usingSSL = false;
                     plugin.getLogger().warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
                     EnjinMinecraftPlugin.enjinLogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
@@ -55,7 +57,7 @@ public class PeriodicVoteTask implements Runnable {
                 successful = true;
                 if (plugin.unabletocontactenjin) {
                     plugin.unabletocontactenjin = false;
-                    Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
+                    Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[]{});
                     for (Player player : players) {
                         if (player.hasPermission("enjin.notify.connectionstatus")) {
                             player.sendMessage(ChatColor.DARK_GREEN + "[Enjin Minecraft Plugin] Connection to Enjin re-established!");
@@ -68,7 +70,7 @@ public class PeriodicVoteTask implements Runnable {
                 EnjinMinecraftPlugin.enjinLogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.stopTask();
-                Player[] players = plugin.getPlayerGetter().getOnlinePlayers();
+                Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[]{});
                 for (Player player : players) {
                     if (player.hasPermission("enjin.notify.invalidauthkey")) {
                         player.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Auth key is invalid. Please generate a new one.");

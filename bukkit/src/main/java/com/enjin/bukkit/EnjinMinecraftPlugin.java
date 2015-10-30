@@ -1,32 +1,29 @@
 package com.enjin.bukkit;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLHandshakeException;
 
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
-import com.enjin.bukkit.compatibility.PlayerGetter;
 import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.util.io.EnjinErrorReport;
+import com.enjin.bukkit.util.io.EnjinLogAppender;
+import com.enjin.bukkit.util.io.EnjinLogFormatter;
+import com.enjin.bukkit.util.io.EnjinLogInterface;
+import com.enjin.bukkit.listeners.*;
+import com.enjin.bukkit.listeners.perm.*;
 import com.enjin.bukkit.managers.VaultManager;
-import com.enjin.bukkit.permlisteners.*;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.StatsServer;
@@ -36,7 +33,6 @@ import com.enjin.bukkit.sync.BukkitInstructionHandler;
 import com.enjin.bukkit.sync.RPCPacketManager;
 import com.enjin.bukkit.tickets.TicketListener;
 import com.enjin.bukkit.tpsmeter.MonitorTPS;
-import com.enjin.bukkit.util.PacketUtilities;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinPlugin;
 import com.enjin.core.EnjinServices;
@@ -52,9 +48,7 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.bukkit.*;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -71,17 +65,11 @@ import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.kitteh.vanish.VanishManager;
 import org.kitteh.vanish.VanishPlugin;
 
-import com.enjin.bukkit.compatibility.OnlinePlayerGetter;
-import com.enjin.bukkit.listeners.EnjinStatsListener;
-import com.enjin.bukkit.listeners.NewPlayerChatListener;
-import com.enjin.bukkit.listeners.VotifierListener;
 import com.enjin.bukkit.threaded.AsyncToSyncEventThrower;
 import com.enjin.bukkit.threaded.BanLister;
-import com.enjin.bukkit.threaded.DelayedCommandExecuter;
 import com.enjin.bukkit.threaded.PeriodicVoteTask;
 import com.enjin.bukkit.threaded.Updater;
 import com.gmail.nossr50.datatypes.skills.SkillType;
@@ -100,12 +88,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private boolean mcMMOSupported = false;
     public boolean supportsglobalgroups = true;
     public boolean votifierinstalled = false;
-    protected boolean votifiererrored = false;
+    public boolean votifiererrored = false;
     public int xpversion = 0;
     private static boolean supportsuuid = false;
     @Getter
     private static boolean mcmmoOutdated = false;
-    private boolean listenforbans = true;
     @Getter
     private boolean tuxtwolibinstalled = false;
     public final static Logger enjinLogger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
@@ -129,15 +116,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public static boolean vaultneedsupdating = false;
     public boolean gmneedsupdating = false;
     private LinkedList<String> keywords = new LinkedList<String>();
-    public OnlinePlayerGetter playergetter = new PlayerGetter();
     public AsyncToSyncEventThrower eventthrower = new AsyncToSyncEventThrower(this);
-    public final EMPListener listener = new EMPListener(this);
 
     //------------Threaded tasks---------------
     public Runnable task;
     public PeriodicVoteTask votetask;
     public BanLister banlistertask;
-    public DelayedCommandExecuter commexecuter = new DelayedCommandExecuter(this);
     //Initialize in the onEnable
     public MonitorTPS tpstask;
 
@@ -145,10 +129,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private int synctaskid = -1;
     private int votetaskid = -1;
     private int banlisttask = -1;
-    private int commandexecutertask = -1;
     private int headsupdateid = -1;
     private int updatethread = -1;
-    public static final ExecutorService exec = Executors.newCachedThreadPool();
     public static boolean usingSSL = true;
     public Map<String, String> playerperms = new ConcurrentHashMap<String, String>();
     //Player, lists voted on.
@@ -198,9 +180,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
             initCommands();
 
-            task = new RPCPacketManager(this);
-            votetask = new PeriodicVoteTask(this);
-
             debug("Initializing internal logger");
             enjinLogger.setLevel(Level.FINEST);
             File logsfolder = new File(getDataFolder().getAbsolutePath() + File.separator + "logs");
@@ -229,8 +208,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             debug("Get the ban list");
             banlistertask = new BanLister(this);
             debug("Ban list loaded");
-            loadCommandIDs();
-            debug("Init files done.");
             initPlugins();
             debug("Init plugins done.");
             setupPermissions();
@@ -238,35 +215,23 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             setupVotifierListener();
             debug("Setup Votifier integration");
 
-            //------We should do TPS even if we have an invalid auth key
-            Bukkit.getScheduler().runTaskTimerAsynchronously(this, tpstask = new MonitorTPS(this), 40, 40);
-
-            //Thread configthread = new Thread(new ConfigSender(this));
-            //configthread.start();
-
             if (configuration.isCollectPlayerStats()) {
                 startStatsCollecting();
                 File stats = new File("enjin-stats.json");
                 if (stats.exists()) {
-                    //Let's not error when we fail to parse the stats.
                     try {
                         String content = readFile(stats, Charset.forName("UTF-8"));
                         StatsUtils.parseStats(content, this);
                     } catch (Exception e) {
-
+                        getLogger().warning(e.getMessage());
                     }
                 }
-                //XP handling and chat event handling changed at 1.3, so we can use the same variable. :D
-                if (xpversion < 1) {
-                    //We only keep this around for backwards compatibility with tekkit as it is still on 1.2.5
-                    getLogger().severe("This version of the Enjin Minecraft Plugin does not support Tekkit Classic! Please downgrade to version 2.4.0.");
-                } else {
-                    Bukkit.getPluginManager().registerEvents(new NewPlayerChatListener(this), this);
-                }
+
+                Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
             }
-            //debug("Checking key valid.");
-            //Bypass key checking, but only if the key looks valid
-            registerEvents();
+
+            // Bypass key checking, but only if the key looks valid
+            initListeners();
             if (configuration.getAuthKey().length() == 50) {
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(configuration.getAuthKey(), Bukkit.getPort(), true);
                 if (data == null) {
@@ -280,7 +245,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                     debug("Auth key is invalid. Failed to authenticate.");
                 } else {
                     debug("Starting periodic tasks.");
-                    startTask();
+                    initTasks();
                 }
             } else {
                 authkeyinvalid = true;
@@ -309,10 +274,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         Bukkit.getPluginManager().registerEvents(ticketListener, this);
 
         pollModules();
-    }
-
-    public OnlinePlayerGetter getPlayerGetter() {
-        return playergetter;
     }
 
     public void stopStatsCollecting() {
@@ -409,10 +370,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             configuration.setApiUrl(configuration.getApiUrl().concat("/"));
         }
 
-        String rpcApiUrl = (configuration.isHttps() ? "https" : "http") + configuration.getApiUrl() + "v1/";
         EnjinRPC.setHttps(configuration.isHttps());
-        EnjinRPC.setApiUrl(rpcApiUrl);
-        debug("RPC API Url: " + rpcApiUrl);
+        EnjinRPC.setApiUrl(configuration.getApiUrl());
+        debug("RPC API Url: " + configuration.getApiUrl());
     }
 
     private void initCommands() {
@@ -432,66 +392,30 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         configuration.save(new File(instance.getDataFolder(), "config.json"));
     }
 
-    public void startTask() {
+    public void initTasks() {
         debug("Starting tasks.");
-        BukkitScheduler scheduler = Bukkit.getScheduler();
-        synctaskid = scheduler.runTaskTimerAsynchronously(this, task, 1200L, 1200L).getTaskId();
-        banlisttask = scheduler.runTaskTimerAsynchronously(this, banlistertask, 40L, 1800L).getTaskId();
-        //execute the value executer task every 10 ticks, which should vary between .5 and 1 second on servers.
-        commandexecutertask = scheduler.runTaskTimer(this, commexecuter, 20L, 10L).getTaskId();
-        commexecuter.loadCommands(Bukkit.getConsoleSender());
-        //Only start the vote task if votifier is installed.
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L).getTaskId();
 
-        if (votifierinstalled) {
+        if (Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
             debug("Starting votifier task.");
-            votetaskid = scheduler.runTaskTimerAsynchronously(this, votetask, 80L, 80L).getTaskId();
+            Bukkit.getScheduler().runTaskTimerAsynchronously(this, new PeriodicVoteTask(this), 20L * 4L, 20L * 4L).getTaskId();
         }
 
-        updatethread = scheduler.runTaskTimerAsynchronously(this, new Updater(this, 44560, this.getFile(), Updater.UpdateType.DEFAULT, true), 20 * 60 * 5, 20 * 60 * 5).getTaskId();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new MonitorTPS(), 20L * 2L, 20L * 4L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Updater(this, 44560, this.getFile(), Updater.UpdateType.DEFAULT, true), 20L * 60L * 5L, 20L * 60L * 5L).getTaskId();
     }
 
-    public void registerEvents() {
-        debug("Registering events.");
-        Bukkit.getPluginManager().registerEvents(listener, this);
-
-        if (listenforbans) {
-            Bukkit.getPluginManager().registerEvents(new BanListeners(this), this);
-        }
-
+    public void initListeners() {
+        debug("Initializing Listeners");
+        Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new BanListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new ShopListener(), this);
     }
 
     public void stopTask() {
         debug("Stopping tasks.");
-        if (synctaskid != -1) {
-            Bukkit.getScheduler().cancelTask(synctaskid);
-        }
-        if (commandexecutertask != -1) {
-            Bukkit.getScheduler().cancelTask(commandexecutertask);
-            commexecuter.saveCommands();
-        }
-        if (votetaskid != -1) {
-            Bukkit.getScheduler().cancelTask(votetaskid);
-        }
-        if (banlisttask != -1) {
-            Bukkit.getScheduler().cancelTask(banlisttask);
-        }
-        if (headsupdateid != -1) {
-            Bukkit.getScheduler().cancelTask(headsupdateid);
-        }
-        if (updatethread != -1) {
-            Bukkit.getScheduler().cancelTask(updatethread);
-        }
-        //Bukkit.getScheduler().cancelTasks(this);
-    }
-
-    public void stopUpdateTask() {
-        debug("Stopping update task.");
-        if (updatethread != -1) {
-            Bukkit.getScheduler().cancelTask(updatethread);
-            updatethread = -1;
-        }
-        //Bukkit.getScheduler().cancelTasks(this);
+        Bukkit.getScheduler().cancelTasks(this);
     }
 
     private void setupVotifierListener() {
@@ -580,219 +504,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
             debug("GroupManager found, hooking custom events.");
-
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("GroupManager");
-            if (supportsUUID()) {
-                boolean gmupdated = false;
-                Pattern devbuild = Pattern.compile("\\(Dev(\\d+)\\.(\\d+)\\.(\\d+)\\)");
-                Matcher devmatch = devbuild.matcher(plugin.getDescription().getVersion());
-
-                if (devmatch.find()) {
-                    int majorver = Integer.parseInt(devmatch.group(1));
-                    int minorver = Integer.parseInt(devmatch.group(2));
-                    int buildver = Integer.parseInt(devmatch.group(3));
-
-                    if (majorver > 2) {
-                        gmupdated = true;
-                    } else if (majorver == 2) {
-                        if (minorver == 14 && buildver > 49) {
-                            gmupdated = true;
-                        } else if (buildver > 14) {
-                            gmupdated = true;
-                        }
-                    }
-
-                    debug("GroupManager dev version: " + majorver + "." + minorver + "." + buildver);
-                } else {
-                    String[] version = plugin.getDescription().getVersion().split("\\.");
-                    int majorver = Integer.parseInt(version[0]);
-                    Pattern numberpattern = Pattern.compile("\\d+");
-                    int minorver = 0;
-
-                    if (version.length > 1) {
-                        Matcher match = numberpattern.matcher(version[1]);
-
-                        if (match.find()) {
-                            minorver = Integer.parseInt(match.group());
-                        }
-                    }
-
-                    int revver = 0;
-
-                    if (version.length > 2) {
-                        Matcher match = numberpattern.matcher(version[2]);
-
-                        try {
-                            if (match.find()) {
-                                revver = Integer.parseInt(match.group());
-                            }
-                        } catch (Exception e) {}
-                    }
-
-                    debug("GroupManager version: " + majorver + "." + minorver + "." + revver);
-
-                    if (majorver > 2) {
-                        gmupdated = true;
-                    } else if (majorver == 2 && minorver > 1) {
-                        gmupdated = true;
-                    } else if (majorver == 2 && minorver == 1 && revver > 10) {
-                        gmupdated = true;
-                    }
-                }
-
-                if (!gmupdated) {
-                    gmneedsupdating = true;
-                    enjinLogger.severe("This version of GroupManager doesn't support UUID! Please update to the latest version here: http://tiny.cc/EssentialsGMZip");
-                    enjinLogger.severe("Disabling GroupManager integration until GroupManager is updated.");
-                    getLogger().severe("This version of GroupManager doesn't support UUID! Please update to the latest version here: http://tiny.cc/EssentialsGMZip");
-                    getLogger().severe("Disabling GroupManager integration until GroupManager is updated.");
-                    return;
-                }
-            }
-
             supportsglobalgroups = false;
-            Bukkit.getPluginManager().registerEvents(new GroupManagerListener(this), this);
+            Bukkit.getPluginManager().registerEvents(new GroupManagerListener(), this);
             return;
         } else {
             debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
             debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
         }
-    }
-
-    public void noEnjinConnectionEvent() {
-        if (!unabletocontactenjin) {
-            unabletocontactenjin = true;
-            Player[] players = getPlayerGetter().getOnlinePlayers();
-            for (Player player : players) {
-                if (player.hasPermission("enjin.notify.connectionstatus")) {
-                    player.sendMessage(ChatColor.DARK_RED + "[Enjin Minecraft Plugin] Unable to connect to enjin, please check your settings.");
-                    player.sendMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin report");
-                }
-            }
-        }
-    }
-
-    public boolean testHTTPSconnection() {
-        try {
-            URL url = new URL("https://api.enjin.com/ok.html");
-            URLConnection con = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine = in.readLine();
-            in.close();
-            if (inputLine != null && inputLine.startsWith("OK")) {
-                return true;
-            }
-            return false;
-        } catch (SSLHandshakeException e) {
-            if (configuration.isDebug()) {
-                e.printStackTrace();
-            }
-            return false;
-        } catch (SocketTimeoutException e) {
-            if (configuration.isDebug()) {
-                e.printStackTrace();
-            }
-            return false;
-        } catch (Throwable t) {
-            if (configuration.isDebug()) {
-                t.printStackTrace();
-            }
-            return false;
-        }
-    }
-
-    public boolean testWebConnection() {
-        try {
-            URL url = new URL("http://google.com");
-            URLConnection con = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine = in.readLine();
-            in.close();
-            if (inputLine != null) {
-                return true;
-            }
-            return false;
-        } catch (SocketTimeoutException e) {
-            if (configuration.isDebug()) {
-                e.printStackTrace();
-            }
-            return false;
-        } catch (Throwable t) {
-            if (configuration.isDebug()) {
-                t.printStackTrace();
-            }
-            return false;
-        }
-    }
-
-    public boolean testHTTPconnection() {
-        try {
-            URL url = new URL("http://api.enjin.com/ok.html");
-            URLConnection con = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine = in.readLine();
-            in.close();
-            if (inputLine != null && inputLine.startsWith("OK")) {
-                return true;
-            }
-            return false;
-        } catch (SocketTimeoutException e) {
-            if (configuration.isDebug()) {
-                e.printStackTrace();
-            }
-            return false;
-        } catch (Throwable t) {
-            if (configuration.isDebug()) {
-                t.printStackTrace();
-            }
-            return false;
-        }
-    }
-
-    public static boolean isMineshafterPresent() {
-        try {
-            Class.forName("mineshafter.MineServer");
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public Runnable getTask() {
-        return task;
-    }
-
-    public void addCommandID(CommandWrapper command) {
-        if (command.getId().equals("")) {
-            return;
-        }
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(command.getCommand().getBytes("UTF-8"));
-
-            BigInteger bigInt = new BigInteger(1, digest);
-            String hashtext = bigInt.toString(16);
-
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
-            }
-
-            command.setHash(hashtext);
-            commandids.put(command.getId(), command);
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Map<String, CommandWrapper> getCommandIDs() {
-        return commandids;
-    }
-
-    public void removeCommandID(String id) {
-        commandids.remove(id);
     }
 
     public void saveCommandIDs() {
@@ -814,71 +532,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
     }
 
-    public void loadCommandIDs() {
-        commandids.clear();
-        File dataFolder = getDataFolder();
-        File headsfile = new File(dataFolder, "executedcommands.yml");
-        File newheadsfile = new File(dataFolder, "newexecutedcommands.yml");
-        if (headsfile.exists()) {
-            YamlConfiguration commandconfig = new YamlConfiguration();
-            try {
-                commandconfig.load(headsfile);
-                Set<String> keys = commandconfig.getValues(false).keySet();
-                for (String key : keys) {
-                    String hash = commandconfig.getString(key);
-                    CommandWrapper comm = new CommandWrapper(Bukkit.getConsoleSender(), "", key);
-                    comm.setHash(hash);
-                    commandids.put(key, comm);
-                }
-                headsfile.delete();
-            } catch (FileNotFoundException e) {
-            } catch (IOException e) {
-            } catch (InvalidConfigurationException e) {
-            }
-        } else if (newheadsfile.exists()) {
-            YamlConfiguration commandconfig = new YamlConfiguration();
-            try {
-                commandconfig.load(newheadsfile);
-                Set<String> keys = commandconfig.getValues(false).keySet();
-                for (String key : keys) {
-                    String hash = commandconfig.getString(key + ".hash");
-                    String command = commandconfig.getString(key + ".command");
-                    String result = commandconfig.getString(key + ".result");
-                    CommandWrapper comm = new CommandWrapper(Bukkit.getConsoleSender(), command, key);
-                    comm.setHash(hash);
-                    comm.setResult(result);
-                    commandids.put(key, comm);
-                }
-            } catch (FileNotFoundException e) {
-            } catch (IOException e) {
-            } catch (InvalidConfigurationException e) {
-            }
-        }
-    }
-
-    public EnjinLogInterface getMcLogListener() {
-        return mcLogListener;
-    }
-
     public String getLastLogLine() {
         return mcLogListener.getLine();
-    }
-
-    public static boolean supportsUUID() {
-        return supportsuuid;
-    }
-
-    public boolean isVanished(Player player) {
-        if (vanishmanager != null) {
-            try {
-                return vanishmanager.isVanished(player);
-                //Make sure old versions of Vanish don't mess up the plugin.
-            } catch (Throwable e) {
-                return vanishmanager.isVanished(player.getName());
-            }
-        } else {
-            return false;
-        }
     }
 
     public void addCustomData(ItemStack is, String[] args, OfflinePlayer reciever, int startingpos) {

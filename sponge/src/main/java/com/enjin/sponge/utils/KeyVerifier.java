@@ -1,5 +1,6 @@
 package com.enjin.sponge.utils;
 
+import com.enjin.common.utils.ConnectionUtil;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;

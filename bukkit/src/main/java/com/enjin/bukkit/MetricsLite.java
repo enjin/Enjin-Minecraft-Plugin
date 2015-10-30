@@ -28,6 +28,7 @@
 
 package com.enjin.bukkit;
 
+import com.enjin.common.utils.ConnectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -50,7 +51,6 @@ import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
 
 public class MetricsLite {
-
     /**
      * The current revision number
      */
@@ -277,34 +277,27 @@ public class MetricsLite {
      * Generic method that posts a plugin to the metrics website
      */
     private void postPlugin(boolean isPing) throws IOException {
-        // Server software specific section
         PluginDescriptionFile description = plugin.getDescription();
         String pluginName = description.getName();
         boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
         String pluginVersion = description.getVersion();
         String serverVersion = Bukkit.getVersion();
-        int playersOnline = plugin.getPlayerGetter().getOnlinePlayers().length;
+        int playersOnline = Bukkit.getOnlinePlayers().size();
 
-        // END server software specific section -- all code below does not use any code outside of this class / Java
-
-        // Construct the post data
         StringBuilder json = new StringBuilder(1024);
         json.append('{');
 
-        // The plugin's description file containg all of the plugin data such as name, version, author, etc
         appendJSONPair(json, "guid", guid);
         appendJSONPair(json, "plugin_version", pluginVersion);
         appendJSONPair(json, "server_version", serverVersion);
         appendJSONPair(json, "players_online", Integer.toString(playersOnline));
 
-        // New data as of R6
         String osname = System.getProperty("os.name");
         String osarch = System.getProperty("os.arch");
         String osversion = System.getProperty("os.version");
         String java_version = System.getProperty("java.version");
         int coreCount = Runtime.getRuntime().availableProcessors();
 
-        // normalize os arch .. amd64 -> x86_64
         if (osarch.equals("amd64")) {
             osarch = "x86_64";
         }
@@ -316,33 +309,25 @@ public class MetricsLite {
         appendJSONPair(json, "auth_mode", onlineMode ? "1" : "0");
         appendJSONPair(json, "java_version", java_version);
 
-        // If we're pinging, append it
         if (isPing) {
             appendJSONPair(json, "ping", "1");
         }
 
-        // close json
         json.append('}');
 
-        // Create the url
         URL url = new URL(BASE_URL + String.format(REPORT_URL, urlEncode(pluginName)));
 
-        // Connect to the website
         URLConnection connection;
 
-        // Mineshafter creates a socks proxy, so we can safely bypass it
-        // It does not reroute POST requests so we need to go around it
-        if (isMineshafterPresent()) {
+        if (ConnectionUtil.isMineshafterPresent()) {
             connection = url.openConnection(Proxy.NO_PROXY);
         } else {
             connection = url.openConnection();
         }
 
-
         byte[] uncompressed = json.toString().getBytes();
         byte[] compressed = gzip(json.toString());
 
-        // Headers
         connection.addRequestProperty("User-Agent", "MCStats/" + REVISION);
         connection.addRequestProperty("Content-Type", "application/json");
         connection.addRequestProperty("Content-Encoding", "gzip");
@@ -356,16 +341,13 @@ public class MetricsLite {
             System.out.println("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
         }
 
-        // Write the data
         OutputStream os = connection.getOutputStream();
         os.write(compressed);
         os.flush();
 
-        // Now read the response
         final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String response = reader.readLine();
 
-        // close resources
         os.close();
         reader.close();
 
@@ -403,20 +385,6 @@ public class MetricsLite {
         }
 
         return baos.toByteArray();
-    }
-
-    /**
-     * Check if mineshafter is present. If it is, we need to bypass it to send POST requests
-     *
-     * @return true if mineshafter is installed on the server
-     */
-    private boolean isMineshafterPresent() {
-        try {
-            Class.forName("mineshafter.MineServer");
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     /**
@@ -508,5 +476,4 @@ public class MetricsLite {
     private static String urlEncode(final String text) throws UnsupportedEncodingException {
         return URLEncoder.encode(text, "UTF-8");
     }
-
 }

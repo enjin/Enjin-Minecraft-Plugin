@@ -39,5 +39,5 @@ public class EnjinConfig extends JsonConfig {
     private boolean loggingEnabled = true;
     @Getter @Setter
     @SerializedName(value = "api-url")
-    private String apiUrl = "://api.enjin.com/api";
+    private String apiUrl = "://api.enjin.com/api/v1";
 }

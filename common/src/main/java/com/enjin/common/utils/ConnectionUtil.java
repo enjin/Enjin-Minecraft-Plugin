@@ -1,6 +1,7 @@
-package com.enjin.sponge.utils;
+package com.enjin.common.utils;
 
-import com.enjin.sponge.EnjinMinecraftPlugin;
+import com.enjin.core.Enjin;
+import com.enjin.rpc.EnjinRPC;
 
 import javax.net.ssl.SSLHandshakeException;
 import java.io.BufferedReader;
@@ -21,12 +22,11 @@ public class ConnectionUtil {
     }
 
     public static boolean testConnection(boolean https) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
         BufferedReader in = null;
         boolean ok = false;
 
         try {
-            URL url = new URL((https ? "https" : "http") + "://api.enjin.com/ok.html");
+            URL url = new URL((https ? "https" : "http") + EnjinRPC.getApiUrl());
             URLConnection con = url.openConnection();
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String line = in.readLine();
@@ -53,5 +53,46 @@ public class ConnectionUtil {
         }
 
         return ok;
+    }
+
+    public static boolean testWebConnection() {
+        BufferedReader in = null;
+        boolean ok = false;
+
+        try {
+            URL url = new URL("http://google.com");
+            URLConnection con = url.openConnection();
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine = in.readLine();
+
+            if (inputLine != null) {
+                ok = true;
+            }
+        } catch (SocketTimeoutException e) {
+            return false;
+        } catch (MalformedURLException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                return false;
+            }
+        }
+
+        return ok;
+    }
+
+    public static boolean isMineshafterPresent() {
+        try {
+            Class.forName("mineshafter.MineServer");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
