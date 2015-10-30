@@ -189,8 +189,8 @@ public class CoreCommands {
         try {
             int extradatastart = 3;
             Pattern digits = Pattern.compile("\\d+");
-            if (args[2].contains(":")) {
-                String[] split = args[2].split(":");
+            if (args[1].contains(":")) {
+                String[] split = args[1].split(":");
                 ItemStack is;
                 Pattern pattern = Pattern.compile("\\d+:\\d+");
                 Matcher match = pattern.matcher(args[2]);
@@ -201,8 +201,8 @@ public class CoreCommands {
                         int damage = Integer.parseInt(split[1]);
                         int quantity = 1;
 
-                        if (args.length > 3 && digits.matcher(args[3]).find()) {
-                            quantity = Integer.parseInt(args[3]);
+                        if (args.length > 2 && digits.matcher(args[2]).find()) {
+                            quantity = Integer.parseInt(args[2]);
                             extradatastart = 4;
                         }
 
@@ -224,8 +224,8 @@ public class CoreCommands {
                         int damage = Integer.parseInt(split[1]);
                         int quantity = 1;
 
-                        if (args.length > 3 && digits.matcher(args[3]).find()) {
-                            quantity = Integer.parseInt(args[3]);
+                        if (args.length > 3 && digits.matcher(args[2]).find()) {
+                            quantity = Integer.parseInt(args[2]);
                             extradatastart = 4;
                         }
 
@@ -251,18 +251,18 @@ public class CoreCommands {
             } else {
                 ItemStack is;
                 try {
-                    int itemid = Integer.parseInt(args[2]);
+                    int itemid = Integer.parseInt(args[1]);
                     int quantity = 1;
 
-                    if (args.length > 3 && digits.matcher(args[3]).find()) {
-                        quantity = Integer.parseInt(args[3]);
+                    if (args.length > 3 && digits.matcher(args[2]).find()) {
+                        quantity = Integer.parseInt(args[2]);
                         extradatastart = 4;
                     }
 
                     is = new ItemStack(itemid, quantity);
                     sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
                 } catch (NumberFormatException e) {
-                    Material material = Material.getMaterial(args[2].trim().toUpperCase());
+                    Material material = Material.getMaterial(args[1].trim().toUpperCase());
 
                     if (material == null) {
                         sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
@@ -271,8 +271,8 @@ public class CoreCommands {
 
                     int quantity = 1;
 
-                    if (args.length > 3 && digits.matcher(args[3]).find()) {
-                        quantity = Integer.parseInt(args[3]);
+                    if (args.length > 3 && digits.matcher(args[2]).find()) {
+                        quantity = Integer.parseInt(args[2]);
                         extradatastart = 4;
                     }
 
@@ -290,7 +290,7 @@ public class CoreCommands {
                 }
 
                 String itemname = is.getType().toString().toLowerCase();
-                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[1] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[0] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
             }
         } catch (Exception e) {
             sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
@@ -305,7 +305,7 @@ public class CoreCommands {
             return;
         }
 
-        Player player = Bukkit.getPlayer(args[1]);
+        Player player = Bukkit.getPlayer(args[0]);
         if (player == null) {
             sender.sendMessage(ChatColor.RED + "That player isn't on the server at the moment.");
             return;
@@ -328,6 +328,7 @@ public class CoreCommands {
     @Directive(parent = "enjin", value = "key", aliases = {"setkey", "sk", "enjinkey", "ek"})
     public static void key(CommandSender sender, String[] args) {
         if (args.length != 1) {
+            sender.sendMessage("USAGE: /enjin key <key>");
             return;
         }
 
@@ -336,8 +337,9 @@ public class CoreCommands {
 
         NewKeyVerifier verifier = EnjinMinecraftPlugin.instance.getVerifier();
         if (verifier == null || verifier.completed) {
-            EnjinMinecraftPlugin.instance.setVerifier(new NewKeyVerifier(EnjinMinecraftPlugin.instance, args[0], sender, false));
-            new Thread(verifier).start();
+            verifier = new NewKeyVerifier(EnjinMinecraftPlugin.instance, args[0], sender, false);
+            EnjinMinecraftPlugin.instance.setVerifier(verifier);
+            Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.instance, verifier);
         } else {
             sender.sendMessage(ChatColor.RED + "Please wait until we verify the key before you try again!");
         }
