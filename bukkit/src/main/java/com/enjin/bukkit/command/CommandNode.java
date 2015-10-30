@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,6 +43,16 @@ public class CommandNode {
         }
 
         try {
+            if (method.getParameters()[0].getType() == Player.class && !(sender instanceof Player)) {
+                sender.sendMessage("This command can only be used in-game by a player.");
+                return;
+            }
+
+            if (method.getParameters()[0].getType() == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
+                sender.sendMessage("This command can only be used by the console.");
+                return;
+            }
+
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
             e.printStackTrace();

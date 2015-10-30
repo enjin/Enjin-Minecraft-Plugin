@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
@@ -146,20 +147,34 @@ public class CommandBank implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        if (handle(event.getPlayer(), event.getMessage())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onServerCommand(ServerCommandEvent event) {
+        if (handle(event.getSender(), event.getCommand())) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean handle(CommandSender sender, String c) {
         if (nodes.size() == 0) {
-            return;
+            return false;
         }
 
-        String[] parts = event.getMessage().replaceFirst("/", "").split(" ");
+        String[] parts = c.startsWith("/") ? c.replaceFirst("/", "").split(" ") : c.split(" ");
         String command = parts[0];
 
         Optional<CommandNode> w = Optional.ofNullable(nodes.get(command));
         if (w.isPresent()) {
-            event.setCancelled(true);
-
             CommandNode wrapper = w.get();
             String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[]{};
-            wrapper.invoke(event.getPlayer(), args);
+            wrapper.invoke(sender, args);
+            return true;
         }
+
+        return false;
     }
 }
