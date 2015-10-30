@@ -79,11 +79,15 @@ public class CommandBank implements Listener {
             List<DirectiveNode> sub = Lists.newArrayList();
             for (Method method : methods) {
                 if (method.isAnnotationPresent(Command.class)) {
-                    root.add(new CommandNode(method.getAnnotation(Command.class), method));
+                    root.add(method.isAnnotationPresent(Permission.class)
+                            ? new CommandNode(method.getAnnotation(Command.class), method, method.getAnnotation(Permission.class))
+                            : new CommandNode(method.getAnnotation(Command.class), method));
                 }
 
                 if (method.isAnnotationPresent(Directive.class)) {
-                    sub.add(new DirectiveNode(method.getAnnotation(Directive.class), method));
+                    sub.add(method.isAnnotationPresent(Permission.class)
+                            ? new DirectiveNode(method.getAnnotation(Directive.class), method, method.getAnnotation(Permission.class))
+                            : new DirectiveNode(method.getAnnotation(Directive.class), method));
                 }
             }
 

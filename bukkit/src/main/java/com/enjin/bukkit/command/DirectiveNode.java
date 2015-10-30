@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 public class DirectiveNode {
     @Getter
     private Directive data;
+    @Getter
+    private Permission permission;
     private Method method;
 
     public DirectiveNode(Directive data, Method method) {
@@ -19,12 +21,17 @@ public class DirectiveNode {
         this.method = method;
     }
 
+    public DirectiveNode(Directive data, Method method, Permission permission) {
+        this(data, method);
+        this.permission = permission;
+    }
+
     public void invoke(CommandSender sender, String[] args) {
         if (method == null) {
             return;
         }
 
-        if (!data.permission().equals("") && !sender.hasPermission(data.permission())) {
+        if (permission != null && permission.permission().equals("") && !sender.hasPermission(permission.permission())) {
             sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return;
         }

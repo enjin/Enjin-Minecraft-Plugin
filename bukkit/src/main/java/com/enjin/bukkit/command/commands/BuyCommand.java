@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class BuyCommand {
-    @Command(command = "buy", permission = "enjin.store.buy")
+    @Command(command = "buy")
     public static void buy(Player player, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.instance;
 

@@ -15,6 +15,8 @@ import java.util.Map;
 public class CommandNode {
     @Getter
     private Command data;
+    @Getter
+    private Permission permission;
     private Method method;
     @Getter
     private Map<String, DirectiveNode> directives = Maps.newHashMap();
@@ -24,12 +26,17 @@ public class CommandNode {
         this.method = method;
     }
 
+    public CommandNode(Command data, Method method, Permission permission) {
+        this(data, method);
+        this.permission = permission;
+    }
+
     public void invoke(CommandSender sender, String[] args) {
         if (method == null) {
             return;
         }
 
-        if (!data.permission().equals("") && !sender.hasPermission(data.permission())) {
+        if (permission != null && permission.permission().equals("") && !sender.hasPermission(permission.permission())) {
             sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return;
         }

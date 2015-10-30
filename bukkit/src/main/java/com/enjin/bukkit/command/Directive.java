@@ -13,6 +13,4 @@ public @interface Directive {
     public String directive();
 
     public String[] aliases() default {};
-
-    public String permission() default "";
 }
