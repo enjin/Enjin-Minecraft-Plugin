@@ -19,12 +19,12 @@ public class StatCommands {
     @Permission("enjin.customstat")
     @Directive(parent = "enjin", value = "customstat")
     public static void customStat(CommandSender sender, String[] args) {
-        if (args.length > 4) {
-            String player = args[1].trim();
-            String plugin = args[2].trim();
-            String statName = args[3].trim();
-            String statValue = args[4].trim();
-            String cumulative = args[5].trim();
+        if (args.length == 5) {
+            String player = args[0].trim();
+            String plugin = args[1].trim();
+            String statName = args[2].trim();
+            String statValue = args[3].trim();
+            String cumulative = args[4].trim();
             boolean existing = cumulative.equalsIgnoreCase("true");
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
             StatsPlayer statsPlayer = EnjinMinecraftPlugin.instance.getPlayerStats(offlinePlayer);
