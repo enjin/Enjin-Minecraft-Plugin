@@ -49,6 +49,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private static EnjinConfig configuration;
     @Getter
     private InstructionHandler instructionHandler = new BukkitInstructionHandler();
+    @Getter
+    private boolean firstRun = true;
 
     @Getter
     private boolean tuxTwoLibInstalled = false;
@@ -116,7 +118,18 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         keywords.add("--c");
         keywords.add("--r");
 
-        try {
+        init();
+    }
+
+    @Override
+    public void onDisable() {
+        disableTasks();
+        disableManagers();
+    }
+
+    public void init() {
+        if (firstRun) {
+            firstRun = false;
             initConfig();
 
             EnjinRPC.setLogger(getLogger());
@@ -145,37 +158,27 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             } else {
                 authKeyInvalid = true;
                 debug("Auth key is invalid. Must be 50 characters in length.");
+                return;
             }
-
-            initManagers();
-            debug("Init managers done.");
-            initPlugins();
-            debug("Init plugins done.");
-            initPermissions();
-            debug("Init permissions done.");
-            initListeners();
-            debug("Init listeners done.");
-            initTasks();
-            debug("Init tasks done.");
-
-            try {
-                MetricsLite metrics = new MetricsLite(this);
-                metrics.start();
-            } catch (IOException e) {
-                debug("Failed to start metrics.");
-            }
-        } catch (Throwable t) {
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
-            Log.warning("Couldn't enable EnjinMinecraftPlugin! Reason: " + t.getMessage());
-            t.printStackTrace();
-            this.setEnabled(false);
         }
-    }
 
-    @Override
-    public void onDisable() {
-        disableTasks();
-        disableManagers();
+        initManagers();
+        debug("Init managers done.");
+        initPlugins();
+        debug("Init plugins done.");
+        initPermissions();
+        debug("Init permissions done.");
+        initListeners();
+        debug("Init listeners done.");
+        initTasks();
+        debug("Init tasks done.");
+
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+        } catch (IOException e) {
+            debug("Failed to start metrics.");
+        }
     }
 
     private void initConfig() {
@@ -243,7 +246,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         Bukkit.getPluginManager().registerEvents(new ShopListener(), this);
     }
 
-    private void initPlugins() throws Throwable {
+    private void initPlugins() {
         if (Bukkit.getPluginManager().isPluginEnabled("TuxTwoLib")) {
             tuxTwoLibInstalled = true;
             Log.info("TuxTwoLib is installed. Offline players can be given items.");
