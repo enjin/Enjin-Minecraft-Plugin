@@ -40,11 +40,11 @@ public class VotifierListener implements Listener {
 
         String userid = username + "|" + Bukkit.getOfflinePlayer(username).getUniqueId();
 
-        if (plugin.playervotes.containsKey(username)) {
-            plugin.playervotes.get(userid).add(vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", ""));
+        if (plugin.getPlayerVotes().containsKey(username)) {
+            plugin.getPlayerVotes().get(userid).add(vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", ""));
         } else {
-            plugin.playervotes.put(userid, new ArrayList<String>());
-            plugin.playervotes.get(userid).add(vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", ""));
+            plugin.getPlayerVotes().put(userid, new ArrayList<String>());
+            plugin.getPlayerVotes().get(userid).add(vote.getServiceName().replaceAll("[^0-9A-Za-z.\\-]", ""));
         }
 
         long realvotetime = System.currentTimeMillis();

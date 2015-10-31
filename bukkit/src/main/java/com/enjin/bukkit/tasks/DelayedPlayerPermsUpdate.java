@@ -1,4 +1,4 @@
-package com.enjin.bukkit.threaded;
+package com.enjin.bukkit.tasks;
 
 import com.enjin.bukkit.listeners.ConnectionListener;
 

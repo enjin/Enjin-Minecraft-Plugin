@@ -1,17 +1,23 @@
 /**
  *
  */
-package com.enjin.bukkit.tpsmeter;
+package com.enjin.bukkit.tasks;
+
+import lombok.Getter;
 
 import java.util.LinkedList;
 
-import com.enjin.bukkit.EnjinMinecraftPlugin;
-
-public class MonitorTPS implements Runnable {
+public class TPSMonitor implements Runnable {
+    @Getter
+    private static TPSMonitor instance;
     private LinkedList<Double> list = new LinkedList<Double>();
     private long last = System.currentTimeMillis();
     private int interval = 40;
     private int max = 25;
+
+    public TPSMonitor() {
+        TPSMonitor.instance = this;
+    }
 
     @Override
     public synchronized void run() {

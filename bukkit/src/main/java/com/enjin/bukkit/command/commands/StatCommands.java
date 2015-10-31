@@ -14,7 +14,6 @@ import org.bukkit.command.CommandSender;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 public class StatCommands {
     @Permission("enjin.customstat")
@@ -51,8 +50,8 @@ public class StatCommands {
             String index = args[0].toLowerCase();
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(index);
 
-            if (plugin.playerstats.containsKey(offlinePlayer.getUniqueId().toString().toLowerCase())) {
-                player = plugin.playerstats.get(offlinePlayer.getUniqueId().toString());
+            if (plugin.getPlayerStats().containsKey(offlinePlayer.getUniqueId().toString().toLowerCase())) {
+                player = plugin.getPlayerStats().get(offlinePlayer.getUniqueId().toString());
             }
 
             if (player != null) {
@@ -86,13 +85,13 @@ public class StatCommands {
     @Directive(parent = "enjin", value = "serverstats")
     public static void serverStats(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-        Date date = new Date(plugin.serverstats.getLastserverstarttime());
+        Date date = new Date(plugin.getServerStats().getLastserverstarttime());
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
         sender.sendMessage(ChatColor.DARK_GREEN + "Server Stats");
         sender.sendMessage(ChatColor.DARK_GREEN + "Server Start time: " + ChatColor.GOLD + format.format(date));
-        sender.sendMessage(ChatColor.DARK_GREEN + "Total number of creeper explosions: " + ChatColor.GOLD + plugin.serverstats.getCreeperexplosions());
-        sender.sendMessage(ChatColor.DARK_GREEN + "Total number of kicks: " + ChatColor.GOLD + plugin.serverstats.getTotalkicks());
-        sender.sendMessage(ChatColor.DARK_GREEN + "Kicks per player: " + ChatColor.GOLD + plugin.serverstats.getPlayerkicks().toString());
+        sender.sendMessage(ChatColor.DARK_GREEN + "Total number of creeper explosions: " + ChatColor.GOLD + plugin.getServerStats().getCreeperexplosions());
+        sender.sendMessage(ChatColor.DARK_GREEN + "Total number of kicks: " + ChatColor.GOLD + plugin.getServerStats().getTotalkicks());
+        sender.sendMessage(ChatColor.DARK_GREEN + "Kicks per player: " + ChatColor.GOLD + plugin.getServerStats().getPlayerkicks().toString());
     }
 }

@@ -29,11 +29,11 @@ public class VoteCommands {
             username = username.concat("|" + player.getUniqueId().toString());
         }
 
-        if (plugin.playervotes.containsKey(username)) {
-            plugin.playervotes.get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
+        if (plugin.getPlayerVotes().containsKey(username)) {
+            plugin.getPlayerVotes().get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
         } else {
-            plugin.playervotes.put(username, new ArrayList<>());
-            plugin.playervotes.get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
+            plugin.getPlayerVotes().put(username, new ArrayList<>());
+            plugin.getPlayerVotes().get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
         }
 
         sender.sendMessage(ChatColor.GREEN + "You just added a vote for player " + username + " on list " + listname);

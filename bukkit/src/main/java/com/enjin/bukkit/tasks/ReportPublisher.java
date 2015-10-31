@@ -1,4 +1,4 @@
-package com.enjin.bukkit.threaded;
+package com.enjin.bukkit.tasks;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -93,9 +93,9 @@ public class ReportPublisher implements Runnable {
             rfrlog.close();
         } catch (Exception e2) {
         }
-        if (plugin.lasterror != null) {
+        if (plugin.getLastError() != null) {
             builder.append("\nLast Enjin Plugin Severe error message: \n");
-            builder.append(plugin.lasterror.toString());
+            builder.append(plugin.getLastError().toString());
         }
         builder.append("\n=========================================\nEnjin HTTPS test: " + (ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
         builder.append("Enjin HTTP test: " + (ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");

@@ -1,4 +1,4 @@
-package com.enjin.bukkit.threaded;
+package com.enjin.bukkit.tasks;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,15 +11,14 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 
-public class DownloadPluginThread implements Runnable {
-
+public class EnjinUpdater implements Runnable {
     String downloadlocation = "";
     File destination;
     EnjinMinecraftPlugin plugin;
     String versionnumber;
     String updatejar = "http://resources.guild-hosting.net/1/downloads/emp/";
 
-    public DownloadPluginThread(String downloadlocation, String versionnumber, File destination, EnjinMinecraftPlugin plugin) {
+    public EnjinUpdater(String downloadlocation, String versionnumber, File destination, EnjinMinecraftPlugin plugin) {
         this.downloadlocation = downloadlocation;
         this.versionnumber = versionnumber;
         this.destination = destination;
@@ -29,6 +28,7 @@ public class DownloadPluginThread implements Runnable {
     @Override
     public void run() {
         File tempfile = new File(downloadlocation + File.separator + "EnjinMinecraftPlugin.jar.part");
+
         try {
             URL website;
 
@@ -39,19 +39,20 @@ public class DownloadPluginThread implements Runnable {
             FileOutputStream fos = new FileOutputStream(tempfile);
             fos.getChannel().transferFrom(rbc, 0, 1 << 24);
             fos.close();
+
             if (destination.delete() && tempfile.renameTo(destination)) {
-                plugin.hasupdate = true;
-                plugin.newversion = versionnumber;
+                plugin.setHasUpdate(true);
+                plugin.setNewVersion(versionnumber);
                 Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Enjin Minecraft plugin was updated to version " + versionnumber + ". Please restart your server.");
                 return;
             } else {
-                plugin.updatefailed = true;
+                plugin.setUpdateFailed(true);
                 Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Unable to update to new version. Please update manually!");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        plugin.hasupdate = false;
-    }
 
+        plugin.setHasUpdate(false);
+    }
 }

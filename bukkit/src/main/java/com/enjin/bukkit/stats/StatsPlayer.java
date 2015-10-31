@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.enjin.bukkit.managers.StatsManager;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.util.PrimitiveUtils;
 import net.milkbowl.vault.economy.Economy;
@@ -439,7 +440,7 @@ public class StatsPlayer {
         }
         player.put("pveentitykills", pveentitykills);
         player.put("chatlines", new Integer(chats));
-        if (EnjinMinecraftPlugin.isMcMMOEnabled()) {
+        if (StatsManager.isMcMmoEnabled()) {
             Player bplayer = Bukkit.getPlayerExact(name);
             JSONObject mcmmoskills = new JSONObject();
             List<SkillType> skills = SkillType.NON_CHILD_SKILLS;

@@ -42,7 +42,7 @@ public class EnjinStatsListener implements Listener {
             return;
         }
         if (event.getEntity() != null && event.getEntityType() == EntityType.CREEPER) {
-            plugin.serverstats.addCreeperExplosion();
+            plugin.getServerStats().addCreeperExplosion();
         }
     }
 
@@ -51,7 +51,7 @@ public class EnjinStatsListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        plugin.serverstats.addKick(event.getPlayer().getName());
+        plugin.getServerStats().addKick(event.getPlayer().getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

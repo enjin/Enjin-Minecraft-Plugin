@@ -2,7 +2,7 @@ package com.enjin.bukkit.listeners.perm;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.listeners.ConnectionListener;
-import com.enjin.bukkit.threaded.DelayedPlayerPermsUpdate;
+import com.enjin.bukkit.tasks.DelayedPlayerPermsUpdate;
 import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

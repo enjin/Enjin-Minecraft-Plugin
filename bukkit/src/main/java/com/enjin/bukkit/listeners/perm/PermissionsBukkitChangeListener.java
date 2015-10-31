@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.threaded.DelayedPlayerPermsUpdate;
+import com.enjin.bukkit.tasks.DelayedPlayerPermsUpdate;
 
 public class PermissionsBukkitChangeListener implements Listener {
     private EnjinMinecraftPlugin plugin;

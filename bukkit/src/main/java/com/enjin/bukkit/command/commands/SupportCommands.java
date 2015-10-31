@@ -3,6 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.managers.TicketManager;
 import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketViewBuilder;
 import com.enjin.core.EnjinServices;
@@ -26,7 +27,7 @@ public class SupportCommands {
     @Directive(parent = "enjin", value = "support")
     public static void support(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-        Map<Integer, Module> modules = EnjinMinecraftPlugin.getModules();
+        Map<Integer, Module> modules = TicketManager.getModules();
 
         if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
             sender.sendMessage("Cannot use this command without setting your key.");
@@ -34,7 +35,7 @@ public class SupportCommands {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            plugin.pollModules();
+            TicketManager.pollModules();
 
             if (modules.size() == 0) {
                 sender.sendMessage("Support tickets are not available on this server.");

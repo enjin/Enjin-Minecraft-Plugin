@@ -1,4 +1,4 @@
-package com.enjin.bukkit.threaded;
+package com.enjin.bukkit.tasks;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -34,7 +34,7 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
  * @version 2.0
  */
 
-public class Updater extends BukkitRunnable {
+public class CurseUpdater extends BukkitRunnable {
 
     private Plugin plugin;
     private UpdateType type;
@@ -62,7 +62,7 @@ public class Updater extends BukkitRunnable {
     private static final int BYTE_SIZE = 1024; // Used for downloading files
     private YamlConfiguration config; // Config file
     private String updateFolder;// The folder that downloads will be placed in
-    private Updater.UpdateResult result = Updater.UpdateResult.SUCCESS; // Used for determining the outcome of the update process
+    private CurseUpdater.UpdateResult result = CurseUpdater.UpdateResult.SUCCESS; // Used for determining the outcome of the update process
 
     /**
      * Gives the dev the result of the update process. Can be obtained by called getResult().
@@ -133,7 +133,7 @@ public class Updater extends BukkitRunnable {
      * @param type     Specify the type of update this will be. See {@link UpdateType}
      * @param announce True if the program should announce the progress of new updates in console
      */
-    public Updater(Plugin plugin, int id, File file, UpdateType type, boolean announce) {
+    public CurseUpdater(Plugin plugin, int id, File file, UpdateType type, boolean announce) {
         this.plugin = plugin;
         this.type = type;
         this.announce = announce;
@@ -145,7 +145,7 @@ public class Updater extends BukkitRunnable {
     /**
      * Get the result of the update process.
      */
-    public Updater.UpdateResult getResult() {
+    public CurseUpdater.UpdateResult getResult() {
         this.waitForThread();
         return this.result;
     }
@@ -212,13 +212,13 @@ public class Updater extends BukkitRunnable {
             in = new BufferedInputStream(url.openStream());
             fout = new FileOutputStream(folder.getAbsolutePath() + "/" + file);
 
-            final byte[] data = new byte[Updater.BYTE_SIZE];
+            final byte[] data = new byte[CurseUpdater.BYTE_SIZE];
             int count;
             if (this.announce) {
                 this.plugin.getLogger().info("About to download a new update: " + this.versionName);
             }
             long downloaded = 0;
-            while ((count = in.read(data, 0, Updater.BYTE_SIZE)) != -1) {
+            while ((count = in.read(data, 0, CurseUpdater.BYTE_SIZE)) != -1) {
                 downloaded += count;
                 fout.write(data, 0, count);
                 final int percent = (int) ((downloaded * 100) / fileLength);
@@ -242,13 +242,13 @@ public class Updater extends BukkitRunnable {
                 this.plugin.getLogger().info("Finished updating.");
             }
             if (plugin instanceof EnjinMinecraftPlugin) {
-                ((EnjinMinecraftPlugin) plugin).hasupdate = true;
+                ((EnjinMinecraftPlugin) plugin).setHasUpdate(true);
                 //No need to check for updates now.
                 this.cancel();
             }
         } catch (final Exception ex) {
             this.plugin.getLogger().warning("The auto-updater tried to download a new update, but was unsuccessful.");
-            this.result = Updater.UpdateResult.FAIL_DOWNLOAD;
+            this.result = CurseUpdater.UpdateResult.FAIL_DOWNLOAD;
         } finally {
             try {
                 if (in != null) {
@@ -280,10 +280,10 @@ public class Updater extends BukkitRunnable {
                 } else {
                     final BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
                     int b;
-                    final byte buffer[] = new byte[Updater.BYTE_SIZE];
+                    final byte buffer[] = new byte[CurseUpdater.BYTE_SIZE];
                     final FileOutputStream fos = new FileOutputStream(destinationFilePath);
-                    final BufferedOutputStream bos = new BufferedOutputStream(fos, Updater.BYTE_SIZE);
-                    while ((b = bis.read(buffer, 0, Updater.BYTE_SIZE)) != -1) {
+                    final BufferedOutputStream bos = new BufferedOutputStream(fos, CurseUpdater.BYTE_SIZE);
+                    while ((b = bis.read(buffer, 0, CurseUpdater.BYTE_SIZE)) != -1) {
                         bos.write(buffer, 0, b);
                     }
                     bos.flush();
@@ -333,7 +333,7 @@ public class Updater extends BukkitRunnable {
             fSourceZip.delete();
         } catch (final IOException ex) {
             this.plugin.getLogger().warning("The auto-updater tried to unzip a new update file, but was unsuccessful.");
-            this.result = Updater.UpdateResult.FAIL_DOWNLOAD;
+            this.result = CurseUpdater.UpdateResult.FAIL_DOWNLOAD;
             ex.printStackTrace();
         }
         new File(file).delete();
@@ -362,10 +362,10 @@ public class Updater extends BukkitRunnable {
 
             if (this.hasTag(version) || version.equalsIgnoreCase(remoteVersion)) {
                 // We already have the latest version, or this buildTicketList is tagged for no-update
-                this.result = Updater.UpdateResult.NO_UPDATE;
+                this.result = CurseUpdater.UpdateResult.NO_UPDATE;
                 return false;
             }
-            ((EnjinMinecraftPlugin) plugin).newversion = remoteVersion;
+            ((EnjinMinecraftPlugin) plugin).setNewVersion(remoteVersion);
         }
         return true;
     }
@@ -374,7 +374,7 @@ public class Updater extends BukkitRunnable {
      * Evaluate whether the version number is marked showing that it should not be updated by this program
      */
     private boolean hasTag(String version) {
-        for (final String string : Updater.NO_UPDATE_TAG) {
+        for (final String string : CurseUpdater.NO_UPDATE_TAG) {
             if (version.contains(string)) {
                 return true;
             }
@@ -405,10 +405,10 @@ public class Updater extends BukkitRunnable {
                 return false;
             }
 
-            this.versionName = (String) ((JSONObject) array.get(array.size() - 1)).get(Updater.TITLE_VALUE);
-            this.versionLink = (String) ((JSONObject) array.get(array.size() - 1)).get(Updater.LINK_VALUE);
-            this.versionType = (String) ((JSONObject) array.get(array.size() - 1)).get(Updater.TYPE_VALUE);
-            this.versionGameVersion = (String) ((JSONObject) array.get(array.size() - 1)).get(Updater.VERSION_VALUE);
+            this.versionName = (String) ((JSONObject) array.get(array.size() - 1)).get(CurseUpdater.TITLE_VALUE);
+            this.versionLink = (String) ((JSONObject) array.get(array.size() - 1)).get(CurseUpdater.LINK_VALUE);
+            this.versionType = (String) ((JSONObject) array.get(array.size() - 1)).get(CurseUpdater.TYPE_VALUE);
+            this.versionGameVersion = (String) ((JSONObject) array.get(array.size() - 1)).get(CurseUpdater.VERSION_VALUE);
 
             return true;
         } catch (final IOException e) {
@@ -429,20 +429,20 @@ public class Updater extends BukkitRunnable {
 
         @Override
         public void run() {
-            if (Updater.this.url != null) {
+            if (CurseUpdater.this.url != null) {
                 // Obtain the results of the project's file feed
-                if (Updater.this.read()) {
-                    if (Updater.this.versionCheck(Updater.this.versionName)) {
-                        if ((Updater.this.versionLink != null) && (Updater.this.type != UpdateType.NO_DOWNLOAD)) {
-                            String name = Updater.this.file.getName();
+                if (CurseUpdater.this.read()) {
+                    if (CurseUpdater.this.versionCheck(CurseUpdater.this.versionName)) {
+                        if ((CurseUpdater.this.versionLink != null) && (CurseUpdater.this.type != UpdateType.NO_DOWNLOAD)) {
+                            String name = CurseUpdater.this.file.getName();
                             // If it's a zip file, it shouldn't be downloaded as the plugin's name
-                            if (Updater.this.versionLink.endsWith(".zip")) {
-                                final String[] split = Updater.this.versionLink.split("/");
+                            if (CurseUpdater.this.versionLink.endsWith(".zip")) {
+                                final String[] split = CurseUpdater.this.versionLink.split("/");
                                 name = split[split.length - 1];
                             }
-                            Updater.this.saveFile(new File(Updater.this.plugin.getDataFolder().getParent(), Updater.this.updateFolder), name, Updater.this.versionLink);
+                            CurseUpdater.this.saveFile(new File(CurseUpdater.this.plugin.getDataFolder().getParent(), CurseUpdater.this.updateFolder), name, CurseUpdater.this.versionLink);
                         } else {
-                            Updater.this.result = UpdateResult.UPDATE_AVAILABLE;
+                            CurseUpdater.this.result = UpdateResult.UPDATE_AVAILABLE;
                         }
                     }
                 }
@@ -499,7 +499,7 @@ public class Updater extends BukkitRunnable {
         this.apiKey = key;
 
         try {
-            this.url = new URL(Updater.HOST + Updater.QUERY + id);
+            this.url = new URL(CurseUpdater.HOST + CurseUpdater.QUERY + id);
         } catch (final MalformedURLException e) {
             plugin.getLogger().severe("The project ID provided for updating, " + id + " is invalid.");
             this.result = UpdateResult.FAIL_BADID;

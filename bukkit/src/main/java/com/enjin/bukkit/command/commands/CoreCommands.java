@@ -1,6 +1,8 @@
 package com.enjin.bukkit.command.commands;
 
 import Tux2.TuxTwoLib.TuxTwoPlayer;
+import com.enjin.bukkit.tasks.TPSMonitor;
+import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.io.EnjinConsole;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
@@ -8,7 +10,7 @@ import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.config.EnjinConfig;
 import com.enjin.bukkit.managers.VaultManager;
-import com.enjin.bukkit.threaded.ReportPublisher;
+import com.enjin.bukkit.tasks.ReportPublisher;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
@@ -164,7 +166,7 @@ public class CoreCommands {
 
         boolean online = true;
         if (player == null || !player.isOnline()) {
-            if (!plugin.isTuxtwolibinstalled()) {
+            if (!plugin.isTuxTwoLibInstalled()) {
                 sender.sendMessage(ChatColor.RED + "This player is not online. In order to give items to players not online please install TuxTwoLib");
                 return;
             }
@@ -335,7 +337,7 @@ public class CoreCommands {
             return;
         }
 
-        EnjinMinecraftPlugin.enjinLogger.info("Checking if key is valid");
+        Log.info("Checking if key is valid");
         EnjinMinecraftPlugin.getInstance().getLogger().info("Checking if key is valid");
 
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
@@ -352,8 +354,8 @@ public class CoreCommands {
     public static void lag(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
-        sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + plugin.tpstask.getTPSAverage());
-        sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + plugin.tpstask.getLastTPSMeasurement());
+        sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + TPSMonitor.getInstance().getTPSAverage());
+        sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + TPSMonitor.getInstance().getLastTPSMeasurement());
 
         Runtime runtime = Runtime.getRuntime();
         long memused = (runtime.maxMemory() - runtime.freeMemory()) / (1024 * 1024);
@@ -368,7 +370,7 @@ public class CoreCommands {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         OfflinePlayer[] players = Bukkit.getOfflinePlayers();
-        Map<String, String> perms = plugin.playerperms;
+        Map<String, String> perms = plugin.getPlayerPerms();
         if (perms.size() > 3000 || perms.size() >= players.length) {
             int minutes = perms.size() / 3000;
             if (perms.size() % 3000 > 0) {
@@ -454,15 +456,15 @@ public class CoreCommands {
         report.append("Java version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n");
         report.append("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") + "\n");
 
-        if (plugin.authkeyinvalid) {
+        if (plugin.isAuthKeyInvalid()) {
             report.append("ERROR: Authkey reported by plugin as invalid!\n");
         }
 
-        if (plugin.unabletocontactenjin) {
+        if (plugin.isUnableToContactEnjin()) {
             report.append("WARNING: Plugin has been unable to contact Enjin for the past 5 minutes\n");
         }
 
-        if (plugin.permissionsnotworking) {
+        if (plugin.isPermissionsNotWorking()) {
             report.append("WARNING: Permissions plugin is not configured properly and is disabled. Check the server.log for more details.\n");
         }
 

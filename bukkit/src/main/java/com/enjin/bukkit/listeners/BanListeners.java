@@ -1,6 +1,7 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.tasks.BanLister;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -21,9 +22,9 @@ public class BanListeners implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        if (event.getPlayer().isBanned() && !plugin.banlistertask.playerIsBanned(event.getPlayer())) {
-            plugin.banlistertask.addBannedPlayer(event.getPlayer());
-            plugin.bannedplayers.put(event.getPlayer().getName(), "");
+        if (event.getPlayer().isBanned() && !BanLister.getInstance().playerIsBanned(event.getPlayer())) {
+            BanLister.getInstance().addBannedPlayer(event.getPlayer());
+            plugin.getBannedPlayers().put(event.getPlayer().getName(), "");
         }
     }
 
@@ -38,16 +39,16 @@ public class BanListeners implements Listener {
 
             if (args.length > 1) {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                plugin.banlistertask.addBannedPlayer(player);
-                plugin.bannedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
+                BanLister.getInstance().addBannedPlayer(player);
+                plugin.getBannedPlayers().put(args[1].toLowerCase(), event.getPlayer().getName());
             }
         } else if (event.getMessage().toLowerCase().startsWith("/pardon") && event.getPlayer().hasPermission("bukkit.permission.unban.player")) {
             String[] args = event.getMessage().split(" ");
 
             if (args.length > 1) {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-                plugin.banlistertask.pardonBannedPlayer(player);
-                plugin.pardonedplayers.put(args[1].toLowerCase(), event.getPlayer().getName());
+                BanLister.getInstance().pardonBannedPlayer(player);
+                plugin.getPardonedPlayers().put(args[1].toLowerCase(), event.getPlayer().getName());
             }
         }
     }

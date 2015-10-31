@@ -1,9 +1,11 @@
-package com.enjin.bukkit.threaded;
+package com.enjin.bukkit.tasks;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.common.utils.ConnectionUtil;
@@ -15,27 +17,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class PeriodicVoteTask implements Runnable {
+public class VoteSender implements Runnable {
     private EnjinMinecraftPlugin plugin;
     private boolean firstrun = true;
 
-    public PeriodicVoteTask(EnjinMinecraftPlugin plugin) {
+    public VoteSender(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public void run() {
-        if (plugin.playervotes.size() > 0) {
-            if (firstrun && EnjinMinecraftPlugin.usingSSL) {
+        EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
+        if (plugin.getPlayerVotes().size() > 0) {
+            if (firstrun && config.isHttps()) {
                 if (!ConnectionUtil.testHTTPSconnection()) {
-                    EnjinMinecraftPlugin.usingSSL = false;
+                    config.setHttps(false);
                     plugin.getLogger().warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
-                    EnjinMinecraftPlugin.enjinLogger.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
+                    Log.warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
                 }
             }
 
-            Map<String, List<String>> votes = new HashMap<String, List<String>>(plugin.playervotes);
-            plugin.playervotes.clear();
+            Map<String, List<String>> votes = new HashMap<String, List<String>>(plugin.getPlayerVotes());
+            plugin.getPlayerVotes().clear();
 
             boolean successful;
             RPCData<String> data = EnjinServices.getService(VoteService.class).get(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), votes);
@@ -55,8 +58,8 @@ public class PeriodicVoteTask implements Runnable {
 
             if (success.equalsIgnoreCase("ok")) {
                 successful = true;
-                if (plugin.unabletocontactenjin) {
-                    plugin.unabletocontactenjin = false;
+                if (plugin.isUnableToContactEnjin()) {
+                    plugin.setUnableToContactEnjin(false);
                     Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[]{});
                     for (Player player : players) {
                         if (player.hasPermission("enjin.notify.connectionstatus")) {
@@ -66,10 +69,10 @@ public class PeriodicVoteTask implements Runnable {
                     }
                 }
             } else if (success.equalsIgnoreCase("auth_error")) {
-                plugin.authkeyinvalid = true;
-                EnjinMinecraftPlugin.enjinLogger.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
+                plugin.setAuthKeyInvalid(true);
+                plugin.disableTasks();
+                Log.warning("[Enjin Minecraft Plugin] Auth key invalid. Please regenerate on the enjin control panel.");
                 plugin.getLogger().warning("Auth key invalid. Please regenerate on the enjin control panel.");
-                plugin.stopTask();
                 Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[]{});
                 for (Player player : players) {
                     if (player.hasPermission("enjin.notify.invalidauthkey")) {
@@ -78,22 +81,22 @@ public class PeriodicVoteTask implements Runnable {
                 }
                 successful = false;
             } else if (success.equalsIgnoreCase("bad_data")) {
-                EnjinMinecraftPlugin.enjinLogger.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
-                plugin.lasterror = new EnjinErrorReport("Enjin reported bad data", "Vote synch.");
+                Log.warning("[Enjin Minecraft Plugin] Oops, we sent bad data, please send the enjin.log file to enjin to debug.");
+                plugin.setLastError(new EnjinErrorReport("Enjin reported bad data", "Vote synch."));
                 successful = false;
             } else if (success.equalsIgnoreCase("retry_later")) {
-                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
+                Log.info("[Enjin Minecraft Plugin] Enjin said to wait, saving data for next sync.");
                 successful = false;
             } else if (success.equalsIgnoreCase("connect_error")) {
-                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
-                plugin.lasterror = new EnjinErrorReport("Enjin reported a connection issue.", "Vote synch.");
+                Log.info("[Enjin Minecraft Plugin] Enjin is having something going on, if you continue to see this error please report it to enjin.");
+                plugin.setLastError(new EnjinErrorReport("Enjin reported a connection issue.", "Vote synch."));
                 successful = false;
             } else if (success.startsWith("invalid_op")) {
-                plugin.lasterror = new EnjinErrorReport(success, "Vote synch.");
+                plugin.setLastError(new EnjinErrorReport(success, "Vote synch."));
                 successful = false;
             } else {
-                EnjinMinecraftPlugin.enjinLogger.info("[Enjin Minecraft Plugin] Something happened on vote sync, if you continue to see this error please report it to enjin.");
-                EnjinMinecraftPlugin.enjinLogger.info("Response code: " + success);
+                Log.info("[Enjin Minecraft Plugin] Something happened on vote sync, if you continue to see this error please report it to enjin.");
+                Log.info("Response code: " + success);
                 plugin.getLogger().info("Something happened on sync, if you continue to see this error please report it to enjin.");
                 plugin.getLogger().info("Response code: " + success);
                 successful = false;
@@ -101,7 +104,7 @@ public class PeriodicVoteTask implements Runnable {
 
             if (!successful) {
                 Enjin.getPlugin().debug("Vote sync unsuccessful.");
-                plugin.playervotes.putAll(votes);
+                plugin.getPlayerVotes().putAll(votes);
             } else {
                 Enjin.getPlugin().debug("Vote sync successful.");
                 firstrun = false;
