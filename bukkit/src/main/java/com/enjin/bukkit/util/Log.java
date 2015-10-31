@@ -32,21 +32,23 @@ public class Log {
     }
 
     public static void debug(String msg) {
-        logger.info("Enjin Debug: " + msg);
+        fine("Enjin Debug: " + msg);
     }
 
     public static void init() {
         debug("Initializing internal logger");
         logger.setLevel(Level.FINEST);
 
-        File log = new File(EnjinMinecraftPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log");
+        File logs = new File(EnjinMinecraftPlugin.getInstance().getDataFolder(), "logs");
+        File log = new File(logs, "enjin.log");
         if (log.exists()) {
             //Max file size of the enjin log should be less than 5MB.
             if (log.length() > 1024 * 1024 * 5) {
                 log.delete();
             }
         } else {
-            log.mkdirs();
+            logs.mkdirs();
+
             try {
                 log.createNewFile();
             } catch (IOException e) {
