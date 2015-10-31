@@ -13,4 +13,6 @@ public @interface Command {
     public String[] aliases() default {};
 
     public String description() default "";
+
+    public boolean requireValidKey() default true;
 }

@@ -13,4 +13,6 @@ public @interface Directive {
     public String value();
 
     public String[] aliases() default {};
+
+    public boolean requireValidKey() default true;
 }

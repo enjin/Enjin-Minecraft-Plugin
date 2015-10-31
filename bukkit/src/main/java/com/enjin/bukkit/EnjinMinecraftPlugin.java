@@ -128,6 +128,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void init() {
+        if (authKeyInvalid) {
+            return;
+        }
+
         if (firstRun) {
             firstRun = false;
             initConfig();

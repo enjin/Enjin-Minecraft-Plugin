@@ -1,5 +1,6 @@
 package com.enjin.bukkit.command;
 
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.core.Enjin;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -33,18 +34,23 @@ public class DirectiveNode {
         }
 
         if (!sender.isOp() && permission != null && permission.value().equals("") && !sender.hasPermission(permission.value())) {
-            sender.sendMessage(ChatColor.RED + "You need to have the \"" + permission.value() + "\" or OP to run that directive.");
+            sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + permission.value() + ChatColor.RED + "\" or OP to run that directive.");
             return;
         }
 
         try {
             if (method.getParameters()[0].getType() == Player.class && !(sender instanceof Player)) {
-                sender.sendMessage("This directive can only be used in-game by a player.");
+                sender.sendMessage(ChatColor.RED + "This directive can only be used in-game by a player.");
                 return;
             }
 
             if (method.getParameters()[0].getType() == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
-                sender.sendMessage("This directive can only be used by the console.");
+                sender.sendMessage(ChatColor.RED + "This directive can only be used by the console.");
+                return;
+            }
+
+            if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid() && data.requireValidKey()) {
+                sender.sendMessage(ChatColor.RED + "This directive requires the server to successfully be authenticated with Enjin.");
                 return;
             }
 

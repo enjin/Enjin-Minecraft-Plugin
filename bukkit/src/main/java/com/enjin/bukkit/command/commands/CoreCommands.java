@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CoreCommands {
-    @Command(value = "enjin", aliases = "e")
+    @Command(value = "enjin", aliases = "e", requireValidKey = false)
     public static void enjin(CommandSender sender, String[] args) {
         sender.sendMessage(EnjinConsole.header());
 
@@ -102,7 +102,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.broadcast")
-    @Directive(parent = "enjin", value = "broadcast")
+    @Directive(parent = "enjin", value = "broadcast", requireValidKey = false)
     public static void broadcast(CommandSender sender, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(ChatColor.RED + "To broadcast a message do: /enjin broadcast <message>");
@@ -122,7 +122,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.debug")
-    @Directive(parent = "enjin", value = "debug")
+    @Directive(parent = "enjin", value = "debug", requireValidKey = false)
     public static void debug(CommandSender sender, String[] args) {
         EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
         config.setDebug(!config.isDebug());
@@ -132,7 +132,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.give")
-    @Directive(parent = "enjin", value = "give")
+    @Directive(parent = "enjin", value = "give", requireValidKey = false)
     public static void give(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
@@ -303,7 +303,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.inform")
-    @Directive(parent = "enjin", value = "inform")
+    @Directive(parent = "enjin", value = "inform", requireValidKey = false)
     public static void inform(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "To send a message do: /enjin inform <player> <message>");
@@ -329,8 +329,8 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.setkey")
-    @Command(value = "enjinkey", aliases = "ek")
-    @Directive(parent = "enjin", value = "key", aliases = {"setkey", "sk", "enjinkey", "ek"})
+    @Command(value = "enjinkey", aliases = "ek", requireValidKey = false)
+    @Directive(parent = "enjin", value = "key", aliases = {"setkey", "sk", "enjinkey", "ek"}, requireValidKey = false)
     public static void key(CommandSender sender, String[] args) {
         if (args.length != 1) {
             sender.sendMessage("USAGE: /enjin key <key>");
@@ -365,6 +365,7 @@ public class CoreCommands {
                 EnjinMinecraftPlugin.saveConfiguration();
 
                 if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid()) {
+                    EnjinMinecraftPlugin.getInstance().setAuthKeyInvalid(false);
                     EnjinMinecraftPlugin.getInstance().init();
                 }
             } else {
@@ -373,7 +374,7 @@ public class CoreCommands {
         });
     }
     @Permission(value = "enjin.lag")
-    @Directive(parent = "enjin", value = "lag")
+    @Directive(parent = "enjin", value = "lag", requireValidKey = false)
     public static void lag(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
@@ -430,7 +431,7 @@ public class CoreCommands {
     }
 
     @Permission(value = "enjin.report")
-    @Directive(parent = "enjin", value = "report")
+    @Directive(parent = "enjin", value = "report", requireValidKey = false)
     public static void report(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
         Date date = new Date();
