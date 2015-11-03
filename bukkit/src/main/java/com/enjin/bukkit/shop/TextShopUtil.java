@@ -17,7 +17,7 @@ import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
-public class ShopUtil {
+public class TextShopUtil {
     private static DecimalFormat priceFormat = new DecimalFormat("#.00");
 
     public static void sendTextShop(Player player, PlayerShopInstance instance, int page) {

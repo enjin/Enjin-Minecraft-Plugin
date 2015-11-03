@@ -3,6 +3,9 @@ package com.enjin.bukkit.util.text;
 import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TextUtils {
     public static final int MINECRAFT_CONSOLE_WIDTH = 320;
 
@@ -30,5 +33,26 @@ public class TextUtils {
         } else {
             return output;
         }
+    }
+
+    public static List<String> splitToListWithPrefix(String text, int length, String prefix) {
+        List<String> result = new ArrayList<>();
+        String[] parts = text.split(" ");
+
+        StringBuilder builder = new StringBuilder();
+        for (String part : parts) {
+            if (builder.length() + part.length() > length) {
+                result.add(prefix + builder.toString().trim());
+                builder = new StringBuilder();
+            } else {
+                builder.append(" " + part);
+            }
+        }
+
+        if (builder.length() > 0) {
+            result.add(prefix + builder.toString().trim());
+        }
+
+        return result;
     }
 }

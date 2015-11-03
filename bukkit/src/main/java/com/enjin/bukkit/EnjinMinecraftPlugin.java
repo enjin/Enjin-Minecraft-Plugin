@@ -21,6 +21,7 @@ import com.enjin.bukkit.stats.StatsServer;
 import com.enjin.bukkit.sync.BukkitInstructionHandler;
 import com.enjin.bukkit.sync.RPCPacketManager;
 import com.enjin.bukkit.tasks.TPSMonitor;
+import com.enjin.bukkit.util.ui.MenuAPI;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinPlugin;
 import com.enjin.core.EnjinServices;
@@ -51,6 +52,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private InstructionHandler instructionHandler = new BukkitInstructionHandler();
     @Getter
     private boolean firstRun = true;
+    @Getter
+    private MenuAPI menuAPI;
 
     @Getter
     private boolean tuxTwoLibInstalled = false;
@@ -166,6 +169,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
         }
 
+        menuAPI = new MenuAPI(this);
+        debug("Init gui api done.");
         initManagers();
         debug("Init managers done.");
         initPlugins();

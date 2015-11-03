@@ -4,8 +4,12 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.shop.RPCShopFetcher;
-import com.enjin.bukkit.shop.ShopUtil;
+import com.enjin.bukkit.shop.ShopListener;
+import com.enjin.bukkit.shop.TextShopUtil;
+import com.enjin.bukkit.shop.gui.ShopList;
+import com.enjin.bukkit.util.ui.Menu;
 import com.enjin.common.shop.PlayerShopInstance;
+import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,6 +35,13 @@ public class BuyCommand {
         if (!instances.containsKey(player.getUniqueId()) || shouldUpdate(instances.get(player.getUniqueId()))) {
             fetchShop(player);
         } else {
+            if (EnjinMinecraftPlugin.getConfiguration().isUseBuyGUI()) {
+                Menu menu = ShopListener.getGuiInstances().containsKey(player.getUniqueId()) ? ShopListener.getGuiInstances().get(player.getUniqueId()) : new ShopList(player);
+                menu.openMenu(player);
+
+                return;
+            }
+
             PlayerShopInstance instance = instances.get(player.getUniqueId());
             if (selection.isPresent()) {
                 int number = selection.get() < 1 ? 1 : selection.get();
@@ -49,13 +60,13 @@ public class BuyCommand {
                                 player.sendMessage(ChatColor.RED.toString() + "There are no items in this category.");
                             } else if (number == 0) {
                                 plugin.debug("Sending first item to " + player.getName());
-                                ShopUtil.sendItemInfo(player, instance, 0);
+                                TextShopUtil.sendItemInfo(player, instance, 0);
                             } else if (instance.getActiveCategory().getItems().size() < number) {
                                 plugin.debug("Sending last item to " + player.getName());
-                                ShopUtil.sendItemInfo(player, instance, category.getItems().size() - 1);
+                                TextShopUtil.sendItemInfo(player, instance, category.getItems().size() - 1);
                             } else {
                                 plugin.debug("Sending item to " + player.getName());
-                                ShopUtil.sendItemInfo(player, instance, number - 1);
+                                TextShopUtil.sendItemInfo(player, instance, number - 1);
                             }
 
                             return;
@@ -82,7 +93,7 @@ public class BuyCommand {
                 }
             }
 
-            ShopUtil.sendTextShop(player, instances.get(player.getUniqueId()), -1);
+            TextShopUtil.sendTextShop(player, instances.get(player.getUniqueId()), -1);
         }
     }
 
@@ -105,12 +116,12 @@ public class BuyCommand {
         PlayerShopInstance instance = instances.get(player.getUniqueId());
         if (!selection.isPresent()) {
             instance.updateShop(-1);
-            ShopUtil.sendTextShop(player, instance, -1);
+            TextShopUtil.sendTextShop(player, instance, -1);
             return;
         } else {
             int value = selection.get() < 1 ? -1 : selection.get() - 1;
             instance.updateShop(value);
-            ShopUtil.sendTextShop(player, instance, -1);
+            TextShopUtil.sendTextShop(player, instance, -1);
         }
 
         return;

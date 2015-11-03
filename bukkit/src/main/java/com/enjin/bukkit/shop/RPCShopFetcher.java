@@ -1,5 +1,6 @@
 package com.enjin.bukkit.shop;
 
+import com.enjin.bukkit.command.commands.BuyCommand;
 import com.enjin.bukkit.util.OptionalUtil;
 import com.enjin.core.EnjinServices;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
@@ -9,6 +10,7 @@ import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -60,6 +62,11 @@ public class RPCShopFetcher implements Runnable {
         }
 
         PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
-        ShopUtil.sendTextShop(player, instance, -1);
+
+        if (EnjinMinecraftPlugin.getConfiguration().isUseBuyGUI()) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> BuyCommand.buy(player, new String[]{}), 0);
+        } else {
+            TextShopUtil.sendTextShop(player, instance, -1);
+        }
     }
 }
