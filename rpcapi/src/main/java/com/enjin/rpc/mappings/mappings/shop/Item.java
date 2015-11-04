@@ -25,5 +25,7 @@ public class Item {
     @SerializedName(value = "icon_item")
     private String iconItem;
     @Getter
-    private double price;
+    private Double price;
+    @Getter
+    private Integer points;
 }

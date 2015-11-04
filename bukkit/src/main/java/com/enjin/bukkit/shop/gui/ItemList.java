@@ -8,6 +8,7 @@ import com.enjin.bukkit.util.ui.MenuItem;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -56,17 +57,25 @@ public class ItemList extends Menu {
                 @Override
                 public void onClick(Player player) {
                     if (!lists.containsKey(this)) {
-                        lists.put(this, null);
+                        lists.put(this, new ItemDetail(ItemList.this, shop, item));
                     }
 
-                    // TODO: Item checkout interface
-                    // switchMenu(EnjinMinecraftPlugin.getInstance().getMenuAPI(), player, lists.get(this));
+                    switchMenu(EnjinMinecraftPlugin.getInstance().getMenuAPI(), player, lists.get(this));
                 }
             };
-            menuItem.setDescriptions(new ArrayList<String>(){{
-                add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "PRICE: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPrice() == 0.0 ? "FREE" : priceFormat.format(item.getPrice()) + " " + shop.getCurrency()));
-                addAll(TextUtils.splitToListWithPrefix(item.getInfo(), 30, ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorInfo())));
-            }});
+
+            List<String> descriptions = Lists.newArrayList();
+            if (item.getPrice() != null) {
+                descriptions.add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "PRICE: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPrice() == 0.0 ? "FREE" : priceFormat.format(item.getPrice()) + " " + shop.getCurrency()));
+            }
+
+            if (item.getPoints() !=  null) {
+                descriptions.add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "POINTS: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPoints() == 0 ? "FREE" : item.getPoints()));
+            }
+
+            descriptions.addAll(TextUtils.splitToListWithPrefix(item.getInfo(), 30, ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorInfo())));
+            menuItem.setDescriptions(descriptions);
+
             addMenuItem(menuItem, i++ + 9);
         }
     }

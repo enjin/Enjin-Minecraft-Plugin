@@ -117,6 +117,13 @@ public class TextShopUtil {
         }
     }
 
+    public static void sendItemInfo(Player player, Shop shop, Item item) {
+        buildHeader(item.getName(), shop).send(player);
+        buildItemContent(player, shop, item).send(player);
+        buildFooterInfo(shop).send(player);
+        buildFooter("", shop, -1).send(player);
+    }
+
     private static FancyMessage buildHeader(String title, Shop shop) {
         StringBuilder header = new StringBuilder();
         String prefix = shop.getBorderC();
@@ -314,15 +321,29 @@ public class TextShopUtil {
         StringBuilder builder = new StringBuilder();
         builder.append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBorder()))
                 .append(shop.getBorderV())
-                .append("\n")
-                .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBorder()))
-                .append(shop.getBorderV())
-                .append(ChatColor.translateAlternateColorCodes('&', "&f"))
-                .append(ChatColor.translateAlternateColorCodes('&', " Price: "))
-                .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()))
-                .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE")
-                .append("\n")
-                .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBorder()))
+                .append(ChatColor.translateAlternateColorCodes('&', "&f"));
+
+        if (item.getPrice() != null) {
+            builder.append(ChatColor.translateAlternateColorCodes('&', " Price: "))
+                    .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()))
+                    .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE")
+                    .append("\n");
+        }
+
+        if (item.getPoints() != null) {
+            if (item.getPrice() != null) {
+                builder.append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBorder()))
+                        .append(shop.getBorderV())
+                        .append(ChatColor.translateAlternateColorCodes('&', "&f"));
+            }
+
+            builder.append(ChatColor.translateAlternateColorCodes('&', " Points: "))
+                    .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()))
+                    .append(item.getPoints() > 0 ? item.getPoints() : "FREE")
+                    .append("\n");
+        }
+
+        builder.append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBorder()))
                 .append(shop.getBorderV())
                 .append(ChatColor.translateAlternateColorCodes('&', "&f"))
                 .append(ChatColor.translateAlternateColorCodes('&', " Info:\n"));
