@@ -97,6 +97,25 @@ public class BuyCommand {
         }
     }
 
+    @Directive(parent = "buy", value = "page")
+    public static void page(Player player, String[] args) {
+        Optional<Integer> selection;
+        try {
+            selection = args.length == 0 ? Optional.empty() : Optional.ofNullable(Integer.parseInt(args[0]));
+        } catch (NumberFormatException e) {
+            player.sendMessage(ChatColor.RED + "USAGE: /buy #");
+            return;
+        }
+
+        PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
+        if (instance == null || instance.getActiveShop() == null) {
+            player.sendMessage(ChatColor.RED + "You must select a shop before attempting to paginate.");
+            return;
+        } else {
+            TextShopUtil.sendTextShop(player, instance, selection.isPresent() ? selection.get() : -1);
+        }
+    }
+
     @Directive(parent = "buy", value = "shop")
     public static void shop(Player player, String[] args){
         Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();

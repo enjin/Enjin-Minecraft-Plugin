@@ -73,7 +73,7 @@ public class TextShopUtil {
             buildShopInfo(shop, false).send(player);
             buildCategoryListContent(shop, shop.getCategories(), page).send(player);
             buildFooterInfo(shop).send(player);
-            buildFooter("Type /buy page #", shop, page < 1 ? 1 : page).send(player);
+            buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page).send(player);
         } else {
             Category category = instance.getActiveCategory();
 
@@ -81,7 +81,7 @@ public class TextShopUtil {
             buildShopInfo(shop, false).send(player);
             buildCategoryListContent(shop, category.getCategories(), page).send(player);
             buildFooterInfo(shop).send(player);
-            buildFooter("Type /buy page #", shop, page < 1 ? 1 : page).send(player);
+            buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page).send(player);
         }
     }
 
@@ -97,7 +97,7 @@ public class TextShopUtil {
             buildShopInfo(shop, true).send(player);
             buildItemListContent(player, shop, category.getItems(), page).send(player);
             buildFooterInfo(shop).send(player);
-            buildFooter("Type /buy page #", shop, page < 1 ? 1 : page).send(player);
+            buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page).send(player);
         }
     }
 
@@ -113,7 +113,7 @@ public class TextShopUtil {
             buildHeader(item.getName(), shop).send(player);
             buildItemContent(player, shop, item).send(player);
             buildFooterInfo(shop).send(player);
-            buildFooter("", shop, -1).send(player);
+            buildFooter("", null, shop, -1).send(player);
         }
     }
 
@@ -121,7 +121,7 @@ public class TextShopUtil {
         buildHeader(item.getName(), shop).send(player);
         buildItemContent(player, shop, item).send(player);
         buildFooterInfo(shop).send(player);
-        buildFooter("", shop, -1).send(player);
+        buildFooter("", null, shop, -1).send(player);
     }
 
     private static FancyMessage buildHeader(String title, Shop shop) {
@@ -273,7 +273,9 @@ public class TextShopUtil {
 
             if (item.getPrice() != null) {
                 builder.append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE");
-                builder.append(" " + shop.getCurrency());
+                if (item.getPrice() > 0.0) {
+                    builder.append(" " + shop.getCurrency());
+                }
             }
 
             if (item.getPoints() != null) {
@@ -404,7 +406,7 @@ public class TextShopUtil {
         return new FancyMessage(builder.toString());
     }
 
-    private static FancyMessage buildFooter(String title, Shop shop, int page) {
+    private static FancyMessage buildFooter(String title, PlayerShopInstance instance, Shop shop, int page) {
         StringBuilder footer = new StringBuilder();
         String prefix = shop.getBorderC();
         String separator = "";
@@ -430,7 +432,9 @@ public class TextShopUtil {
                 separator = separator.substring(0, 12);
             }
 
-            pagination = "Page " + page + " of " + (int) Math.ceil((double) shop.getCategories().size() / 4);
+            int entries = instance.getActiveCategory() != null ? (instance.getActiveCategory().getCategories().size() > 0 ? instance.getActiveCategory().getCategories().size() : instance.getActiveCategory().getItems().size()) : shop.getCategories().size();
+            int lastPage = (int) Math.ceil((double) entries / 4);
+            pagination = "Page " + (page > lastPage ? lastPage : page) + " of " + lastPage;
 
             footer.append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBottom()))
                     .append(" " + title + " ")
