@@ -269,9 +269,22 @@ public class TextShopUtil {
                     .append(item.getName().trim())
                     .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBracket()))
                     .append(" (")
-                    .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()))
-                    .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE")
-                    .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBracket()))
+                    .append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()));
+
+            if (item.getPrice() != null) {
+                builder.append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE");
+                builder.append(" " + shop.getCurrency());
+            }
+
+            if (item.getPoints() != null) {
+                if (item.getPrice() != null) {
+                    builder.append(" or ");
+                }
+
+                builder.append(item.getPoints() + " Points");
+            }
+
+            builder.append(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorBracket()))
                     .append(")\n");
             message.then(builder.toString());
 
