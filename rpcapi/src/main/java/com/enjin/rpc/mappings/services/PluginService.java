@@ -4,10 +4,7 @@ import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.deserializers.InstructionDeserializer;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.plugin.Instruction;
-import com.enjin.rpc.mappings.mappings.plugin.Status;
-import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
-import com.enjin.rpc.mappings.mappings.plugin.TagData;
+import com.enjin.rpc.mappings.mappings.plugin.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -16,10 +13,7 @@ import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PluginService implements Service {
     private static Gson gson = new GsonBuilder()
@@ -181,6 +175,41 @@ public class PluginService implements Service {
             EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<Boolean> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>() {}.getType());
+            data.setRequest(request);
+            data.setResponse(response);
+            return data;
+        } catch (JSONRPC2SessionException e) {
+            EnjinRPC.debug(e.getMessage());
+            EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
+            return null;
+        }
+    }
+
+    public RPCData<Stats> getStats(final String authkey, Optional<List<Integer>> items) {
+        String method = "Plugin.getStats";
+        Map<String, Object> parameters = new HashMap<String, Object>() {{
+            put("authkey", authkey);
+        }};
+
+        if (items.isPresent()) {
+            parameters.put("items", items.get());
+        }
+
+        int id = EnjinRPC.getNextRequestId();
+
+        JSONRPC2Session session = null;
+        JSONRPC2Request request = null;
+        JSONRPC2Response response = null;
+
+        try {
+            session = EnjinRPC.getSession("minecraft.php");
+            request = new JSONRPC2Request(method, parameters, id);
+            response = session.send(request);
+
+            EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
+
+            RPCData<Stats> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Stats>>() {}.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;

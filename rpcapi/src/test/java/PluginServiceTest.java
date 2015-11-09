@@ -1,10 +1,7 @@
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
-import com.enjin.rpc.mappings.mappings.plugin.Status;
-import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
-import com.enjin.rpc.mappings.mappings.plugin.TagData;
+import com.enjin.rpc.mappings.mappings.plugin.*;
 import com.enjin.rpc.mappings.services.PluginService;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -14,6 +11,7 @@ import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
@@ -75,6 +73,17 @@ public class PluginServiceTest {
         Assert.assertNotNull("result is null", data.getResult());
 
         System.out.println("# of tags: " + data.getResult().size());
+    }
+
+    @Test
+    public void test4GetStats() {
+        PluginService service = EnjinServices.getService(PluginService.class);
+        RPCData<Stats> data = service.getStats(KEY, Optional.empty());
+
+        Assert.assertNotNull("data is null", data);
+        Assert.assertNotNull("result is null", data.getResult());
+
+        System.out.println(data.getResult().toString());
     }
 
     @BeforeClass
