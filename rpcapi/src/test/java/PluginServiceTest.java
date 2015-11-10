@@ -78,7 +78,10 @@ public class PluginServiceTest {
     @Test
     public void test4GetStats() {
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<Stats> data = service.getStats(KEY, Optional.empty());
+        RPCData<Stats> data = service.getStats(KEY, Optional.ofNullable(new ArrayList<Integer>(){{
+            add(1584937);
+            add(1604379);
+        }}));
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());

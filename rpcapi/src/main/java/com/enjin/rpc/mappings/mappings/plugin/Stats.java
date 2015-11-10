@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Map;
 
 @ToString
 @EqualsAndHashCode
@@ -15,10 +16,10 @@ import java.util.List;
 public class Stats {
     @Getter
     @SerializedName(value = "recent_purchases")
-    private List<Object> recentPurchases;
+    private List<RecentPurchase> recentPurchases;
     @Getter
     @SerializedName(value = "item_purchases")
-    private List<Object> itemPurchases;
+    private Map<Integer, List<ItemPurchase>> itemPurchases;
     @Getter
     @SerializedName(value = "top_voters_day")
     private List<TopVoter> topVotersDay;
@@ -57,26 +58,26 @@ public class Stats {
     private List<TopPoint> topPointsMonth;
     @Getter
     @SerializedName(value = "top_donators_points")
-    private List<Object> topDonatorsPoints;
+    private List<TopDonator> topDonatorsPoints;
     @Getter
     @SerializedName(value = "top_donators_points_day")
-    private List<Object> topDonatorsPointsDay;
+    private List<TopDonator> topDonatorsPointsDay;
     @Getter
     @SerializedName(value = "top_donators_points_week")
-    private List<Object> topDonatorsPointsWeek;
+    private List<TopDonator> topDonatorsPointsWeek;
     @Getter
     @SerializedName(value = "top_donators_points_month")
-    private List<Object> topDonatorsPointsMonth;
+    private List<TopDonator> topDonatorsPointsMonth;
     @Getter
     @SerializedName(value = "top_donators_money")
-    private List<Object> topDonatorsMoney;
+    private List<TopDonator> topDonatorsMoney;
     @Getter
     @SerializedName(value = "top_donators_money_day")
-    private List<Object> topDonatorsMoneyDay;
+    private List<TopDonator> topDonatorsMoneyDay;
     @Getter
     @SerializedName(value = "top_donators_money_week")
-    private List<Object> topDonatorsMoneyWeek;
+    private List<TopDonator> topDonatorsMoneyWeek;
     @Getter
     @SerializedName(value = "top_donators_money_month")
-    private List<Object> topDonatorsMoneyMonth;
+    private List<TopDonator> topDonatorsMoneyMonth;
 }
