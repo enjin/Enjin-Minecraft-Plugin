@@ -7,10 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
 import com.enjin.bukkit.config.EnjinConfig;
-import com.enjin.bukkit.managers.StatsManager;
-import com.enjin.bukkit.managers.TicketManager;
-import com.enjin.bukkit.managers.VaultManager;
-import com.enjin.bukkit.managers.VotifierManager;
+import com.enjin.bukkit.managers.*;
 import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.listeners.*;
@@ -230,10 +227,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         VotifierManager.init(this);
         TicketManager.init(this);
         StatsManager.init(this);
+        StatSignManager.init(this);
     }
 
     private void disableManagers() {
         StatsManager.disable(this);
+        StatSignManager.disable();
     }
 
     public void initTasks() {
@@ -241,7 +240,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L).getTaskId();
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 4L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CurseUpdater(this, 44560, this.getFile(), CurseUpdater.UpdateType.DEFAULT, true), 20L * 60L * 5L, 20L * 60L * 5L).getTaskId();
+        if (configuration.isAutoUpdate()) {
+            Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CurseUpdater(this, 44560, this.getFile(), CurseUpdater.UpdateType.DEFAULT, true), 20L * 60L * 5L, 20L * 60L * 5L).getTaskId();
+        }
     }
 
     public void disableTasks() {
