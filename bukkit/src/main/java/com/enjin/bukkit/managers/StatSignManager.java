@@ -212,7 +212,7 @@ public class StatSignManager {
 
         Skull skull = (Skull) block.getState();
         skull.setSkullType(SkullType.PLAYER);
-        skull.setOwner(name);
+        skull.setOwner(name != null ? (name.isEmpty() ? "MHF_Steve" : name) : "MHF_Steve");
         skull.update();
         data.setHeadLocation(location);
     }
