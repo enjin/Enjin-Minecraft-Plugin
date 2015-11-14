@@ -3,6 +3,7 @@ package com.enjin.bukkit.statsigns;
 import com.enjin.bukkit.util.serialization.SerializableLocation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.bukkit.block.Block;
 
@@ -19,6 +20,8 @@ public class SignData {
     private Integer itemId;
     @Getter
     private int index;
+    @Getter @Setter
+    private transient SerializableLocation headLocation;
 
     public SignData(Block block, SignType type, SignType.SubType subType, int index) {
         this(block, type, subType, null, index);

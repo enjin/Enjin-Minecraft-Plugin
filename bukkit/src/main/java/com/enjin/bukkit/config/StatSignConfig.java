@@ -9,5 +9,5 @@ import java.util.List;
 
 public class StatSignConfig extends JsonConfig {
     @Getter
-    private List<SignData> heads = Lists.newArrayList();
+    private List<SignData> signs = Lists.newArrayList();
 }

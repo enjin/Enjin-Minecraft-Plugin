@@ -17,8 +17,11 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,7 +85,7 @@ public class StatSignManager {
 
     public static void add(SignData data) {
         if (config != null) {
-            config.getHeads().add(data);
+            config.getSigns().add(data);
             config.save(file);
 
             if (data.getSubType() != null && data.getSubType() == SignType.SubType.ITEMID && data.getItemId() != null) {
@@ -99,7 +102,7 @@ public class StatSignManager {
 
     public static void remove(SerializableLocation location) {
         if (config != null) {
-            new ArrayList<>(config.getHeads()).stream().filter(data -> data.getLocation().equals(location)).forEach(data -> config.getHeads().remove(data));
+            new ArrayList<>(config.getSigns()).stream().filter(data -> data.getLocation().equals(location)).forEach(data -> config.getSigns().remove(data));
             config.save(file);
 
             updateItems();
@@ -107,7 +110,7 @@ public class StatSignManager {
     }
 
     public static void update() {
-        new ArrayList<>(config.getHeads()).forEach(StatSignManager::update);
+        new ArrayList<>(config.getSigns()).forEach(StatSignManager::update);
     }
 
     public static void update(SignData data) {
@@ -115,51 +118,102 @@ public class StatSignManager {
         Block block = location.getBlock();
 
         if (block.getState() == null || !(block.getState() instanceof Sign)) {
-            config.getHeads().remove(data);
+            config.getSigns().remove(data);
             return;
         }
 
         Sign sign = (Sign) block.getState();
+        String name = null;
         switch (data.getType()) {
             case DONATION:
-                StatSignProcessor.setPurchaseSign(sign, data, stats);
+                name = StatSignProcessor.setPurchaseSign(sign, data, stats);
                 break;
             case TOPVOTER:
-                StatSignProcessor.setTopVoterSign(sign, data, stats);
+                name = StatSignProcessor.setTopVoterSign(sign, data, stats);
                 break;
             case VOTER:
-                StatSignProcessor.setVoterSign(sign, data, stats);
+                name = StatSignProcessor.setVoterSign(sign, data, stats);
                 break;
             case TOPPLAYER:
-                StatSignProcessor.setTopPlayerSign(sign, data, stats);
+                name = StatSignProcessor.setTopPlayerSign(sign, data, stats);
                 break;
             case TOPPOSTER:
-                StatSignProcessor.setTopPosterSign(sign, data, stats);
+                name = StatSignProcessor.setTopPosterSign(sign, data, stats);
                 break;
             case TOPLIKES:
-                StatSignProcessor.setTopLikesSign(sign, data, stats);
+                name = StatSignProcessor.setTopLikesSign(sign, data, stats);
                 break;
             case NEWMEMBER:
-                StatSignProcessor.setNewMemberSign(sign, data, stats);
+                name = StatSignProcessor.setNewMemberSign(sign, data, stats);
                 break;
             case TOPPOINTS:
-                StatSignProcessor.setTopPointsSign(sign, data, stats);
+                name = StatSignProcessor.setTopPointsSign(sign, data, stats);
                 break;
             case POINTSSPENT:
-                StatSignProcessor.setPointsSpentSign(sign, data, stats);
+                name = StatSignProcessor.setPointsSpentSign(sign, data, stats);
                 break;
             case MONEYSPENT:
-                StatSignProcessor.setMoneySpentSign(sign, data, stats);
+                name = StatSignProcessor.setMoneySpentSign(sign, data, stats);
                 break;
             default:
                 break;
         }
         sign.update();
+
+        if (name != null) {
+            updateHead(sign, data, name);
+        }
     }
 
     public static void updateItems() {
-        new ArrayList<>(config.getHeads()).stream()
+        new ArrayList<>(config.getSigns()).stream()
                 .filter(data -> data.getType() == SignType.DONATION && data.getSubType() != null && data.getSubType().equals(SignType.SubType.ITEMID) && data.getItemId() != null)
                 .filter(data -> !items.contains(data.getItemId())).forEach(data -> items.add(data.getItemId()));
+    }
+
+    public static void updateHead(Sign sign, SignData data, String name) {
+        Block block = null;
+        if (data.getHeadLocation() != null) {
+            block = data.getHeadLocation().toLocation().getBlock();
+
+            if (block.getType() != Material.SKULL) {
+                block = null;
+                data.setHeadLocation(null);
+            } else {
+                updateHead(block, data, name);
+                return;
+            }
+        }
+
+        block = sign.getBlock().getRelative(((org.bukkit.material.Sign) sign.getData()).getAttachedFace()).getRelative(0, 1, 0);
+        if (block.getType() == Material.SKULL) {
+            updateHead(block, data, name);
+            return;
+        }
+
+        block = sign.getBlock().getRelative(0, 2, 0);
+        if (block.getType() == Material.SKULL) {
+            updateHead(block, data, name);
+            return;
+        }
+    }
+
+    public static void updateHead(Block block, SignData data, String name) {
+        SerializableLocation location = new SerializableLocation(block.getLocation());
+        for (SignData d : new ArrayList<>(config.getSigns())) {
+            if (d != data && d.getHeadLocation() != null && d.getHeadLocation().equals(location)) {
+                return;
+            }
+        }
+
+        if (block.getType() != Material.SKULL) {
+            return;
+        }
+
+        Skull skull = (Skull) block.getState();
+        skull.setSkullType(SkullType.PLAYER);
+        skull.setOwner(name);
+        skull.update();
+        data.setHeadLocation(location);
     }
 }

@@ -15,12 +15,13 @@ public class StatSignProcessor {
     private static DateFormat dateFormat = new SimpleDateFormat("d MMM yyyy");
     private static DateFormat timeFormat = new SimpleDateFormat("h:mm a z");
 
-    public static void setPurchaseSign(Sign sign, SignData data, Stats stats) {
+    public static String setPurchaseSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         if (data.getSubType() != null && data.getItemId() != null) {
             List<ItemPurchase> purchases = stats.getItemPurchases().get(data.getItemId());
             String[] lines = new String[4];
@@ -28,6 +29,7 @@ public class StatSignProcessor {
 
             if (purchases != null && purchases.size() >= index) {
                 ItemPurchase purchase = purchases.get(index - 1);
+                name = purchase.getName();
                 lines[1] = purchase.getName();
                 lines[3] = "ID: " + data.getItemId();
             }
@@ -43,6 +45,7 @@ public class StatSignProcessor {
 
             if (purchases.size() >= index) {
                 RecentPurchase purchase = purchases.get(index - 1);
+                name = purchase.getName();
                 lines[1] = purchase.getName();
                 lines[3] = decimalFormat.format(purchase.getPrice());
             }
@@ -52,14 +55,17 @@ public class StatSignProcessor {
                 sign.setLine(i, line);
             }
         }
+
+        return name;
     }
 
-    public static void setTopVoterSign(Sign sign, SignData data, Stats stats) {
+    public static String setTopVoterSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         String period = "Monthly";
         List<TopVoter> voters = stats.getTopVotersMonth();
 
@@ -79,6 +85,7 @@ public class StatSignProcessor {
 
         if (voters.size() >= index) {
             TopVoter voter = voters.get(index - 1);
+            name = voter.getName();
             lines[2] = voter.getName();
             lines[3] = voter.getCount() + " Votes";
         }
@@ -87,20 +94,24 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 
-    public static void setVoterSign(Sign sign, SignData data, Stats stats) {
+    public static String setVoterSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         List<RecentVoter> voters = stats.getRecentVoters();
         String[] lines = new String[4];
         lines[0] = "Latest Voter " + index;
 
         if (voters.size() >= index) {
             RecentVoter voter = voters.get(index - 1);
+            name = voter.getName();
             Date date = new Date(voter.getTime() * 1000);
             lines[1] = voter.getName();
             lines[2] = dateFormat.format(date);
@@ -111,20 +122,24 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 
-    public static void setTopPlayerSign(Sign sign, SignData data, Stats stats) {
+    public static String setTopPlayerSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         List<TopPlayer> players = stats.getTopPlayers();
         String[] lines = new String[4];
         lines[0] = "Top Player " + index;
 
         if (players.size() >= index) {
             TopPlayer player = players.get(index - 1);
+            name = player.getName();
             lines[1] = player.getName();
             lines[3] = decimalFormat.format(player.getHours()) + " Hours";
         }
@@ -133,20 +148,24 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 
-    public static void setTopPosterSign(Sign sign, SignData data, Stats stats) {
+    public static String setTopPosterSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         List<TopPoster> players = stats.getTopPosters();
         String[] lines = new String[4];
         lines[0] = "Top Poster " + index;
 
         if (players.size() >= index) {
             TopPoster player = players.get(index - 1);
+            name = player.getName();
             lines[1] = player.getName();
             lines[3] = player.getPosts() + " Posts";
         }
@@ -155,20 +174,24 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 
-    public static void setTopLikesSign(Sign sign, SignData data, Stats stats) {
+    public static String setTopLikesSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         List<TopLiker> players = stats.getTopForumLikes();
         String[] lines = new String[4];
         lines[0] = "Top Likes " + index;
 
         if (players.size() >= index) {
             TopLiker player = players.get(index - 1);
+            name = player.getName();
             lines[1] = player.getName();
             lines[3] = player.getLikes() + " Likes";
         }
@@ -177,20 +200,24 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 
-    public static void setNewMemberSign(Sign sign, SignData data, Stats stats) {
+    public static String setNewMemberSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         List<LatestMember> members = stats.getLatestMembers();
         String[] lines = new String[4];
         lines[0] = "New Member " + index;
 
         if (members.size() >= index) {
             LatestMember member = members.get(index - 1);
+            name = member.getName();
             Date date = new Date(member.getDateJoined() * 1000);
             lines[1] = member.getName();
             lines[2] = dateFormat.format(date);
@@ -201,20 +228,24 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 
-    public static void setTopPointsSign(Sign sign, SignData data, Stats stats) {
+    public static String setTopPointsSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         List<TopPoint> players = stats.getTopPoints();
         String[] lines = new String[4];
         lines[0] = "Top Points " + index;
 
         if (players.size() >= index) {
             TopPoint player = players.get(index - 1);
+            name = player.getName();
             lines[1] = player.getName();
             lines[3] = player.getPoints() + " Points";
         }
@@ -223,14 +254,17 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 
-    public static void setPointsSpentSign(Sign sign, SignData data, Stats stats) {
+    public static String setPointsSpentSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         String period = "Total";
         List<TopDonator> donors = stats.getTopDonatorsPoints();
 
@@ -253,6 +287,7 @@ public class StatSignProcessor {
 
         if (donors.size() >= index) {
             TopDonator donor = donors.get(index - 1);
+            name = donor.getName();
             lines[2] = donor.getName();
             lines[3] = donor.getPoints() + " Points";
         }
@@ -261,14 +296,17 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 
-    public static void setMoneySpentSign(Sign sign, SignData data, Stats stats) {
+    public static String setMoneySpentSign(Sign sign, SignData data, Stats stats) {
         int index = data.getIndex();
         if (index < 1 || index > 10) {
-            return;
+            return null;
         }
 
+        String name = "";
         String period = "Total";
         List<TopDonator> donors = stats.getTopDonatorsMoney();
 
@@ -291,6 +329,7 @@ public class StatSignProcessor {
 
         if (donors.size() >= index) {
             TopDonator donor = donors.get(index - 1);
+            name = donor.getName();
             lines[2] = donor.getName();
             lines[3] = decimalFormat.format(donor.getPrice());
         }
@@ -299,5 +338,7 @@ public class StatSignProcessor {
             String line = lines[i];
             sign.setLine(i, line);
         }
+
+        return name;
     }
 }
