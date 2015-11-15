@@ -12,6 +12,7 @@ import com.enjin.bukkit.config.EnjinConfig;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.tasks.ReportPublisher;
 import com.enjin.core.EnjinServices;
+import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.vexsoftware.votifier.Votifier;
@@ -127,6 +128,7 @@ public class CoreCommands {
         EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
         config.setDebug(!config.isDebug());
         EnjinMinecraftPlugin.saveConfiguration();
+        EnjinRPC.setDebug(config.isDebug());
 
         sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + config.isDebug());
     }
