@@ -26,12 +26,13 @@ public class ConnectionUtil {
         boolean ok = false;
 
         try {
-            URL url = new URL((https ? "https" : "http") + EnjinRPC.getApiUrl());
+            URL url = new URL((https ? "https" : "http") + EnjinRPC.getApiUrl() + "api.php");
+            Enjin.getPlugin().debug(url.toExternalForm());
             URLConnection con = url.openConnection();
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String line = in.readLine();
 
-            if (line != null && line.startsWith("OK")) {
+            if (line != null) {
                 ok = true;
             }
         } catch (SSLHandshakeException e) {
