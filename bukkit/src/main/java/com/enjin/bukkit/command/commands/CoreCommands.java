@@ -12,8 +12,10 @@ import com.enjin.bukkit.config.EnjinConfig;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.tasks.ReportPublisher;
 import com.enjin.core.EnjinServices;
+import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.vexsoftware.votifier.Votifier;
 import org.bukkit.*;
@@ -25,9 +27,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -505,5 +505,44 @@ public class CoreCommands {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new ReportPublisher(plugin, report, sender));
+    }
+
+    @Permission(value = "enjin.tags")
+    @Directive(parent = "enjin", value = "tags", requireValidKey = true)
+    public static void tags(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            sender.sendMessage("/enjin tags <player>");
+            return;
+        }
+
+        String name = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
+        PluginService service = EnjinServices.getService(PluginService.class);
+        RPCData<List<TagData>> data = service.getTags(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), name);
+
+        if (data == null) {
+            sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+            return;
+        }
+
+        if (data.getError() != null) {
+            sender.sendMessage(data.getError().getMessage());
+            return;
+        }
+
+        List<TagData> tags = data.getResult();
+        String tagList = "";
+        if (tags != null) {
+            Iterator<TagData> iterator = tags.iterator();
+            while (iterator.hasNext()) {
+                if (!tagList.isEmpty()) {
+                    tagList += ChatColor.GOLD + ", ";
+                }
+
+                TagData tag = iterator.next();
+                tagList += ChatColor.GREEN + tag.getName();
+            }
+        }
+
+        sender.sendMessage(ChatColor.GOLD + name + "'s Tags: " + tagList);
     }
 }
