@@ -15,6 +15,31 @@ public class PointCommands {
     private static final String REMOVE_POINTS_USAGE = "USAGE: /enjin removepoints <points> or /enjin removepoints <player> <points>";
     private static final String SET_POINTS_USAGE = "USAGE: /enjin setpoints <points> or /enjin setpoints <player> <points>";
 
+    @Permission(value = "enjin.points")
+    @Directive(parent = "enjin", value = "points")
+    public static void points(CommandSender sender, String[] args) {
+        if (args.length == 0 && !(sender instanceof Player)) {
+            sender.sendMessage("Only a player can check their own points.");
+            return;
+        }
+
+        String name = args.length == 0 ? sender.getName() : args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
+        PointService service = EnjinServices.getService(PointService.class);
+        RPCData<Integer> data = service.get(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), name);
+
+        if (data == null) {
+            sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+            return;
+        }
+
+        if (data.getError() != null) {
+            sender.sendMessage(data.getError().getMessage());
+            return;
+        }
+
+        sender.sendMessage(ChatColor.GOLD + (args.length == 0 ? "You have " : name + " has ") + data.getResult() + " points.");
+    }
+
     @Permission(value = "enjin.points.add")
     @Directive(parent = "enjin", value = "addpoints")
     public static void add(CommandSender sender, String[] args) {
