@@ -22,20 +22,18 @@ public class VoteCommands {
         }
 
         String username = args[0];
-        String listname = args[1];
+        String listname = args[1].replaceAll("[^0-9A-Za-z.\\-]", "");
 
         OfflinePlayer player = Bukkit.getOfflinePlayer(username);
         if (player != null) {
             username = username.concat("|" + player.getUniqueId().toString());
         }
 
-        if (plugin.getPlayerVotes().containsKey(username)) {
-            plugin.getPlayerVotes().get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
-        } else {
-            plugin.getPlayerVotes().put(username, new ArrayList<>());
-            plugin.getPlayerVotes().get(username).add(listname.replaceAll("[^0-9A-Za-z.\\-]", ""));
+        if (!plugin.getPlayerVotes().containsKey(listname)) {
+            plugin.getPlayerVotes().put(listname, new ArrayList<>());
         }
 
+        plugin.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});
         sender.sendMessage(ChatColor.GREEN + "You just added a vote for player " + username + " on list " + listname);
     }
 }

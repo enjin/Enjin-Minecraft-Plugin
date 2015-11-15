@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class VoteService implements Service {
-    public RPCData<String> get(final String authkey, final Map<String, List<String>> votes) {
+    public RPCData<String> get(final String authkey, final Map<String, List<Object[]>> votes) {
         String method = "Votifier.get";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);

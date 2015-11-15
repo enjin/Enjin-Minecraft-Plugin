@@ -37,7 +37,7 @@ public class VoteSender implements Runnable {
                 }
             }
 
-            Map<String, List<String>> votes = new HashMap<String, List<String>>(plugin.getPlayerVotes());
+            Map<String, List<Object[]>> votes = new HashMap<>(plugin.getPlayerVotes());
             plugin.getPlayerVotes().clear();
 
             boolean successful;

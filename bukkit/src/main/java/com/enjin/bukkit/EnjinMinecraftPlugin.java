@@ -90,7 +90,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private Map<String, String> playerPerms = new ConcurrentHashMap<>();
     //Player, lists voted on.
     @Getter
-    private Map<String, List<String>> playerVotes = new ConcurrentHashMap<>();
+    private Map<String, List<Object[]>> playerVotes = new ConcurrentHashMap<>();
     @Getter @Setter
     private EnjinErrorReport lastError = null;
 
