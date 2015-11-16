@@ -35,23 +35,9 @@
         </profile>
 
         <profile>
-            <id>canary</id>
-            <modules>
-                <module>canary</module>
-            </modules>
-        </profile>
-
-        <profile>
             <id>forge</id>
             <modules>
                 <module>forge</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>tekkit</id>
-            <modules>
-                <module>tekkit</module>
             </modules>
         </profile>
 
@@ -67,9 +53,7 @@
             <modules>
                 <module>bukkit</module>
                 <module>bungee</module>
-                <module>canary</module>
                 <module>forge</module>
-                <module>tekkit</module>
                 <module>sponge</module>
             </modules>
         </profile>
