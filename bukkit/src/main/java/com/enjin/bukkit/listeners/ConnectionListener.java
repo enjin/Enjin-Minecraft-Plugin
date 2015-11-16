@@ -2,7 +2,6 @@ package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.managers.VaultManager;
-import com.enjin.bukkit.managers.VotifierManager;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -37,11 +36,6 @@ public class ConnectionListener implements Listener {
 
         if (plugin.isAuthKeyInvalid() && p.hasPermission("enjin.notify.invalidauthkey")) {
             p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Auth key is invalid. Please generate a new one.");
-        }
-
-        if (!VotifierManager.isVotifierWorking() && p.hasPermission("enjin.notify.votifiererrored")) {
-            p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Votifier is not configured correctly. Voting rewards will not work.");
-            p.sendMessage(ChatColor.RED + "For more information visit: http://www.enjin.com/info/votifier");
         }
 
         if (plugin.isUnableToContactEnjin() && p.hasPermission("enjin.notify.connectionstatus")) {

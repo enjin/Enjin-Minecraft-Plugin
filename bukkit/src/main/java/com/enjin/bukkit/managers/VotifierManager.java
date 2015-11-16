@@ -4,7 +4,6 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.listeners.VotifierListener;
 import com.enjin.bukkit.tasks.VoteSender;
 import com.enjin.core.Enjin;
-import com.vexsoftware.votifier.Votifier;
 import org.bukkit.Bukkit;
 
 public class VotifierManager {
@@ -18,9 +17,5 @@ public class VotifierManager {
 
     public static boolean isVotifierEnabled() {
         return Bukkit.getPluginManager().isPluginEnabled("Votifier");
-    }
-
-    public static boolean isVotifierWorking() {
-        return !isVotifierEnabled() ? true :  Votifier.getInstance().getVoteReceiver() != null;
     }
 }

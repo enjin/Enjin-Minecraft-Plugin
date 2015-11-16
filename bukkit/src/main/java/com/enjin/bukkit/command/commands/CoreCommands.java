@@ -12,12 +12,10 @@ import com.enjin.bukkit.config.EnjinConfig;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.tasks.ReportPublisher;
 import com.enjin.core.EnjinServices;
-import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.enjin.rpc.mappings.services.PluginService;
-import com.vexsoftware.votifier.Votifier;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -465,15 +463,14 @@ public class CoreCommands {
             }
         }
 
-        Plugin v = Bukkit.getPluginManager().getPlugin("Votifier");
-        if (v != null && v.isEnabled()) {
-            report.append("Votifier version: " + v.getDescription().getVersion() + "\n");
-            if (v instanceof Votifier) {
-                Votifier votifier = (Votifier) v;
-                FileConfiguration votifierConfig = votifier.getConfig();
-                String port = votifierConfig.getString("port", "");
-                String host = votifierConfig.getString("host", "");
-                report.append("Votifier is enabled properly: " + !(votifier.getVoteReceiver() == null) + "\n");
+        Plugin votifier = Bukkit.getPluginManager().getPlugin("Votifier");
+        if (votifier != null) {
+            report.append("Votifier version: " + votifier.getDescription().getVersion() + "\n");
+            FileConfiguration votifierConfig = votifier.getConfig();
+            String port = votifierConfig.getString("port", "");
+            String host = votifierConfig.getString("host", "");
+            report.append("Votifier Enabled: " + votifier.isEnabled() + "\n");
+            if (!port.isEmpty() && !host.isEmpty()) {
                 report.append("Votifier is listening on: " + host + ":" + port + "\n");
             }
         }
