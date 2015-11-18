@@ -312,7 +312,12 @@ public class CoreCommands {
 
         Player player = Bukkit.getPlayer(args[0]);
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + "That player isn't on the server at the moment.");
+            if (sender instanceof Player) {
+                sender.sendMessage(ChatColor.RED + "That player isn't on the server at the moment.");
+            } else {
+                Log.info(ChatColor.RED + "That player isn't on the server at the moment.");
+            }
+
             return;
         }
 
