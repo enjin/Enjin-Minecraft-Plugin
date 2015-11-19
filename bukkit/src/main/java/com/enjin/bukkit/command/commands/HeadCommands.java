@@ -34,7 +34,7 @@ public class HeadCommands {
         sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
     }
 
-    @Permission("enjin.sign.updateheads")
+    @Permission("enjin.updateheads")
     @Directive(parent = "enjin", value = "updateheads", requireValidKey = true)
     public static void update(CommandSender sender, String[] args) {
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
