@@ -73,7 +73,7 @@ public class StatSignManager {
         }
     }
 
-    private static void fetchStats() {
+    public static void fetchStats() {
         RPCData<Stats> data = EnjinServices.getService(PluginService.class).getStats(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), Optional.ofNullable(items));
 
         if (data.getError() != null) {

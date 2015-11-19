@@ -1,8 +1,11 @@
 package com.enjin.bukkit.command.commands;
 
+import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.managers.StatSignManager;
 import com.enjin.bukkit.util.io.EnjinConsole;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -29,5 +32,16 @@ public class HeadCommands {
         sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
         sender.sendMessage(ChatColor.GOLD + "[moneyspent#] " + ChatColor.RESET + " - Player which has spent the most money on the server overall.");
         sender.sendMessage(ChatColor.GRAY + " Subtypes: " + ChatColor.RESET + " day, week, month. Changes the range to day/week/month.");
+    }
+
+    @Permission("enjin.sign.updateheads")
+    @Directive(parent = "enjin", value = "updateheads", requireValidKey = true)
+    public static void update(CommandSender sender, String[] args) {
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
+            sender.sendMessage(ChatColor.GREEN + "Fetching stat sign updates.");
+            StatSignManager.fetchStats();
+            StatSignManager.update();
+            sender.sendMessage(ChatColor.GREEN + "Stat signs have been updated.");
+        });
     }
 }
