@@ -11,6 +11,7 @@ import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.config.EnjinConfig;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.tasks.ReportPublisher;
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
@@ -211,7 +212,7 @@ public class CoreCommands {
                 String[] split = args[1].split(":");
                 ItemStack is;
                 Pattern pattern = Pattern.compile("\\d+:\\d+");
-                Matcher match = pattern.matcher(args[2]);
+                Matcher match = pattern.matcher(args[1]);
 
                 if (match.find()) {
                     try {
@@ -221,7 +222,7 @@ public class CoreCommands {
 
                         if (args.length > 2 && digits.matcher(args[2]).find()) {
                             quantity = Integer.parseInt(args[2]);
-                            extradatastart = 4;
+                            extradatastart = 3;
                         }
 
                         is = new ItemStack(itemid, quantity, (short) damage);
@@ -242,9 +243,9 @@ public class CoreCommands {
                         int damage = Integer.parseInt(split[1]);
                         int quantity = 1;
 
-                        if (args.length > 3 && digits.matcher(args[2]).find()) {
+                        if (args.length > 2 && digits.matcher(args[2]).find()) {
                             quantity = Integer.parseInt(args[2]);
-                            extradatastart = 4;
+                            extradatastart = 3;
                         }
 
                         is = new ItemStack(itemid, quantity, (short) damage);
@@ -265,16 +266,16 @@ public class CoreCommands {
                 }
 
                 String itemname = is.getType().toString().toLowerCase();
-                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[1] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[0] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
             } else {
                 ItemStack is;
                 try {
                     int itemid = Integer.parseInt(args[1]);
                     int quantity = 1;
 
-                    if (args.length > 3 && digits.matcher(args[2]).find()) {
+                    if (args.length > 2 && digits.matcher(args[2]).find()) {
                         quantity = Integer.parseInt(args[2]);
-                        extradatastart = 4;
+                        extradatastart = 3;
                     }
 
                     is = new ItemStack(itemid, quantity);
@@ -289,9 +290,9 @@ public class CoreCommands {
 
                     int quantity = 1;
 
-                    if (args.length > 3 && digits.matcher(args[2]).find()) {
+                    if (args.length > 2 && digits.matcher(args[2]).find()) {
                         quantity = Integer.parseInt(args[2]);
-                        extradatastart = 4;
+                        extradatastart = 3;
                     }
 
                     is = new ItemStack(material, quantity);
