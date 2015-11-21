@@ -33,7 +33,7 @@ public class DirectiveNode {
             return;
         }
 
-        if (!sender.isOp() && permission != null && permission.value().equals("") && !sender.hasPermission(permission.value())) {
+        if (!sender.isOp() && permission != null && !permission.value().equals("") && !sender.hasPermission(permission.value())) {
             sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + permission.value() + ChatColor.RED + "\" or OP to run that directive.");
             return;
         }
