@@ -4,6 +4,7 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.managers.TicketManager;
 import com.enjin.rpc.mappings.mappings.tickets.Module;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -20,6 +21,13 @@ public class TicketListener implements Listener {
                 final Module module = entry.getValue();
                 if (module.getCommand() != null && !module.getCommand().isEmpty()) {
                     if (module.getCommand().equalsIgnoreCase(command)) {
+                        event.setCancelled(true);
+
+                        if (TicketCreationSession.getSessions().containsKey(event.getPlayer().getUniqueId())) {
+                            event.getPlayer().sendMessage(ChatColor.RED + "A ticket session is already in progress...");
+                            return;
+                        }
+
                         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> new TicketCreationSession(event.getPlayer(), entry.getKey(), module));
                     }
                 }

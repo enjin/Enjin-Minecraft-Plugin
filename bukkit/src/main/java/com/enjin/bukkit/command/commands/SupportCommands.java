@@ -24,13 +24,13 @@ import java.util.Map;
 
 public class SupportCommands {
     @Permission(value = "enjin.support")
-    @Directive(parent = "enjin", value = "support")
+    @Directive(parent = "enjin", value = "support", requireValidKey = true)
     public static void support(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
         Map<Integer, Module> modules = TicketManager.getModules();
 
-        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
-            sender.sendMessage("Cannot use this command without setting your key.");
+        if (TicketCreationSession.getSessions().containsKey(sender.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + "A ticket session is already in progress...");
             return;
         }
 
@@ -80,14 +80,9 @@ public class SupportCommands {
     }
 
     @Permission(value = "enjin.ticket")
-    @Directive(parent = "enjin", value = "ticket")
+    @Directive(parent = "enjin", value = "ticket", requireValidKey = true)
     public static void ticket(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-
-        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
-            sender.sendMessage("Cannot use this command without setting your key.");
-            return;
-        }
 
         if (args.length == 0) {
             final Player player = sender;
@@ -135,14 +130,9 @@ public class SupportCommands {
     }
 
     @Permission(value = "enjin.ticket.open")
-    @Directive(parent = "enjin", value = "openticket")
+    @Directive(parent = "enjin", value = "openticket", requireValidKey = true)
     public static void openTicket(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-
-        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
-            sender.sendMessage("Cannot use this command without setting your key.");
-            return;
-        }
 
         if (args.length == 0) {
             final Player player = sender;
@@ -190,14 +180,9 @@ public class SupportCommands {
     }
 
     @Permission(value = "enjin.ticket.reply")
-    @Directive(parent = "enjin", value = "reply")
+    @Directive(parent = "enjin", value = "reply", requireValidKey = true)
     public static void reply(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-
-        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
-            sender.sendMessage("Cannot use this command without setting your key.");
-            return;
-        }
 
         if (args.length < 3) {
             sender.sendMessage("Usage: /e reply <#> <message>");
@@ -236,14 +221,9 @@ public class SupportCommands {
     }
 
     @Permission(value = "enjin.ticket.status")
-    @Directive(parent = "enjin", value = "ticketstatus")
+    @Directive(parent = "enjin", value = "ticketstatus", requireValidKey = true)
     public static void ticketStatus(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-
-        if (EnjinMinecraftPlugin.getConfiguration().getAuthKey() == null || EnjinMinecraftPlugin.getConfiguration().getAuthKey().isEmpty()) {
-            sender.sendMessage("Cannot use this command without setting your key.");
-            return;
-        }
 
         if (args.length != 3) {
             sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");

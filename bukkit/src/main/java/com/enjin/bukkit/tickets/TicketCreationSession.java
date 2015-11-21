@@ -2,6 +2,7 @@ package com.enjin.bukkit.tickets;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.tickets.*;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.*;
@@ -15,13 +16,14 @@ import java.util.*;
 public class TicketCreationSession {
     private static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private static ConversationFactory factory;
-    private static Map<UUID, TicketCreationSession> sessions = new HashMap<UUID, TicketCreationSession>();
+    @Getter
+    private static Map<UUID, TicketCreationSession> sessions = new HashMap<>();
 
     private int moduleId;
     private Map<Integer, Question> idMap;
     private List<Question> questions;
-    private List<Question> conditional = new ArrayList<Question>();
-    private Map<Integer, QuestionResponse> responses = new HashMap<Integer, QuestionResponse>();
+    private List<Question> conditional = new ArrayList<>();
+    private Map<Integer, QuestionResponse> responses = new HashMap<>();
 
     private EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
     private UUID uuid;
@@ -35,19 +37,16 @@ public class TicketCreationSession {
         this.uuid = player.getUniqueId();
         this.moduleId = moduleId;
         this.idMap = module.getIdMappedQuestions();
-        this.questions = new ArrayList<Question>(module.getQuestions());
-        Collections.sort(this.questions, new Comparator<Question>() {
-            @Override
-            public int compare(Question q1, Question q2) {
-                if (q1.getOrder() == q2.getOrder()) {
-                    return Integer.compare(q1.getId(), q2.getId());
-                } else {
-                    return Integer.compare(q1.getOrder(), q2.getOrder());
-                }
+        this.questions = new ArrayList<>(module.getQuestions());
+        Collections.sort(this.questions, (q1, q2) -> {
+            if (q1.getOrder() == q2.getOrder()) {
+                return Integer.compare(q1.getId(), q2.getId());
+            } else {
+                return Integer.compare(q1.getOrder(), q2.getOrder());
             }
         });
 
-        for (Question question : new ArrayList<Question>(questions)) {
+        for (Question question : new ArrayList<>(questions)) {
             if (question.getType() == QuestionType.file) {
                 if (question.isRequired()) {
                     player.sendMessage(ChatColor.GOLD + "This support ticket requires a file upload and must be submitted on the website.");
@@ -56,6 +55,7 @@ public class TicketCreationSession {
                     this.questions.remove(question);
                 }
             }
+
             if (question.getConditions() != null && this.questions.size() > 0) {
                 this.questions.remove(question);
                 this.conditional.add(question);
@@ -64,13 +64,10 @@ public class TicketCreationSession {
 
         if (factory == null) {
             factory = new ConversationFactory(EnjinMinecraftPlugin.getInstance());
-            factory.addConversationAbandonedListener(new ConversationAbandonedListener() {
-                @Override
-                public void conversationAbandoned(ConversationAbandonedEvent event) {
-                    if (event.getContext().getForWhom() instanceof Player) {
-                        Player p = (Player) event.getContext().getForWhom();
-                        sessions.remove(p.getUniqueId());
-                    }
+            factory.addConversationAbandonedListener(event -> {
+                if (event.getContext().getForWhom() instanceof Player) {
+                    Player p = (Player) event.getContext().getForWhom();
+                    sessions.remove(p.getUniqueId());
                 }
             });
             factory.withEscapeSequence("abandon-ticket");
@@ -97,7 +94,7 @@ public class TicketCreationSession {
             } else {
                 plugin.debug("Checking conditionals for next question to prompt.");
                 if (!conditional.isEmpty()) {
-                    for (Question question : new ArrayList<Question>(conditional)) {
+                    for (Question question : new ArrayList<>(conditional)) {
                         boolean conditionsMet = false;
                         if (question.getConditionQualify() == ConditionQualify.one_true) {
                             plugin.debug("Question: " + question.getId() + "|" + question.getLabel() + " requires that condition be met. Checking conditions.");
@@ -149,12 +146,7 @@ public class TicketCreationSession {
             final Player player = Bukkit.getPlayer(uuid);
 
             if (player != null) {
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        TicketSubmission.submit(player, moduleId, new ArrayList<QuestionResponse>(responses.values()));
-                    }
-                });
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> TicketSubmission.submit(player, moduleId, new ArrayList<>(responses.values())));
             }
 
             return null;
@@ -408,7 +400,7 @@ public class TicketCreationSession {
         public Prompt acceptInput(ConversationContext context, String input) {
             String[] selections = input.replace(" ", "").split(",");
 
-            List<String> answers = new ArrayList<String>();
+            List<String> answers = new ArrayList<>();
             for (String selection : selections) {
                 try {
                     int index = Integer.parseInt(selection) - 1;
