@@ -55,17 +55,17 @@ public class TicketSubmission {
             }
         }
 
-        player.sendMessage("\n" + ChatColor.GOLD + "Your ticket is being submitted!");
+        player.sendMessage("\n" + ChatColor.GOLD + "Submitting ticket...");
         RPCData<Boolean> result = service.createTicket(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), moduleId, (String) subject.getAnswer(), (String) description.getAnswer(), player.getName(), extra);
         if (player != null) {
             if (result != null) {
                 if (result.getError() != null) {
-                    player.sendMessage(result.getError().getMessage());
+                    player.sendMessage(ChatColor.RED + result.getError().getMessage());
                 } else {
-                    player.sendMessage("Your ticket was submitted successfully!");
+                    player.sendMessage(ChatColor.GREEN + "Your ticket was submitted successfully!");
                 }
             } else {
-                player.sendMessage("Unable to submit your ticket.");
+                player.sendMessage(ChatColor.RED + "Unable to submit your ticket.");
             }
         }
     }
