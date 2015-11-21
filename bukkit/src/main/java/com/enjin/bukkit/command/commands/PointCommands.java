@@ -140,7 +140,7 @@ public class PointCommands {
             return;
         }
 
-        sender.sendMessage(ChatColor.GREEN + (args.length == 1 ? "Your" : (name + "'s")) + " point balance is " + ChatColor.GOLD + data.getResult().intValue());
+        sender.sendMessage(ChatColor.GREEN + (args.length == 0 ? "Your" : (name + "'s")) + " point balance is " + ChatColor.GOLD + data.getResult().intValue());
     }
 
     @Permission(value = "enjin.points.set")
