@@ -34,70 +34,83 @@ public class CoreCommands {
     public static void enjin(CommandSender sender, String[] args) {
         sender.sendMessage(EnjinConsole.header());
 
-        if (sender.hasPermission("enjin.setkey"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin key <KEY>: "
-                    + ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
-        if (sender.hasPermission("enjin.broadcast"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin broadcast <MESSAGE>: "
-                    + ChatColor.RESET + "Broadcast a message to all players.");
-        if (sender.hasPermission("enjin.push"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin push: "
-                    + ChatColor.RESET + "Sync your website tags with the current ranks.");
-        if (sender.hasPermission("enjin.lag"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin lag: "
-                    + ChatColor.RESET + "Display TPS average and memory usage.");
-        if (sender.hasPermission("enjin.debug"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin debug: "
-                    + ChatColor.RESET + "Enable debug mode and display extra information in console.");
-        if (sender.hasPermission("enjin.report"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin report: "
-                    + ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.");
-        if (sender.hasPermission("enjin.sign.set"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin heads: "
-                    + ChatColor.RESET + "Shows in game help for the heads and sign stats part of the plugin.");
-        if (sender.hasPermission("enjin.tags.view"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin tags <player>: "
-                    + ChatColor.RESET + "Shows the tags on the website for the player.");
+        if (sender.hasPermission("enjin.setkey")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin key <KEY>: " + ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
+        }
+
+        if (sender.hasPermission("enjin.broadcast")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin broadcast <MESSAGE>: " + ChatColor.RESET + "Broadcast a message to all players.");
+        }
+
+        if (sender.hasPermission("enjin.push")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin push: " + ChatColor.RESET + "Sync your website tags with the current ranks.");
+        }
+
+        if (sender.hasPermission("enjin.lag")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin lag: " + ChatColor.RESET + "Display TPS average and memory usage.");
+        }
+
+        if (sender.hasPermission("enjin.debug")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin debug: " + ChatColor.RESET + "Enable debug mode and display extra information in console.");
+        }
+
+        if (sender.hasPermission("enjin.report")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin report: " + ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.");
+        }
+
+        if (sender.hasPermission("enjin.sign.set")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin heads: " + ChatColor.RESET + "Shows in game help for the heads and sign stats part of the plugin.");
+        }
+
+        if (sender.hasPermission("enjin.tags.view")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin tags <player>: " + ChatColor.RESET + "Shows the tags on the website for the player.");
+        }
 
         // Points commands
-        if (sender.hasPermission("enjin.points.getself"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin points: "
-                    + ChatColor.RESET + "Shows your current website points.");
-        if (sender.hasPermission("enjin.points.getothers"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin points <NAME>: "
-                    + ChatColor.RESET + "Shows another player's current website points.");
-        if (sender.hasPermission("enjin.points.add"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin addpoints <NAME> <AMOUNT>: "
-                    + ChatColor.RESET + "Add points to a player.");
-        if (sender.hasPermission("enjin.points.remove"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin removepoints <NAME> <AMOUNT>: "
-                    + ChatColor.RESET + "Remove points from a player.");
-        if (sender.hasPermission("enjin.points.set"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin setpoints <NAME> <AMOUNT>: "
-                    + ChatColor.RESET + "Set a player's total points.");
-        if (sender.hasPermission("enjin.support"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin support: "
-                    + ChatColor.RESET + "Starts ticket session or informs player of available modules.");
-        if (sender.hasPermission("enjin.ticket.self"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin ticket: "
-                    + ChatColor.RESET + "Sends player a list of their tickets.");
-        if (sender.hasPermission("enjin.ticket.open"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin openticket: "
-                    + ChatColor.RESET + "Sends player a list of open tickets.");
-        if (sender.hasPermission("enjin.ticket.reply"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin reply <module #> <ticket id> <message>: "
-                    + ChatColor.RESET + "Sends a reply to a ticket.");
-        if (sender.hasPermission("enjin.ticket.status"))
-            sender.sendMessage(ChatColor.GOLD + "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: "
-                    + ChatColor.RESET + "Sets the status of a ticket.");
+        if (sender.hasPermission("enjin.points.getself")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin points: " + ChatColor.RESET + "Shows your current website points.");
+        }
+
+        if (sender.hasPermission("enjin.points.getothers")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin points <NAME>: " + ChatColor.RESET + "Shows another player's current website points.");
+        }
+
+        if (sender.hasPermission("enjin.points.add")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin addpoints <NAME> <AMOUNT>: " + ChatColor.RESET + "Add points to a player.");
+        }
+
+        if (sender.hasPermission("enjin.points.remove")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin removepoints <NAME> <AMOUNT>: " + ChatColor.RESET + "Remove points from a player.");
+        }
+
+        if (sender.hasPermission("enjin.points.set")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin setpoints <NAME> <AMOUNT>: " + ChatColor.RESET + "Set a player's total points.");
+        }
+
+        if (sender.hasPermission("enjin.support")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin support: " + ChatColor.RESET + "Starts ticket session or informs player of available modules.");
+        }
+
+        if (sender.hasPermission("enjin.ticket.self")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin ticket: " + ChatColor.RESET + "Sends player a list of their tickets.");
+        }
+
+        if (sender.hasPermission("enjin.ticket.open")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin openticket: " + ChatColor.RESET + "Sends player a list of open tickets.");
+        }
+
+        if (sender.hasPermission("enjin.ticket.reply")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin reply <module #> <ticket id> <message>: " + ChatColor.RESET + "Sends a reply to a ticket.");
+        }
+
+        if (sender.hasPermission("enjin.ticket.status")) {
+            sender.sendMessage(ChatColor.GOLD + "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: " + ChatColor.RESET + "Sets the status of a ticket.");
+        }
 
         // Shop buy commands
-        sender.sendMessage(ChatColor.GOLD + "/buy: "
-                + ChatColor.RESET + "Display items available for purchase.");
-        sender.sendMessage(ChatColor.GOLD + "/buy page <#>: "
-                + ChatColor.RESET + "View the next page of results.");
-        sender.sendMessage(ChatColor.GOLD + "/buy <ID>: "
-                + ChatColor.RESET + "Purchase the specified item ID in the server shop.");
+        sender.sendMessage(ChatColor.GOLD + "/buy: " + ChatColor.RESET + "Display items available for purchase.");
+        sender.sendMessage(ChatColor.GOLD + "/buy page <#>: " + ChatColor.RESET + "View the next page of results.");
+        sender.sendMessage(ChatColor.GOLD + "/buy <ID>: " + ChatColor.RESET + "Purchase the specified item ID in the server shop.");
     }
 
     @Permission(value = "enjin.broadcast")
