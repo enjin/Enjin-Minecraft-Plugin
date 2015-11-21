@@ -46,7 +46,8 @@ public class CategoryList extends Menu {
         int i = 0;
         for (Category category : categories) {
             String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + category.getName();
-            MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(Material.CHEST)) {
+            Material material = Material.getMaterial(category.getIconItem());
+            MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(material == null ? Material.CHEST : material), category.getIconDamage()) {
                 @Override
                 public void onClick(Player player) {
                     if (!lists.containsKey(this)) {

@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.mappings.shop;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -19,4 +20,10 @@ public class Category {
     private List<Category> categories;
     @Getter
     private List<Item> items;
+    @Getter
+    @SerializedName(value = "icon_item")
+    private String iconItem;
+    @Getter
+    @SerializedName(value = "icon_damage")
+    private byte iconDamage;
 }

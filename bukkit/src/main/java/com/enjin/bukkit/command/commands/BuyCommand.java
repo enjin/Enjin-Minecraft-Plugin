@@ -128,7 +128,14 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.empty() : Optional.ofNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "USAGE: /buy #");
+            player.sendMessage(ChatColor.RED + "USAGE: /buy shop #");
+            return;
+        }
+
+        if (EnjinMinecraftPlugin.getConfiguration().isUseBuyGUI()) {
+            Menu menu = new ShopList(player);
+            menu.openMenu(player);
+
             return;
         }
 
