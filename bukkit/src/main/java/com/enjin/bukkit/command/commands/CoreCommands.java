@@ -159,7 +159,7 @@ public class CoreCommands {
         String index = args[0].trim();
         UUID uuid = null;
 
-        if (index.length() > 20) {
+        if (index.length() > 16) {
             if (index.length() == 32) {
                 index = index.substring(0, 8) + "-" + index.substring(8, 12) + "-" + index.substring(12, 16) + "-" + index.substring(16, 20) + "-" + index.substring(20, 32);
             } else if (index.length() != 36) {
@@ -266,7 +266,7 @@ public class CoreCommands {
                 }
 
                 String itemname = is.getType().toString().toLowerCase();
-                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[0] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + player.getName() + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
             } else {
                 ItemStack is;
                 try {
@@ -309,7 +309,7 @@ public class CoreCommands {
                 }
 
                 String itemname = is.getType().toString().toLowerCase();
-                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + args[0] + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + player.getName() + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
             }
         } catch (Exception e) {
             sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
