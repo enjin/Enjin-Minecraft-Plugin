@@ -6,7 +6,6 @@ import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
 import com.enjin.rpc.mappings.mappings.plugin.Status;
 import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.services.BungeeCordService;
-import com.enjin.rpc.mappings.services.PluginService;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;

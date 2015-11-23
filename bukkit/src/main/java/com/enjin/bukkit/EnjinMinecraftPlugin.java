@@ -187,7 +187,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
     }
 
-    private void initConfig() {
+    public void initConfig() {
         File configFile = new File(getDataFolder(), "config.json");
         EnjinMinecraftPlugin.configuration = JsonConfig.load(configFile, EnjinConfig.class);
 

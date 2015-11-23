@@ -4,7 +4,9 @@ import com.enjin.core.config.JsonConfig;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 public class EnjinConfig extends JsonConfig {
     @Getter @Setter
     private boolean debug = false;

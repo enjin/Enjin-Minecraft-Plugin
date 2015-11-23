@@ -1,9 +1,16 @@
 package com.enjin.core;
 
-import lombok.Getter;
 import lombok.Setter;
 
 public class Enjin {
-    @Getter @Setter
+    @Setter
     private static EnjinPlugin plugin;
+
+    public static EnjinPlugin getPlugin() {
+        if (plugin == null) {
+            plugin = () -> null;
+        }
+
+        return plugin;
+    }
 }

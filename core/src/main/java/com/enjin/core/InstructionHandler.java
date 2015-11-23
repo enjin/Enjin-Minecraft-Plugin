@@ -20,7 +20,7 @@ public interface InstructionHandler {
 
     public void commandConfirmed(List<Long> executed);
 
-    public void configUpdated(Map<String, Object> updates);
+    public void configUpdated(Object update);
 
     public void statusReceived(String status);
 
