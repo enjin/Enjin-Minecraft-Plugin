@@ -84,8 +84,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private boolean unableToContactEnjin = false;
     @Getter @Setter
     private boolean permissionsNotWorking = false;
-    @Getter
-    private LinkedList<String> keywords = new LinkedList<String>();
 
     //-------------Thread IDS-------------------
     @Getter
@@ -111,15 +109,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void onEnable() {
         Enjin.setPlugin(this);
         instance = this;
-
-        //Add keywords for item giving
-        keywords.add("-name");
-        keywords.add("-color");
-        keywords.add("-repairxp");
-        keywords.add("--n");
-        keywords.add("--c");
-        keywords.add("--r");
-
         init();
     }
 
@@ -299,74 +288,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
             debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
         }
-    }
-
-    public void addCustomData(ItemStack is, String[] args, OfflinePlayer reciever, int startingpos) {
-        for (int i = startingpos; i < args.length; i++) {
-            if (args[i].equalsIgnoreCase("-name") || args[i].equalsIgnoreCase("--n")) {
-                boolean noflags = true;
-                i++;
-                StringBuilder name = new StringBuilder();
-                while (noflags && i < args.length) {
-                    if (keywords.contains(args[i].toLowerCase())) {
-                        noflags = false;
-                        i--;
-                    } else {
-                        name.append(args[i] + " ");
-                        i++;
-                    }
-                }
-                addName(is, ChatColor.translateAlternateColorCodes('&', name.toString().trim()));
-            } else if (args[i].equalsIgnoreCase("-color") || args[i].equalsIgnoreCase("--c")) {
-                i++;
-                if (args.length > i) {
-                    try {
-                        String[] rgb = args[i].split(",");
-                        int r = 0;
-                        int g = 0;
-                        int b = 0;
-                        for (String col : rgb) {
-                            col = col.toLowerCase();
-                            if (col.startsWith("r")) {
-                                r = Integer.parseInt(col.substring(1));
-                            } else if (col.startsWith("g")) {
-                                g = Integer.parseInt(col.substring(1));
-                            } else if (col.startsWith("b")) {
-                                b = Integer.parseInt(col.substring(1));
-                            }
-                        }
-                        ItemMeta meta = is.getItemMeta();
-                        if (meta instanceof LeatherArmorMeta) {
-                            ((LeatherArmorMeta) meta).setColor(Color.fromRGB(r, g, b));
-                            is.setItemMeta(meta);
-                        }
-                    } catch (NumberFormatException e) {
-
-                    }
-                }
-            } else if (args[i].equalsIgnoreCase("-repairxp") || args[i].equalsIgnoreCase("--r")) {
-                i++;
-                if (args.length > i) {
-                    try {
-                        int repaircost = Integer.parseInt(args[i]);
-                        ItemMeta meta = is.getItemMeta();
-                        if (meta instanceof Repairable) {
-                            ((Repairable) meta).setRepairCost(repaircost);
-                            is.setItemMeta(meta);
-                        }
-                    } catch (NumberFormatException e) {
-
-                    }
-                }
-            }
-        }
-    }
-
-    public ItemStack addName(ItemStack is, String name) {
-        ItemMeta meta = is.getItemMeta();
-        meta.setDisplayName(name);
-        is.setItemMeta(meta);
-        return is;
     }
 
     public static void dispatchConsoleCommand(String command) {
