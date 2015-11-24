@@ -63,7 +63,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void execute(long id, String command, long delay) {
-        for (ExecutedCommand c : RPCPacketManager.getExecutedCommands()) {
+        for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
             if (Long.parseLong(c.getId()) == id) {
                 return;
             }
@@ -71,7 +71,8 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
         Runnable runnable = () -> {
             EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-            RPCPacketManager.getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, ""));
+            EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, ""));
+            EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
         };
 
         if (delay <= 0) {
@@ -85,7 +86,8 @@ public class BukkitInstructionHandler implements InstructionHandler {
     public void commandConfirmed(List<Long> executed) {
         for (long id : executed) {
             Enjin.getPlugin().debug("Confirming Command ID: " + id);
-            new ArrayList<>(RPCPacketManager.getExecutedCommands()).stream().filter(command -> Long.parseLong(command.getId()) == id).forEach(command -> RPCPacketManager.getExecutedCommands().remove(command));
+            new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()).stream().filter(command -> Long.parseLong(command.getId()) == id).forEach(command -> EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command));
+            EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
         }
     }
 

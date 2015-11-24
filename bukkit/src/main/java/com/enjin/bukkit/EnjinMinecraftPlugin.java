@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
 import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.config.ExecutedCommandsConfig;
 import com.enjin.bukkit.managers.*;
 import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
@@ -47,6 +48,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private static EnjinMinecraftPlugin instance;
     @Getter
     private static EnjinConfig configuration;
+    @Getter
+    private static ExecutedCommandsConfig executedCommandsConfiguration;
     @Getter
     private InstructionHandler instructionHandler = new BukkitInstructionHandler();
     @Getter
@@ -193,10 +196,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         EnjinRPC.setHttps(configuration.isHttps());
         EnjinRPC.setApiUrl(configuration.getApiUrl());
         debug("RPC API Url: " + configuration.getApiUrl());
+
+        configFile = new File(getDataFolder(), "commands.json");
+        EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
+
+        if (!configFile.exists()) {
+            configuration.save(configFile);
+        }
     }
 
     public static void saveConfiguration() {
         configuration.save(new File(instance.getDataFolder(), "config.json"));
+    }
+
+    public static void saveExecutedCommandsConfiguration() {
+        executedCommandsConfiguration.save(new File(instance.getDataFolder(), "commands.json"));
     }
 
     private void initCommands() {

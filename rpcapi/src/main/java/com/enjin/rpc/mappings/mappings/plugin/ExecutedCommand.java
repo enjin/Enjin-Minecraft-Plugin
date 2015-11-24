@@ -3,6 +3,7 @@ package com.enjin.rpc.mappings.mappings.plugin;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.UnsupportedEncodingException;
@@ -12,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor
 public class ExecutedCommand {
     @Getter
     @SerializedName(value = "command_id")

@@ -21,9 +21,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
-    @Getter
-    private static List<ExecutedCommand> executedCommands = Lists.newArrayList();
-
     private EnjinMinecraftPlugin plugin;
 
     public RPCPacketManager(EnjinMinecraftPlugin plugin) {
@@ -40,7 +37,7 @@ public class RPCPacketManager implements Runnable {
                 getOnlineCount(),
                 getOnlinePlayers(),
                 null,
-                executedCommands,
+                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
                 null);
 
         PluginService service = EnjinServices.getService(PluginService.class);
