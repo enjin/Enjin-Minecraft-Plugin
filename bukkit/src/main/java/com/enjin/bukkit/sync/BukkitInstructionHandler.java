@@ -88,6 +88,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
         if (config != null) {
             config.update(new File(EnjinMinecraftPlugin.getInstance().getDataFolder(), "config.json"), update);
             EnjinMinecraftPlugin.getInstance().initConfig();
+            EnjinMinecraftPlugin.saveConfiguration();
         }
     }
 
