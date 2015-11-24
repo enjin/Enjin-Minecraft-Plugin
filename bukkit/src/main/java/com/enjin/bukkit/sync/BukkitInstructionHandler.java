@@ -17,22 +17,22 @@ import java.util.Map;
 public class BukkitInstructionHandler implements InstructionHandler {
     @Override
     public void addToWhitelist(String player) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist add " + player);
+        EnjinMinecraftPlugin.dispatchConsoleCommand("whitelist add " + player);
     }
 
     @Override
     public void removeFromWhitelist(String player) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist remove " + player);
+        EnjinMinecraftPlugin.dispatchConsoleCommand("whitelist remove " + player);
     }
 
     @Override
     public void ban(String player) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + player);
+        EnjinMinecraftPlugin.dispatchConsoleCommand("ban " + player);
     }
 
     @Override
     public void pardon(String player) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pardon " + player);
+        EnjinMinecraftPlugin.dispatchConsoleCommand("pardon " + player);
     }
 
     @Override
@@ -69,9 +69,17 @@ public class BukkitInstructionHandler implements InstructionHandler {
             }
         }
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command), delay <= 0 ? 0 : delay * 20);
+        Runnable runnable = () -> {
+            EnjinMinecraftPlugin.dispatchConsoleCommand(command);
+            Enjin.getPlugin().debug("Executed Command: " + command);
+            RPCPacketManager.getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, ""));
+        };
 
-        RPCPacketManager.getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, ""));
+        if (delay <= 0) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
+        } else {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay * 20);
+        }
     }
 
     @Override

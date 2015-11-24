@@ -31,6 +31,7 @@ import lombok.Getter;
 
 import lombok.Setter;
 import org.bukkit.*;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -365,5 +366,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         meta.setDisplayName(name);
         is.setItemMeta(meta);
         return is;
+    }
+
+    public static void dispatchConsoleCommand(String command) {
+        Bukkit.getPluginManager().callEvent(new ServerCommandEvent(Bukkit.getConsoleSender(), command));
     }
 }
