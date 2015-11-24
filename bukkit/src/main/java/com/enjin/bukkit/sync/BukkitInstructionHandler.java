@@ -71,7 +71,6 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
         Runnable runnable = () -> {
             EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-            Enjin.getPlugin().debug("Executed Command: " + command);
             RPCPacketManager.getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, ""));
         };
 

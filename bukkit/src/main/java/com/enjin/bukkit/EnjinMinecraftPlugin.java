@@ -31,6 +31,7 @@ import lombok.Getter;
 
 import lombok.Setter;
 import org.bukkit.*;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -369,6 +370,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public static void dispatchConsoleCommand(String command) {
+        if (!CommandBank.getNodes().containsKey(command.split(" ")[0])) {
+            Enjin.getPlugin().debug("[D1] Executed Command: " + command);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            return;
+        }
+
+        Enjin.getPlugin().debug("[D2] Executed Command: " + command);
         Bukkit.getPluginManager().callEvent(new ServerCommandEvent(Bukkit.getConsoleSender(), command));
     }
 }
