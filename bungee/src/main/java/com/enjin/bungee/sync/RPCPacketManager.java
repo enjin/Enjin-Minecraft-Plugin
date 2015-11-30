@@ -14,12 +14,16 @@ import com.enjin.rpc.mappings.mappings.plugin.Status;
 import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.services.BungeeCordService;
+import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -109,10 +113,36 @@ public class RPCPacketManager implements Runnable {
                     return;
                 }
 
-                servers.put(server.getKey() ,new NodeState(info.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList()), ping.getPlayers().getMax()));
+                List<String> players = isRedisBungeeEnabled() ? getPlayersFromRedisBungee(info) : info.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
+                servers.put(server.getKey(), new NodeState(players, ping.getPlayers().getMax()));
             });
         }
 
         return servers;
+    }
+
+    private List<String> getPlayersFromRedisBungee(ServerInfo info) {
+        List<String> players = new ArrayList<>();
+        List<UUID> rbplayers = new ArrayList<>(RedisBungee.getApi().getPlayersOnServer(info.getName()));
+        if (rbplayers != null && !rbplayers.isEmpty()) {
+            for (UUID uuid : rbplayers) {
+                String name = RedisBungee.getApi().getNameFromUuid(uuid);
+                if (name == null || name.isEmpty()) {
+                    continue;
+                }
+                players.add(uuid.toString() + ":" + name);
+            }
+        }
+
+        return players;
+    }
+
+    private boolean isRedisBungeeEnabled() {
+        Plugin plugin = ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee");
+        if (plugin != null) {
+            return true;
+        }
+
+        return false;
     }
 }
