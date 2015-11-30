@@ -110,8 +110,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     @Override
     public void onEnable() {
-        Enjin.setPlugin(this);
         instance = this;
+        Enjin.setPlugin(instance);
         init();
     }
 

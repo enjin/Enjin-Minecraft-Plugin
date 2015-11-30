@@ -1,4 +1,4 @@
-package com.enjin.bungee;
+package com.enjin.bungee.tasks;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,16 +9,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
+import com.enjin.bungee.EnjinMinecraftPlugin;
+import com.enjin.bungee.util.io.ReverseFileReader;
+import com.enjin.common.utils.ConnectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
-public class ReportMakerThread implements Runnable {
+public class ReportPublisher implements Runnable {
+    private EnjinMinecraftPlugin plugin;
+    private StringBuilder builder;
+    private CommandSender sender;
 
-    EnjinPlugin plugin;
-    StringBuilder builder;
-    CommandSender sender;
-
-    public ReportMakerThread(EnjinPlugin plugin, StringBuilder builder, CommandSender sender) {
+    public ReportPublisher(EnjinMinecraftPlugin plugin, StringBuilder builder, CommandSender sender) {
         this.plugin = plugin;
         this.builder = builder;
         this.sender = sender;
@@ -60,7 +62,7 @@ public class ReportMakerThread implements Runnable {
             }
             rfr.close();
         } catch (Exception e) {
-            if (EnjinPlugin.debug) {
+            if (EnjinMinecraftPlugin.getConfiguration().isDebug()) {
                 e.printStackTrace();
             }
         }
@@ -78,17 +80,16 @@ public class ReportMakerThread implements Runnable {
             rfrlog.close();
         } catch (Exception e2) {
         }
-        if (plugin.lasterror != null) {
+        if (plugin.getLastError() != null) {
             builder.append("\nLast Enjin Plugin Severe error message: \n");
-            builder.append(plugin.lasterror.toString());
+            builder.append(plugin.getLastError().toString());
         }
-        builder.append("\n=========================================\nEnjin HTTPS test: " + (plugin.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Enjin HTTP test: " + (plugin.testHTTPconnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Enjin web connectivity test: " + (plugin.testWebConnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Is mineshafter present: " + (EnjinPlugin.isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
+        builder.append("\n=========================================\nEnjin HTTPS test: " + (ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
+        builder.append("Enjin HTTP test: " + (ConnectionUtil.testHTTPconnection() ? "passed" : "FAILED!") + "\n");
+        builder.append("Enjin web connectivity test: " + (ConnectionUtil.testWebConnection() ? "passed" : "FAILED!") + "\n");
+        builder.append("Is mineshafter present: " + (ConnectionUtil.isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
         //let's make sure to hide the apikey, wherever it may occurr in the file.
-        String fullreport = builder.toString().replaceAll(EnjinPlugin.getHash(), "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        System.out.println(fullreport);
+        String fullreport = builder.toString().replaceAll(EnjinMinecraftPlugin.getConfiguration().getApiUrl(), "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
         Date date = new Date();
         BufferedWriter outChannel = null;

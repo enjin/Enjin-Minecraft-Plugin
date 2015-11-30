@@ -148,7 +148,6 @@ public class ReportPublisher implements Runnable {
         }
         //let's make sure to hide the apikey, wherever it may occurr in the file.
         String fullreport = builder.toString().replaceAll("authkey=\\w{50}", "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        System.out.println(fullreport);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
         Date date = new Date();
         BufferedWriter outChannel = null;

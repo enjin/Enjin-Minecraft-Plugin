@@ -112,8 +112,8 @@ public class BukkitInstructionHandler implements InstructionHandler {
     }
 
     @Override
-    public void notify(List<String> player, String message, long time) {
-        player.stream().filter(p -> Bukkit.getPlayer(p) != null).forEach(p -> Bukkit.getPlayer(p).sendMessage(message));
+    public void notify(List<String> players, String message, long time) {
+        players.stream().filter(p -> Bukkit.getPlayer(p) != null).forEach(p -> Bukkit.getPlayer(p).sendMessage(message));
     }
 
     @Override

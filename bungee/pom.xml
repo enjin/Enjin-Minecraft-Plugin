@@ -14,7 +14,7 @@
     <version>2.7.1-SNAPSHOT</version>
 
     <build>
-        <finalName>EMPBungee</finalName>
+        <finalName>EnjinMinecraftPlugin</finalName>
         <defaultGoal>clean package</defaultGoal>
         <resources>
             <resource>
@@ -89,7 +89,7 @@
 
         <dependency>
             <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
+            <artifactId>bungeecord-bootstrap</artifactId>
             <version>1.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>

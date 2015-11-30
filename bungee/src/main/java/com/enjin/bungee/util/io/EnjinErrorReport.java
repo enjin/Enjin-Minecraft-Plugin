@@ -1,4 +1,4 @@
-package com.enjin.bungee;
+package com.enjin.bungee.util.io;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

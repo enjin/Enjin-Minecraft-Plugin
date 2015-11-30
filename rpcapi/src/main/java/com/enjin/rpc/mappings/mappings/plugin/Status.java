@@ -15,7 +15,7 @@ import java.util.Map;
 public class Status {
     @Getter
     @SerializedName(value = "hasranks")
-    private boolean ranksEnabled;
+    private Boolean ranksEnabled;
     @Getter
     @SerializedName(value = "pluginversion")
     private String pluginVersion;
@@ -25,9 +25,9 @@ public class Status {
     private List<String> groups;
     @Getter
     @SerializedName(value = "maxplayers")
-    private int maxPlayers;
+    private Integer maxPlayers;
     @Getter
-    private int players;
+    private Integer players;
     @Getter
     @SerializedName(value = "playerlist")
     private List<PlayerInfo> playersList;

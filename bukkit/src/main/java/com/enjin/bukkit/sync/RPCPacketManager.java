@@ -10,8 +10,6 @@ import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import com.enjin.rpc.mappings.services.PluginService;
-import com.google.common.collect.Lists;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 

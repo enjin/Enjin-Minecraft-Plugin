@@ -20,7 +20,7 @@ public class PluginService implements Service {
             .registerTypeAdapter(Instruction.class, new InstructionDeserializer())
             .create();
 
-    public RPCData<Boolean> auth(final String authkey, final int port, final boolean save) {
+    public RPCData<Boolean> auth(final String authkey, final Integer port, final boolean save) {
         String method = "Plugin.auth";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authkey);
