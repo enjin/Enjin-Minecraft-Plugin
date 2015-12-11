@@ -72,4 +72,8 @@ public class Log {
         org.apache.logging.log4j.core.Logger log4j = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
         log4j.addAppender((Appender) mcLogListener);
     }
+
+    public static String getLastLine() {
+        return mcLogListener.getLine();
+    }
 }

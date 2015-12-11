@@ -2,6 +2,7 @@ package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.config.EnjinConfig;
 import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
@@ -71,7 +72,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
         Runnable runnable = () -> {
             EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-            EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, ""));
+            EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Log.getLastLine()));
             EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
         };
 
