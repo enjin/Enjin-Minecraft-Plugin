@@ -1,6 +1,8 @@
 package com.enjin.bukkit.command.commands;
 
 import Tux2.TuxTwoLib.TuxTwoPlayer;
+import com.enjin.bukkit.config.RankUpdatesConfig;
+import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.tasks.TPSMonitor;
 import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.io.EnjinConsole;
@@ -423,43 +425,15 @@ public class CoreCommands {
     @Permission(value = "enjin.push")
     @Directive(parent = "enjin", value = "push")
     public static void push(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-
+        RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
         OfflinePlayer[] players = Bukkit.getOfflinePlayers();
-        Map<String, String> perms = plugin.getPlayerPerms();
-        if (perms.size() > 3000 || perms.size() >= players.length) {
-            int minutes = perms.size() / 3000;
-            if (perms.size() % 3000 > 0) {
-                minutes++;
-            }
-
-            if (perms.size() > 3000) {
-                minutes += minutes * 0.1;
-            }
-
-            sender.sendMessage(ChatColor.RED + "A rank sync is still in progress, please wait until the current sync completes.");
-            sender.sendMessage(ChatColor.RED + "Progress: " + Integer.toString(perms.size()) + " more player ranks to transmit, ETA: " + minutes + " minute" + (minutes > 1 ? "s" : "") + ".");
-            return;
-        }
 
         for (OfflinePlayer player : players) {
-            if (player == null || player.getName() == null || player.getName().isEmpty()) {
-                continue;
-            }
-
-            perms.put(player.getName(), player.getUniqueId().toString());
+            ConnectionListener.updatePlayerRanks(player);
         }
 
-        int minutes = perms.size() / 3000;
-        if (perms.size() % 3000 > 0) {
-            minutes++;
-        }
-
-        if (perms.size() > 3000) {
-            minutes += minutes * 0.1;
-        }
-
-        sender.sendMessage(ChatColor.GREEN + Integer.toString(perms.size()) + " players have been queued for synchronization. This should take approximately " + Integer.toString(minutes) + " minute" + (minutes > 1 ? "s." : "."));
+        int minutes = Double.valueOf(Math.ceil(((double) config.getPlayerPerms().size()) / 3000.0D)).intValue();
+        sender.sendMessage(ChatColor.GREEN + Integer.toString(config.getPlayerPerms().size()) + " players have been queued for synchronization. This should take approximately " + minutes + " minutes" + (minutes > 1 ? "s." : "."));
     }
 
     @Permission(value = "enjin.report")

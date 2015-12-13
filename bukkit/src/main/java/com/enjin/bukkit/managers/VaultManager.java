@@ -23,9 +23,9 @@ public class VaultManager {
     }
 
     private static void initEconomy(EnjinMinecraftPlugin plugin) {
-        RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
+        RegisteredServiceProvider<Economy> provider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (provider != null) {
+            economy = provider.getProvider();
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 try {
                     economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
@@ -43,11 +43,21 @@ public class VaultManager {
         if (provider == null || provider.getProvider() == null) {
             Log.warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
             Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
+            return;
         }
+        permission = provider.getProvider();
     }
 
     public static boolean isVaultEnabled() {
         return Bukkit.getPluginManager().isPluginEnabled("Vault");
+    }
+
+    public static boolean isPermissionsAvailable() {
+        return permission != null;
+    }
+
+    public static boolean isEconomyAvailable() {
+        return economy != null;
     }
 
     public static boolean isEconomyUpToDate() {

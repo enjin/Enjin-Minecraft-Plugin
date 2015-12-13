@@ -1,6 +1,7 @@
 package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
@@ -8,6 +9,7 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
 import java.io.File;
@@ -42,10 +44,16 @@ public class BukkitInstructionHandler implements InstructionHandler {
             return;
         }
 
-        if (world == null || world.isEmpty() || world.equals("*") || Bukkit.getWorld(world) == null) {
-            VaultManager.getPermission().playerAddGroup((World) null, player, group);
-        } else {
-            VaultManager.getPermission().playerAddGroup(Bukkit.getWorld(world), player, group);
+        OfflinePlayer p = Bukkit.getOfflinePlayer(player);
+
+        if (p != null) {
+            if (world == null || world.isEmpty() || world.equals("*")) {
+                VaultManager.getPermission().playerAddGroup(null, p, group);
+            } else {
+                VaultManager.getPermission().playerAddGroup(world, p, group);
+            }
+
+            ConnectionListener.updatePlayerRanks(p);
         }
     }
 
@@ -55,10 +63,16 @@ public class BukkitInstructionHandler implements InstructionHandler {
             return;
         }
 
-        if (world == null || world.isEmpty() || world.equals("*") || Bukkit.getWorld(world) == null) {
-            VaultManager.getPermission().playerAddGroup((World) null, player, group);
-        } else {
-            VaultManager.getPermission().playerAddGroup(Bukkit.getWorld(world), player, group);
+        OfflinePlayer p = Bukkit.getOfflinePlayer(player);
+
+        if (p != null) {
+            if (world == null || world.isEmpty() || world.equals("*")) {
+                VaultManager.getPermission().playerRemoveGroup(null, p, group);
+            } else {
+                VaultManager.getPermission().playerRemoveGroup(world, p, group);
+            }
+
+            ConnectionListener.updatePlayerRanks(p);
         }
     }
 

@@ -1,30 +1,19 @@
-package com.enjin.bukkit.listeners.perm;
+package com.enjin.bukkit.listeners.perm.processors;
 
-import com.enjin.bukkit.listeners.ConnectionListener;
-import com.enjin.core.Enjin;
+import com.enjin.bukkit.listeners.perm.PermissionListener;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-
-import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.tasks.DelayedPlayerPermsUpdate;
 
 import ru.tehkode.permissions.PermissionEntity;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.events.PermissionEntityEvent;
 import ru.tehkode.permissions.events.PermissionEntityEvent.Action;
 
-public class PexChangeListener implements Listener {
-    private EnjinMinecraftPlugin plugin;
-
-    public PexChangeListener(EnjinMinecraftPlugin plugin) {
-        this.plugin = plugin;
-    }
-
+public class PexChangeListener extends PermissionListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void pexGroupAdded(PermissionEntityEvent event) {
         Action theaction = event.getAction();
@@ -32,28 +21,22 @@ public class PexChangeListener implements Listener {
             PermissionEntity theentity = event.getEntity();
             if (theentity instanceof PermissionUser) {
                 PermissionUser permuser = (PermissionUser) theentity;
-                Player p = Bukkit.getPlayerExact(permuser.getName());
-                if (p == null) {
-                    return;
-                }
-                Enjin.getPlugin().debug(p.getName() + " just got a rank change... processing...");
-                ConnectionListener.getInstance().updatePlayerRanks(p);
+                OfflinePlayer op = Bukkit.getOfflinePlayer(permuser.getName());
+                update(op);
             }
         }
 
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void preCommandListener(PlayerCommandPreprocessEvent event) {
+    public void processCommand(CommandSender sender, String command, Cancellable event) {
         if (event.isCancelled()) {
             return;
         }
-        Player p = event.getPlayer();
-        String command = event.getMessage();
+
         //Make sure the user has permissions to run the value, otherwise we are just wasting time...
-        if (command.toLowerCase().startsWith("/pex group ")) {
+        if (command.toLowerCase().startsWith("pex group ")) {
             String[] args = command.split(" ");
-            if (args.length > 5 && p.hasPermission("permissions.manage.membership." + args[2])) {
+            if (args.length > 5 && sender.hasPermission("permissions.manage.membership." + args[2])) {
                 if (args[3].equalsIgnoreCase("user") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
                     //This value accepts csv lists of players
                     if (args[5].contains(",")) {
@@ -62,30 +45,26 @@ public class PexChangeListener implements Listener {
                             String ep = players[i];
                             OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                             //We need to make sure the value executes before we actually grab the data.
-                            Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(ConnectionListener.getInstance(), ep, op.getUniqueId().toString()), 2);
+                            update(op);
                         }
                     } else {
                         String ep = args[5];
                         OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                         //We need to make sure the value executes before we actually grab the data.
-                        Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(ConnectionListener.getInstance(), ep, op.getUniqueId().toString()), 2);
+                        update(op);
                     }
                 }
             }
         } else if (command.toLowerCase().startsWith("/pex user ")) {
             String[] args = command.split(" ");
-            if (args.length > 5 && p.hasPermission("permissions.manage.membership." + args[5])) {
+            if (args.length > 5 && sender.hasPermission("permissions.manage.membership." + args[5])) {
                 if (args[3].equalsIgnoreCase("group") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
                     String ep = args[2];
                     OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                     //We need to make sure the value executes before we actually grab the data.
-                    Enjin.getPlugin().debug(ep + " just got a rank change... processing...");
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DelayedPlayerPermsUpdate(ConnectionListener.getInstance(), ep, op.getUniqueId().toString()), 2);
+                    update(op);
                 }
             }
         }
     }
-
 }

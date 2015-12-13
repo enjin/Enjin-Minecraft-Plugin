@@ -1,5 +1,6 @@
 package com.enjin.bukkit.sync;
 
+import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.sync.data.*;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
@@ -13,9 +14,7 @@ import com.enjin.rpc.mappings.services.PluginService;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
@@ -27,14 +26,14 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
-        Status status = new Status(false,
+        Status status = new Status(VaultManager.isPermissionsAvailable(),
                 plugin.getDescription().getVersion(),
                 getWorlds(),
                 getGroups(),
                 getMaxPlayers(),
                 getOnlineCount(),
                 getOnlinePlayers(),
-                null,
+                getPlayerGroups(),
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
                 null);
 
@@ -106,7 +105,13 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<String> getGroups() {
-        return null;
+        List<String> groups = new ArrayList<>();
+
+        if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
+            groups.addAll(Arrays.asList(VaultManager.getPermission().getGroups()));
+        }
+
+        return groups;
     }
 
     private int getMaxPlayers() {
@@ -119,5 +124,23 @@ public class RPCPacketManager implements Runnable {
 
     private List<PlayerInfo> getOnlinePlayers() {
         return Bukkit.getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(), player.getUniqueId())).collect(Collectors.toList());
+    }
+
+    private Map<String, PlayerGroupInfo> getPlayerGroups() {
+        Map<String, PlayerGroupInfo> groups = EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms();
+        Map<String, PlayerGroupInfo> update = new HashMap<>();
+
+        int index = 0;
+        for (String player : groups.keySet()) {
+            if (index >= 3000) {
+                break;
+            }
+
+            update.put(player, groups.get(player));
+        }
+
+        update.forEach((player, info) -> groups.remove(player));
+        EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
+        return update;
     }
 }

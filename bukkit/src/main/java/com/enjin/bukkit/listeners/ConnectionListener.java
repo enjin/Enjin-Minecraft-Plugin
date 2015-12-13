@@ -2,14 +2,21 @@ package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
+import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.*;
 
 public class ConnectionListener implements Listener {
     @Getter
@@ -58,11 +65,37 @@ public class ConnectionListener implements Listener {
         updatePlayerRanks(p);
     }
 
-    public void updatePlayerRanks(Player p) {
-        updatePlayerRanks(p.getName(), p.getUniqueId().toString());
+    public static void updatePlayerRanks(OfflinePlayer player) {
+        if (player == null) {
+            return;
+        }
+
+        PlayerGroupInfo info = new PlayerGroupInfo(player.getUniqueId());
+        info.getWorlds().putAll(getPlayerGroups(player));
+        EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
+        EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
     }
 
-    public void updatePlayerRanks(String p, String uuid) {
-        plugin.getPlayerPerms().put(p, uuid);
+    public static Map<String, List<String>> getPlayerGroups(OfflinePlayer player) {
+        Map<String, List<String>> groups = new HashMap<>();
+
+        if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
+            Permission permission = VaultManager.getPermission();
+            if (permission.hasGroupSupport()) {
+                String[] g = permission.getPlayerGroups(null, player);
+                if (g.length > 0) {
+                    groups.put("*", Arrays.asList(g));
+                }
+
+                for (World world : Bukkit.getWorlds()) {
+                    g = permission.getPlayerGroups(world.getName(), player);
+                    if (g.length > 0) {
+                        groups.put(world.getName(), Arrays.asList(g));
+                    }
+                }
+            }
+        }
+
+        return groups;
     }
 }

@@ -8,11 +8,13 @@ import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
 import com.enjin.bukkit.config.EnjinConfig;
 import com.enjin.bukkit.config.ExecutedCommandsConfig;
+import com.enjin.bukkit.config.RankUpdatesConfig;
+import com.enjin.bukkit.listeners.perm.PermissionListener;
+import com.enjin.bukkit.listeners.perm.processors.*;
 import com.enjin.bukkit.managers.*;
 import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.listeners.*;
-import com.enjin.bukkit.listeners.perm.*;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.StatsServer;
@@ -27,17 +29,13 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import com.enjin.rpc.mappings.services.PluginService;
 import lombok.Getter;
 
 import lombok.Setter;
 import org.bukkit.*;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.enjin.bukkit.tasks.BanLister;
@@ -50,6 +48,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private static EnjinConfig configuration;
     @Getter
     private static ExecutedCommandsConfig executedCommandsConfiguration;
+    @Getter
+    private static RankUpdatesConfig rankUpdatesConfiguration;
     @Getter
     private InstructionHandler instructionHandler = new BukkitInstructionHandler();
     @Getter
@@ -88,10 +88,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter @Setter
     private boolean permissionsNotWorking = false;
 
-    //-------------Thread IDS-------------------
     @Getter
-    private Map<String, String> playerPerms = new ConcurrentHashMap<>();
-    //Player, lists voted on.
+    private PermissionListener permissionListener;
+
     @Getter
     private Map<String, List<Object[]>> playerVotes = new ConcurrentHashMap<>();
     @Getter @Setter
@@ -201,7 +200,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
 
         if (!configFile.exists()) {
-            configuration.save(configFile);
+            executedCommandsConfiguration.save(configFile);
+        }
+
+        configFile = new File(getDataFolder(), "rankUpdates.json");
+        EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
+
+        if (!configFile.exists()) {
+            rankUpdatesConfiguration.save(configFile);
         }
     }
 
@@ -211,6 +217,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public static void saveExecutedCommandsConfiguration() {
         executedCommandsConfiguration.save(new File(instance.getDataFolder(), "commands.json"));
+    }
+
+    public static void saveRankUpdatesConfiguration() {
+        rankUpdatesConfiguration.save(new File(instance.getDataFolder(), "rankUpdates.json"));
     }
 
     private void initCommands() {
@@ -279,24 +289,24 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private void initPermissions() {
         if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
             debug("PermissionsEx found, hooking custom events.");
-            Bukkit.getPluginManager().registerEvents(new PexChangeListener(this), this);
+            Bukkit.getPluginManager().registerEvents(permissionListener = new PexChangeListener(), this);
             return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("bPermissions")) {
             debug("bPermissions found, hooking custom events.");
-            Bukkit.getPluginManager().registerEvents(new BPermissionsListener(this), this);
+            Bukkit.getPluginManager().registerEvents(permissionListener = new BPermissionsListener(), this);
             return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("zPermissions")) {
             debug("zPermissions found, hooking custom events.");
-            Bukkit.getPluginManager().registerEvents(new ZPermissionsListener(this), this);
+            Bukkit.getPluginManager().registerEvents(permissionListener = new ZPermissionsListener(), this);
             return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
             debug("PermissionsBukkit found, hooking custom events.");
-            Bukkit.getPluginManager().registerEvents(new PermissionsBukkitChangeListener(this), this);
+            Bukkit.getPluginManager().registerEvents(permissionListener = new PermissionsBukkitChangeListener(), this);
             return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
             debug("GroupManager found, hooking custom events.");
             globalGroupsSupported = false;
-            Bukkit.getPluginManager().registerEvents(new GroupManagerListener(), this);
+            Bukkit.getPluginManager().registerEvents(permissionListener = new GroupManagerListener(), this);
             return;
         } else {
             debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
