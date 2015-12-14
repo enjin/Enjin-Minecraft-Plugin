@@ -1,7 +1,10 @@
 package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
+import com.enjin.bukkit.util.EncodeUtil;
+import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
@@ -15,10 +18,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
+    private long nextStatUpdate = System.currentTimeMillis();
 
     public RPCPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -26,6 +31,12 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
+        String stats = null;
+        if (System.currentTimeMillis() > nextStatUpdate) {
+            stats = getStats();
+            nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+        }
+
         Status status = new Status(VaultManager.isPermissionsAvailable(),
                 plugin.getDescription().getVersion(),
                 getWorlds(),
@@ -35,7 +46,7 @@ public class RPCPacketManager implements Runnable {
                 getOnlinePlayers(),
                 getPlayerGroups(),
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
-                null);
+                stats);
 
         PluginService service = EnjinServices.getService(PluginService.class);
         RPCData<SyncResponse> data = service.sync(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), status);
@@ -142,5 +153,16 @@ public class RPCPacketManager implements Runnable {
         update.forEach((player, info) -> groups.remove(player));
         EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
         return update;
+    }
+
+    private String getStats() {
+        try {
+            String stats = new WriteStats(plugin).getStatsJSON();
+            return EncodeUtil.base64Encode(stats);
+        } catch (Exception e) {
+            Log.debug("Failed to encode statistics.");
+        }
+
+        return "";
     }
 }

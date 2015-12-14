@@ -77,8 +77,8 @@ public class StatCommands {
     @Permission(value = "enjin.savestats")
     @Directive(parent = "enjin", value = "savestats")
     public static void saveStats(CommandSender sender, String[] args) {
-        new WriteStats(EnjinMinecraftPlugin.getInstance()).write("stats.stats");
-        sender.sendMessage(ChatColor.GREEN + "Stats saved to stats.stats.");
+        new WriteStats(EnjinMinecraftPlugin.getInstance()).write("enjin-stats.json");
+        sender.sendMessage(ChatColor.GREEN + "Stats saved to enjin-stats.json.");
     }
 
     @Permission(value = "enjin.serverstats")

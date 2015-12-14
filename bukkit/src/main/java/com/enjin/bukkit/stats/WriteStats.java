@@ -14,7 +14,6 @@ import org.json.simple.JSONValue;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 
 public class WriteStats {
-
     EnjinMinecraftPlugin plugin;
 
     public WriteStats(EnjinMinecraftPlugin plugin) {
@@ -44,11 +43,9 @@ public class WriteStats {
         JSONArray players = plugin.getPlayerStats().entrySet().stream().map(eplayer -> eplayer.getValue().getSerialized()).collect(Collectors.toCollection(() -> new JSONArray()));
         stats.put("players", players);
         return JSONValue.toJSONString(stats);
-
     }
 
-    public byte[] write() {
-        return getStatsJSON().getBytes();
+    public String write() {
+        return getStatsJSON();
     }
-
 }

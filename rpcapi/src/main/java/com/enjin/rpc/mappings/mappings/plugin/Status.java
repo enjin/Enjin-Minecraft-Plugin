@@ -37,6 +37,10 @@ public class Status {
     @Getter
     @SerializedName(value = "executed_commands")
     private List<ExecutedCommand> executedCommands;
+
+    /**
+     * gzipped and base64 encoded
+     */
     @Getter
-    private Map<String, Object> stats;
+    private String stats;
 }
