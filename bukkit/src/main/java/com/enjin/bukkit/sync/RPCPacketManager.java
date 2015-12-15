@@ -32,7 +32,7 @@ public class RPCPacketManager implements Runnable {
     @Override
     public void run() {
         String stats = null;
-        if (System.currentTimeMillis() > nextStatUpdate) {
+        if (EnjinMinecraftPlugin.getConfiguration().isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
             stats = getStats();
             nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
         }
