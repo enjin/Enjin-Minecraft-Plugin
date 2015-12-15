@@ -3,6 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.managers.PurchaseManager;
 import com.enjin.bukkit.shop.RPCShopFetcher;
 import com.enjin.bukkit.shop.ShopListener;
@@ -40,7 +41,7 @@ public class BuyCommand {
         if (!instances.containsKey(player.getUniqueId()) || shouldUpdate(instances.get(player.getUniqueId()))) {
             fetchShop(player);
         } else {
-            if (EnjinMinecraftPlugin.getConfiguration().isUseBuyGUI()) {
+            if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
                 Menu menu = ShopListener.getGuiInstances().containsKey(player.getUniqueId()) ? ShopListener.getGuiInstances().get(player.getUniqueId()) : new ShopList(player);
                 menu.openMenu(player);
 
@@ -123,7 +124,7 @@ public class BuyCommand {
 
     @Directive(parent = "buy", value = "item")
     public static void item(Player player, String[] args) {
-        if (EnjinMinecraftPlugin.getConfiguration().isUseBuyGUI()) {
+        if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
             player.sendMessage(ChatColor.RED + "The text shop has been disabled. Please use the gui to make point purchases.");
             return;
         }
@@ -189,7 +190,7 @@ public class BuyCommand {
             return;
         }
 
-        if (EnjinMinecraftPlugin.getConfiguration().isUseBuyGUI()) {
+        if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
             Menu menu = new ShopList(player);
             menu.openMenu(player);
 

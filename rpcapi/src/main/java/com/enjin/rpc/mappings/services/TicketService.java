@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.services;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.mappings.deserializers.QuestionDeserializer;
 import com.enjin.rpc.mappings.deserializers.TicketDeserializer;
@@ -28,10 +29,10 @@ public class TicketService implements Service {
             .registerTypeAdapter(Question.class, new QuestionDeserializer())
             .create();
 
-    public RPCData<List<Ticket>> getPlayerTickets(final String authkey, final int preset, final String player) {
+    public RPCData<List<Ticket>> getPlayerTickets(final int preset, final String player) {
         String method = "Tickets.getPlayerTickets";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("minecraft_player", player);
         }};
 
@@ -63,10 +64,10 @@ public class TicketService implements Service {
         }
     }
 
-    public RPCData<List<Ticket>> getTickets(final String authkey, final int preset, final TicketStatus status) {
+    public RPCData<List<Ticket>> getTickets(final int preset, final TicketStatus status) {
         String method = "Tickets.getTickets";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("status", status.name());
         }};
 
@@ -99,10 +100,10 @@ public class TicketService implements Service {
         }
     }
 
-    public RPCData<Map<Integer, Module>> getModules(final String authkey) {
+    public RPCData<Map<Integer, Module>> getModules() {
         String method = "Tickets.getModules";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
         }};
         int id = EnjinRPC.getNextRequestId();
 
@@ -129,10 +130,10 @@ public class TicketService implements Service {
         }
     }
 
-    public RPCData<Boolean> setStatus(final String authkey, final int preset, final String code, final TicketStatus status) {
+    public RPCData<Boolean> setStatus(final int preset, final String code, final TicketStatus status) {
         String method = "Tickets.setStatus";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("preset_id", preset);
             put("ticket_code", code);
             put("status", status.name());
@@ -162,10 +163,10 @@ public class TicketService implements Service {
         }
     }
 
-    public RPCData<PlayerAccess> getPlayerAccess(final String authkey, final int preset, final String player) {
+    public RPCData<PlayerAccess> getPlayerAccess(final int preset, final String player) {
         String method = "Tickets.getPlayerAccess";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("preset_id", preset);
             put("minecraft_player", player);
         }};
@@ -194,10 +195,10 @@ public class TicketService implements Service {
         }
     }
 
-    public RPCData<List<Reply>> getReplies(final String authkey, final int preset, final String code, final String player) {
+    public RPCData<List<Reply>> getReplies(final int preset, final String code, final String player) {
         String method = "Tickets.getReplies";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("ticket_code", code);
             put("minecraft_player", player);
         }};
@@ -231,10 +232,10 @@ public class TicketService implements Service {
         }
     }
 
-    public RPCData<Boolean> createTicket(final String authkey, final int preset, final String subject, final String description, final String player, final List<ExtraQuestion> extraQuestions) {
+    public RPCData<Boolean> createTicket(final int preset, final String subject, final String description, final String player, final List<ExtraQuestion> extraQuestions) {
         String method = "Tickets.createTicket";
         final Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("preset_id", preset);
             put("subject", subject);
             put("description", description);
@@ -266,10 +267,10 @@ public class TicketService implements Service {
         }
     }
 
-    public RPCData<RPCSuccess> sendReply(final String authkey, final int preset, final String code, final String text, final String mode, final TicketStatus status, final String player) {
+    public RPCData<RPCSuccess> sendReply(final int preset, final String code, final String text, final String mode, final TicketStatus status, final String player) {
         String method = "Tickets.sendReply";
         final Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("preset_id", preset);
             put("ticket_code", code);
             put("text", text);

@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 import com.enjin.bungee.command.CommandBank;
 import com.enjin.bungee.command.commands.CoreCommands;
 import com.enjin.bungee.command.commands.PointCommands;
-import com.enjin.bungee.config.EnjinConfig;
 import com.enjin.bungee.sync.BungeeInstructionHandler;
 import com.enjin.bungee.sync.RPCPacketManager;
 import com.enjin.bungee.util.Log;
 import com.enjin.bungee.util.io.EnjinErrorReport;
+import com.enjin.common.config.GenericEnjinConfig;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinPlugin;
 import com.enjin.core.EnjinServices;
@@ -31,8 +31,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
-    @Getter
-    private static EnjinConfig configuration;
     @Getter
     private InstructionHandler instructionHandler = new BungeeInstructionHandler();
     @Getter
@@ -54,11 +52,11 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
     @Override
     public void debug(String s) {
-        if (configuration.isDebug()) {
+        if (Enjin.getConfiguration().isDebug()) {
             getLogger().info("Enjin Debug: " + s);
         }
 
-        if (configuration.isLoggingEnabled()) {
+        if (Enjin.getConfiguration().isLoggingEnabled()) {
             Log.debug(s);
         }
     }
@@ -85,16 +83,16 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
             initConfig();
 
             EnjinRPC.setLogger(getLogger());
-            EnjinRPC.setDebug(configuration.isDebug());
+            EnjinRPC.setDebug(Enjin.getConfiguration().isDebug());
             Log.init();
             debug("Init config done.");
 
             initCommands();
             debug("Init commands done.");
 
-            if (configuration.getAuthKey().length() == 50) {
+            if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 Optional<Integer> port = getPort();
-                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(configuration.getAuthKey(), port.isPresent() ? port.get() : null, true);
+                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.empty(), port.isPresent() ? port.get() : null, true);
                 if (data == null) {
                     authKeyInvalid = true;
                     debug("Auth key is invalid. Data could not be retrieved.");
@@ -121,7 +119,8 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
     public void initConfig() {
         File configFile = new File(getDataFolder(), "config.json");
-        EnjinMinecraftPlugin.configuration = JsonConfig.load(configFile, EnjinConfig.class);
+        GenericEnjinConfig configuration = JsonConfig.load(configFile, GenericEnjinConfig.class);
+        Enjin.setConfiguration(configuration);
 
         if (!configFile.exists()) {
             configuration.save(configFile);
@@ -137,7 +136,7 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
     }
 
     public static void saveConfiguration() {
-        configuration.save(new File(instance.getDataFolder(), "config.json"));
+        Enjin.getConfiguration().save(new File(instance.getDataFolder(), "config.json"));
     }
 
     public void initCommands() {

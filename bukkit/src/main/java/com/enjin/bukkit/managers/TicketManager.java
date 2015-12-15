@@ -31,7 +31,7 @@ public class TicketManager {
     public static void pollModules() {
         if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
             modulesLastPolled = System.currentTimeMillis();
-            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules(EnjinMinecraftPlugin.getConfiguration().getAuthKey());
+            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules();
 
             if (data == null || data.getError() != null) {
                 Enjin.getPlugin().debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());

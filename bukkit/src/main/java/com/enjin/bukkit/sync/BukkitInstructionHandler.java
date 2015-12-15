@@ -1,6 +1,6 @@
 package com.enjin.bukkit.sync;
 
-import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.util.Log;
@@ -10,12 +10,10 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class BukkitInstructionHandler implements InstructionHandler {
     @Override
@@ -108,7 +106,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void configUpdated(Object update) {
-        EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
+        EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
         if (config != null) {
             config.update(new File(EnjinMinecraftPlugin.getInstance().getDataFolder(), "config.json"), update);
             EnjinMinecraftPlugin.getInstance().initConfig();

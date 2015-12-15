@@ -1,13 +1,12 @@
-package com.enjin.bungee.config;
+package com.enjin.common.config;
 
+import com.enjin.core.config.EnjinConfig;
 import com.enjin.core.config.JsonConfig;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-@ToString
-public class EnjinConfig extends JsonConfig {
+public class GenericEnjinConfig extends JsonConfig implements EnjinConfig {
     @Getter
     @Setter
     private boolean debug = false;

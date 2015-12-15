@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
@@ -27,7 +27,7 @@ public class VoteSender implements Runnable {
 
     @Override
     public void run() {
-        EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
+        EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
         if (plugin.getPlayerVotes().size() > 0) {
             if (firstrun && config.isHttps()) {
                 if (!ConnectionUtil.testHTTPSconnection()) {
@@ -41,7 +41,7 @@ public class VoteSender implements Runnable {
             plugin.getPlayerVotes().clear();
 
             boolean successful;
-            RPCData<String> data = EnjinServices.getService(VoteService.class).get(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), votes);
+            RPCData<String> data = EnjinServices.getService(VoteService.class).get(votes);
             String success;
 
             if (data == null) {

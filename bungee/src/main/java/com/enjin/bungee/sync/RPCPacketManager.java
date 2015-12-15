@@ -51,7 +51,7 @@ public class RPCPacketManager implements Runnable {
         Map<String, NodeState> servers = getServers();
         ProxyServer.getInstance().getScheduler().schedule(plugin, () -> {
             BungeeCordService service = EnjinServices.getService(BungeeCordService.class);
-            RPCData<SyncResponse> data = service.get(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), status, servers);
+            RPCData<SyncResponse> data = service.get(status, servers);
 
             if (data == null) {
                 Enjin.getPlugin().debug("Data is null while requesting sync update from Bungeecord.get.");

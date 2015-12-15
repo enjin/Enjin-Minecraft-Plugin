@@ -47,8 +47,7 @@ public class PurchaseManager {
 
         Runnable runnable = () -> {
             ShopService service = EnjinServices.getService(ShopService.class);
-            RPCData<Integer> data = service.purchase(EnjinMinecraftPlugin.getConfiguration().getAuthKey(),
-                    player.getName(),
+            RPCData<Integer> data = service.purchase(player.getName(),
                     id,
                     Optional.empty(),
                     Optional.empty(),

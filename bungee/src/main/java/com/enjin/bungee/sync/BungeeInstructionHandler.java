@@ -1,9 +1,9 @@
 package com.enjin.bungee.sync;
 
 import com.enjin.bungee.EnjinMinecraftPlugin;
-import com.enjin.bungee.config.EnjinConfig;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
+import com.enjin.core.config.EnjinConfig;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.io.File;
@@ -44,7 +44,7 @@ public class BungeeInstructionHandler implements InstructionHandler {
 
     @Override
     public void configUpdated(Object update) {
-        EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
+        EnjinConfig config = Enjin.getConfiguration();
         if (config != null) {
             config.update(new File(EnjinMinecraftPlugin.getInstance().getDataFolder(), "config.json"), update);
             EnjinMinecraftPlugin.getInstance().initConfig();

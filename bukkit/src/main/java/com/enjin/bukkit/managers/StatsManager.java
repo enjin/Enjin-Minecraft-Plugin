@@ -1,7 +1,7 @@
 package com.enjin.bukkit.managers;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ChatListener;
 import com.enjin.bukkit.listeners.EnjinStatsListener;
 import com.enjin.bukkit.stats.StatsPlayer;
@@ -46,7 +46,7 @@ public class StatsManager {
             }
         }
 
-        EnjinConfig configuration = EnjinMinecraftPlugin.getConfiguration();
+        EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
         if (configuration.isCollectPlayerStats()) {
             if (listener == null) {
                 Bukkit.getPluginManager().registerEvents(listener = new EnjinStatsListener(plugin), plugin);
@@ -101,7 +101,7 @@ public class StatsManager {
     }
 
     public static void disable(EnjinMinecraftPlugin plugin) {
-        EnjinConfig configuration = EnjinMinecraftPlugin.getConfiguration();
+        EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
         if (configuration.isCollectPlayerStats()) {
             new WriteStats(plugin).write("enjin-stats.json");
             Enjin.getPlugin().debug("Stats saved to enjin-stats.json.");

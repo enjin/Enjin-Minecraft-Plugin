@@ -75,7 +75,7 @@ public class ReportPublisher implements Runnable {
             }
             rfr.close();
         } catch (Exception e) {
-            if (EnjinMinecraftPlugin.getConfiguration().isDebug()) {
+            if (Enjin.getConfiguration().isDebug()) {
                 e.printStackTrace();
             }
         }

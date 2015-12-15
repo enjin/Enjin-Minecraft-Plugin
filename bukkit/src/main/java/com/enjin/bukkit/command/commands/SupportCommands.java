@@ -88,7 +88,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Ticket>> data = service.getPlayerTickets(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), -1, player.getName());
+                RPCData<List<Ticket>> data = service.getPlayerTickets(-1, player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -109,7 +109,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Reply>> data = service.getReplies(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), -1, args[0], player.getName());
+                RPCData<List<Reply>> data = service.getReplies(-1, args[0], player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -138,7 +138,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Ticket>> data = service.getTickets(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), -1, TicketStatus.open);
+                RPCData<List<Ticket>> data = service.getTickets(-1, TicketStatus.open);
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -159,7 +159,7 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Reply>> data = service.getReplies(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), -1, args[0], player.getName());
+                RPCData<List<Reply>> data = service.getReplies(-1, args[0], player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -206,7 +206,7 @@ public class SupportCommands {
             final String finalMessage = message;
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), preset, ticket, finalMessage, "public", TicketStatus.open, sender.getName());
+                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(preset, ticket, finalMessage, "public", TicketStatus.open, sender.getName());
                 if (result != null) {
                     if (result.getError() == null) {
                         sender.sendMessage("You replied to the ticket successfully.");
@@ -246,7 +246,7 @@ public class SupportCommands {
             }
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), preset, ticket, status);
+                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(preset, ticket, status);
                 if (result != null) {
                     if (result.getError() == null) {
                         if (result.getResult()) {

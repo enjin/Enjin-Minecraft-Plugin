@@ -1,23 +1,13 @@
 package com.enjin.bukkit.config;
 
-import com.enjin.core.config.JsonConfig;
+import com.enjin.common.config.GenericEnjinConfig;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @ToString
-public class EnjinConfig extends JsonConfig {
-    @Getter @Setter
-    private boolean debug = false;
-    @Getter @Setter
-    @SerializedName(value = "auth-key")
-    private String authKey = "";
-    @Getter @Setter
-    private boolean https = true;
-    @Getter @Setter
-    @SerializedName(value = "auto-update")
-    private boolean autoUpdate = true;
+public class EMPConfig extends GenericEnjinConfig {
     @Getter @Setter
     @SerializedName(value = "collect-player-stats")
     private boolean collectPlayerStats = true;
@@ -36,10 +26,4 @@ public class EnjinConfig extends JsonConfig {
     @Getter @Setter
     @SerializedName(value = "use-buy-gui")
     private boolean useBuyGUI = true;
-    @Getter @Setter
-    @SerializedName(value = "logging-enabled")
-    private boolean loggingEnabled = true;
-    @Getter @Setter
-    @SerializedName(value = "api-url")
-    private String apiUrl = "://api.enjin.com/api/v1";
 }

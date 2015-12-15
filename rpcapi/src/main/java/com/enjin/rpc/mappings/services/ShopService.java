@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.services;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
@@ -15,10 +16,10 @@ import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 import java.util.*;
 
 public class ShopService implements Service {
-    public RPCData<List<Shop>> get(final String authkey, final String player) {
+    public RPCData<List<Shop>> get(final String player) {
         String method = "Shop.get";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
         }};
 
@@ -47,10 +48,10 @@ public class ShopService implements Service {
         }
     }
 
-    public RPCData<List<Purchase>> getPurchases(final String authkey, final String player, final boolean commands) {
+    public RPCData<List<Purchase>> getPurchases(final String player, final boolean commands) {
         String method = "Shop.getPurchases";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
             put("commands", commands);
         }};
@@ -80,10 +81,10 @@ public class ShopService implements Service {
         }
     }
 
-    public RPCData<List<FilteredItem>> getItems(final String authkey, final String player) {
+    public RPCData<List<FilteredItem>> getItems(final String player) {
         String method = "Shop.getItems";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
         }};
 
@@ -112,10 +113,10 @@ public class ShopService implements Service {
         }
     }
 
-    public RPCData<Integer> purchase(final String authkey, final String player, final int itemId, final Optional<List<String>> variables, final Optional<Integer> customPoints, final Optional<Integer> customPrice, final boolean ignoreMessages) {
+    public RPCData<Integer> purchase(final String player, final int itemId, final Optional<List<String>> variables, final Optional<Integer> customPoints, final Optional<Integer> customPrice, final boolean ignoreMessages) {
         String method = "Shop.purchase";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
             put("item_id", itemId);
             put("ignore_messages", ignoreMessages);

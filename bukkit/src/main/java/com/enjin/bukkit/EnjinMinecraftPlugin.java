@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
-import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.ExecutedCommandsConfig;
 import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.listeners.perm.PermissionListener;
@@ -29,7 +29,6 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import com.enjin.rpc.mappings.services.PluginService;
 import lombok.Getter;
 
@@ -44,8 +43,6 @@ import com.enjin.bukkit.tasks.CurseUpdater;
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
-    @Getter
-    private static EnjinConfig configuration;
     @Getter
     private static ExecutedCommandsConfig executedCommandsConfiguration;
     @Getter
@@ -98,11 +95,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     @Override
     public void debug(String s) {
-        if (configuration.isDebug()) {
+        if (Enjin.getConfiguration().isDebug()) {
             getLogger().info("Enjin Debug: " + s);
         }
 
-        if (configuration.isLoggingEnabled()) {
+        if (Enjin.getConfiguration().isLoggingEnabled()) {
             Log.debug(s);
         }
     }
@@ -130,15 +127,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             initConfig();
 
             EnjinRPC.setLogger(getLogger());
-            EnjinRPC.setDebug(configuration.isDebug());
+            EnjinRPC.setDebug(Enjin.getConfiguration().isDebug());
             Log.init();
             debug("Init config done.");
 
             initCommands();
             debug("Init commands done.");
 
-            if (configuration.getAuthKey().length() == 50) {
-                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(configuration.getAuthKey(), Bukkit.getPort(), true);
+            if (Enjin.getConfiguration().getAuthKey().length() == 50) {
+                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.empty(), Bukkit.getPort(), true);
                 if (data == null) {
                     authKeyInvalid = true;
                     debug("Auth key is invalid. Data could not be retrieved.");
@@ -182,7 +179,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public void initConfig() {
         File configFile = new File(getDataFolder(), "config.json");
-        EnjinMinecraftPlugin.configuration = JsonConfig.load(configFile, EnjinConfig.class);
+        EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
+        Enjin.setConfiguration(configuration);
 
         if (!configFile.exists()) {
             configuration.save(configFile);
@@ -212,7 +210,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public static void saveConfiguration() {
-        configuration.save(new File(instance.getDataFolder(), "config.json"));
+        Enjin.getConfiguration().save(new File(instance.getDataFolder(), "config.json"));
     }
 
     public static void saveExecutedCommandsConfiguration() {
@@ -232,8 +230,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             CommandBank.register(VoteCommands.class);
         }
 
-        if (configuration.getBuyCommand() != null && !configuration.getBuyCommand().isEmpty()) {
-            CommandBank.registerCommandAlias("buy", configuration.getBuyCommand());
+        if (Enjin.getConfiguration(EMPConfig.class).getBuyCommand() != null && !Enjin.getConfiguration(EMPConfig.class).getBuyCommand().isEmpty()) {
+            CommandBank.registerCommandAlias("buy", Enjin.getConfiguration(EMPConfig.class).getBuyCommand());
         }
     }
 
@@ -255,7 +253,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L).getTaskId();
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 4L);
-        if (configuration.isAutoUpdate()) {
+        if (Enjin.getConfiguration().isAutoUpdate()) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CurseUpdater(this, 44560, this.getFile(), CurseUpdater.UpdateType.DEFAULT, true), 20L * 60L * 5L, 20L * 60L * 5L).getTaskId();
         }
     }

@@ -1,5 +1,4 @@
-import com.enjin.bukkit.config.EnjinConfig;
-import com.enjin.core.Enjin;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.EnjinRPC;
 import data.ConfigUpdateData;
@@ -19,12 +18,12 @@ public class ConfigUpdateTest {
             file.delete();
         }
 
-        EnjinConfig config = JsonConfig.load(file, EnjinConfig.class);
+        EMPConfig config = JsonConfig.load(file, EMPConfig.class);
         ConfigUpdateData data = new ConfigUpdateData(false);
 
         System.out.println(config.toString());
         config.update(file, EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(data), Object.class));
-        config = config.load(file, EnjinConfig.class);
+        config = config.load(file, EMPConfig.class);
         System.out.println(config.toString());
     }
 

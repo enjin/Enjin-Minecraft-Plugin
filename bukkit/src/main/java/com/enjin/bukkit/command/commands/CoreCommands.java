@@ -10,7 +10,7 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
-import com.enjin.bukkit.config.EnjinConfig;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.tasks.ReportPublisher;
 import com.enjin.core.Enjin;
@@ -19,7 +19,6 @@ import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.enjin.rpc.mappings.services.PluginService;
-import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -152,7 +151,7 @@ public class CoreCommands {
     @Permission(value = "enjin.debug")
     @Directive(parent = "enjin", value = "debug", requireValidKey = false)
     public static void debug(CommandSender sender, String[] args) {
-        EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
+        EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
         config.setDebug(!config.isDebug());
         EnjinMinecraftPlugin.saveConfiguration();
         EnjinRPC.setDebug(config.isDebug());
@@ -375,13 +374,13 @@ public class CoreCommands {
         EnjinMinecraftPlugin.getInstance().getLogger().info("Checking if key is valid");
 
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-            if (EnjinMinecraftPlugin.getConfiguration().getAuthKey().equals(args[0])) {
+            if (Enjin.getConfiguration().getAuthKey().equals(args[0])) {
                 sender.sendMessage(ChatColor.GREEN + "That key has already been validated.");
                 return;
             }
 
             PluginService service = EnjinServices.getService(PluginService.class);
-            RPCData<Boolean> data = service.auth(args[0], Bukkit.getPort(), true);
+            RPCData<Boolean> data = service.auth(Optional.of(args[0]), Bukkit.getPort(), true);
 
             if (data == null) {
                 sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
@@ -395,7 +394,7 @@ public class CoreCommands {
 
             if (data.getResult().booleanValue()) {
                 sender.sendMessage(ChatColor.GREEN + "The key has been successfully validated.");
-                EnjinMinecraftPlugin.getConfiguration().setAuthKey(args[0]);
+                Enjin.getConfiguration().setAuthKey(args[0]);
                 EnjinMinecraftPlugin.saveConfiguration();
 
                 if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid()) {
@@ -520,7 +519,7 @@ public class CoreCommands {
 
         String name = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<List<TagData>> data = service.getTags(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), name);
+        RPCData<List<TagData>> data = service.getTags(name);
 
         if (data == null) {
             sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");

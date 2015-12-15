@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.services;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
@@ -14,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 public class VoteService implements Service {
-    public RPCData<String> get(final String authkey, final Map<String, List<Object[]>> votes) {
+    public RPCData<String> get(final Map<String, List<Object[]>> votes) {
         String method = "Votifier.get";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("votifier", votes);
         }};
 

@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import com.enjin.bungee.EnjinMinecraftPlugin;
 import com.enjin.bungee.util.io.ReverseFileReader;
 import com.enjin.common.utils.ConnectionUtil;
+import com.enjin.core.Enjin;
+import com.enjin.core.config.EnjinConfig;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
@@ -28,6 +30,7 @@ public class ReportPublisher implements Runnable {
 
     @Override
     public synchronized void run() {
+        EnjinConfig config = Enjin.getConfiguration();
         builder.append("\nLast Severe error message: \n");
         File serverloglocation = plugin.getDataFolder().getAbsoluteFile().getParentFile().getParentFile();
         try {
@@ -62,7 +65,7 @@ public class ReportPublisher implements Runnable {
             }
             rfr.close();
         } catch (Exception e) {
-            if (EnjinMinecraftPlugin.getConfiguration().isDebug()) {
+            if (config.isDebug()) {
                 e.printStackTrace();
             }
         }
@@ -89,7 +92,7 @@ public class ReportPublisher implements Runnable {
         builder.append("Enjin web connectivity test: " + (ConnectionUtil.testWebConnection() ? "passed" : "FAILED!") + "\n");
         builder.append("Is mineshafter present: " + (ConnectionUtil.isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
         //let's make sure to hide the apikey, wherever it may occurr in the file.
-        String fullreport = builder.toString().replaceAll(EnjinMinecraftPlugin.getConfiguration().getApiUrl(), "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        String fullreport = builder.toString().replaceAll(config.getApiUrl(), "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
         Date date = new Date();
         BufferedWriter outChannel = null;

@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.services;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
@@ -17,10 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public class MinecraftService implements Service {
-    public RPCData<List<ServerInfo>> getServers(final String authkey) {
+    public RPCData<List<ServerInfo>> getServers() {
         String method = "Minecraft.getServers";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
         }};
 
         int id = EnjinRPC.getNextRequestId();
@@ -48,10 +49,10 @@ public class MinecraftService implements Service {
         }
     }
 
-    public RPCData<List<MinecraftPlayerInfo>> getPlayers(final String authkey, final int serverId, final Optional<List<String>> names, final Optional<List<String>> uuids) {
+    public RPCData<List<MinecraftPlayerInfo>> getPlayers(final int serverId, final Optional<List<String>> names, final Optional<List<String>> uuids) {
         String method = "Minecraft.getPlayers";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("server_id", serverId);
         }};
 

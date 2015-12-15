@@ -4,11 +4,12 @@ import com.enjin.bungee.EnjinMinecraftPlugin;
 import com.enjin.bungee.command.Command;
 import com.enjin.bungee.command.Directive;
 import com.enjin.bungee.command.Permission;
-import com.enjin.bungee.config.EnjinConfig;
 import com.enjin.bungee.tasks.ReportPublisher;
 import com.enjin.bungee.util.Log;
 import com.enjin.bungee.util.io.EnjinConsole;
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
+import com.enjin.core.config.EnjinConfig;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.TagData;
@@ -21,8 +22,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CoreCommands {
     @Command(value = "benjin", aliases = "be", requireValidKey = false)
@@ -72,7 +71,7 @@ public class CoreCommands {
     @Permission(value = "enjin.debug")
     @Directive(parent = "benjin", value = "debug", requireValidKey = false)
     public static void debug(CommandSender sender, String[] args) {
-        EnjinConfig config = EnjinMinecraftPlugin.getConfiguration();
+        EnjinConfig config = Enjin.getConfiguration();
         config.setDebug(!config.isDebug());
         EnjinMinecraftPlugin.saveConfiguration();
         EnjinRPC.setDebug(config.isDebug());
@@ -93,14 +92,14 @@ public class CoreCommands {
         EnjinMinecraftPlugin.getInstance().getLogger().info("Checking if key is valid");
 
         ProxyServer.getInstance().getScheduler().runAsync(EnjinMinecraftPlugin.getInstance(), () -> {
-            if (EnjinMinecraftPlugin.getConfiguration().getAuthKey().equals(args[0])) {
+            if (Enjin.getConfiguration().getAuthKey().equals(args[0])) {
                 sender.sendMessage(ChatColor.GREEN + "That key has already been validated.");
                 return;
             }
 
             Optional<Integer> port = EnjinMinecraftPlugin.getPort();
             PluginService service = EnjinServices.getService(PluginService.class);
-            RPCData<Boolean> data = service.auth(args[0], port.isPresent() ? port.get() : null, true);
+            RPCData<Boolean> data = service.auth(Optional.of(args[0]), port.isPresent() ? port.get() : null, true);
 
             if (data == null) {
                 sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
@@ -114,7 +113,7 @@ public class CoreCommands {
 
             if (data.getResult().booleanValue()) {
                 sender.sendMessage(ChatColor.GREEN + "The key has been successfully validated.");
-                EnjinMinecraftPlugin.getConfiguration().setAuthKey(args[0]);
+                Enjin.getConfiguration().setAuthKey(args[0]);
                 EnjinMinecraftPlugin.saveConfiguration();
 
                 if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid()) {
@@ -170,7 +169,7 @@ public class CoreCommands {
 
         String name = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<List<TagData>> data = service.getTags(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), name);
+        RPCData<List<TagData>> data = service.getTags(name);
 
         if (data == null) {
             sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");

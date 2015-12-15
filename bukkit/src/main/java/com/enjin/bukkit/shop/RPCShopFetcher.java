@@ -1,7 +1,9 @@
 package com.enjin.bukkit.shop;
 
 import com.enjin.bukkit.command.commands.BuyCommand;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.util.OptionalUtil;
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.common.shop.PlayerShopInstance;
@@ -36,7 +38,7 @@ public class RPCShopFetcher implements Runnable {
         }
 
         Player player = p.get();
-        RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), player.getName());
+        RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(player.getName());
 
         if (data == null) {
             player.spigot().sendMessage(new ComponentBuilder("Failed to fetch shop data.").color(ChatColor.RED).create());
@@ -63,7 +65,7 @@ public class RPCShopFetcher implements Runnable {
 
         PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
 
-        if (EnjinMinecraftPlugin.getConfiguration().isUseBuyGUI()) {
+        if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> BuyCommand.buy(player, new String[]{}), 0);
         } else {
             TextShopUtil.sendTextShop(player, instance, -1);

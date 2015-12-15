@@ -1,5 +1,6 @@
 package com.enjin.bukkit.sync;
 
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
@@ -32,7 +33,7 @@ public class RPCPacketManager implements Runnable {
     @Override
     public void run() {
         String stats = null;
-        if (EnjinMinecraftPlugin.getConfiguration().isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
+        if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
             stats = getStats();
             nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
         }
@@ -49,7 +50,7 @@ public class RPCPacketManager implements Runnable {
                 stats);
 
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<SyncResponse> data = service.sync(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), status);
+        RPCData<SyncResponse> data = service.sync(status);
 
         if (data == null) {
             Enjin.getPlugin().debug("Data is null while requesting sync update from Plugin.sync.");

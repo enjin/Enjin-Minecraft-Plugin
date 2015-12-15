@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.services;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.deserializers.InstructionDeserializer;
@@ -20,10 +21,10 @@ public class PluginService implements Service {
             .registerTypeAdapter(Instruction.class, new InstructionDeserializer())
             .create();
 
-    public RPCData<Boolean> auth(final String authkey, final Integer port, final boolean save) {
+    public RPCData<Boolean> auth(final Optional<String> authKey, final Integer port, final boolean save) {
         String method = "Plugin.auth";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", authKey.isPresent() ? authKey.get() : Enjin.getConfiguration().getAuthKey());
             put("port", port);
             put("save", save);
         }};
@@ -53,10 +54,10 @@ public class PluginService implements Service {
         }
     }
 
-    public RPCData<SyncResponse> sync(final String authkey, final Status status) {
+    public RPCData<SyncResponse> sync(final Status status) {
         String method = "Plugin.sync";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("status", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(status), Object.class));
         }};
 
@@ -85,10 +86,10 @@ public class PluginService implements Service {
         }
     }
 
-    public RPCData<List<TagData>> getTags(final String authkey, final String player) {
+    public RPCData<List<TagData>> getTags(final String player) {
         String method = "Plugin.getTags";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
         }};
 
@@ -117,10 +118,10 @@ public class PluginService implements Service {
         }
     }
 
-    public RPCData<Boolean> setRank(final String authkey, final String player, final String group, final String world) {
+    public RPCData<Boolean> setRank(final String player, final String group, final String world) {
         String method = "Plugin.setRank";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
             put("group", group);
             put("world", world);
@@ -151,10 +152,10 @@ public class PluginService implements Service {
         }
     }
 
-    public RPCData<Boolean> removeRank(final String authkey, final String player, final String group, final String world) {
+    public RPCData<Boolean> removeRank(final String player, final String group, final String world) {
         String method = "Plugin.removeRank";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
             put("group", group);
             put("world", world);
@@ -185,10 +186,10 @@ public class PluginService implements Service {
         }
     }
 
-    public RPCData<Stats> getStats(final String authkey, Optional<List<Integer>> items) {
+    public RPCData<Stats> getStats(Optional<List<Integer>> items) {
         String method = "Plugin.getStats";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
         }};
 
         if (items.isPresent()) {

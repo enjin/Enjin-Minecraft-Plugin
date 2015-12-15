@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.services;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
@@ -14,10 +15,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public class PointService implements Service {
-    public RPCData<Integer> get(final String authkey, final String player) {
+    public RPCData<Integer> get(final String player) {
         String method = "Points.get";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
         }};
 
@@ -46,10 +47,10 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Map<Long, Integer>> getRecent(final String authkey, final Optional<Integer> seconds) {
+    public RPCData<Map<Long, Integer>> getRecent(final Optional<Integer> seconds) {
         String method = "Points.getRecent";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
         }};
 
         if (seconds.isPresent()) {
@@ -81,10 +82,10 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> set(final String authkey, final String player, int points) {
+    public RPCData<Integer> set(final String player, int points) {
         String method = "Points.set";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
             put("points", points);
         }};
@@ -114,10 +115,10 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> add(final String authkey, final String player, int points) {
+    public RPCData<Integer> add(final String player, int points) {
         String method = "Points.add";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
             put("points", points);
         }};
@@ -147,10 +148,10 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> remove(final String authkey, final String player, int points) {
+    public RPCData<Integer> remove(final String player, int points) {
         String method = "Points.remove";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("player", player);
             put("points", points);
         }};

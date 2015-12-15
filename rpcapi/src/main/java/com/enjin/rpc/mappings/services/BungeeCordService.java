@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.services;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.bungeecord.NodeState;
@@ -16,11 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BungeeCordService implements Service {
-    public RPCData<SyncResponse> get(final String authkey, final Status status, final Map<String, NodeState> servers) {
+    public RPCData<SyncResponse> get(final Status status, final Map<String, NodeState> servers) {
         String method = "Bungeecord.get";
 
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", authkey);
+            put("authkey", Enjin.getConfiguration().getApiUrl());
             put("status", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(status), Object.class));
             put("servers", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(servers, new TypeToken<HashMap<String, NodeState>>(){}.getType()), Object.class));
         }};

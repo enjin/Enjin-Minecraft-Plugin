@@ -47,7 +47,7 @@ public class PointCommands {
         }
 
         PointService service = EnjinServices.getService(PointService.class);
-        RPCData<Integer> data = service.add(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), name, points);
+        RPCData<Integer> data = service.add(name, points);
 
         if (data == null) {
             sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
@@ -94,7 +94,7 @@ public class PointCommands {
         }
 
         PointService service = EnjinServices.getService(PointService.class);
-        RPCData<Integer> data = service.remove(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), name, points);
+        RPCData<Integer> data = service.remove(name, points);
 
         if (data == null) {
             sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
@@ -128,7 +128,7 @@ public class PointCommands {
         }
 
         PointService service = EnjinServices.getService(PointService.class);
-        RPCData<Integer> data = service.get(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), name);
+        RPCData<Integer> data = service.get(name);
 
         if (data == null) {
             sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
@@ -175,7 +175,7 @@ public class PointCommands {
         }
 
         PointService service = EnjinServices.getService(PointService.class);
-        RPCData<Integer> data = service.set(EnjinMinecraftPlugin.getConfiguration().getAuthKey(), name, points);
+        RPCData<Integer> data = service.set(name, points);
 
         if (data == null) {
             sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");

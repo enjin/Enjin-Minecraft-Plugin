@@ -1,4 +1,6 @@
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
+import com.enjin.core.config.EnjinConfig;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
@@ -7,6 +9,7 @@ import com.enjin.rpc.mappings.services.TicketService;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +25,7 @@ public class TicketServiceTest {
     @Test
     public void test1GetModules() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<Map<Integer, Module>> data = service.getModules(KEY);
+        RPCData<Map<Integer, Module>> data = service.getModules();
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
@@ -40,7 +43,7 @@ public class TicketServiceTest {
     @Test
     public void test2GetTickets() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<List<Ticket>> data = service.getTickets(KEY, -1, TicketStatus.closed);
+        RPCData<List<Ticket>> data = service.getTickets(-1, TicketStatus.closed);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
@@ -55,7 +58,7 @@ public class TicketServiceTest {
     @Test
     public void test3GetPlayerTickets() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<List<Ticket>> data = service.getPlayerTickets(KEY, -1, PLAYER);
+        RPCData<List<Ticket>> data = service.getPlayerTickets(-1, PLAYER);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
@@ -70,7 +73,7 @@ public class TicketServiceTest {
     @Test
     public void test4GetReplies() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<List<Reply>> data = service.getReplies(KEY, PRESET_ID, TICKET_CODE, PLAYER);
+        RPCData<List<Reply>> data = service.getReplies(PRESET_ID, TICKET_CODE, PLAYER);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
@@ -85,7 +88,7 @@ public class TicketServiceTest {
     @Test
     public void test5CreateTicket() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<Boolean> data = service.createTicket(KEY, PRESET_ID, "This is my subject", "This is my description", "Favorlock", new ArrayList<ExtraQuestion>());
+        RPCData<Boolean> data = service.createTicket(PRESET_ID, "This is my subject", "This is my description", "Favorlock", new ArrayList<ExtraQuestion>());
 
         Assert.assertNotNull("data is null", data);
 
@@ -106,7 +109,7 @@ public class TicketServiceTest {
     @Test
     public void test6SendReply() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<RPCSuccess> data = service.sendReply(KEY, PRESET_ID, TICKET_CODE, "This is a reply", "public", TicketStatus.pending, "Favorlock");
+        RPCData<RPCSuccess> data = service.sendReply(PRESET_ID, TICKET_CODE, "This is a reply", "public", TicketStatus.pending, "Favorlock");
 
         Assert.assertNotNull("data is null", data);
 
@@ -127,7 +130,7 @@ public class TicketServiceTest {
     @Test
     public void test7SetStatus() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<Boolean> data = service.setStatus(KEY, PRESET_ID, TICKET_CODE, TicketStatus.closed);
+        RPCData<Boolean> data = service.setStatus(PRESET_ID, TICKET_CODE, TicketStatus.closed);
 
         Assert.assertNotNull("data is null", data);
 
@@ -147,6 +150,65 @@ public class TicketServiceTest {
 
     @BeforeClass
     public static void prepare() {
+        Enjin.setConfiguration(new EnjinConfig() {
+            @Override
+            public boolean isDebug() {
+                return true;
+            }
+
+            @Override
+            public void setDebug(boolean debug) {}
+
+            @Override
+            public String getAuthKey() {
+                return KEY;
+            }
+
+            @Override
+            public void setAuthKey(String key) {}
+
+            @Override
+            public boolean isHttps() {
+                return false;
+            }
+
+            @Override
+            public void setHttps(boolean https) {}
+
+            @Override
+            public boolean isAutoUpdate() {
+                return false;
+            }
+
+            @Override
+            public void setAutoUpdate(boolean autoUpdate) {}
+
+            @Override
+            public boolean isLoggingEnabled() {
+                return false;
+            }
+
+            @Override
+            public void setLoggingEnabled(boolean loggingEnabled) {}
+
+            @Override
+            public String getApiUrl() {
+                return API_URL;
+            }
+
+            @Override
+            public void setApiUrl(String apiUrl) {}
+
+            @Override
+            public boolean save(File file) {
+                return true;
+            }
+
+            @Override
+            public boolean update(File file, Object data) {
+                return true;
+            }
+        });
         EnjinRPC.setHttps(false);
         EnjinRPC.setApiUrl(API_URL);
     }
