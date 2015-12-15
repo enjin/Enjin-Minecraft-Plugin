@@ -114,14 +114,18 @@ public class TextShopUtil {
             buildItemContent(player, shop, item).send(player);
             buildFooterInfo(shop).send(player);
             buildFooter("", null, shop, -1).send(player);
+
+            instance.setActiveItem(item);
         }
     }
 
     public static void sendItemInfo(Player player, Shop shop, Item item) {
-        buildHeader(item.getName(), shop).send(player);
-        buildItemContent(player, shop, item).send(player);
-        buildFooterInfo(shop).send(player);
-        buildFooter("", null, shop, -1).send(player);
+        if (item != null) {
+            buildHeader(item.getName(), shop).send(player);
+            buildItemContent(player, shop, item).send(player);
+            buildFooterInfo(shop).send(player);
+            buildFooter("", null, shop, -1).send(player);
+        }
     }
 
     private static FancyMessage buildHeader(String title, Shop shop) {

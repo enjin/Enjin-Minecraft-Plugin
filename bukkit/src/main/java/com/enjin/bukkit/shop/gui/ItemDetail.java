@@ -1,6 +1,7 @@
 package com.enjin.bukkit.shop.gui;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.managers.PurchaseManager;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
 import com.enjin.bukkit.util.text.TextUtils;
@@ -63,9 +64,8 @@ public class ItemDetail extends Menu {
             pointOption = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Buy with Points", new MaterialData(Material.EMERALD)) {
                 @Override
                 public void onClick(Player player) {
-                    // TODO: in-game point purchases
                     closeMenu(player);
-                    TextShopUtil.sendItemInfo(player, shop, item);
+                    PurchaseManager.processItemPurchase(player, item);
                 }
             };
             pointOption.setDescriptions(new ArrayList<String>(){{

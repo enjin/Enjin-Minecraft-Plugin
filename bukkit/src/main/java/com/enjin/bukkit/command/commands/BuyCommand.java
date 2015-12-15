@@ -3,6 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
+import com.enjin.bukkit.managers.PurchaseManager;
 import com.enjin.bukkit.shop.RPCShopFetcher;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
@@ -10,7 +11,11 @@ import com.enjin.bukkit.shop.gui.ShopList;
 import com.enjin.bukkit.util.ui.Menu;
 import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.core.Enjin;
+import com.enjin.core.EnjinServices;
+import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Category;
+import com.enjin.rpc.mappings.mappings.shop.Item;
+import com.enjin.rpc.mappings.services.ShopService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -114,6 +119,58 @@ public class BuyCommand {
         } else {
             TextShopUtil.sendTextShop(player, instance, selection.isPresent() ? selection.get() : -1);
         }
+    }
+
+    @Directive(parent = "buy", value = "item")
+    public static void item(Player player, String[] args) {
+        if (EnjinMinecraftPlugin.getConfiguration().isUseBuyGUI()) {
+            player.sendMessage(ChatColor.RED + "The text shop has been disabled. Please use the gui to make point purchases.");
+            return;
+        }
+
+        PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
+        if (instance == null) {
+            player.sendMessage(ChatColor.RED + "You have no shop selected.");
+            return;
+        }
+
+        if (args.length == 0) {
+            Item item = instance.getActiveItem();
+            PurchaseManager.processItemPurchase(player, item);
+        } else {
+            Integer index;
+
+            try {
+                index = Integer.valueOf(args[0]);
+            } catch (NumberFormatException e) {
+                player.sendMessage(ChatColor.RED + "USAGE: /buy item #");
+                return;
+            }
+
+            if (index < 1) {
+                index = 1;
+            }
+
+            Category category = instance.getActiveCategory();
+
+            if (category == null) {
+                player.sendMessage("You must select a category first.");
+            } else if (category.getItems() == null || category.getItems().isEmpty()) {
+                player.sendMessage("There are no items in this category.");
+            } else {
+                if (index > category.getItems().size()) {
+                    index = category.getItems().size();
+                }
+
+                Item item = category.getItems().get(index - 1);
+                PurchaseManager.processItemPurchase(player, item);
+            }
+        }
+    }
+
+    @Directive(parent = "buy", value = "confirm")
+    public static void confirm(Player player, String[] args) {
+        PurchaseManager.confirmPurchase(player);
     }
 
     @Directive(parent = "buy", value = "shop")

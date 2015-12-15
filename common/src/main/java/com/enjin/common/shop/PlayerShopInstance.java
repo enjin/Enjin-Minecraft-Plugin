@@ -2,6 +2,7 @@ package com.enjin.common.shop;
 
 import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.shop.Category;
+import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -21,6 +22,8 @@ public class PlayerShopInstance {
     private Shop activeShop = null;
     @Getter
     private Category activeCategory = null;
+    @Getter
+    private Item activeItem = null;
     @Getter
     private long lastUpdated = System.currentTimeMillis();
 
@@ -87,5 +90,9 @@ public class PlayerShopInstance {
         if (activeCategory != null) {
             Enjin.getPlugin().debug(activeCategory.toString());
         }
+    }
+
+    public void setActiveItem(Item item) {
+        this.activeItem = item;
     }
 }
