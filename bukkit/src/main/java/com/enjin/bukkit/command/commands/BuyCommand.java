@@ -136,7 +136,7 @@ public class BuyCommand {
 
         if (args.length == 0) {
             Item item = instance.getActiveItem();
-            PurchaseManager.processItemPurchase(player, item);
+            PurchaseManager.processItemPurchase(player, instance.getActiveShop(), item);
         } else {
             Integer index;
 
@@ -163,7 +163,7 @@ public class BuyCommand {
                 }
 
                 Item item = category.getItems().get(index - 1);
-                PurchaseManager.processItemPurchase(player, item);
+                PurchaseManager.processItemPurchase(player, instance.getActiveShop(), item);
             }
         }
     }

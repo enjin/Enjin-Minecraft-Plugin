@@ -65,7 +65,7 @@ public class ItemDetail extends Menu {
                 @Override
                 public void onClick(Player player) {
                     closeMenu(player);
-                    PurchaseManager.processItemPurchase(player, item);
+                    PurchaseManager.processItemPurchase(player, shop, item);
                 }
             };
             pointOption.setDescriptions(new ArrayList<String>(){{

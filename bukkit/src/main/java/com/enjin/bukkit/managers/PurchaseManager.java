@@ -1,15 +1,22 @@
 package com.enjin.bukkit.managers;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.shop.TextShopUtil;
+import com.enjin.bukkit.util.text.TextUtils;
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Item;
+import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
 import lombok.Getter;
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,13 +25,11 @@ public class PurchaseManager {
     @Getter
     private static Map<String, Integer> pendingPurchases = new ConcurrentHashMap<>();
 
-    public static void processItemPurchase(Player player, Item item) {
+    public static void processItemPurchase(Player player, Shop shop, Item item) {
         if (item == null) {
             player.sendMessage(ChatColor.RED + "You must select an item from a category first.");
-        } else if (item.getPoints() == null) {
-            player.sendMessage(ChatColor.RED + "This item cannot be purchased with points.");
-        } else if (item.getVariables() != null && !item.getVariables().isEmpty()) {
-            player.sendMessage(ChatColor.RED + "This item has variables and must be purchased on the web store.");
+        } else if (item.getPoints() == null || (item.getVariables() != null && !item.getVariables().isEmpty())) {
+            TextShopUtil.sendItemInfo(player, shop, item);
         } else {
             PurchaseManager.getPendingPurchases().put(player.getName(), item.getId());
             player.sendMessage(ChatColor.GREEN + "Type \"/buy confirm\" to complete your pending purchase.");
