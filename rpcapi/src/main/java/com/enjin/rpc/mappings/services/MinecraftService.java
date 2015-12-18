@@ -21,7 +21,7 @@ public class MinecraftService implements Service {
     public RPCData<List<ServerInfo>> getServers() {
         String method = "Minecraft.getServers";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
         }};
 
         int id = EnjinRPC.getNextRequestId();
@@ -52,7 +52,7 @@ public class MinecraftService implements Service {
     public RPCData<List<MinecraftPlayerInfo>> getPlayers(final int serverId, final Optional<List<String>> names, final Optional<List<String>> uuids) {
         String method = "Minecraft.getPlayers";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("server_id", serverId);
         }};
 

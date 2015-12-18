@@ -18,7 +18,7 @@ public class VoteService implements Service {
     public RPCData<String> get(final Map<String, List<Object[]>> votes) {
         String method = "Votifier.get";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("votifier", votes);
         }};
 

@@ -18,7 +18,7 @@ public class PointService implements Service {
     public RPCData<Integer> get(final String player) {
         String method = "Points.get";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("player", player);
         }};
 
@@ -50,7 +50,7 @@ public class PointService implements Service {
     public RPCData<Map<Long, Integer>> getRecent(final Optional<Integer> seconds) {
         String method = "Points.getRecent";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
         }};
 
         if (seconds.isPresent()) {
@@ -85,7 +85,7 @@ public class PointService implements Service {
     public RPCData<Integer> set(final String player, int points) {
         String method = "Points.set";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("player", player);
             put("points", points);
         }};
@@ -118,7 +118,7 @@ public class PointService implements Service {
     public RPCData<Integer> add(final String player, int points) {
         String method = "Points.add";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("player", player);
             put("points", points);
         }};
@@ -151,7 +151,7 @@ public class PointService implements Service {
     public RPCData<Integer> remove(final String player, int points) {
         String method = "Points.remove";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("player", player);
             put("points", points);
         }};

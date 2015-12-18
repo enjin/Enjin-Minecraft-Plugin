@@ -19,7 +19,7 @@ public class ShopService implements Service {
     public RPCData<List<Shop>> get(final String player) {
         String method = "Shop.get";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("player", player);
         }};
 
@@ -51,7 +51,7 @@ public class ShopService implements Service {
     public RPCData<List<Purchase>> getPurchases(final String player, final boolean commands) {
         String method = "Shop.getPurchases";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("player", player);
             put("commands", commands);
         }};
@@ -84,7 +84,7 @@ public class ShopService implements Service {
     public RPCData<List<FilteredItem>> getItems(final String player) {
         String method = "Shop.getItems";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("player", player);
         }};
 
@@ -116,7 +116,7 @@ public class ShopService implements Service {
     public RPCData<Integer> purchase(final String player, final int itemId, final Optional<Map<Integer, String>> variables, final Optional<Integer> customPoints, final Optional<Integer> customPrice, final boolean ignoreMessages) {
         String method = "Shop.purchase";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("player", player);
             put("item_id", itemId);
             put("ignore_messages", ignoreMessages);

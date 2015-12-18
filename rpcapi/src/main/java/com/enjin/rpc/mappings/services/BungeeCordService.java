@@ -21,7 +21,7 @@ public class BungeeCordService implements Service {
         String method = "Bungeecord.get";
 
         Map<String, Object> parameters = new HashMap<String, Object>() {{
-            put("authkey", Enjin.getConfiguration().getApiUrl());
+            put("authkey", Enjin.getConfiguration().getAuthKey());
             put("status", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(status), Object.class));
             put("servers", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(servers, new TypeToken<HashMap<String, NodeState>>(){}.getType()), Object.class));
         }};
