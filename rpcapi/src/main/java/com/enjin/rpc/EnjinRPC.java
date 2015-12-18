@@ -1,5 +1,7 @@
 package com.enjin.rpc;
 
+import com.enjin.core.Enjin;
+import com.enjin.core.config.EnjinConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
@@ -17,19 +19,15 @@ public class EnjinRPC {
     private static final int READ_TIMEOUT = 15000;
     private static final int CONNECT_TIMEOUT = 15000;
 
-    @Getter @Setter
-    private static boolean https;
-    @Getter @Setter
-    private static String apiUrl = "://api.enjin.com/api/v1/";
     @Setter
     private static Logger logger;
-    @Setter
-    private static boolean debug;
     private static int nextRequestId = 0;
 
     private static URL getUrl(String clazz) {
         try {
-            StringBuilder builder = new StringBuilder(https ? "https" : "http");
+            EnjinConfig config = Enjin.getConfiguration();
+            String apiUrl = config.getApiUrl();
+            StringBuilder builder = new StringBuilder(config.isHttps() ? "https" : "http");
 
             if (apiUrl.startsWith("https")) {
                 builder.append(apiUrl.replaceFirst("https", ""));
@@ -56,7 +54,7 @@ public class EnjinRPC {
     }
 
     public static void debug(String s) {
-        if (debug) {
+        if (Enjin.getConfiguration().isDebug()) {
             if (logger == null) {
                 System.out.println("Enjin Debug: " + (s == null ? "null" : s));
             } else {

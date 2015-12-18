@@ -114,8 +114,5 @@ public class BungeeCordServiceTest {
                 return true;
             }
         });
-        EnjinRPC.setDebug(true);
-        EnjinRPC.setHttps(false);
-        EnjinRPC.setApiUrl(API_URL);
     }
 }

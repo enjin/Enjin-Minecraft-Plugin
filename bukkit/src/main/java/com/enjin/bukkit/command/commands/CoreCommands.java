@@ -154,7 +154,6 @@ public class CoreCommands {
         EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
         config.setDebug(!config.isDebug());
         EnjinMinecraftPlugin.saveConfiguration();
-        EnjinRPC.setDebug(config.isDebug());
 
         sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + config.isDebug());
     }

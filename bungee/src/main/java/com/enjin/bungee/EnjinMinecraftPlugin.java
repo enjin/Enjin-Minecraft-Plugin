@@ -83,7 +83,6 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
             initConfig();
 
             EnjinRPC.setLogger(getLogger());
-            EnjinRPC.setDebug(Enjin.getConfiguration().isDebug());
             Log.init();
             debug("Init config done.");
 
@@ -129,10 +128,6 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
         if (!configuration.getApiUrl().endsWith("/")) {
             configuration.setApiUrl(configuration.getApiUrl().concat("/"));
         }
-
-        EnjinRPC.setHttps(configuration.isHttps());
-        EnjinRPC.setApiUrl(configuration.getApiUrl());
-        debug("RPC API Url: " + configuration.getApiUrl());
     }
 
     public static void saveConfiguration() {

@@ -101,7 +101,5 @@ public class VoteServiceTest {
                 return true;
             }
         });
-        EnjinRPC.setHttps(false);
-        EnjinRPC.setApiUrl(API_URL);
     }
 }

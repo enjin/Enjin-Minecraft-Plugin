@@ -127,7 +127,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             initConfig();
 
             EnjinRPC.setLogger(getLogger());
-            EnjinRPC.setDebug(Enjin.getConfiguration().isDebug());
             Log.init();
             debug("Init config done.");
 
@@ -185,14 +184,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         if (!configFile.exists()) {
             configuration.save(configFile);
         }
-
-        if (!configuration.getApiUrl().endsWith("/")) {
-            configuration.setApiUrl(configuration.getApiUrl().concat("/"));
-        }
-
-        EnjinRPC.setHttps(configuration.isHttps());
-        EnjinRPC.setApiUrl(configuration.getApiUrl());
-        debug("RPC API Url: " + configuration.getApiUrl());
 
         configFile = new File(getDataFolder(), "commands.json");
         EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);

@@ -118,8 +118,5 @@ public class MinecraftServiceTest {
                 return true;
             }
         });
-        EnjinRPC.setDebug(true);
-        EnjinRPC.setHttps(false);
-        EnjinRPC.setApiUrl(API_URL);
     }
 }

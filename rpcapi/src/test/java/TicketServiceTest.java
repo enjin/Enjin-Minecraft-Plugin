@@ -209,7 +209,5 @@ public class TicketServiceTest {
                 return true;
             }
         });
-        EnjinRPC.setHttps(false);
-        EnjinRPC.setApiUrl(API_URL);
     }
 }

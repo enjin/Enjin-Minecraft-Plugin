@@ -134,7 +134,5 @@ public class ShopServiceTest {
                 return true;
             }
         });
-        EnjinRPC.setHttps(false);
-        EnjinRPC.setApiUrl(API_URL);
     }
 }
