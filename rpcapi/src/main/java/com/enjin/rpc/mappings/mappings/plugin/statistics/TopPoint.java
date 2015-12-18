@@ -14,5 +14,5 @@ public class TopPoint {
     @SerializedName(value = "player_name")
     private String name;
     @Getter
-    private int points;
+    private Integer points;
 }

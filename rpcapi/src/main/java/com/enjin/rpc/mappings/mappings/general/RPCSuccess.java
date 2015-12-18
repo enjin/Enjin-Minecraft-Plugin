@@ -4,5 +4,5 @@ import lombok.Getter;
 
 public class RPCSuccess {
     @Getter
-    boolean success;
+    private Boolean success;
 }

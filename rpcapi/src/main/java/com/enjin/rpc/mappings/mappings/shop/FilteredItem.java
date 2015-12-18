@@ -10,5 +10,5 @@ import lombok.ToString;
 public class FilteredItem extends Item {
     @Getter
     @SerializedName(value = "preset_id")
-    private int preset;
+    private Integer preset;
 }

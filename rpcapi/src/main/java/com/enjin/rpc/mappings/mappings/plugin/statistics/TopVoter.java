@@ -15,5 +15,5 @@ public class TopVoter {
     private String name;
     @Getter
     @SerializedName(value = "cnt")
-    private int count;
+    private Integer count;
 }

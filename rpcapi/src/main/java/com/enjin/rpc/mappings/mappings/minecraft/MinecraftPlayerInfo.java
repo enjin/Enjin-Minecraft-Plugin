@@ -15,19 +15,19 @@ public class MinecraftPlayerInfo {
     @Getter
     private Boolean online;
     @Getter
-    private int playtime;
+    private Integer playtime;
     @Getter
     @SerializedName(value = "playtime_week")
-    private int playtimeWeek;
+    private Integer playtimeWeek;
     @Getter
     @SerializedName(value = "playtime_month")
-    private int playtimeMonth;
+    private Integer playtimeMonth;
     @Getter
     @SerializedName(value = "playtime_year")
-    private int playtimeYear;
+    private Integer playtimeYear;
     @Getter
     @SerializedName(value = "playtime_alltime")
-    private int playtimeAllTime;
+    private Integer playtimeAllTime;
     @Getter
     private String uuid;
     @Getter

@@ -14,11 +14,11 @@ public class PlayerInfo {
     @Getter
     private String name;
     @Getter
-    private boolean vanish;
+    private Boolean vanish;
     @Getter
     private String uuid;
 
-    public PlayerInfo(String name, boolean vanished, UUID uuid) {
+    public PlayerInfo(String name, Boolean vanished, UUID uuid) {
         this.name = name;
         this.vanish = vanished;
         this.uuid = uuid.toString().replace("-", "");

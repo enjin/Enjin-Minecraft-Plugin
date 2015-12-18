@@ -124,7 +124,7 @@ public class TicketServiceTest {
 
         Assert.assertNotNull("success is null", success);
 
-        System.out.println("Replied to ticket: " + success.isSuccess());
+        System.out.println("Replied to ticket: " + success.getSuccess().booleanValue());
     }
 
     @Test

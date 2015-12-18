@@ -22,7 +22,7 @@ public class VoteService implements Service {
             put("votifier", votes);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;

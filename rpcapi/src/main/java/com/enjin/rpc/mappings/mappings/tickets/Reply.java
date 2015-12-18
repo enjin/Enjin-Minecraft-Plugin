@@ -11,21 +11,21 @@ public class Reply {
     @Getter
     private String mode;
     @Getter
-    private int agent;
+    private Integer agent;
     @Getter
     @SerializedName(value = "preset_id")
-    private int presetId;
+    private Integer presetId;
     @Getter
     @SerializedName(value = "user_id")
-    private int userId;
+    private Integer userId;
     @Getter
-    private int origin;
+    private Integer origin;
     @Getter
-    private int id;
+    private Integer id;
     @Getter
     private String text;
     @Getter
-    private long sent;
+    private Long sent;
     @Getter
     private String username;
 }

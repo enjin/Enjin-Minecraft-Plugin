@@ -26,7 +26,7 @@ public class BungeeCordService implements Service {
             put("servers", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(servers, new TypeToken<HashMap<String, NodeState>>(){}.getType()), Object.class));
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;

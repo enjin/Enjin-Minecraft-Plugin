@@ -10,8 +10,8 @@ import lombok.ToString;
 public class TicketViewer {
     @Getter
     @SerializedName(value = "user_id")
-    private int id;
+    private Integer id;
     @Getter
     @SerializedName(value = "time_expire")
-    private long expiration;
+    private Long expiration;
 }

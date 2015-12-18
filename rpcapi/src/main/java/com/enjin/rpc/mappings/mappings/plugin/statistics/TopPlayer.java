@@ -14,5 +14,5 @@ public class TopPlayer {
     @SerializedName(value = "player_name")
     private String name;
     @Getter
-    private double hours;
+    private Double hours;
 }

@@ -12,11 +12,11 @@ import lombok.ToString;
 public class ServerInfo {
     @Getter
     @SerializedName(value = "server_id")
-    private int id;
+    private Integer id;
     @Getter
     private String host;
     @Getter
-    private int port;
+    private Integer port;
     @Getter
     private String name;
     @Getter
@@ -26,13 +26,13 @@ public class ServerInfo {
     @Getter
     private String features;
     @Getter
-    private long uptime;
+    private Long uptime;
     @Getter
     @SerializedName(value = "max_players")
-    private int maxPlayers;
+    private Integer maxPlayers;
     @Getter
     @SerializedName(value = "players_online")
-    private int playersOnline;
+    private Integer playersOnline;
     @Getter
     @SerializedName(value = "pluginversion")
     private String pluginVersion;
@@ -40,7 +40,7 @@ public class ServerInfo {
     @SerializedName(value = "server_plugins")
     private String plugins;
     @Getter
-    private long updated;
+    private Long updated;
     @Getter
     @SerializedName(value = "server_type")
     private String type;

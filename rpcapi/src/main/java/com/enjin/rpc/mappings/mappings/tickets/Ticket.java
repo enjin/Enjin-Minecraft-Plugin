@@ -11,54 +11,54 @@ import java.util.List;
 @EqualsAndHashCode
 public class Ticket {
     @Getter
-    private int id;
+    private Integer id;
     @Getter
     private String code;
     @Getter
     @SerializedName(value = "site_id")
-    private int siteId;
+    private Integer siteId;
     @Getter
     @SerializedName(value = "preset_id")
-    private int presetId;
+    private Integer presetId;
     @Getter
     private String subject;
     @Getter
-    private long created;
+    private Long created;
     @Getter
     private TicketStatus status;
     @Getter
     private String assignee;
     @Getter
-    private long updated;
+    private Long updated;
     @Getter
-    private int requester;
+    private Integer requester;
     @Getter
-    private int priority;
+    private Integer priority;
     @Getter
     @SerializedName(value = "extra_questions")
     private List<ExtraQuestion> extraQuestions;
     @Getter
     @SerializedName(value = "status_change")
-    private long statusChange;
+    private Long statusChange;
     @Getter
     private String email;
     @Getter
-    private boolean viewers;
+    private Boolean viewers;
     @Getter
     @SerializedName(value = "site_name")
     private String siteName;
     @Getter
     @SerializedName(value = "no_reply_closed")
-    private boolean noReplyClosed;
+    private Boolean noReplyClosed;
     @Getter
     @SerializedName(value = "reply_frequency")
-    private int replyFrequency;
+    private Integer replyFrequency;
     @Getter
     @SerializedName(value = "disable_email_notifications")
-    private boolean disableEmailNotifications;
+    private Boolean disableEmailNotifications;
     @Getter
     @SerializedName(value = "disable_pms")
-    private boolean disablePms;
+    private Boolean disablePms;
     @Getter
     @SerializedName(value = "email_user_create")
     private String emailUserCreate;
@@ -82,11 +82,11 @@ public class Ticket {
     private String usersChangePriority;
     @Getter
     @SerializedName(value = "feedback_surveys")
-    private int feedbackSurveys;
+    private Integer feedbackSurveys;
     @Getter
     @SerializedName(value = "ticket_priority")
     private String ticketPriority;
     @Getter
     @SerializedName(value = "reply_count")
-    private int replyCount;
+    private Integer replyCount;
 }

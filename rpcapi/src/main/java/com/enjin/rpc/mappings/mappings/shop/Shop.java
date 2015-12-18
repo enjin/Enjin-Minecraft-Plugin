@@ -11,7 +11,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class Shop {
     @Getter
-    private int id;
+    private Integer id;
     @Getter
     private String name;
     @Getter
@@ -23,13 +23,13 @@ public class Shop {
     private String currency;
     @Getter
     @SerializedName(value = "ingame_purchase_points_enabled")
-    private boolean pointsEnabled;
+    private Boolean pointsEnabled;
     @Getter
     @SerializedName(value = "current_points")
-    private int currentPoints;
+    private Integer currentPoints;
     @Getter
     @SerializedName(value = "simpleitems")
-    private boolean simpleItems;
+    private Boolean simpleItems;
     @Getter
     @SerializedName("colortext")
     private String colorText;

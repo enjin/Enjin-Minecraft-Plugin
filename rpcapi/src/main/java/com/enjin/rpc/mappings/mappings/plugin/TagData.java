@@ -6,14 +6,14 @@ import lombok.Getter;
 public class TagData {
     @Getter
     @SerializedName(value = "tag_id")
-    private int id;
+    private Integer id;
     @Getter
     @SerializedName(value = "tagname")
     private String name;
     @Getter
     @SerializedName(value = "date_added")
-    private long date;
+    private Long date;
     @Getter
     @SerializedName(value = "expiry_time")
-    private long expire;
+    private Long expire;
 }

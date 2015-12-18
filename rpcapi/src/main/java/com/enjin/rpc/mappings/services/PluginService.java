@@ -3,6 +3,7 @@ package com.enjin.rpc.mappings.services;
 import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
+import com.enjin.rpc.mappings.adapters.BooleanAdapter;
 import com.enjin.rpc.mappings.deserializers.InstructionDeserializer;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.*;
@@ -18,6 +19,7 @@ import java.util.*;
 
 public class PluginService implements Service {
     private static Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Boolean.class, new BooleanAdapter())
             .registerTypeAdapter(Instruction.class, new InstructionDeserializer())
             .create();
 
@@ -29,7 +31,7 @@ public class PluginService implements Service {
             put("save", save);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -61,7 +63,7 @@ public class PluginService implements Service {
             put("status", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(status), Object.class));
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -93,7 +95,7 @@ public class PluginService implements Service {
             put("player", player);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -127,7 +129,7 @@ public class PluginService implements Service {
             put("world", world);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -161,7 +163,7 @@ public class PluginService implements Service {
             put("world", world);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -196,7 +198,7 @@ public class PluginService implements Service {
             parameters.put("items", items.get());
         }
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;

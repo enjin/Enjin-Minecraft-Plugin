@@ -14,5 +14,5 @@ public class TopLiker {
     @SerializedName(value = "player_name")
     private String name;
     @Getter
-    private int likes;
+    private Integer likes;
 }

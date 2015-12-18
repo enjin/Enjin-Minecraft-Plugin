@@ -11,7 +11,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class Category {
     @Getter
-    private int id;
+    private Integer id;
     @Getter
     private String name;
     @Getter

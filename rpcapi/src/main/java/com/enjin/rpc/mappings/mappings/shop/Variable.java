@@ -16,21 +16,21 @@ public class Variable {
     private String type;
     @Getter
     @SerializedName(value = "max_length")
-    private int maxLength;
+    private Integer maxLength;
     @SerializedName(value = "min_length")
-    private int minLength;
+    private Integer minLength;
     @SerializedName(value = "max_value")
-    private int maxValue;
+    private Integer maxValue;
     @SerializedName(value = "min_value")
-    private int minValue;
+    private Integer minValue;
     @Getter
-    private boolean required;
+    private Boolean required;
     @Getter
     private Map<Integer, Option> options;
     @Getter
     @SerializedName(value = "pricemin")
-    private double minPrice;
+    private Double minPrice;
     @Getter
     @SerializedName(value = "pricemax")
-    private double maxPrice;
+    private Double maxPrice;
 }

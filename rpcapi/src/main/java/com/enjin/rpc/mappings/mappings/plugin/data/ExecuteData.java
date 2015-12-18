@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 public class ExecuteData {
     @Getter
     @SerializedName(value = "command_id")
-    private long id = -1;
+    private Long id = -1L;
     @Getter
     private String command = "";
     @Getter
-    private long delay = 0;
+    private Long delay = 0L;
 }

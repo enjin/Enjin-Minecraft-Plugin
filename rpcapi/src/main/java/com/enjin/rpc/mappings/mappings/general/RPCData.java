@@ -11,7 +11,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class RPCData<T> {
     @Getter
-    private int id;
+    private Integer id;
     @Getter
     private T result;
     @Getter

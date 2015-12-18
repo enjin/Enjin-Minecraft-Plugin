@@ -8,11 +8,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class MetaOptions {
     @Getter
-    private int bbcode;
+    private Integer bbcode;
     @Getter
-    private int lines;
+    private Integer lines;
     @Getter
-    private int min;
+    private Integer min;
     @Getter
-    private int max;
+    private Integer max;
 }

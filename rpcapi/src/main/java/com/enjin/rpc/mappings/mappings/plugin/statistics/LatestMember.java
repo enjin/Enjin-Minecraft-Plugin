@@ -15,5 +15,5 @@ public class LatestMember {
     private String name;
     @Getter
     @SerializedName(value = "datejoined")
-    private long dateJoined;
+    private Long dateJoined;
 }

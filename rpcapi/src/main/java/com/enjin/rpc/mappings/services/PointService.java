@@ -22,7 +22,7 @@ public class PointService implements Service {
             put("player", player);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -57,7 +57,7 @@ public class PointService implements Service {
             parameters.put("seconds", seconds.get());
         }
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -82,7 +82,7 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> set(final String player, int points) {
+    public RPCData<Integer> set(final String player, Integer points) {
         String method = "Points.set";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -90,7 +90,7 @@ public class PointService implements Service {
             put("points", points);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -115,7 +115,7 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> add(final String player, int points) {
+    public RPCData<Integer> add(final String player, Integer points) {
         String method = "Points.add";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -123,7 +123,7 @@ public class PointService implements Service {
             put("points", points);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -148,7 +148,7 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> remove(final String player, int points) {
+    public RPCData<Integer> remove(final String player, Integer points) {
         String method = "Points.remove";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -156,7 +156,7 @@ public class PointService implements Service {
             put("points", points);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;

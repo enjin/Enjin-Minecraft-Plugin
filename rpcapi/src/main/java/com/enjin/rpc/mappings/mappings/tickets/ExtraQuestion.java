@@ -10,15 +10,15 @@ import lombok.ToString;
 @EqualsAndHashCode
 @NoArgsConstructor
 public class ExtraQuestion {
-    public ExtraQuestion(QuestionType type, int questionId, String label, String... answer) {
+    public ExtraQuestion(QuestionType type, Integer questionId, String label, String... answer) {
         this(type, questionId, label, Object.class.cast(answer));
     }
 
-    public ExtraQuestion(QuestionType type, int questionId, String label, String answer) {
+    public ExtraQuestion(QuestionType type, Integer questionId, String label, String answer) {
         this(type, questionId, label, Object.class.cast(answer));
     }
 
-    private ExtraQuestion(QuestionType type, int questionId, String label, Object answer) {
+    private ExtraQuestion(QuestionType type, Integer questionId, String label, Object answer) {
         this.type = type;
         this.questionId = questionId;
         this.label = label;
@@ -29,7 +29,7 @@ public class ExtraQuestion {
     private QuestionType type;
     @Getter
     @SerializedName("question_id")
-    private int questionId;
+    private Integer questionId;
     @Getter
     private String label;
     @Getter

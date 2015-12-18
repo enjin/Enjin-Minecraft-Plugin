@@ -11,7 +11,7 @@ import java.util.Map;
 @EqualsAndHashCode
 public class Item {
     @Getter
-    private int id;
+    private Integer id;
     @Getter
     private String name;
     @Getter
@@ -20,7 +20,7 @@ public class Item {
     private Map<Integer, Variable> variables;
     @Getter
     @SerializedName(value = "icon_damage")
-    private int iconDamage;
+    private Integer iconDamage;
     @Getter
     @SerializedName(value = "icon_item")
     private String iconItem;

@@ -10,7 +10,7 @@ import lombok.ToString;
 public class Purchase {
     @Getter
     @SerializedName(value = "item_id")
-    private int id;
+    private Integer id;
     @Getter
     @SerializedName(value = "item_name")
     private String name;

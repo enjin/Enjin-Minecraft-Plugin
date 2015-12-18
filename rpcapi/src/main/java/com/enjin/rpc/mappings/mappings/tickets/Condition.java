@@ -8,11 +8,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Condition {
     @Getter
-    private int question;
+    private Integer question;
     @Getter
     private Status status;
     @Getter
-    private int answer;
+    private Integer answer;
 
     public enum Status {
         is,

@@ -15,10 +15,10 @@ public class RecentVoter {
     private String name;
     @Getter
     @SerializedName(value = "vote_time")
-    private long time;
+    private Long time;
     @Getter
     @SerializedName(value = "list_id")
-    private int listId;
+    private Integer listId;
     @Getter
     @SerializedName(value = "list_name")
     private String listName;

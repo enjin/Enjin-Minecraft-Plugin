@@ -11,7 +11,7 @@ public class ClearInGameCacheData {
     private String player;
     @Getter
     @SerializedName(value = "item_id")
-    private int itemId;
+    private Integer itemId;
     @Getter
     @SerializedName(value = "item_price")
     private String itemPrice;

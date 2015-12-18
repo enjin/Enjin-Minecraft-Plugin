@@ -4,7 +4,7 @@ import lombok.Getter;
 
 public class RPCError {
     @Getter
-    private int code;
+    private Integer code;
     @Getter
     private String message;
 }

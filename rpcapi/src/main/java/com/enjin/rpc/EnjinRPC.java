@@ -2,6 +2,7 @@ package com.enjin.rpc;
 
 import com.enjin.core.Enjin;
 import com.enjin.core.config.EnjinConfig;
+import com.enjin.rpc.mappings.adapters.BooleanAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
@@ -14,14 +15,16 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 public class EnjinRPC {
-    public static Gson gson = new GsonBuilder().create();
+    public static Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Boolean.class, new BooleanAdapter())
+            .create();
 
-    private static final int READ_TIMEOUT = 15000;
-    private static final int CONNECT_TIMEOUT = 15000;
+    private static final Integer READ_TIMEOUT = 15000;
+    private static final Integer CONNECT_TIMEOUT = 15000;
 
     @Setter
     private static Logger logger;
-    private static int nextRequestId = 0;
+    private static Integer nextRequestId = 0;
 
     private static URL getUrl(String clazz) {
         try {

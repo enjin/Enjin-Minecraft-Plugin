@@ -231,7 +231,7 @@ public class TextShopUtil {
     }
 
     private static FancyMessage buildItemListContent(Player player, Shop shop, List<Item> items, int page) {
-        int maxEntries = shop.isSimpleItems() ? 8 : 4;
+        int maxEntries = shop.getSimpleItems().booleanValue() ? 8 : 4;
 
         if (page < 1) {
             page = 1;
@@ -294,7 +294,7 @@ public class TextShopUtil {
                     .append(")\n");
             message.then(builder.toString());
 
-            if (!shop.isSimpleItems()) {
+            if (!shop.getSimpleItems().booleanValue()) {
                 StringBuilder urlBuilder = new StringBuilder();
 
                 try {

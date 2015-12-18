@@ -12,7 +12,7 @@ public class Option {
     @Getter
     private String value;
     @Getter
-    private double price;
+    private Double price;
     @Getter
-    private int points;
+    private Integer points;
 }

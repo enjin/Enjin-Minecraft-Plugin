@@ -12,5 +12,5 @@ public class NotificationData {
     @Getter
     private List<String> players;
     @Getter
-    private long time;
+    private Long time;
 }

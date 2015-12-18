@@ -47,8 +47,11 @@ public class TicketCreationSession {
         });
 
         for (Question question : new ArrayList<>(questions)) {
+            plugin.debug("Processing question: " + question.getId() + " of type " + question.getType());
+
             if (question.getType() == QuestionType.file) {
-                if (question.isRequired()) {
+                plugin.debug("File question type detected. Required: " + question.getRequired().booleanValue());
+                if (question.getRequired().booleanValue()) {
                     player.sendMessage(ChatColor.GOLD + "This support ticket requires a file upload and must be submitted on the website.");
                     return;
                 } else {

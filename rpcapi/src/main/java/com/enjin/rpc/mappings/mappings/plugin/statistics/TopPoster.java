@@ -14,5 +14,5 @@ public class TopPoster {
     @SerializedName(value = "player_name")
     private String name;
     @Getter
-    private int posts;
+    private Integer posts;
 }

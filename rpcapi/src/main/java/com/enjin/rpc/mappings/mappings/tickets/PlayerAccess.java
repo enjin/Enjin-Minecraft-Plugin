@@ -10,47 +10,47 @@ import lombok.ToString;
 public class PlayerAccess {
     @Getter
     @SerializedName(value = "is_admin")
-    private boolean isAdmin;
+    private Boolean isAdmin;
     @Getter
     @SerializedName(value = "has_some_access")
-    private boolean hasSomeAccess;
+    private Boolean hasSomeAccess;
     @Getter
     @SerializedName(value = "manage_all_tickets")
-    private boolean manageAllTickets;
+    private Boolean manageAllTickets;
     @Getter
     @SerializedName(value = "visit_form_tickets")
-    private boolean visitFormTickets;
+    private Boolean visitFormTickets;
     @Getter
     @SerializedName(value = "visit_views_tickets")
-    private boolean visitViewsTickets;
+    private Boolean visitViewsTickets;
     @Getter
     @SerializedName(value = "visit_settings_tickets")
-    private boolean visitSettingsTickets;
+    private Boolean visitSettingsTickets;
     @Getter
     @SerializedName(value = "visit_statistics_tickets")
-    private boolean visitStatisticsTickets;
+    private Boolean visitStatisticsTickets;
     @Getter
     @SerializedName(value = "visit_signatures_tickets")
-    private boolean visitSignaturesTickets;
+    private Boolean visitSignaturesTickets;
     @Getter
     @SerializedName(value = "reply_tickets")
-    private boolean replyTickets;
+    private Boolean replyTickets;
     @Getter
     @SerializedName(value = "delete_tickets")
-    private boolean deleteTickets;
+    private Boolean deleteTickets;
     @Getter
     @SerializedName(value = "status_tickets")
-    private boolean statusTickets;
+    private Boolean statusTickets;
     @Getter
     @SerializedName(value = "assignee_tickets")
-    private boolean assigneeTickets;
+    private Boolean assigneeTickets;
     @Getter
     @SerializedName(value = "priority_tickets")
-    private boolean priorityTickets;
+    private Boolean priorityTickets;
     @Getter
     @SerializedName(value = "submit_tickets")
-    private boolean submitTickets;
+    private Boolean submitTickets;
     @Getter
     @SerializedName(value = "visit_index_tickets")
-    private boolean visitIndexTickets;
+    private Boolean visitIndexTickets;
 }

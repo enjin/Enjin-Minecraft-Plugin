@@ -11,13 +11,13 @@ import java.util.List;
 @EqualsAndHashCode
 public class Question {
     @Getter
-    private int id;
+    private Integer id;
     @Getter
     @SerializedName(value = "site_id")
-    private int siteId;
+    private Integer siteId;
     @Getter
     @SerializedName(value = "preset_id")
-    private int presetId;
+    private Integer presetId;
     @Getter
     private QuestionType type;
     @Getter
@@ -26,9 +26,9 @@ public class Question {
     @SerializedName(value = "help_text")
     private String helpText;
     @Getter
-    private boolean required;
+    private Boolean required;
     @Getter
-    private int order;
+    private Integer order;
     @Getter
     @SerializedName(value = "other_options")
     private MetaOptions otherOptions;
@@ -40,5 +40,5 @@ public class Question {
     @SerializedName(value = "condition_qualify")
     private ConditionQualify conditionQualify;
     @Getter
-    private int system;
+    private Integer system;
 }

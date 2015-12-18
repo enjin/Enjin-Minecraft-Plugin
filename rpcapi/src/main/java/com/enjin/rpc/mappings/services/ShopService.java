@@ -23,7 +23,7 @@ public class ShopService implements Service {
             put("player", player);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -56,7 +56,7 @@ public class ShopService implements Service {
             put("commands", commands);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -88,7 +88,7 @@ public class ShopService implements Service {
             put("player", player);
         }};
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
@@ -113,7 +113,7 @@ public class ShopService implements Service {
         }
     }
 
-    public RPCData<Integer> purchase(final String player, final int itemId, final Optional<Map<Integer, String>> variables, final Optional<Integer> customPoints, final Optional<Integer> customPrice, final boolean ignoreMessages) {
+    public RPCData<Integer> purchase(final String player, final Integer itemId, final Optional<Map<Integer, String>> variables, final Optional<Integer> customPoints, final Optional<Integer> customPrice, final boolean ignoreMessages) {
         String method = "Shop.purchase";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -134,7 +134,7 @@ public class ShopService implements Service {
             parameters.put("custom_price", customPrice.get());
         }
 
-        int id = EnjinRPC.getNextRequestId();
+        Integer id = EnjinRPC.getNextRequestId();
 
         JSONRPC2Session session = null;
         JSONRPC2Request request = null;
