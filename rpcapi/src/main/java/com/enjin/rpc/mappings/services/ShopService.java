@@ -113,7 +113,7 @@ public class ShopService implements Service {
         }
     }
 
-    public RPCData<Integer> purchase(final String player, final int itemId, final Optional<List<String>> variables, final Optional<Integer> customPoints, final Optional<Integer> customPrice, final boolean ignoreMessages) {
+    public RPCData<Integer> purchase(final String player, final int itemId, final Optional<Map<Integer, String>> variables, final Optional<Integer> customPoints, final Optional<Integer> customPrice, final boolean ignoreMessages) {
         String method = "Shop.purchase";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getApiUrl());
