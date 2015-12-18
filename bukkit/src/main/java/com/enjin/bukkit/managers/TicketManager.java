@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class TicketManager {
     @Getter
-    private static Map<Integer, Module> modules = new HashMap<Integer, Module>();
+    private static Map<Integer, Module> modules = new HashMap<>();
     @Getter
     private static long modulesLastPolled = 0;
     @Getter

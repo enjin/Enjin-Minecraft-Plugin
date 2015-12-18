@@ -52,6 +52,7 @@ public class TicketService implements Service {
             response = session.send(request);
 
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
+            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<Ticket>> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Ticket>>>() {}.getType());
             data.setRequest(request);

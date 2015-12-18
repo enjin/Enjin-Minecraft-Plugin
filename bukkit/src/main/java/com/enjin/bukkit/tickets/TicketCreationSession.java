@@ -54,6 +54,8 @@ public class TicketCreationSession {
                 } else {
                     this.questions.remove(question);
                 }
+            } else if (question.getType() == QuestionType.section) {
+                this.questions.remove(question);
             }
 
             if (question.getConditions() != null && this.questions.size() > 0) {
@@ -188,6 +190,10 @@ public class TicketCreationSession {
     }
 
     public Prompt createPrompt(Question question) {
+        if (question == null) {
+            return null;
+        }
+
         switch (question.getType()) {
             case text:
             case multiline:

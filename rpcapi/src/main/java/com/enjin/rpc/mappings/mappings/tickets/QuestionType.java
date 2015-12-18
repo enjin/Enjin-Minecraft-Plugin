@@ -8,5 +8,6 @@ public enum QuestionType {
     select,
     radio,
     checkbox,
-    file
+    file,
+    section
 }
