@@ -39,6 +39,7 @@ public class BungeeCordServiceTest {
                 }},
                 null,
                 null,
+                null,
                 null);
         Map<String, NodeState> servers = new HashMap<String, NodeState>(){{
             put("lobby", new NodeState(new ArrayList<String>(){{add("Favorlock");}}, 50));

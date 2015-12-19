@@ -46,6 +46,7 @@ public class RPCPacketManager implements Runnable {
                 getOnlinePlayers(),
                 null,
                 null,
+                null,
                 null);
 
         Map<String, NodeState> servers = getServers();

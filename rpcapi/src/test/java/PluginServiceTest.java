@@ -57,6 +57,7 @@ public class PluginServiceTest {
                 }},
                 null,
                 null,
+                null,
                 null);
         PluginService service = EnjinServices.getService(PluginService.class);
         RPCData<SyncResponse> data = service.sync(status);

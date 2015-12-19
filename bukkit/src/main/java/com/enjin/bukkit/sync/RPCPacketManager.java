@@ -4,6 +4,7 @@ import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
+import com.enjin.bukkit.tasks.TPSMonitor;
 import com.enjin.bukkit.util.EncodeUtil;
 import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
@@ -46,6 +47,7 @@ public class RPCPacketManager implements Runnable {
                 getOnlineCount(),
                 getOnlinePlayers(),
                 getPlayerGroups(),
+                TPSMonitor.getInstance().getLastTPSMeasurement(),
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
                 stats);
 

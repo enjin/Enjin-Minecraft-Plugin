@@ -35,6 +35,8 @@ public class Status {
     @SerializedName(value = "playergroups")
     private Map<String, PlayerGroupInfo> playerGroups;
     @Getter
+    private Double tps;
+    @Getter
     @SerializedName(value = "executed_commands")
     private List<ExecutedCommand> executedCommands;
 
