@@ -92,10 +92,10 @@ public class StatSignManager {
                 updateItems();
                 Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
                     fetchStats();
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), () -> update(data));
+                    update(data);
                 });
             } else {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), () -> update(data));
+                update(data);
             }
         }
     }
@@ -104,7 +104,6 @@ public class StatSignManager {
         if (config != null) {
             new ArrayList<>(config.getSigns()).stream().filter(data -> data.getLocation().equals(location)).forEach(data -> config.getSigns().remove(data));
             config.save(file);
-
             updateItems();
         }
     }
@@ -114,55 +113,57 @@ public class StatSignManager {
     }
 
     public static void update(SignData data) {
-        Location location = data.getLocation().toLocation();
-        Block block = location.getBlock();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), () -> {
+            Location location = data.getLocation().toLocation();
+            Block block = location.getBlock();
 
-        if (block.getState() == null || !(block.getState() instanceof Sign)) {
-            config.getSigns().remove(data);
-            return;
-        }
+            if (block.getState() == null || !(block.getState() instanceof Sign)) {
+                config.getSigns().remove(data);
+                return;
+            }
 
-        Sign sign = (Sign) block.getState();
-        String name = null;
-        switch (data.getType()) {
-            case DONATION:
-                name = StatSignProcessor.setPurchaseSign(sign, data, stats);
-                break;
-            case TOPVOTER:
-                name = StatSignProcessor.setTopVoterSign(sign, data, stats);
-                break;
-            case VOTER:
-                name = StatSignProcessor.setVoterSign(sign, data, stats);
-                break;
-            case TOPPLAYER:
-                name = StatSignProcessor.setTopPlayerSign(sign, data, stats);
-                break;
-            case TOPPOSTER:
-                name = StatSignProcessor.setTopPosterSign(sign, data, stats);
-                break;
-            case TOPLIKES:
-                name = StatSignProcessor.setTopLikesSign(sign, data, stats);
-                break;
-            case NEWMEMBER:
-                name = StatSignProcessor.setNewMemberSign(sign, data, stats);
-                break;
-            case TOPPOINTS:
-                name = StatSignProcessor.setTopPointsSign(sign, data, stats);
-                break;
-            case POINTSSPENT:
-                name = StatSignProcessor.setPointsSpentSign(sign, data, stats);
-                break;
-            case MONEYSPENT:
-                name = StatSignProcessor.setMoneySpentSign(sign, data, stats);
-                break;
-            default:
-                break;
-        }
-        sign.update();
+            Sign sign = (Sign) block.getState();
+            String name = null;
+            switch (data.getType()) {
+                case DONATION:
+                    name = StatSignProcessor.setPurchaseSign(sign, data, stats);
+                    break;
+                case TOPVOTER:
+                    name = StatSignProcessor.setTopVoterSign(sign, data, stats);
+                    break;
+                case VOTER:
+                    name = StatSignProcessor.setVoterSign(sign, data, stats);
+                    break;
+                case TOPPLAYER:
+                    name = StatSignProcessor.setTopPlayerSign(sign, data, stats);
+                    break;
+                case TOPPOSTER:
+                    name = StatSignProcessor.setTopPosterSign(sign, data, stats);
+                    break;
+                case TOPLIKES:
+                    name = StatSignProcessor.setTopLikesSign(sign, data, stats);
+                    break;
+                case NEWMEMBER:
+                    name = StatSignProcessor.setNewMemberSign(sign, data, stats);
+                    break;
+                case TOPPOINTS:
+                    name = StatSignProcessor.setTopPointsSign(sign, data, stats);
+                    break;
+                case POINTSSPENT:
+                    name = StatSignProcessor.setPointsSpentSign(sign, data, stats);
+                    break;
+                case MONEYSPENT:
+                    name = StatSignProcessor.setMoneySpentSign(sign, data, stats);
+                    break;
+                default:
+                    break;
+            }
+            sign.update();
 
-        if (name != null) {
-            updateHead(sign, data, name);
-        }
+            if (name != null) {
+                updateHead(sign, data, name);
+            }
+        });
     }
 
     public static void updateItems() {
