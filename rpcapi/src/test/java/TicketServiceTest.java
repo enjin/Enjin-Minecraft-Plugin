@@ -43,12 +43,12 @@ public class TicketServiceTest {
     @Test
     public void test2GetTickets() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<List<Ticket>> data = service.getTickets(-1, TicketStatus.closed);
+        RPCData<TicketResults> data = service.getTickets(-1, TicketStatus.closed);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
 
-        List<Ticket> tickets = data.getResult();
+        List<Ticket> tickets = new ArrayList<>(data.getResult().getResults().values());
 
         Assert.assertNotNull("tickets is null", tickets);
 
@@ -58,12 +58,12 @@ public class TicketServiceTest {
     @Test
     public void test3GetPlayerTickets() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<List<Ticket>> data = service.getPlayerTickets(-1, PLAYER);
+        RPCData<TicketResults> data = service.getPlayerTickets(-1, PLAYER);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
 
-        List<Ticket> tickets = data.getResult();
+        List<Ticket> tickets = new ArrayList<>(data.getResult().getResults().values());
 
         Assert.assertNotNull("tickets is null", tickets);
 
@@ -73,12 +73,12 @@ public class TicketServiceTest {
     @Test
     public void test4GetReplies() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<List<Reply>> data = service.getReplies(PRESET_ID, TICKET_CODE, PLAYER);
+        RPCData<ReplyResults> data = service.getReplies(PRESET_ID, TICKET_CODE, PLAYER);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
 
-        List<Reply> replies = data.getResult();
+        List<Reply> replies = new ArrayList<>(data.getResult().getResults().values());
 
         Assert.assertNotNull("replies is null", replies);
 

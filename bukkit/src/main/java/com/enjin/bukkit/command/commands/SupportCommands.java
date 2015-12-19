@@ -9,15 +9,13 @@ import com.enjin.bukkit.tickets.TicketViewBuilder;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
-import com.enjin.rpc.mappings.mappings.tickets.Module;
-import com.enjin.rpc.mappings.mappings.tickets.Reply;
-import com.enjin.rpc.mappings.mappings.tickets.Ticket;
-import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
+import com.enjin.rpc.mappings.mappings.tickets.*;
 import com.enjin.rpc.mappings.services.TicketService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -88,13 +86,13 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Ticket>> data = service.getPlayerTickets(-1, player.getName());
+                RPCData<TicketResults> data = service.getPlayerTickets(-1, player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
                         player.sendMessage(data.getError().getMessage());
                     } else {
-                        List<Ticket> tickets = data.getResult();
+                        List<Ticket> tickets = new ArrayList<>(data.getResult().getResults().values());
                         if (tickets.size() > 0) {
                             player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
                         } else {
@@ -109,13 +107,13 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Reply>> data = service.getReplies(-1, args[0], player.getName());
+                RPCData<ReplyResults> data = service.getReplies(-1, args[0], player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
                         player.sendMessage(data.getError().getMessage());
                     } else {
-                        List<Reply> replies = data.getResult();
+                        List<Reply> replies = new ArrayList<>(data.getResult().getResults().values());
                         if (replies.size() > 0) {
                             player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")));
                         } else {
@@ -138,13 +136,13 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Ticket>> data = service.getTickets(-1, TicketStatus.open);
+                RPCData<TicketResults> data = service.getTickets(-1, TicketStatus.open);
 
                 if (data != null) {
                     if (data.getError() != null) {
                         player.sendMessage(data.getError().getMessage());
                     } else {
-                        List<Ticket> tickets = data.getResult();
+                        List<Ticket> tickets = new ArrayList<>(data.getResult().getResults().values());
                         if (tickets.size() > 0) {
                             player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
                         } else {
@@ -159,13 +157,13 @@ public class SupportCommands {
             final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<List<Reply>> data = service.getReplies(-1, args[0], player.getName());
+                RPCData<ReplyResults> data = service.getReplies(-1, args[0], player.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
                         player.sendMessage(data.getError().getMessage());
                     } else {
-                        List<Reply> replies = data.getResult();
+                        List<Reply> replies = new ArrayList<>(data.getResult().getResults().values());
                         if (replies.size() > 0) {
                             player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")));
                         } else {
