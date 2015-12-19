@@ -185,7 +185,7 @@ public class SupportCommands {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (args.length < 3) {
-            sender.sendMessage("Usage: /e reply <#> <message>");
+            sender.sendMessage("Usage: /e reply <module_id> <ticket_code> <message>");
             return;
         } else {
             final int preset;
@@ -193,7 +193,7 @@ public class SupportCommands {
             try {
                 preset = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                sender.sendMessage("Usage: /e reply <#> <message>");
+                sender.sendMessage("Usage: /e reply <module_id> <ticket_code> <message>");
                 return;
             }
 
@@ -226,14 +226,14 @@ public class SupportCommands {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (args.length != 3) {
-            sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+            sender.sendMessage("Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>");
         } else {
             final int preset;
 
             try {
                 preset = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+                sender.sendMessage("Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>");
                 return;
             }
 
@@ -241,7 +241,7 @@ public class SupportCommands {
             final TicketStatus status = TicketStatus.valueOf(args[2].toLowerCase());
 
             if (status == null) {
-                sender.sendMessage("Usage: /e reply <preset_id> <ticket_code> <open,pending,closed>");
+                sender.sendMessage("Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>");
                 return;
             }
 
