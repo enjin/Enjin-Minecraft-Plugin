@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class SignListener implements Listener {
@@ -80,14 +81,17 @@ public class SignListener implements Listener {
         if (event.getBlock().getState() instanceof Sign) {
             SerializableLocation location = new SerializableLocation(event.getBlock().getLocation());
 
-            if (StatSignManager.getConfig().getSigns().contains(location)) {
-                if (!event.getPlayer().hasPermission("enjin.sign.remove")) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to remove Enjin stat signs.");
-                    event.setCancelled(true);
+            for (SignData data : new ArrayList<>(StatSignManager.getConfig().getSigns())) {
+                if (data.getLocation().equals(location)) {
+                    if (!event.getPlayer().hasPermission("enjin.sign.remove")) {
+                        event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to remove Enjin stat signs.");
+                        event.setCancelled(true);
+                    } else {
+                        StatSignManager.remove(location);
+                    }
+
                     return;
                 }
-
-                StatSignManager.remove(location);
             }
         }
     }

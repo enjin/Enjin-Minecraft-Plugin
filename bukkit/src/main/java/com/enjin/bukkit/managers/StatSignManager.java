@@ -101,8 +101,7 @@ public class StatSignManager {
     }
 
     public static void remove(SerializableLocation location) {
-        if (config != null) {
-            new ArrayList<>(config.getSigns()).stream().filter(data -> data.getLocation().equals(location)).forEach(data -> config.getSigns().remove(data));
+        if (config != null && config.getSigns().removeIf((data) -> data.getLocation().equals(location))) {
             config.save(file);
             updateItems();
         }
