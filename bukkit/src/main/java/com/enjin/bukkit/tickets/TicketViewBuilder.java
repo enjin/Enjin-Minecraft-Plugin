@@ -19,18 +19,13 @@ public class TicketViewBuilder {
     private static final DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss dd-MM-yyyy");
 
     public static BaseComponent[] buildTicketList(List<Ticket> tickets) {
-        Collections.sort(tickets, new Comparator<Ticket>() {
-            @Override
-            public int compare(Ticket o1, Ticket o2) {
-                return Long.compare(o1.getUpdated(), o2.getUpdated());
-            }
-        });
+        Collections.sort(tickets, (o1, o2) -> Long.compare(o1.getUpdated(), o2.getUpdated()));
 
         ComponentBuilder builder = new ComponentBuilder("Your Tickets:\n")
                 .color(ChatColor.GOLD);
 
         for (Ticket ticket : tickets) {
-            builder.append(ticket.getCode() + ") " + ticket.getSubject() + " (" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay((System.currentTimeMillis() / 1000) - ticket.getUpdated()) + " ago)\n")
+            builder.append(ticket.getCode() + ") " + ticket.getSubject() + " (" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay((System.currentTimeMillis() / 1000) - ticket.getUpdated()) + ")\n")
                     .color(ChatColor.GREEN)
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/e ticket " + ticket.getCode()));
         }
@@ -42,12 +37,7 @@ public class TicketViewBuilder {
     }
 
     public static BaseComponent[] buildTicket(String ticketCode, List<Reply> replies, boolean showPrivate) {
-        Collections.sort(replies, new Comparator<Reply>() {
-            @Override
-            public int compare(Reply o1, Reply o2) {
-                return Long.compare(o1.getSent(), o2.getSent());
-            }
-        });
+        Collections.sort(replies, (o1, o2) -> Long.compare(o1.getSent(), o2.getSent()));
 
         ComponentBuilder builder = null;
 
@@ -87,15 +77,15 @@ public class TicketViewBuilder {
 
     private static String getLastUpdateDisplay(long time) {
         if (time < 60) {
-            return time + " seconds";
+            return "Just Now";
         } else if (time < 60 * 60) {
-            return TimeUnit.SECONDS.toMinutes(time) + " minutes";
+            return TimeUnit.SECONDS.toMinutes(time) + " minutes ago";
         } else if (time < 24 * 60 * 60) {
-            return TimeUnit.SECONDS.toHours(time) + " hours";
+            return TimeUnit.SECONDS.toHours(time) + " hours ago";
         } else if (time < 365 * 24 * 60 * 60) {
-            return TimeUnit.SECONDS.toDays(time) + " days";
+            return TimeUnit.SECONDS.toDays(time) + " days ago";
         } else {
-            return (TimeUnit.SECONDS.toDays(time) / 365) + " years";
+            return (TimeUnit.SECONDS.toDays(time) / 365) + " years ago";
         }
     }
 }
