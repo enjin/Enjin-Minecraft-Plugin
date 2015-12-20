@@ -48,7 +48,7 @@ public class TicketServiceTest {
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
 
-        List<Ticket> tickets = new ArrayList<>(data.getResult().getResults().values());
+        List<Ticket> tickets = data.getResult().getResults();
 
         Assert.assertNotNull("tickets is null", tickets);
 
@@ -63,7 +63,7 @@ public class TicketServiceTest {
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
 
-        List<Ticket> tickets = new ArrayList<>(data.getResult().getResults().values());
+        List<Ticket> tickets = data.getResult().getResults();
 
         Assert.assertNotNull("tickets is null", tickets);
 

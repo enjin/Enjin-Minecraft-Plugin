@@ -92,7 +92,7 @@ public class SupportCommands {
                     if (data.getError() != null) {
                         player.sendMessage(data.getError().getMessage());
                     } else {
-                        List<Ticket> tickets = new ArrayList<>(data.getResult().getResults().values());
+                        List<Ticket> tickets = data.getResult().getResults();
                         if (tickets.size() > 0) {
                             player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
                         } else {
@@ -142,7 +142,7 @@ public class SupportCommands {
                     if (data.getError() != null) {
                         player.sendMessage(data.getError().getMessage());
                     } else {
-                        List<Ticket> tickets = new ArrayList<>(data.getResult().getResults().values());
+                        List<Ticket> tickets = data.getResult().getResults();
                         if (tickets.size() > 0) {
                             player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
                         } else {
