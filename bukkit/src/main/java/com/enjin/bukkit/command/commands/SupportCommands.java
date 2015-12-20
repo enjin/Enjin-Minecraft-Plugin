@@ -78,7 +78,7 @@ public class SupportCommands {
     }
 
     @Permission(value = "enjin.ticket")
-    @Directive(parent = "enjin", value = "ticket", requireValidKey = true)
+    @Directive(parent = "enjin", value = "ticket", aliases = "tickets", requireValidKey = true)
     public static void ticket(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
@@ -128,7 +128,7 @@ public class SupportCommands {
     }
 
     @Permission(value = "enjin.ticket.open")
-    @Directive(parent = "enjin", value = "openticket", requireValidKey = true)
+    @Directive(parent = "enjin", value = "openticket", aliases = "opentickets", requireValidKey = true)
     public static void openTicket(Player sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
