@@ -531,6 +531,12 @@ public class CoreCommands {
         }
 
         List<TagData> tags = data.getResult();
+
+        if (tags.size() == 0) {
+            sender.sendMessage(ChatColor.RED + "The user " + name + " currently doesn't have any tags.");
+            return;
+        }
+
         String tagList = "";
         if (tags != null) {
             Iterator<TagData> iterator = tags.iterator();
