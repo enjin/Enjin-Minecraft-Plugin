@@ -223,7 +223,7 @@ public class ShopUtil {
     }
 
     private static Text buildItemListContent(Player player, Shop shop, List<Item> items, int page) {
-        int maxEntries = shop.isSimpleItems() ? 8 : 4;
+        int maxEntries = shop.getSimpleItems().booleanValue() ? 8 : 4;
 
         if (page < 1) {
             page = 1;
@@ -267,7 +267,7 @@ public class ShopUtil {
                     .append(")\n");
             textBuilder.append(Texts.of(builder.toString()));
 
-            if (!shop.isSimpleItems()) {
+            if (!shop.getSimpleItems().booleanValue()) {
                 StringBuilder urlBuilder = new StringBuilder();
 
                 try {

@@ -1,10 +1,16 @@
 package com.enjin.sponge;
 
+import com.enjin.core.Enjin;
+import com.enjin.core.EnjinPlugin;
+import com.enjin.core.EnjinServices;
+import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
+import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.sponge.commands.EnjinCommand;
 import com.enjin.sponge.commands.configuration.SetKeyCommand;
 import com.enjin.sponge.commands.store.BuyCommand;
-import com.enjin.sponge.config.EnjinConfig;
+import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.sync.RPCPacketManager;
 import com.enjin.sponge.utils.commands.CommandWrapper;
@@ -12,17 +18,18 @@ import com.enjin.rpc.EnjinRPC;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.config.ConfigDir;
-import org.spongepowered.api.service.scheduler.Task;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.args.GenericArguments;
-import org.spongepowered.api.util.command.spec.CommandSpec;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -30,10 +37,11 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "EnjinMinecraftPlugin", name = "Enjin Minecraft Plugin", version = "2.8.3-sponge")
-public class EnjinMinecraftPlugin {
+public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
     @Getter
@@ -54,8 +62,6 @@ public class EnjinMinecraftPlugin {
     @ConfigDir(sharedRoot = false)
     @Getter
     private File configDir;
-    @Getter
-    private EnjinConfig config;
     @Inject
     @Getter
     private Game game;
@@ -63,28 +69,76 @@ public class EnjinMinecraftPlugin {
     @Getter
     private Task syncTask;
 
+    @Getter
+    private boolean firstRun = true;
+    @Getter @Setter
+    private boolean authKeyInvalid = false;
+
     public EnjinMinecraftPlugin() {
         instance = this;
     }
 
     @Listener
     public void initialization(GameInitializationEvent event) {
-        logger.info("Initializing Enjin Minecraft Plugin");
-        initConfig();
-        initJsonRPC();
-        initCommands();
+        init();
+    }
+
+    public void init() {
+        if (authKeyInvalid) {
+            return;
+        }
+
+        if (firstRun) {
+            firstRun = false;
+            initConfig();
+
+            EnjinRPC.setLogger(getJavaLogger());
+            //Log.init();
+            debug("Init config done.");
+
+            initCommands();
+            debug("Init commands done.");
+
+            if (Enjin.getConfiguration().getAuthKey().length() == 50) {
+                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.empty(), getPort(), true);
+                if (data == null) {
+                    authKeyInvalid = true;
+                    debug("Auth key is invalid. Data could not be retrieved.");
+                    return;
+                } else if (data.getError() != null) {
+                    authKeyInvalid = true;
+                    debug("Auth key is invalid. " + data.getError().getMessage());
+                    return;
+                } else if (!data.getResult()) {
+                    authKeyInvalid = true;
+                    debug("Auth key is invalid. Failed to authenticate.");
+                    return;
+                }
+            } else {
+                authKeyInvalid = true;
+                debug("Auth key is invalid. Must be 50 characters in length.");
+                return;
+            }
+        }
+
+        //menuAPI = new MenuAPI(this);
+        //debug("Init gui api done.");
+        //initManagers();
+        //debug("Init managers done.");
+        //initPlugins();
+        //debug("Init plugins done.");
+        //initPermissions();
+        //debug("Init permissions done.");
         initListeners();
+        debug("Init listeners done.");
         initTasks();
+        debug("Init tasks done.");
     }
 
     private void initConfig() {
         logger.info("Initializing EMP Config");
-        config = JsonConfig.load(new File(configDir, "config.json"), EnjinConfig.class);
-    }
-
-    public void saveConfig() {
-        logger.info("Saving EMP Config");
-        config.save(new File(configDir, "config.json"));
+        EMPConfig config = JsonConfig.load(new File(configDir, "config.json"), EMPConfig.class);
+        Enjin.setConfiguration(config);
     }
 
     private void initCommands() {
@@ -121,8 +175,8 @@ public class EnjinMinecraftPlugin {
         commands.add(enjinSpec);
         commands.add(buySpec);
 
-        game.getCommandDispatcher().register(this, enjinSpec, "enjin", "emp", "e");
-        game.getCommandDispatcher().register(this, buySpec, "buy");
+        game.getCommandManager().register(this, enjinSpec, "enjin", "emp", "e");
+        game.getCommandManager().register(this, buySpec, "buy");
     }
 
     private void initListeners() {
@@ -145,61 +199,27 @@ public class EnjinMinecraftPlugin {
         syncTask = null;
     }
 
-    private void initJsonRPC() {
-        if (javaLogger == null) {
-            debug("Java logger is null, skipping rpc logger initialization.");
-        } else {
-            debug("Initializing rpc logger.");
-            EnjinRPC.setLogger(javaLogger);
-        }
-
-        EnjinRPC.setDebug(config.isDebug());
-        EnjinRPC.setHttps(config.isHttps());
-        EnjinRPC.setApiUrl("://api.enjin.com/api/v1/");
-    }
-
-    public String getAuthKey() {
-        if (config == null) {
-            return "";
-        }
-
-        return config.getAuthkey();
-    }
-
-    public int getPort() {
+    public Integer getPort() {
         return game.getServer().getBoundAddress().get().getPort();
     }
 
-    public void debug(String ... messages) {
-        if (config.isDebug()) {
-            for (String message : messages) {
-                logger.info("[Debug] " + message);
-            }
+    @Override
+    public InstructionHandler getInstructionHandler() {
+        return null;
+    }
+
+    @Override
+    public void debug(String s) {
+        if (Enjin.getConfiguration().isDebug()) {
+            getLogger().info("Enjin Debug: " + s);
+        }
+
+        if (Enjin.getConfiguration().isLoggingEnabled()) {
+            //Log.debug(s);
         }
     }
 
-    public void addProcessedCommand(CommandWrapper wrapper) {
-        if (wrapper.getId().isEmpty()) {
-            return;
-        }
-
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(wrapper.getCommand().getBytes("UTF-8"));
-
-            BigInteger bigInt = new BigInteger(1, digest);
-            String hash = bigInt.toString(16);
-
-            while (hash.length() < 32) {
-                hash = "0" + hash;
-            }
-
-            wrapper.setHash(hash);
-            processedCommands.add(wrapper);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+    public static void saveConfiguration() {
+        Enjin.getConfiguration().save(new File(instance.configDir, "config.json"));
     }
 }

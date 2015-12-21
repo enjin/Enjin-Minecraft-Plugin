@@ -30,10 +30,11 @@ public class RPCPacketManager implements Runnable {
                 getOnlinePlayers(),
                 null,
                 null,
+                null,
                 null);
 
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<SyncResponse> data = service.sync(plugin.getAuthKey(), status);
+        RPCData<SyncResponse> data = service.sync(status);
 
         if (data == null) {
             return;

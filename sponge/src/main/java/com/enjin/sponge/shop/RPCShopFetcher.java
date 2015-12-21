@@ -33,7 +33,7 @@ public class RPCShopFetcher implements Runnable {
         }
 
         Player player = p.get();
-        RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(plugin.getAuthKey(), player.getName());
+        RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(player.getName());
 
         if (data == null) {
             player.sendMessage(Texts.builder("Failed to fetch shop data.").color(TextColors.RED).build());
