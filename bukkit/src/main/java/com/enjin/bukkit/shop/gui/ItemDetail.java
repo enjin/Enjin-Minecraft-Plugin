@@ -52,7 +52,7 @@ public class ItemDetail extends Menu {
         }
 
         String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + item.getName();
-        MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(material, item.getIconDamage().byteValue())) {
+        MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(material, item.getIconDamage() != null ? item.getIconDamage().byteValue() : 0)) {
             @Override
             public void onClick(Player player) {}
         };

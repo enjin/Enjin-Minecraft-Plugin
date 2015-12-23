@@ -25,5 +25,5 @@ public class Category {
     private String iconItem;
     @Getter
     @SerializedName(value = "icon_damage")
-    private byte iconDamage;
+    private Byte iconDamage;
 }
