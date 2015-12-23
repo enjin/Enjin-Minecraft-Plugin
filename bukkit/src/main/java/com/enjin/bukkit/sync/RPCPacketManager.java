@@ -5,7 +5,6 @@ import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
 import com.enjin.bukkit.tasks.TPSMonitor;
-import com.enjin.bukkit.util.EncodeUtil;
 import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
@@ -159,13 +158,6 @@ public class RPCPacketManager implements Runnable {
     }
 
     private String getStats() {
-        try {
-            String stats = new WriteStats(plugin).getStatsJSON();
-            return EncodeUtil.base64Encode(stats);
-        } catch (Exception e) {
-            Log.debug("Failed to encode statistics.");
-        }
-
-        return "";
+        return new WriteStats(plugin).getStatsJSON();
     }
 }
