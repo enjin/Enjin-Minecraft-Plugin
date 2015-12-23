@@ -35,13 +35,6 @@
         </profile>
 
         <profile>
-            <id>forge</id>
-            <modules>
-                <module>forge</module>
-            </modules>
-        </profile>
-
-        <profile>
             <id>sponge</id>
             <modules>
                 <module>sponge</module>
@@ -53,7 +46,6 @@
             <modules>
                 <module>bukkit</module>
                 <module>bungee</module>
-                <module>forge</module>
                 <module>sponge</module>
             </modules>
         </profile>
