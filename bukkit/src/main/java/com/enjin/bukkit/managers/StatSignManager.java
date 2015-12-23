@@ -15,10 +15,7 @@ import com.enjin.rpc.mappings.mappings.plugin.Stats;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.SkullType;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
@@ -76,7 +73,9 @@ public class StatSignManager {
     public static void fetchStats() {
         RPCData<Stats> data = EnjinServices.getService(PluginService.class).getStats(Optional.ofNullable(items));
 
-        if (data.getError() != null) {
+        if (data == null) {
+            Enjin.getPlugin().debug("Failed to fetch stats from Enjin web services.");
+        } else if (data.getError() != null) {
             Enjin.getPlugin().debug(data.getError().getMessage());
         } else {
             stats = data.getResult();
