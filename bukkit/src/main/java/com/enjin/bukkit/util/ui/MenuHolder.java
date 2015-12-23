@@ -59,11 +59,13 @@ public abstract class MenuHolder extends MenuBase implements InventoryHolder {
     }
 
     public boolean addMenuItem(MenuItem item, int index) {
+        if (index < 0 || index >= getMaxItems()) {
+            return false;
+        }
+
         ItemStack slot = getInventory().getItem(index);
 
         if (slot != null && slot.getType() != Material.AIR) {
-            return false;
-        } else if (index < 0 || index >= getMaxItems()) {
             return false;
         }
 
@@ -75,11 +77,13 @@ public abstract class MenuHolder extends MenuBase implements InventoryHolder {
     }
 
     public boolean removeMenuItem(int index) {
+        if (index < 0 || index >= getMaxItems()) {
+            return false;
+        }
+
         ItemStack slot = getInventory().getItem(index);
 
         if (slot == null || slot.getType() == Material.AIR) {
-            return false;
-        } else if (index < 0 || index >= getMaxItems()) {
             return false;
         }
 
