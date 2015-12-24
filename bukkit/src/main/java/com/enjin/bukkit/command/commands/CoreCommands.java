@@ -342,7 +342,7 @@ public class CoreCommands {
             if (sender instanceof Player) {
                 sender.sendMessage(ChatColor.RED + "That player isn't on the server at the moment.");
             } else {
-                Log.info(ChatColor.RED + "That player isn't on the server at the moment.");
+                Enjin.getLogger().info(ChatColor.RED + "That player isn't on the server at the moment.");
             }
 
             return;
@@ -369,7 +369,7 @@ public class CoreCommands {
             return;
         }
 
-        Log.info("Checking if key is valid");
+        Enjin.getLogger().info("Checking if key is valid");
         EnjinMinecraftPlugin.getInstance().getLogger().info("Checking if key is valid");
 
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {

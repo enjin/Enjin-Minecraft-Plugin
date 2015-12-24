@@ -86,7 +86,7 @@ public class CoreCommands {
             return;
         }
 
-        Log.info("Checking if key is valid");
+        Enjin.getLogger().info("Checking if key is valid");
         EnjinMinecraftPlugin.getInstance().getLogger().info("Checking if key is valid");
 
         ProxyServer.getInstance().getScheduler().runAsync(EnjinMinecraftPlugin.getInstance(), () -> {

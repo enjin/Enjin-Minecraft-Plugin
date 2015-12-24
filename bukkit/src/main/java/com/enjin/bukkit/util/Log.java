@@ -4,6 +4,7 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.util.io.EnjinLogAppender;
 import com.enjin.bukkit.util.io.EnjinLogFormatter;
 import com.enjin.bukkit.util.io.EnjinLogInterface;
+import com.enjin.core.util.EnjinLogger;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
@@ -14,28 +15,12 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Log {
+public class Log implements EnjinLogger {
     @Getter
-    private final static Logger logger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
-    private static EnjinLogInterface mcLogListener = new EnjinLogAppender();
+    private Logger logger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
+    private EnjinLogInterface mcLogListener = new EnjinLogAppender();
 
-    public static void info(String msg) {
-        logger.info(msg);
-    }
-
-    public static void fine(String msg) {
-        logger.fine(msg);
-    }
-
-    public static void warning(String msg) {
-        logger.warning(msg);
-    }
-
-    public static void debug(String msg) {
-        fine("Enjin Debug: " + msg);
-    }
-
-    public static void init() {
+    public Log() {
         debug("Initializing internal logger");
         logger.setLevel(Level.FINEST);
 
@@ -73,7 +58,23 @@ public class Log {
         log4j.addAppender((Appender) mcLogListener);
     }
 
-    public static String getLastLine() {
+    public void info(String msg) {
+        logger.info(msg);
+    }
+
+    public void fine(String msg) {
+        logger.fine(msg);
+    }
+
+    public void warning(String msg) {
+        logger.warning(msg);
+    }
+
+    public void debug(String msg) {
+        fine("Enjin Debug: " + msg);
+    }
+
+    public String getLastLine() {
         return mcLogListener.getLine();
     }
 }

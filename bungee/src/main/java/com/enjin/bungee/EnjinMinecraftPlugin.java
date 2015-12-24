@@ -57,7 +57,7 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
         }
 
         if (Enjin.getConfiguration().isLoggingEnabled()) {
-            Log.debug(s);
+            Enjin.getLogger().debug(s);
         }
     }
 
@@ -82,8 +82,7 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
             firstRun = false;
             initConfig();
 
-            EnjinRPC.setLogger(getLogger());
-            Log.init();
+            Enjin.setLogger(new Log());
             debug("Init config done.");
 
             initCommands();

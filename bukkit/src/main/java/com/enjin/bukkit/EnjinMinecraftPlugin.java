@@ -27,7 +27,6 @@ import com.enjin.core.EnjinPlugin;
 import com.enjin.core.EnjinServices;
 import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
-import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
 import lombok.Getter;
@@ -100,7 +99,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
 
         if (Enjin.getConfiguration().isLoggingEnabled()) {
-            Log.debug(s);
+            Enjin.getLogger().debug(s);
         }
     }
 
@@ -126,8 +125,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             firstRun = false;
             initConfig();
 
-            EnjinRPC.setLogger(getLogger());
-            Log.init();
+            Enjin.setLogger(new Log());
             debug("Init config done.");
 
             initCommands();
@@ -264,12 +262,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private void initPlugins() {
         if (Bukkit.getPluginManager().isPluginEnabled("TuxTwoLib")) {
             tuxTwoLibInstalled = true;
-            Log.info("TuxTwoLib is installed. Offline players can be given items.");
+            Enjin.getLogger().info("TuxTwoLib is installed. Offline players can be given items.");
             getLogger().info("TuxTwoLib is installed. Offline players can be given items.");
         }
 
         if (!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-            Log.warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
+            Enjin.getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
             getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
             return;
         }

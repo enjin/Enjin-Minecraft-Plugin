@@ -2,6 +2,7 @@ package com.enjin.bukkit.managers;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.util.Log;
+import com.enjin.core.Enjin;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -31,7 +32,7 @@ public class VaultManager {
                     economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
                 } catch (AbstractMethodError e) {
                     economyCompatibilityMode = true;
-                    Log.warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+                    Enjin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
                     plugin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
                 }
             });
@@ -41,7 +42,7 @@ public class VaultManager {
     private static void initPermissions(EnjinMinecraftPlugin plugin) {
         RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
         if (provider == null || provider.getProvider() == null) {
-            Log.warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
+            Enjin.getLogger().warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
             Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
             return;
         }

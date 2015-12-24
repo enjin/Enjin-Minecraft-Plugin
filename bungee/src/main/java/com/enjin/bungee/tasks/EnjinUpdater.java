@@ -42,11 +42,11 @@ public class EnjinUpdater implements Runnable {
                 plugin.setHasUpdate(true);
                 plugin.setNewVersion(versionNumber);
                 plugin.setUpdateFailed(false);
-                Log.info("Enjin Minecraft Plugin was updated to version " + versionNumber + ". Please restart your server.");
+                Enjin.getLogger().info("Enjin Minecraft Plugin was updated to version " + versionNumber + ". Please restart your server.");
                 return;
             } else {
                 plugin.setUpdateFailed(true);
-                Log.warning("Unable to update to new version. Please update manually!");
+                Enjin.getLogger().warning("Unable to update to new version. Please update manually!");
             }
         } catch (IOException e) {
             e.printStackTrace();

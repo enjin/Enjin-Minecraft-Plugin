@@ -84,7 +84,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
         Runnable runnable = () -> {
             EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-            EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Log.getLastLine()));
+            EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
             EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
         };
 

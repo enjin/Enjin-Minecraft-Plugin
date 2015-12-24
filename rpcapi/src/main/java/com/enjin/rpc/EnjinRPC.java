@@ -22,8 +22,6 @@ public class EnjinRPC {
     private static final Integer READ_TIMEOUT = 15000;
     private static final Integer CONNECT_TIMEOUT = 15000;
 
-    @Setter
-    private static Logger logger;
     private static Integer nextRequestId = 0;
 
     private static URL getUrl(String clazz) {
@@ -58,11 +56,7 @@ public class EnjinRPC {
 
     public static void debug(String s) {
         if (Enjin.getConfiguration().isDebug()) {
-            if (logger == null) {
-                System.out.println("Enjin Debug: " + (s == null ? "null" : s));
-            } else {
-                logger.info("Enjin Debug: " + (s == null ? "null" : s));
-            }
+            Enjin.getLogger().debug(s);
         }
     }
 
