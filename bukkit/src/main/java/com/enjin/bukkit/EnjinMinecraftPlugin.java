@@ -94,13 +94,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     @Override
     public void debug(String s) {
-        if (Enjin.getConfiguration().isDebug()) {
-            getLogger().info("Enjin Debug: " + s);
-        }
-
-        if (Enjin.getConfiguration().isLoggingEnabled()) {
-            Enjin.getLogger().debug(s);
-        }
+        Enjin.getLogger().debug(s);
     }
 
     @Override
@@ -125,7 +119,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             firstRun = false;
             initConfig();
 
-            Enjin.setLogger(new Log());
+            Enjin.setLogger(new Log(getDataFolder()));
             debug("Init config done.");
 
             initCommands();

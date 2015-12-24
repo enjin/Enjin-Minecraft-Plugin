@@ -1,0 +1,28 @@
+package com.enjin.bukkit.util.io;
+
+import lombok.Getter;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+
+import java.io.Serializable;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+
+public class LineAppender extends AbstractAppender {
+    @Getter
+    String line = "";
+
+    public LineAppender(String name, Layout<? extends Serializable> layout) {
+        super(name, null, layout);
+    }
+
+    @Override
+    public void append(LogEvent event) {
+        if (event != null && event.getMessage() != null && event.getMessage().getFormattedMessage() != null) {
+            line = event.getMessage().getFormattedMessage();
+            line = line.replaceAll("\\p{Cntrl}.{2}", "");
+            line = line.replaceAll("\\p{Cntrl}", "");
+        }
+    }
+}
