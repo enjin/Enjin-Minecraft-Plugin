@@ -9,7 +9,6 @@ import lombok.Getter;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public enum InstructionCode {
     ADD_PLAYER_GROUP(PlayerGroupUpdateData.class),
@@ -17,7 +16,6 @@ public enum InstructionCode {
     EXECUTE(ExecuteData.class),
     EXECUTE_AS(null),
     CONFIRMED_COMMANDS(new TypeToken<ArrayList<Long>>(){}.getType()),
-    //CONFIG(new TypeToken<HashMap<String, Object>>(){}.getType()),
     CONFIG(Object.class),
     ADD_PLAYER_WHITELIST(String.class),
     REMOVE_PLAYER_WHITELIST(String.class),

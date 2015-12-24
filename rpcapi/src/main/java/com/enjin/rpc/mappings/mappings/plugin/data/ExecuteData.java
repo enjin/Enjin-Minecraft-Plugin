@@ -14,4 +14,11 @@ public class ExecuteData {
     private String command = "";
     @Getter
     private Long delay = 0L;
+    @Getter
+    private String player;
+    @Getter
+    private String uuid;
+    @Getter
+    @SerializedName(value = "require_online")
+    private Boolean requireOnline;
 }
