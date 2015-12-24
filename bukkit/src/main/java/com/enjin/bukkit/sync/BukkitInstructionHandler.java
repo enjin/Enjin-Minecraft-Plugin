@@ -10,10 +10,13 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class BukkitInstructionHandler implements InstructionHandler {
     @Override
@@ -75,7 +78,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
     }
 
     @Override
-    public void execute(long id, String command, long delay) {
+    public void execute(long id, String command, long delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
         for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
             if (Long.parseLong(c.getId()) == id) {
                 return;
@@ -83,6 +86,17 @@ public class BukkitInstructionHandler implements InstructionHandler {
         }
 
         Runnable runnable = () -> {
+            if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
+                if (uuid.isPresent() || name.isPresent()) {
+                    Player player = uuid.isPresent() ? Bukkit.getPlayer(UUID.fromString(uuid.get())) : Bukkit.getPlayer(name.get());
+                    if (player == null || !player.isOnline()) {
+                        return;
+                    }
+                } else {
+                    return;
+                }
+            }
+
             EnjinMinecraftPlugin.dispatchConsoleCommand(command);
             EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
             EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();

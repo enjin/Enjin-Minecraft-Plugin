@@ -2,6 +2,7 @@ package com.enjin.core;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface InstructionHandler {
     public void addToWhitelist(String player);
@@ -16,7 +17,7 @@ public interface InstructionHandler {
 
     public void removeFromGroup(String player, String group, String world);
 
-    public void execute(long id, String command, long delay);
+    public void execute(long id, String command, long delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid);
 
     public void commandConfirmed(List<Long> executed);
 
