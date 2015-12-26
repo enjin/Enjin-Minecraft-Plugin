@@ -113,7 +113,7 @@ public class SupportCommands {
                     if (data.getError() != null) {
                         player.sendMessage(data.getError().getMessage());
                     } else {
-                        List<Reply> replies = new ArrayList<>(data.getResult().getResults().values());
+                        List<Reply> replies = data.getResult().getResults();
                         if (replies.size() > 0) {
                             player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")));
                         } else {
@@ -163,7 +163,7 @@ public class SupportCommands {
                     if (data.getError() != null) {
                         player.sendMessage(data.getError().getMessage());
                     } else {
-                        List<Reply> replies = new ArrayList<>(data.getResult().getResults().values());
+                        List<Reply> replies = data.getResult().getResults();
                         if (replies.size() > 0) {
                             player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")));
                         } else {

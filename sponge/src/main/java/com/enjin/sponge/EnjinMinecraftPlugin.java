@@ -92,8 +92,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
             firstRun = false;
             initConfig();
 
-            EnjinRPC.setLogger(getJavaLogger());
-            //Log.init();
+            //Enjin.setLogger(new Log());
             debug("Init config done.");
 
             initCommands();

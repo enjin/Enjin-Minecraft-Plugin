@@ -78,7 +78,7 @@ public class TicketServiceTest {
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
 
-        List<Reply> replies = new ArrayList<>(data.getResult().getResults().values());
+        List<Reply> replies = data.getResult().getResults();
 
         Assert.assertNotNull("replies is null", replies);
 
