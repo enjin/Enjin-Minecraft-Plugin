@@ -21,7 +21,6 @@ public class TicketService implements Service {
     public static final Gson GSON_TICKET = new GsonBuilder()
             .registerTypeAdapter(Boolean.class, new BooleanAdapter())
             .registerTypeAdapter(Ticket.class, new TicketDeserializer())
-            .registerTypeAdapter(ReplyResults.class, new ReplyResultsDeserializer())
             .create();
     public static final Gson GSON_EXTRA_QUESTION = new GsonBuilder()
             .registerTypeAdapter(Boolean.class, new BooleanAdapter())
