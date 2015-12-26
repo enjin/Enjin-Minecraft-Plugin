@@ -196,8 +196,8 @@ public class PointCommands {
             return;
         }
 
-        if (points <= 0) {
-            sender.sendMessage(ChatColor.RED + "You must specify a value greater than 0 for points.");
+        if (points < 0) {
+            sender.sendMessage(ChatColor.RED + "You cannot set points to less than 0.");
             return;
         }
 
