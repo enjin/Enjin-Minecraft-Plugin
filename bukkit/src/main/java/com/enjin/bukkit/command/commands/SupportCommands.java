@@ -227,7 +227,6 @@ public class SupportCommands {
             sender.sendMessage("Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>");
         } else {
             final int preset;
-
             try {
                 preset = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
@@ -235,14 +234,21 @@ public class SupportCommands {
                 return;
             }
 
-            final String ticket = args[1];
-            final TicketStatus status = TicketStatus.valueOf(args[2].toLowerCase());
+            TicketStatus tempStatus = null;
+            for (TicketStatus s : TicketStatus.values()) {
+                if (s.name().equalsIgnoreCase(args[2])) {
+                    tempStatus = s;
+                    break;
+                }
+            }
 
-            if (status == null) {
+            if (tempStatus == null) {
                 sender.sendMessage("Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>");
                 return;
             }
 
+            final String ticket = args[1];
+            final TicketStatus status = tempStatus;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(preset, ticket, status);
                 if (result != null) {
