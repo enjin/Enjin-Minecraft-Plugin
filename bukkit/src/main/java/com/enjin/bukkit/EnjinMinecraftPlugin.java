@@ -219,6 +219,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void initManagers() {
+        PurchaseManager.init();
         VaultManager.init(this);
         VotifierManager.init(this);
         TicketManager.init(this);

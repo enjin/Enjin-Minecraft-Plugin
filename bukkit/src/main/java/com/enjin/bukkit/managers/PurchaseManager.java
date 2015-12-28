@@ -1,8 +1,10 @@
 package com.enjin.bukkit.managers;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
 import com.enjin.bukkit.util.text.TextUtils;
+import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
@@ -24,6 +26,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PurchaseManager {
     @Getter
     private static Map<String, Integer> pendingPurchases = new ConcurrentHashMap<>();
+
+    public static void init() {
+        PlayerShopInstance.getInstances().clear();
+        ShopListener.getGuiInstances().clear();
+    }
 
     public static void processItemPurchase(Player player, Shop shop, Item item) {
         if (item == null) {
