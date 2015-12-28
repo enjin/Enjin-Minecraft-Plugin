@@ -1,6 +1,7 @@
 package com.enjin.bukkit.managers;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketListener;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
@@ -22,10 +23,19 @@ public class TicketManager {
     private static TicketListener ticketListener;
 
     public static void init(EnjinMinecraftPlugin plugin) {
+        clean();
+
         ticketListener = new TicketListener();
         Bukkit.getPluginManager().registerEvents(ticketListener, plugin);
 
         pollModules();
+    }
+
+    private static void clean() {
+        TicketManager.getModules().clear();
+        TicketCreationSession.getSessions().forEach((uuid, session) -> {
+            session.getConversation().abandon();
+        });
     }
 
     public static void pollModules() {

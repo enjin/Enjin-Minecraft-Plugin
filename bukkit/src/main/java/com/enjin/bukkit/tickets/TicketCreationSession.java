@@ -27,6 +27,7 @@ public class TicketCreationSession {
 
     private EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
     private UUID uuid;
+    @Getter
     private Conversation conversation;
 
     static {
