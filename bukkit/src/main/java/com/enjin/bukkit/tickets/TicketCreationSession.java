@@ -82,6 +82,10 @@ public class TicketCreationSession {
             factory.withFirstPrompt(new StartPrompt());
         }
 
+        if (player == null) {
+            return;
+        }
+
         final Conversation conversation = factory.buildConversation(player);
         this.conversation = conversation;
         sessions.put(player.getUniqueId(), this);
