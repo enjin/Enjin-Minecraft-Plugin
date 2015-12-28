@@ -13,7 +13,7 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.events.PermissionEntityEvent;
 import ru.tehkode.permissions.events.PermissionEntityEvent.Action;
 
-public class PexChangeListener extends PermissionListener {
+public class PexListener extends PermissionListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void pexGroupAdded(PermissionEntityEvent event) {
         Action theaction = event.getAction();

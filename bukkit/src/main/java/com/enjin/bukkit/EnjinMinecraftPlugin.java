@@ -271,7 +271,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private void initPermissions() {
         if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
             debug("PermissionsEx found, hooking custom events.");
-            Bukkit.getPluginManager().registerEvents(permissionListener = new PexChangeListener(), this);
+            Bukkit.getPluginManager().registerEvents(permissionListener = new PexListener(), this);
             return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("bPermissions")) {
             debug("bPermissions found, hooking custom events.");
@@ -283,7 +283,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
             debug("PermissionsBukkit found, hooking custom events.");
-            Bukkit.getPluginManager().registerEvents(permissionListener = new PermissionsBukkitChangeListener(), this);
+            Bukkit.getPluginManager().registerEvents(permissionListener = new PermissionsBukkitListener(), this);
             return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
             debug("GroupManager found, hooking custom events.");

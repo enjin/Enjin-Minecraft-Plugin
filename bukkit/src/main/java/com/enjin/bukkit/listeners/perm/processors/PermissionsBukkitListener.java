@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 
-public class PermissionsBukkitChangeListener extends PermissionListener {
+public class PermissionsBukkitListener extends PermissionListener {
     public void processCommand(CommandSender sender, String command, Cancellable event) {
         if (event.isCancelled()) {
             return;
