@@ -22,7 +22,7 @@ public class BPermissionsListener extends PermissionListener {
         }
 
         //Make sure the user has permissions to run the value, otherwise we are just wasting time...
-        if (sender.hasPermission("bPermissions.admin") && command.toLowerCase().startsWith("/user ")) {
+        if (sender.hasPermission("bPermissions.admin") && command.toLowerCase().startsWith("user ")) {
             String[] args = command.split(" ");
             update(sender, args);
         }
