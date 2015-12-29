@@ -1,6 +1,7 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.listeners.perm.processors.PermissionsBukkitListener;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
@@ -83,6 +84,10 @@ public class ConnectionListener implements Listener {
             Permission permission = VaultManager.getPermission();
             if (permission.hasGroupSupport()) {
                 String[] g = permission.getPlayerGroups(null, player);
+                if (g.length == 0 && Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
+                    g = PermissionsBukkitListener.getGroups(player);
+                }
+
                 if (g.length > 0) {
                     groups.put("*", Arrays.asList(g));
                 }
