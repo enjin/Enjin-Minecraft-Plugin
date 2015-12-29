@@ -55,7 +55,7 @@ public class PexListener extends PermissionListener {
                     }
                 }
             }
-        } else if (command.toLowerCase().startsWith("/pex user ")) {
+        } else if (command.toLowerCase().startsWith("pex user ")) {
             String[] args = command.split(" ");
             if (args.length > 5 && sender.hasPermission("permissions.manage.membership." + args[5])) {
                 if (args[3].equalsIgnoreCase("group") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
