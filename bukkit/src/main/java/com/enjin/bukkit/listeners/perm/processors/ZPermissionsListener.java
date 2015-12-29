@@ -17,7 +17,7 @@ public class ZPermissionsListener extends PermissionListener {
     @Override
     public void processCommand(CommandSender sender, String command, Cancellable event) {
         String[] args = command.split(" ");
-        if (args.length >= 5 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("permissions"))) {
+        if (args.length >= 5 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("perms") || args[0].equalsIgnoreCase("permissions"))) {
             if (args[1].equalsIgnoreCase("player")) {
                 String name = args[2];
                 OfflinePlayer op = Bukkit.getOfflinePlayer(name);
