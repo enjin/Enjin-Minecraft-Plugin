@@ -3,6 +3,7 @@ package com.enjin.bukkit.sync;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.tasks.EnjinUpdater;
 import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
@@ -145,6 +146,11 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void version(String version) {
-        // TODO
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+
+        if (Enjin.getConfiguration().isAutoUpdate() && !plugin.isHasUpdate() && !plugin.isUpdateFromCurseForge() &&!plugin.isUpdateFailed()) {
+            plugin.setHasUpdate(true);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new EnjinUpdater(plugin.getServer().getUpdateFolder(), version, plugin));
+        }
     }
 }
