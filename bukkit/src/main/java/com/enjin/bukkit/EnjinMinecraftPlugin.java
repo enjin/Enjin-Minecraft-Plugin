@@ -41,9 +41,6 @@ import com.enjin.bukkit.tasks.CurseUpdater;
 
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
-    private static final boolean updateFromCurseForge = true;
-
-    @Getter
     private static EnjinMinecraftPlugin instance;
     @Getter
     private static ExecutedCommandsConfig executedCommandsConfiguration;
@@ -240,7 +237,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 4L);
-        if (Enjin.getConfiguration().isAutoUpdate() && updateFromCurseForge) {
+        if (Enjin.getConfiguration().isAutoUpdate() && isUpdateFromCurseForge()) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CurseUpdater(this, 44560, this.getFile(), CurseUpdater.UpdateType.DEFAULT, true), 0, 20L * 60L * 30L);
         }
     }
@@ -308,5 +305,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
         Enjin.getPlugin().debug("[D2] Executed Command: " + command);
         Bukkit.getPluginManager().callEvent(new ServerCommandEvent(Bukkit.getConsoleSender(), command));
+    }
+
+    public boolean isUpdateFromCurseForge() {
+        return getDescription().getVersion().endsWith("-bukkit");
     }
 }
