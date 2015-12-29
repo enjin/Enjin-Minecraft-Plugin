@@ -14,6 +14,11 @@ import java.util.Map;
 @AllArgsConstructor
 public class Status {
     @Getter
+    @SerializedName(value = "mc_version")
+    private String mcVersion;
+    @Getter
+    private List<String> plugins;
+    @Getter
     @SerializedName(value = "hasranks")
     private Boolean ranksEnabled;
     @Getter

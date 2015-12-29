@@ -17,6 +17,7 @@ import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import com.enjin.rpc.mappings.services.PluginService;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +39,9 @@ public class RPCPacketManager implements Runnable {
             nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
         }
 
-        Status status = new Status(VaultManager.isPermissionsAvailable(),
+        Status status = new Status(plugin.getMcVersion(),
+                getPlugins(),
+                VaultManager.isPermissionsAvailable(),
                 plugin.getDescription().getVersion(),
                 getWorlds(),
                 getGroups(),
@@ -111,6 +114,10 @@ public class RPCPacketManager implements Runnable {
                 }
             }
         }
+    }
+
+    private List<String> getPlugins() {
+        return Arrays.asList(Bukkit.getPluginManager().getPlugins()).stream().map(Plugin::getName).collect(Collectors.toList());
     }
 
     private List<String> getWorlds() {

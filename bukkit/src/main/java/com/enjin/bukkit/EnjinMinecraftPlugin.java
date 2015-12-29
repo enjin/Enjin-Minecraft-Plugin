@@ -54,6 +54,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private MenuAPI menuAPI;
 
     @Getter
+    private String mcVersion;
+
+    @Getter
     private boolean tuxTwoLibInstalled = false;
     @Getter
     private boolean globalGroupsSupported = true;
@@ -101,6 +104,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void onEnable() {
         instance = this;
         Enjin.setPlugin(instance);
+        preInit();
         init();
     }
 
@@ -108,6 +112,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void onDisable() {
         disableTasks();
         disableManagers();
+    }
+
+    public void preInit() {
+        String bukkitVersion = Bukkit.getBukkitVersion();
+        String[] versionParts = bukkitVersion.split("-");
+        mcVersion = versionParts.length >= 1 ? versionParts[0] : "UNKNOWN";
     }
 
     public void init() {

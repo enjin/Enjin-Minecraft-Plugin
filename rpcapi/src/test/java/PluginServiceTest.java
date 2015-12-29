@@ -38,8 +38,10 @@ public class PluginServiceTest {
 
     @Test
     public void test2Sync() {
-        Status status = new Status(true,
-                "2.8.2-bukkit",
+        Status status = new Status("UNKNOWN",
+                null,
+                true,
+                "3.0.0-bukkit",
                 new ArrayList<String>() {{
                     add("world");
                     add("end");

@@ -27,8 +27,10 @@ public class BungeeCordServiceTest {
 
     @Test
     public void test1Get() {
-        Status status = new Status(true,
-                "2.7.0-bungee",
+        Status status = new Status("UNKNOWN",
+                null,
+                true,
+                "3.0.0-bungee",
                 null,
                 null,
                 75,
