@@ -34,6 +34,14 @@ public class ZPermissionsListener extends PermissionListener {
                     }
                 } else if (args[3].equalsIgnoreCase("removegroup") || args[3].equalsIgnoreCase("rmgroup") || args[3].equalsIgnoreCase("remove") || args[3].equalsIgnoreCase("rm")) {
                     update(op);
+                } else if (args[3].equalsIgnoreCase("addgroup") || args[3].equalsIgnoreCase("add")) {
+                    update(op);
+                }
+            } else if (args[1].equalsIgnoreCase("group")) {
+                String name = args.length > 5 ? args[5] : args[4];
+                OfflinePlayer op = Bukkit.getOfflinePlayer(name);
+                if (args[3].equalsIgnoreCase("add") || args[3].equalsIgnoreCase("remove")) {
+                    update(op);
                 }
             }
         }
