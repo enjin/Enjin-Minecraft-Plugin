@@ -13,7 +13,7 @@ public class PermissionsBukkitListener extends PermissionListener {
         }
 
         String[] args = command.split(" ");
-        if (args.length > 3 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("perms") || args[0].equalsIgnoreCase("permissons"))) {
+        if (args.length > 3 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("perms") || args[0].equalsIgnoreCase("permissions"))) {
             //Make sure the user has permissions to run the value, otherwise we are just wasting time...
             if (args[1].equalsIgnoreCase("setrank") || args[1].equalsIgnoreCase("rank")) {
                 if (args.length >= 4 && sender.hasPermission("permissions.setrank." + args[3])) {
