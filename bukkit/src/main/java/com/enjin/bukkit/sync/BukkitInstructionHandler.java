@@ -99,8 +99,10 @@ public class BukkitInstructionHandler implements InstructionHandler {
             }
 
             EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-            EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-            EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+            if (id > -1) {
+                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+            }
         };
 
         if (delay <= 0) {
