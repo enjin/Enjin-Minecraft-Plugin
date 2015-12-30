@@ -39,7 +39,8 @@ public class RPCPacketManager implements Runnable {
             nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
         }
 
-        Status status = new Status(plugin.getMcVersion(),
+        Status status = new Status(System.getProperty("java.version"),
+                plugin.getMcVersion(),
                 getPlugins(),
                 VaultManager.isPermissionsAvailable(),
                 plugin.getDescription().getVersion(),

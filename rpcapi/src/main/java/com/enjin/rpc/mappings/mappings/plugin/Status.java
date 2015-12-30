@@ -14,6 +14,9 @@ import java.util.Map;
 @AllArgsConstructor
 public class Status {
     @Getter
+    @SerializedName(value = "java_version")
+    private String javaVersion;
+    @Getter
     @SerializedName(value = "mc_version")
     private String mcVersion;
     @Getter

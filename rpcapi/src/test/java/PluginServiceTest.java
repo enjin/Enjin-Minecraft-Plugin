@@ -38,7 +38,8 @@ public class PluginServiceTest {
 
     @Test
     public void test2Sync() {
-        Status status = new Status("UNKNOWN",
+        Status status = new Status(System.getProperty("java.version"),
+                "UNKNOWN",
                 null,
                 true,
                 "3.0.0-bukkit",
