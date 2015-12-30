@@ -1,7 +1,8 @@
 package com.enjin.bukkit;
 
 import java.io.*;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.enjin.bukkit.command.CommandBank;
@@ -30,6 +31,7 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
+import com.google.common.base.Optional;
 import lombok.Getter;
 
 import lombok.Setter;
@@ -148,7 +150,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             debug("Init commands done.");
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
-                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.empty(), Bukkit.getPort(), true);
+                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true);
                 if (data == null) {
                     authKeyInvalid = true;
                     debug("Auth key is invalid. Data could not be retrieved.");

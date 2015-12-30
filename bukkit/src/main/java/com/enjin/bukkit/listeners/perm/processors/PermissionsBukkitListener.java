@@ -45,7 +45,10 @@ public class PermissionsBukkitListener extends PermissionListener {
         List<Group> groups = plugin.getGroups(player.getUniqueId());
 
         List<String> result = Lists.newArrayList();
-        groups.forEach(group -> result.add(group.getName()));
+        for (Group group : groups) {
+            result.add(group.getName());
+        }
+
         return result.toArray(new String[]{});
     }
 }

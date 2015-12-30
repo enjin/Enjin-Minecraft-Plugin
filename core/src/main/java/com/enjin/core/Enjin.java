@@ -14,10 +14,6 @@ public class Enjin {
     private static EnjinConfig configuration;
 
     public static EnjinPlugin getPlugin() {
-        if (plugin == null) {
-            plugin = () -> null;
-        }
-
         return plugin;
     }
 

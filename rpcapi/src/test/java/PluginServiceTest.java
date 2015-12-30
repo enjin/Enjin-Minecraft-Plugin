@@ -1,10 +1,10 @@
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.core.config.EnjinConfig;
-import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.*;
 import com.enjin.rpc.mappings.services.PluginService;
+import com.google.common.base.Optional;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -14,7 +14,6 @@ import org.junit.runners.MethodSorters;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
@@ -27,7 +26,7 @@ public class PluginServiceTest {
     @Test
     public void test1Auth() {
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<Boolean> data = service.auth(Optional.empty(), PORT, true);
+        RPCData<Boolean> data = service.auth(Optional.<String>absent(), PORT, true);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());
@@ -85,7 +84,7 @@ public class PluginServiceTest {
     @Test
     public void test4GetStats() {
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<Stats> data = service.getStats(Optional.ofNullable(new ArrayList<Integer>(){{
+        RPCData<Stats> data = service.getStats(Optional.<List<Integer>>fromNullable(new ArrayList<Integer>(){{
             add(1584937);
             add(1604379);
         }}));

@@ -5,7 +5,6 @@ import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
 import com.enjin.bukkit.tasks.TPSMonitor;
-import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
@@ -17,11 +16,11 @@ import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import com.enjin.rpc.mappings.services.PluginService;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
@@ -118,11 +117,19 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<String> getPlugins() {
-        return Arrays.asList(Bukkit.getPluginManager().getPlugins()).stream().map(Plugin::getName).collect(Collectors.toList());
+        List<String> plugins = new ArrayList<>();
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+            plugins.add(plugin.getName());
+        }
+        return plugins;
     }
 
     private List<String> getWorlds() {
-        return Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList());
+        List<String> worlds = new ArrayList<>();
+        for (World plugin : Bukkit.getWorlds()) {
+            worlds.add(plugin.getName());
+        }
+        return worlds;
     }
 
     private List<String> getGroups() {
@@ -144,7 +151,11 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<PlayerInfo> getOnlinePlayers() {
-        return Bukkit.getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(), player.getUniqueId())).collect(Collectors.toList());
+        List<PlayerInfo> infos = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            infos.add(new PlayerInfo(player.getName(), player.getUniqueId()));
+        }
+        return infos;
     }
 
     private Map<String, PlayerGroupInfo> getPlayerGroups() {
@@ -160,7 +171,10 @@ public class RPCPacketManager implements Runnable {
             update.put(player, groups.get(player));
         }
 
-        update.forEach((player, info) -> groups.remove(player));
+        for (Map.Entry<String, PlayerGroupInfo> entry : update.entrySet()) {
+            groups.remove(entry.getKey());
+        }
+
         EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
         return update;
     }

@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
-public abstract class PermissionListener implements Listener, PermissionProcessor {
+public abstract class PermissionListener extends PermissionProcessor implements Listener {
     @EventHandler
     public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
         processCommand(event.getPlayer(), event.getMessage().replaceFirst("/", "").trim(), event);

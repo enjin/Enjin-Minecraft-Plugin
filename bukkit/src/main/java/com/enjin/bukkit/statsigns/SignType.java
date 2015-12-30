@@ -1,11 +1,11 @@
 package com.enjin.bukkit.statsigns;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,13 +38,13 @@ public enum SignType {
 
         if (matcher.matches()) {
             try {
-                return Optional.ofNullable(Integer.parseInt(matcher.group(1)));
+                return Optional.fromNullable(Integer.parseInt(matcher.group(1)));
             } catch (NumberFormatException e) {
-                return Optional.empty();
+                return Optional.absent();
             }
         }
 
-        return Optional.empty();
+        return Optional.absent();
     }
 
     public enum SubType {

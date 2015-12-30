@@ -30,7 +30,7 @@ public class VoteCommands {
         }
 
         if (!plugin.getPlayerVotes().containsKey(listname)) {
-            plugin.getPlayerVotes().put(listname, new ArrayList<>());
+            plugin.getPlayerVotes().put(listname, new ArrayList<Object[]>());
         }
 
         plugin.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});

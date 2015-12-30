@@ -10,13 +10,13 @@ import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
+import com.google.common.base.Optional;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class RPCShopFetcher implements Runnable {
@@ -37,7 +37,7 @@ public class RPCShopFetcher implements Runnable {
             return;
         }
 
-        Player player = p.get();
+        final Player player = p.get();
         RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(player.getName());
 
         if (data == null) {
@@ -66,7 +66,12 @@ public class RPCShopFetcher implements Runnable {
         PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
 
         if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> BuyCommand.buy(player, new String[]{}), 0);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    BuyCommand.buy(player, new String[]{});
+                }
+            }, 0);
         } else {
             TextShopUtil.sendTextShop(player, instance, -1);
         }

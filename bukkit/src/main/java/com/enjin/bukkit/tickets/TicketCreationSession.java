@@ -39,11 +39,14 @@ public class TicketCreationSession {
         this.moduleId = moduleId;
         this.idMap = module.getIdMappedQuestions();
         this.questions = new ArrayList<>(module.getQuestions());
-        Collections.sort(this.questions, (q1, q2) -> {
-            if (q1.getOrder() == q2.getOrder()) {
-                return Integer.compare(q1.getId(), q2.getId());
-            } else {
-                return Integer.compare(q1.getOrder(), q2.getOrder());
+        Collections.sort(this.questions, new Comparator<Question>() {
+            @Override
+            public int compare(Question q1, Question q2) {
+                if (q1.getOrder() == q2.getOrder()) {
+                    return Integer.compare(q1.getId(), q2.getId());
+                } else {
+                    return Integer.compare(q1.getOrder(), q2.getOrder());
+                }
             }
         });
 
@@ -70,10 +73,13 @@ public class TicketCreationSession {
 
         if (factory == null) {
             factory = new ConversationFactory(EnjinMinecraftPlugin.getInstance());
-            factory.addConversationAbandonedListener(event -> {
-                if (event.getContext().getForWhom() instanceof Player) {
-                    Player p = (Player) event.getContext().getForWhom();
-                    sessions.remove(p.getUniqueId());
+            factory.addConversationAbandonedListener(new ConversationAbandonedListener() {
+                @Override
+                public void conversationAbandoned(ConversationAbandonedEvent event) {
+                    if (event.getContext().getForWhom() instanceof Player) {
+                        Player p = (Player) event.getContext().getForWhom();
+                        sessions.remove(p.getUniqueId());
+                    }
                 }
             });
             factory.withEscapeSequence("abandon-ticket");
@@ -156,7 +162,12 @@ public class TicketCreationSession {
             final Player player = Bukkit.getPlayer(uuid);
 
             if (player != null) {
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> TicketSubmission.submit(player, moduleId, new ArrayList<>(responses.values())));
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        TicketSubmission.submit(player, moduleId, new ArrayList<>(responses.values()));
+                    }
+                });
             }
 
             return null;

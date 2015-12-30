@@ -6,6 +6,7 @@ import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.minecraft.ServerInfo;
 import com.enjin.rpc.mappings.mappings.minecraft.MinecraftPlayerInfo;
+import com.google.common.base.Optional;
 import com.google.gson.reflect.TypeToken;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
@@ -15,7 +16,6 @@ import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class MinecraftService implements Service {
     public RPCData<List<ServerInfo>> getServers() {

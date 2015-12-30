@@ -13,6 +13,7 @@ import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.Stats;
 import com.enjin.rpc.mappings.services.PluginService;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.bukkit.*;
@@ -23,7 +24,6 @@ import org.bukkit.block.Skull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class StatSignManager {
     @Getter
@@ -53,12 +53,15 @@ public class StatSignManager {
         }
     }
 
-    public static void schedule(EnjinMinecraftPlugin plugin, boolean delayed) {
-        Runnable runnable = () -> {
-            updateItems();
-            fetchStats();
-            update();
-            schedule(plugin, true);
+    public static void schedule(final EnjinMinecraftPlugin plugin, boolean delayed) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                updateItems();
+                fetchStats();
+                update();
+                schedule(plugin, true);
+            }
         };
 
         if (plugin.isEnabled()) {
@@ -71,7 +74,7 @@ public class StatSignManager {
     }
 
     public static void fetchStats() {
-        RPCData<Stats> data = EnjinServices.getService(PluginService.class).getStats(Optional.ofNullable(items));
+        RPCData<Stats> data = EnjinServices.getService(PluginService.class).getStats(Optional.fromNullable(items));
 
         if (data == null) {
             Enjin.getPlugin().debug("Failed to fetch stats from Enjin web services.");
@@ -82,16 +85,19 @@ public class StatSignManager {
         }
     }
 
-    public static void add(SignData data) {
+    public static void add(final SignData data) {
         if (config != null) {
             config.getSigns().add(data);
             config.save(file);
 
             if (data.getSubType() != null && data.getSubType() == SignType.SubType.ITEMID && data.getItemId() != null) {
                 updateItems();
-                Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-                    fetchStats();
-                    update(data);
+                Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        fetchStats();
+                        update(data);
+                    }
                 });
             } else {
                 update(data);
@@ -100,74 +106,90 @@ public class StatSignManager {
     }
 
     public static void remove(SerializableLocation location) {
-        if (config != null && config.getSigns().removeIf((data) -> data.getLocation().equals(location))) {
+        boolean removed = false;
+        for (SignData data : new ArrayList<>(config.getSigns())) {
+            if (data.getLocation().equals(location)) {
+                removed = config.getSigns().remove(data);
+            }
+        }
+
+        if (config != null && removed) {
             config.save(file);
             updateItems();
         }
     }
 
     public static void update() {
-        new ArrayList<>(config.getSigns()).forEach(StatSignManager::update);
+        for (SignData data : new ArrayList<>(config.getSigns())) {
+            StatSignManager.update(data);
+        }
     }
 
-    public static void update(SignData data) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), () -> {
-            Location location = data.getLocation().toLocation();
-            Block block = location.getBlock();
+    public static void update(final SignData data) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                Location location = data.getLocation().toLocation();
+                Block block = location.getBlock();
 
-            if (block.getState() == null || !(block.getState() instanceof Sign)) {
-                config.getSigns().remove(data);
-                return;
-            }
+                if (block.getState() == null || !(block.getState() instanceof Sign)) {
+                    config.getSigns().remove(data);
+                    return;
+                }
 
-            Sign sign = (Sign) block.getState();
-            String name = null;
-            switch (data.getType()) {
-                case DONATION:
-                    name = StatSignProcessor.setPurchaseSign(sign, data, stats);
-                    break;
-                case TOPVOTER:
-                    name = StatSignProcessor.setTopVoterSign(sign, data, stats);
-                    break;
-                case VOTER:
-                    name = StatSignProcessor.setVoterSign(sign, data, stats);
-                    break;
-                case TOPPLAYER:
-                    name = StatSignProcessor.setTopPlayerSign(sign, data, stats);
-                    break;
-                case TOPPOSTER:
-                    name = StatSignProcessor.setTopPosterSign(sign, data, stats);
-                    break;
-                case TOPLIKES:
-                    name = StatSignProcessor.setTopLikesSign(sign, data, stats);
-                    break;
-                case NEWMEMBER:
-                    name = StatSignProcessor.setNewMemberSign(sign, data, stats);
-                    break;
-                case TOPPOINTS:
-                    name = StatSignProcessor.setTopPointsSign(sign, data, stats);
-                    break;
-                case POINTSSPENT:
-                    name = StatSignProcessor.setPointsSpentSign(sign, data, stats);
-                    break;
-                case MONEYSPENT:
-                    name = StatSignProcessor.setMoneySpentSign(sign, data, stats);
-                    break;
-                default:
-                    break;
-            }
-            sign.update();
+                Sign sign = (Sign) block.getState();
+                String name = null;
+                switch (data.getType()) {
+                    case DONATION:
+                        name = StatSignProcessor.setPurchaseSign(sign, data, stats);
+                        break;
+                    case TOPVOTER:
+                        name = StatSignProcessor.setTopVoterSign(sign, data, stats);
+                        break;
+                    case VOTER:
+                        name = StatSignProcessor.setVoterSign(sign, data, stats);
+                        break;
+                    case TOPPLAYER:
+                        name = StatSignProcessor.setTopPlayerSign(sign, data, stats);
+                        break;
+                    case TOPPOSTER:
+                        name = StatSignProcessor.setTopPosterSign(sign, data, stats);
+                        break;
+                    case TOPLIKES:
+                        name = StatSignProcessor.setTopLikesSign(sign, data, stats);
+                        break;
+                    case NEWMEMBER:
+                        name = StatSignProcessor.setNewMemberSign(sign, data, stats);
+                        break;
+                    case TOPPOINTS:
+                        name = StatSignProcessor.setTopPointsSign(sign, data, stats);
+                        break;
+                    case POINTSSPENT:
+                        name = StatSignProcessor.setPointsSpentSign(sign, data, stats);
+                        break;
+                    case MONEYSPENT:
+                        name = StatSignProcessor.setMoneySpentSign(sign, data, stats);
+                        break;
+                    default:
+                        break;
+                }
+                sign.update();
 
-            if (name != null) {
-                updateHead(sign, data, name);
+                if (name != null) {
+                    updateHead(sign, data, name);
+                }
             }
         });
     }
 
     public static void updateItems() {
-        new ArrayList<>(config.getSigns()).stream()
-                .filter(data -> data.getType() == SignType.DONATION && data.getSubType() != null && data.getSubType().equals(SignType.SubType.ITEMID) && data.getItemId() != null)
-                .filter(data -> !items.contains(data.getItemId())).forEach(data -> items.add(data.getItemId()));
+        for (SignData data : new ArrayList<>(config.getSigns())) {
+            if (data.getType() == SignType.DONATION && data.getSubType() != null && data.getSubType().equals(SignType.SubType.ITEMID) && data.getItemId() != null) {
+                if (items.contains(data.getItemId())) {
+                    items.add(data.getItemId());
+                }
+            }
+        }
     }
 
     public static void updateHead(Sign sign, SignData data, String name) {

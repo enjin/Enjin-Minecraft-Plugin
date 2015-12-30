@@ -4,6 +4,7 @@ import com.enjin.bukkit.statsigns.SignData;
 import com.enjin.bukkit.statsigns.SignType;
 import com.enjin.bukkit.managers.StatSignManager;
 import com.enjin.bukkit.util.serialization.SerializableLocation;
+import com.google.common.base.Optional;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
@@ -12,7 +13,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class SignListener implements Listener {
     @EventHandler
@@ -21,7 +21,7 @@ public class SignListener implements Listener {
         for (SignType type : SignType.values()) {
             Optional<Integer> index = type.matches(line);
             SignType.SubType subType = null;
-            Optional<Integer> itemId = Optional.empty();
+            Optional<Integer> itemId = Optional.absent();
 
             if (index.isPresent()) {
                 if (event.getPlayer().hasPermission("enjin.sign.set")) {
@@ -53,9 +53,9 @@ public class SignListener implements Listener {
 
                             if (subType == SignType.SubType.ITEMID) {
                                 try {
-                                    itemId = Optional.ofNullable(Integer.parseInt(line2));
+                                    itemId = Optional.fromNullable(Integer.parseInt(line2));
                                 } catch (NumberFormatException e) {
-                                    itemId = Optional.empty();
+                                    itemId = Optional.absent();
                                 }
                             }
                         }

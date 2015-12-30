@@ -23,17 +23,20 @@ public class VaultManager {
         }
     }
 
-    private static void initEconomy(EnjinMinecraftPlugin plugin) {
+    private static void initEconomy(final EnjinMinecraftPlugin plugin) {
         RegisteredServiceProvider<Economy> provider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (provider != null) {
             economy = provider.getProvider();
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
-                } catch (AbstractMethodError e) {
-                    economyCompatibilityMode = true;
-                    Enjin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
-                    plugin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
+                    } catch (AbstractMethodError e) {
+                        economyCompatibilityMode = true;
+                        Enjin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+                        plugin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+                    }
                 }
             });
         }

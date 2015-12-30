@@ -37,7 +37,7 @@ public class VotifierListener implements Listener {
         String listname = event.getVote().getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 
         if (!plugin.getPlayerVotes().containsKey(listname)) {
-            plugin.getPlayerVotes().put(listname, new ArrayList<>());
+            plugin.getPlayerVotes().put(listname, new ArrayList<Object[]>());
         }
 
         plugin.getPlayerVotes().get(listname).add(new Object[]{userid, System.currentTimeMillis() / 1000});

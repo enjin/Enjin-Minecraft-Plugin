@@ -36,12 +36,15 @@ public class HeadCommands {
 
     @Permission("enjin.updateheads")
     @Directive(parent = "enjin", value = "updateheads", requireValidKey = true)
-    public static void update(CommandSender sender, String[] args) {
-        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-            sender.sendMessage(ChatColor.GREEN + "Fetching stat sign updates.");
-            StatSignManager.fetchStats();
-            StatSignManager.update();
-            sender.sendMessage(ChatColor.GREEN + "Stat signs have been updated.");
+    public static void update(final CommandSender sender, final String[] args) {
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                sender.sendMessage(ChatColor.GREEN + "Fetching stat sign updates.");
+                StatSignManager.fetchStats();
+                StatSignManager.update();
+                sender.sendMessage(ChatColor.GREEN + "Stat signs have been updated.");
+            }
         });
     }
 }

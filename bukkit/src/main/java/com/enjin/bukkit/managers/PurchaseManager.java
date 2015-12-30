@@ -3,24 +3,19 @@ package com.enjin.bukkit.managers;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
-import com.enjin.bukkit.util.text.TextUtils;
 import com.enjin.common.shop.PlayerShopInstance;
-import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
+import com.google.common.base.Optional;
 import lombok.Getter;
-import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PurchaseManager {
@@ -43,35 +38,38 @@ public class PurchaseManager {
         }
     }
 
-    public static void confirmPurchase(Player player) {
+    public static void confirmPurchase(final Player player) {
         if (!pendingPurchases.containsKey(player.getName())) {
             player.sendMessage(ChatColor.RED + "You do not have a pending purchase.");
             return;
         }
 
-        Integer id = pendingPurchases.get(player.getName());
+        final Integer id = pendingPurchases.get(player.getName());
         pendingPurchases.remove(player.getName());
 
-        Runnable runnable = () -> {
-            ShopService service = EnjinServices.getService(ShopService.class);
-            RPCData<Integer> data = service.purchase(player.getName(),
-                    id,
-                    Optional.empty(),
-                    Optional.empty(),
-                    Optional.empty(),
-                    false);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                ShopService service = EnjinServices.getService(ShopService.class);
+                RPCData<Integer> data = service.purchase(player.getName(),
+                        id,
+                        Optional.<Map<Integer, String>>absent(),
+                        Optional.<Integer>absent(),
+                        Optional.<Integer>absent(),
+                        false);
 
-            if (data == null) {
-                player.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
-                return;
+                if (data == null) {
+                    player.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+                    return;
+                }
+
+                if (data.getError() != null) {
+                    player.sendMessage(ChatColor.RED + data.getError().getMessage());
+                    return;
+                }
+
+                player.sendMessage(ChatColor.GREEN + "You successfully purchased the item. Your new point balance is: " + data.getResult().toString());
             }
-
-            if (data.getError() != null) {
-                player.sendMessage(ChatColor.RED + data.getError().getMessage());
-                return;
-            }
-
-            player.sendMessage(ChatColor.GREEN + "You successfully purchased the item. Your new point balance is: " + data.getResult().toString());
         };
 
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), runnable);

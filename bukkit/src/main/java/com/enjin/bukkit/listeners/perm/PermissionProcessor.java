@@ -9,10 +9,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 
-public interface PermissionProcessor {
-    public void processCommand(CommandSender sender, String command, Cancellable event);
+public abstract class PermissionProcessor {
+    public abstract void processCommand(CommandSender sender, String command, Cancellable event);
 
-    public default void update(OfflinePlayer player) {
+    public void update(OfflinePlayer player) {
         if (player == null) {
             return;
         }

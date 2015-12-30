@@ -4,6 +4,7 @@ import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.google.common.base.Optional;
 import com.google.gson.reflect.TypeToken;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
@@ -12,7 +13,6 @@ import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class PointService implements Service {
     public RPCData<Integer> get(final String player) {
@@ -82,7 +82,7 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> set(final String player, Integer points) {
+    public RPCData<Integer> set(final String player, final Integer points) {
         String method = "Points.set";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -115,7 +115,7 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> add(final String player, Integer points) {
+    public RPCData<Integer> add(final String player, final Integer points) {
         String method = "Points.add";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -148,7 +148,7 @@ public class PointService implements Service {
         }
     }
 
-    public RPCData<Integer> remove(final String player, Integer points) {
+    public RPCData<Integer> remove(final String player, final Integer points) {
         String method = "Points.remove";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());

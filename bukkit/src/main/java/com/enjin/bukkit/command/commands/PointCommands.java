@@ -18,9 +18,9 @@ public class PointCommands {
 
     @Permission(value = "enjin.points.add")
     @Directive(parent = "enjin", value = "addpoints")
-    public static void add(CommandSender sender, String[] args) {
-        String name;
-        Integer points;
+    public static void add(final CommandSender sender, final String[] args) {
+        final String name;
+        final Integer points;
         if (args.length == 1) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "Only a player can give themselves points.");
@@ -53,29 +53,32 @@ public class PointCommands {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-            PointService service = EnjinServices.getService(PointService.class);
-            RPCData<Integer> data = service.add(name, points);
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                PointService service = EnjinServices.getService(PointService.class);
+                RPCData<Integer> data = service.add(name, points);
 
-            if (data == null) {
-                sender.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
-                return;
+                if (data == null) {
+                    sender.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+                    return;
+                }
+
+                if (data.getError() != null) {
+                    sender.sendMessage(data.getError().getMessage());
+                    return;
+                }
+
+                sender.sendMessage(ChatColor.GREEN + (args.length == 1 ? "Your" : (name + "'s")) + " new point balance is " + ChatColor.GOLD + data.getResult().intValue());
             }
-
-            if (data.getError() != null) {
-                sender.sendMessage(data.getError().getMessage());
-                return;
-            }
-
-            sender.sendMessage(ChatColor.GREEN + (args.length == 1 ? "Your" : (name + "'s")) + " new point balance is " + ChatColor.GOLD + data.getResult().intValue());
         });
     }
 
     @Permission(value = "enjin.points.remove")
     @Directive(parent = "enjin", value = "removepoints")
-    public static void remove(CommandSender sender, String[] args) {
-        String name;
-        Integer points;
+    public static void remove(final CommandSender sender, final String[] args) {
+        final String name;
+        final Integer points;
         if (args.length == 1) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "Only a player can remove points from themselves.");
@@ -108,28 +111,31 @@ public class PointCommands {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-            PointService service = EnjinServices.getService(PointService.class);
-            RPCData<Integer> data = service.remove(name, points);
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                PointService service = EnjinServices.getService(PointService.class);
+                RPCData<Integer> data = service.remove(name, points);
 
-            if (data == null) {
-                sender.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
-                return;
+                if (data == null) {
+                    sender.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+                    return;
+                }
+
+                if (data.getError() != null) {
+                    sender.sendMessage(data.getError().getMessage());
+                    return;
+                }
+
+                sender.sendMessage(ChatColor.GREEN + (args.length == 1 ? "Your" : (name + "'s")) + " new point balance is " + ChatColor.GOLD + data.getResult().intValue());
             }
-
-            if (data.getError() != null) {
-                sender.sendMessage(data.getError().getMessage());
-                return;
-            }
-
-            sender.sendMessage(ChatColor.GREEN + (args.length == 1 ? "Your" : (name + "'s")) + " new point balance is " + ChatColor.GOLD + data.getResult().intValue());
         });
     }
 
     @Permission(value = "enjin.points.getself")
     @Directive(parent = "enjin", value = "getpoints", aliases = {"points"})
-    public static void get(CommandSender sender, String[] args) {
-        String name;
+    public static void get(final CommandSender sender, final String[] args) {
+        final String name;
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "Only a player can get their own points.");
@@ -146,29 +152,32 @@ public class PointCommands {
             name = args[0];
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-            PointService service = EnjinServices.getService(PointService.class);
-            RPCData<Integer> data = service.get(name);
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                PointService service = EnjinServices.getService(PointService.class);
+                RPCData<Integer> data = service.get(name);
 
-            if (data == null) {
-                sender.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
-                return;
+                if (data == null) {
+                    sender.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+                    return;
+                }
+
+                if (data.getError() != null) {
+                    sender.sendMessage(data.getError().getMessage());
+                    return;
+                }
+
+                sender.sendMessage(ChatColor.GREEN + (args.length == 0 ? "Your" : (name + "'s")) + " point balance is " + ChatColor.GOLD + data.getResult().intValue());
             }
-
-            if (data.getError() != null) {
-                sender.sendMessage(data.getError().getMessage());
-                return;
-            }
-
-            sender.sendMessage(ChatColor.GREEN + (args.length == 0 ? "Your" : (name + "'s")) + " point balance is " + ChatColor.GOLD + data.getResult().intValue());
         });
     }
 
     @Permission(value = "enjin.points.set")
     @Directive(parent = "enjin", value = "setpoints")
-    public static void set(CommandSender sender, String[] args) {
-        String name;
-        Integer points;
+    public static void set(final CommandSender sender, final String[] args) {
+        final String name;
+        final Integer points;
         if (args.length == 1) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "Only a player can set their own points.");
@@ -201,21 +210,24 @@ public class PointCommands {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-            PointService service = EnjinServices.getService(PointService.class);
-            RPCData<Integer> data = service.set(name, points);
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                PointService service = EnjinServices.getService(PointService.class);
+                RPCData<Integer> data = service.set(name, points);
 
-            if (data == null) {
-                sender.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
-                return;
+                if (data == null) {
+                    sender.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+                    return;
+                }
+
+                if (data.getError() != null) {
+                    sender.sendMessage(data.getError().getMessage());
+                    return;
+                }
+
+                sender.sendMessage(ChatColor.GREEN + (args.length == 0 ? "Your" : (name + "'s")) + " new point balance is " + ChatColor.GOLD + data.getResult().intValue());
             }
-
-            if (data.getError() != null) {
-                sender.sendMessage(data.getError().getMessage());
-                return;
-            }
-
-            sender.sendMessage(ChatColor.GREEN + (args.length == 0 ? "Your" : (name + "'s")) + " new point balance is " + ChatColor.GOLD + data.getResult().intValue());
         });
     }
 }

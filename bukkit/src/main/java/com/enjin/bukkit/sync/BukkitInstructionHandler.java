@@ -4,11 +4,11 @@ import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.tasks.EnjinUpdater;
-import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
+import com.google.common.base.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class BukkitInstructionHandler implements InstructionHandler {
@@ -79,29 +78,32 @@ public class BukkitInstructionHandler implements InstructionHandler {
     }
 
     @Override
-    public void execute(long id, String command, long delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
+    public void execute(final long id, final String command, final long delay, final Optional<Boolean> requireOnline, final Optional<String> name, final Optional<String> uuid) {
         for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
             if (Long.parseLong(c.getId()) == id) {
                 return;
             }
         }
 
-        Runnable runnable = () -> {
-            if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
-                if (uuid.isPresent() || name.isPresent()) {
-                    Player player = (uuid.isPresent() && !uuid.get().isEmpty()) ? Bukkit.getPlayer(UUID.fromString(uuid.get())) : Bukkit.getPlayer(name.get());
-                    if (player == null || !player.isOnline()) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
+                    if (uuid.isPresent() || name.isPresent()) {
+                        Player player = (uuid.isPresent() && !uuid.get().isEmpty()) ? Bukkit.getPlayer(UUID.fromString(uuid.get())) : Bukkit.getPlayer(name.get());
+                        if (player == null || !player.isOnline()) {
+                            return;
+                        }
+                    } else {
                         return;
                     }
-                } else {
-                    return;
                 }
-            }
 
-            EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-            if (id > -1) {
-                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-                EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                EnjinMinecraftPlugin.dispatchConsoleCommand(command);
+                if (id > -1) {
+                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                    EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                }
             }
         };
 
@@ -114,11 +116,16 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void commandConfirmed(List<Long> executed) {
-        for (long id : executed) {
-            Enjin.getPlugin().debug("Confirming Command ID: " + id);
-            new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()).stream().filter(command -> Long.parseLong(command.getId()) == id).forEach(command -> EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command));
-            EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+        for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
+            for (long id : executed) {
+                Enjin.getPlugin().debug("Confirming Command ID: " + id);
+                if (Long.parseLong(command.getId()) == id) {
+                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command);
+                }
+            }
         }
+
+        EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
     }
 
     @Override
@@ -143,7 +150,12 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void notify(List<String> players, String message, long time) {
-        players.stream().filter(p -> Bukkit.getPlayer(p) != null).forEach(p -> Bukkit.getPlayer(p).sendMessage(message));
+        for (String player : players) {
+            Player p = Bukkit.getPlayer(player);
+            if (p != null) {
+                p.sendMessage(message);
+            }
+        }
     }
 
     @Override

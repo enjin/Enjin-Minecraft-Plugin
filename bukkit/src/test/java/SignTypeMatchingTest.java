@@ -1,14 +1,13 @@
 import com.enjin.bukkit.statsigns.SignType;
 import com.enjin.core.Enjin;
 import com.enjin.core.config.EnjinConfig;
-import com.enjin.rpc.EnjinRPC;
+import com.google.common.base.Optional;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
-import java.util.Optional;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class SignTypeMatchingTest {

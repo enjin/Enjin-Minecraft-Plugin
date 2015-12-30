@@ -33,9 +33,9 @@ public class TicketManager {
 
     private static void clean() {
         TicketManager.getModules().clear();
-        TicketCreationSession.getSessions().forEach((uuid, session) -> {
+        for (TicketCreationSession session : TicketCreationSession.getSessions().values()) {
             session.getConversation().abandon();
-        });
+        }
     }
 
     public static void pollModules() {

@@ -7,6 +7,7 @@ import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.FilteredItem;
 import com.enjin.rpc.mappings.mappings.shop.Purchase;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
+import com.google.common.base.Optional;
 import com.google.gson.reflect.TypeToken;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;

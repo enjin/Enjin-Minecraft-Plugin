@@ -4,7 +4,6 @@ import Tux2.TuxTwoLib.TuxTwoPlayer;
 import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.tasks.TPSMonitor;
-import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.io.EnjinConsole;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
@@ -15,10 +14,10 @@ import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.tasks.ReportPublisher;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
-import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.enjin.rpc.mappings.services.PluginService;
+import com.google.common.base.Optional;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -363,7 +362,7 @@ public class CoreCommands {
     @Permission(value = "enjin.setkey")
     @Command(value = "enjinkey", aliases = "ek", requireValidKey = false)
     @Directive(parent = "enjin", value = "key", aliases = {"setkey", "sk", "enjinkey", "ek"}, requireValidKey = false)
-    public static void key(CommandSender sender, String[] args) {
+    public static void key(final CommandSender sender, final String[] args) {
         if (args.length != 1) {
             sender.sendMessage("USAGE: /enjin key <key>");
             return;
@@ -372,36 +371,39 @@ public class CoreCommands {
         Enjin.getLogger().info("Checking if key is valid");
         EnjinMinecraftPlugin.getInstance().getLogger().info("Checking if key is valid");
 
-        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-            if (Enjin.getConfiguration().getAuthKey().equals(args[0])) {
-                sender.sendMessage(ChatColor.GREEN + "That key has already been validated.");
-                return;
-            }
-
-            PluginService service = EnjinServices.getService(PluginService.class);
-            RPCData<Boolean> data = service.auth(Optional.of(args[0]), Bukkit.getPort(), true);
-
-            if (data == null) {
-                sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
-                return;
-            }
-
-            if (data.getError() != null) {
-                sender.sendMessage(ChatColor.RED + data.getError().getMessage());
-                return;
-            }
-
-            if (data.getResult().booleanValue()) {
-                sender.sendMessage(ChatColor.GREEN + "The key has been successfully validated.");
-                Enjin.getConfiguration().setAuthKey(args[0]);
-                EnjinMinecraftPlugin.saveConfiguration();
-
-                if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid()) {
-                    EnjinMinecraftPlugin.getInstance().setAuthKeyInvalid(false);
-                    EnjinMinecraftPlugin.getInstance().init();
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                if (Enjin.getConfiguration().getAuthKey().equals(args[0])) {
+                    sender.sendMessage(ChatColor.GREEN + "That key has already been validated.");
+                    return;
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED + "We were unable to validate the provided key.");
+
+                PluginService service = EnjinServices.getService(PluginService.class);
+                RPCData<Boolean> data = service.auth(Optional.of(args[0]), Bukkit.getPort(), true);
+
+                if (data == null) {
+                    sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+                    return;
+                }
+
+                if (data.getError() != null) {
+                    sender.sendMessage(ChatColor.RED + data.getError().getMessage());
+                    return;
+                }
+
+                if (data.getResult().booleanValue()) {
+                    sender.sendMessage(ChatColor.GREEN + "The key has been successfully validated.");
+                    Enjin.getConfiguration().setAuthKey(args[0]);
+                    EnjinMinecraftPlugin.saveConfiguration();
+
+                    if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid()) {
+                        EnjinMinecraftPlugin.getInstance().setAuthKeyInvalid(false);
+                        EnjinMinecraftPlugin.getInstance().init();
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "We were unable to validate the provided key.");
+                }
             }
         });
     }

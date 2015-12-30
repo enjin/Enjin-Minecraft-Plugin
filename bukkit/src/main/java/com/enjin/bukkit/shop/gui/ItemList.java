@@ -30,7 +30,7 @@ public class ItemList extends Menu {
         init(parent, shop, category.getItems());
     }
 
-    private void init(Menu parent, Shop shop, List<Item> items) {
+    private void init(final Menu parent, final Shop shop, final List<Item> items) {
         MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back", new MaterialData(Material.ARROW)) {
             @Override
             public void onClick(Player player) {
@@ -43,7 +43,7 @@ public class ItemList extends Menu {
         addMenuItem(back, 0);
 
         int i = 0;
-        for (Item item : items) {
+        for (final Item item : items) {
             Material material = Material.PAPER;
 
             for (Material mat : Material.values()) {

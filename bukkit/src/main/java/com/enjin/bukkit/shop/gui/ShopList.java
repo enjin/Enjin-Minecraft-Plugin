@@ -33,7 +33,7 @@ public class ShopList extends Menu {
 
     private void init(PlayerShopInstance instance) {
         int i = 0;
-        for (Shop shop : instance.getShops()) {
+        for (final Shop shop : instance.getShops()) {
             String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + shop.getName();
             MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(Material.CHEST)) {
                 @Override

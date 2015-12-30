@@ -19,7 +19,12 @@ public class TicketViewBuilder {
     private static final DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss dd-MM-yyyy");
 
     public static BaseComponent[] buildTicketList(List<Ticket> tickets) {
-        Collections.sort(tickets, (o1, o2) -> Long.compare(o1.getUpdated(), o2.getUpdated()));
+        Collections.sort(tickets, new Comparator<Ticket>() {
+            @Override
+            public int compare(Ticket o1, Ticket o2) {
+                return Long.compare(o1.getUpdated(), o2.getUpdated());
+            }
+        });
 
         ComponentBuilder builder = new ComponentBuilder("Your Tickets:\n")
                 .color(ChatColor.GOLD);
@@ -37,7 +42,12 @@ public class TicketViewBuilder {
     }
 
     public static BaseComponent[] buildTicket(String ticketCode, List<Reply> replies, boolean showPrivate) {
-        Collections.sort(replies, (o1, o2) -> Long.compare(o1.getSent(), o2.getSent()));
+        Collections.sort(replies, new Comparator<Reply>() {
+            @Override
+            public int compare(Reply o1, Reply o2) {
+                return Long.compare(o1.getSent(), o2.getSent());
+            }
+        });
 
         ComponentBuilder builder = null;
 

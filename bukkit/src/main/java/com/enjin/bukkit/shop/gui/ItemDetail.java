@@ -31,7 +31,7 @@ public class ItemDetail extends Menu {
         init(parent, shop, item);
     }
 
-    private void init(Menu parent, Shop shop, Item item) {
+    private void init(final Menu parent, final Shop shop, final Item item) {
         MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back", new MaterialData(Material.ARROW)) {
             @Override
             public void onClick(Player player) {

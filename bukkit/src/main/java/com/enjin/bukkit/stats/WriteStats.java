@@ -4,8 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -40,7 +39,12 @@ public class WriteStats {
     @SuppressWarnings("unchecked")
     public String getStatsJSON() {
         JSONObject stats = plugin.getServerStats().getSerialized();
-        JSONArray players = plugin.getPlayerStats().entrySet().stream().map(eplayer -> eplayer.getValue().getSerialized()).collect(Collectors.toCollection(() -> new JSONArray()));
+        JSONArray players = new JSONArray();
+
+        for (Map.Entry<String, StatsPlayer> player : plugin.getPlayerStats().entrySet()) {
+            players.add(player.getValue().getSerialized());
+        }
+
         stats.put("players", players);
         return JSONValue.toJSONString(stats);
     }

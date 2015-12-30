@@ -31,7 +31,7 @@ public class CategoryList extends Menu {
         init(parent, shop, category.getCategories());
     }
 
-    private void init(Menu parent, Shop shop, List<Category> categories) {
+    private void init(final Menu parent, final Shop shop, final List<Category> categories) {
         MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back", new MaterialData(Material.ARROW)) {
             @Override
             public void onClick(Player player) {
@@ -44,7 +44,7 @@ public class CategoryList extends Menu {
         addMenuItem(back, 0);
 
         int i = 0;
-        for (Category category : categories) {
+        for (final Category category : categories) {
             String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + category.getName();
             Material material = Material.getMaterial(category.getIconItem());
             MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(material == null ? Material.CHEST : material), category.getIconDamage() != null ? category.getIconDamage().byteValue() : 0) {

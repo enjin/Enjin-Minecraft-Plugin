@@ -1,11 +1,11 @@
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.core.config.EnjinConfig;
-import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.minecraft.MinecraftPlayerInfo;
 import com.enjin.rpc.mappings.mappings.minecraft.ServerInfo;
 import com.enjin.rpc.mappings.services.MinecraftService;
+import com.google.common.base.Optional;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -15,7 +15,6 @@ import org.junit.runners.MethodSorters;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class MinecraftServiceTest {
@@ -42,11 +41,11 @@ public class MinecraftServiceTest {
         MinecraftService service = EnjinServices.getService(MinecraftService.class);
 
         RPCData<List<MinecraftPlayerInfo>> data = service.getPlayers(SERVER,
-                Optional.of(new ArrayList<String>(){{
+                Optional.<List<String>>of(new ArrayList<String>(){{
                     add("Favorlock");
                     add("AlmightyToaster");
                 }}),
-                Optional.empty());
+                Optional.<List<String>>absent());
 
         Assert.assertNotNull(data);
         Assert.assertNotNull(data.getResult());
