@@ -13,6 +13,7 @@ import com.enjin.bukkit.listeners.perm.PermissionListener;
 import com.enjin.bukkit.listeners.perm.processors.*;
 import com.enjin.bukkit.managers.*;
 import com.enjin.bukkit.util.Log;
+import com.enjin.bukkit.util.VersionUtil;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.listeners.*;
 import com.enjin.bukkit.shop.ShopListener;
@@ -104,7 +105,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void onEnable() {
         instance = this;
         Enjin.setPlugin(instance);
-        preInit();
         init();
     }
 
@@ -114,10 +114,19 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         disableManagers();
     }
 
-    public void preInit() {
+    public boolean initVersion() {
+        if (VersionUtil.validate("8f9ff9f")) {
+            Enjin.getLogger().info(Bukkit.getVersion() + " is compatible with this version of EMP!");
+        } else {
+            Enjin.getLogger().warning(Bukkit.getVersion() + " is not compatible with this version of EMP, please update to the latest version!");
+            return false;
+        }
+
         String bukkitVersion = Bukkit.getBukkitVersion();
         String[] versionParts = bukkitVersion.split("-");
         mcVersion = versionParts.length >= 1 ? versionParts[0] : "UNKNOWN";
+
+        return true;
     }
 
     public void init() {
@@ -130,7 +139,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             initConfig();
 
             Enjin.setLogger(new Log(getDataFolder()));
-            debug("Init config done.");
+
+            if (!initVersion()) {
+                return;
+            }
 
             initCommands();
             debug("Init commands done.");
