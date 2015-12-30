@@ -89,7 +89,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
         Runnable runnable = () -> {
             if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
                 if (uuid.isPresent() || name.isPresent()) {
-                    Player player = uuid.isPresent() ? Bukkit.getPlayer(UUID.fromString(uuid.get())) : Bukkit.getPlayer(name.get());
+                    Player player = (uuid.isPresent() && !uuid.get().isEmpty()) ? Bukkit.getPlayer(UUID.fromString(uuid.get())) : Bukkit.getPlayer(name.get());
                     if (player == null || !player.isOnline()) {
                         return;
                     }
