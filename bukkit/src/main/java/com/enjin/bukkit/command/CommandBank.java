@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -176,7 +177,9 @@ public class CommandBank implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onServerCommand(ServerCommandEvent event) {
         if (handle(event.getSender(), event.getCommand())) {
-            event.setCancelled(true);
+            if (event instanceof Cancellable) {
+                event.setCancelled(true);
+            }
         }
     }
 
