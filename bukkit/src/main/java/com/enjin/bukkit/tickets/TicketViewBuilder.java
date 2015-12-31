@@ -2,10 +2,8 @@ package com.enjin.bukkit.tickets;
 
 import com.enjin.rpc.mappings.mappings.tickets.Reply;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import mkremins.fanciful.FancyMessage;
+import org.bukkit.ChatColor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class TicketViewBuilder {
     private static final DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss dd-MM-yyyy");
 
-    public static BaseComponent[] buildTicketList(List<Ticket> tickets) {
+    public static FancyMessage buildTicketList(List<Ticket> tickets) {
         Collections.sort(tickets, new Comparator<Ticket>() {
             @Override
             public int compare(Ticket o1, Ticket o2) {
@@ -26,22 +24,22 @@ public class TicketViewBuilder {
             }
         });
 
-        ComponentBuilder builder = new ComponentBuilder("Your Tickets:\n")
+        FancyMessage message = new FancyMessage("Your Tickets:\n")
                 .color(ChatColor.GOLD);
 
         for (Ticket ticket : tickets) {
-            builder.append(ticket.getCode() + ") " + ticket.getSubject() + " (" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay((System.currentTimeMillis() / 1000) - ticket.getUpdated()) + ")\n")
+            message.then(ticket.getCode() + ") " + ticket.getSubject() + " (" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay((System.currentTimeMillis() / 1000) - ticket.getUpdated()) + ")\n")
                     .color(ChatColor.GREEN)
-                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/e ticket " + ticket.getCode()));
+                    .command("/e ticket " + ticket.getCode());
         }
 
-        builder.append("[Please click a ticket or type /e ticket <#> to view it]")
+        message.then("[Please click a ticket or type /e ticket <#> to view it]")
                 .color(ChatColor.GOLD);
 
-        return builder.create();
+        return message;
     }
 
-    public static BaseComponent[] buildTicket(String ticketCode, List<Reply> replies, boolean showPrivate) {
+    public static FancyMessage buildTicket(String ticketCode, List<Reply> replies, boolean showPrivate) {
         Collections.sort(replies, new Comparator<Reply>() {
             @Override
             public int compare(Reply o1, Reply o2) {
@@ -49,14 +47,13 @@ public class TicketViewBuilder {
             }
         });
 
-        ComponentBuilder builder = null;
-
+        FancyMessage message = null;
         for (Reply reply : replies) {
-            if (builder == null) {
-                builder = new ComponentBuilder("---------------\n")
+            if (message == null) {
+                message = new FancyMessage("---------------\n")
                         .color(ChatColor.GOLD);
             } else {
-                builder.append("---------------\n")
+                message.then("---------------\n")
                         .color(ChatColor.GOLD);
             }
 
@@ -64,25 +61,25 @@ public class TicketViewBuilder {
                 continue;
             }
 
-            builder.append(reply.getUsername() + ChatColor.GRAY.toString() + " (" + ChatColor.GREEN.toString() + dateFormat.format(new Date(reply.getSent() * 1000)) + ChatColor.GRAY.toString() + ")" + ChatColor.DARK_GRAY.toString() + ":\n")
+            message.then(reply.getUsername() + ChatColor.GRAY.toString() + " (" + ChatColor.GREEN.toString() + dateFormat.format(new Date(reply.getSent() * 1000)) + ChatColor.GRAY.toString() + ")" + ChatColor.DARK_GRAY.toString() + ":\n")
                     .color(ChatColor.GREEN);
             if (showPrivate && reply.getMode().equalsIgnoreCase("private")) {
-                builder.append(ChatColor.DARK_GRAY.toString() + "(" + ChatColor.GRAY.toString() + "Private" + ChatColor.DARK_GRAY.toString() + ") ");
+                message.then(ChatColor.DARK_GRAY.toString() + "(" + ChatColor.GRAY.toString() + "Private" + ChatColor.DARK_GRAY.toString() + ") ");
             }
-            builder.append(reply.getText().replaceAll("\\s+", " ").replace("<br>", "\n").replace("<b>", ChatColor.GRAY.toString() + ChatColor.BOLD.toString()).replace("</b>", ChatColor.DARK_GRAY.toString() + ":" + ChatColor.GOLD.toString()) + "\n")
+            message.then(reply.getText().replaceAll("\\s+", " ").replace("<br>", "\n").replace("<b>", ChatColor.GRAY.toString() + ChatColor.BOLD.toString()).replace("</b>", ChatColor.DARK_GRAY.toString() + ":" + ChatColor.GOLD.toString()) + "\n")
                     .color(ChatColor.GOLD);
         }
 
         Reply reply = replies.get(0);
-        builder.append(ChatColor.GRAY + "[" + ChatColor.GOLD + "To reply to this ticket please type:\n");
-        builder.append(ChatColor.GREEN + "/e reply " + reply.getPresetId() + " " + ticketCode + " <message>")
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/e reply " + reply.getPresetId() + " " + ticketCode + " <message>"));
-        builder.append(ChatColor.GOLD + ",\nor to set the status of this ticket type:\n");
-        builder.append(ChatColor.GREEN + "/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>")
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>"));
-        builder.append(ChatColor.GRAY + "]");
+        message.then(ChatColor.GRAY + "[" + ChatColor.GOLD + "To reply to this ticket please type:\n");
+        message.then(ChatColor.GREEN + "/e reply " + reply.getPresetId() + " " + ticketCode + " <message>")
+                .command("/e reply " + reply.getPresetId() + " " + ticketCode + " <message>");
+        message.then(ChatColor.GOLD + ",\nor to set the status of this ticket type:\n");
+        message.then(ChatColor.GREEN + "/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>")
+                .command("/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>");
+        message.then(ChatColor.GRAY + "]");
 
-        return builder.create();
+        return message;
     }
 
     private static String getLastUpdateDisplay(long time) {

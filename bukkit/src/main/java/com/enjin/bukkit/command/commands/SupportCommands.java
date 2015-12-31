@@ -104,7 +104,7 @@ public class SupportCommands {
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
-                                player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                                TicketViewBuilder.buildTicketList(tickets).send(player);
                             } else {
                                 player.sendMessage("You do not have any tickets at this time!");
                             }
@@ -128,7 +128,7 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")));
+                                TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")).send(player);
                             } else {
                                 player.sendMessage("You entered an invalid ticket code!");
                             }
@@ -160,7 +160,7 @@ public class SupportCommands {
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
-                                player.spigot().sendMessage(TicketViewBuilder.buildTicketList(tickets));
+                                TicketViewBuilder.buildTicketList(tickets).send(player);
                             } else {
                                 player.sendMessage("There are no open tickets at this time.");
                             }
@@ -184,7 +184,7 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                player.spigot().sendMessage(TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")));
+                                TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")).send(player);
                             } else {
                                 player.sendMessage("You entered an invalid ticket code!");
                             }

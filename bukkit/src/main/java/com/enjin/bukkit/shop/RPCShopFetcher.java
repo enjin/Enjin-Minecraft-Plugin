@@ -11,9 +11,8 @@ import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
 import com.google.common.base.Optional;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -41,19 +40,19 @@ public class RPCShopFetcher implements Runnable {
         RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(player.getName());
 
         if (data == null) {
-            player.spigot().sendMessage(new ComponentBuilder("Failed to fetch shop data.").color(ChatColor.RED).create());
+            player.sendMessage(ChatColor.RED + "Failed to fetch shop data.");
             return;
         }
 
         if (data.getError() != null) {
-            player.spigot().sendMessage(new ComponentBuilder(data.getError().getMessage()).create());
+            player.sendMessage(ChatColor.RED + data.getError().getMessage());
             return;
         }
 
         List<Shop> shops = data.getResult();
 
         if (shops == null || shops.isEmpty()) {
-            player.spigot().sendMessage(new ComponentBuilder("There are no shops available at this time.").color(ChatColor.RED).create());
+            player.sendMessage(ChatColor.RED + "There are no shops available at this time.");
             return;
         }
 
