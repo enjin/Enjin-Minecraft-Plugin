@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -16,11 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BPermissionsListener extends PermissionListener {
     private ConcurrentHashMap<String, String> usereditingwhatplayer = new ConcurrentHashMap<String, String>();
 
-    public void processCommand(CommandSender sender, String command, Cancellable event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
+    public void processCommand(CommandSender sender, String command, Event event) {
         //Make sure the user has permissions to run the value, otherwise we are just wasting time...
         if (sender.hasPermission("bPermissions.admin") && command.toLowerCase().startsWith("user ")) {
             String[] args = command.split(" ");

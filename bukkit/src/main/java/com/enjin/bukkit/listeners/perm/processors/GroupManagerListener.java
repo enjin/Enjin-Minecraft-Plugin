@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -22,7 +23,7 @@ public class GroupManagerListener extends PermissionListener {
     }
 
     @Override
-    public void processCommand(CommandSender sender, String command, Cancellable event) {
+    public void processCommand(CommandSender sender, String command, Event event) {
         // Not Used
     }
 }

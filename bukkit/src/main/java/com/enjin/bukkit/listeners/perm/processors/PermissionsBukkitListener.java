@@ -8,15 +8,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 
 import java.util.List;
 
 public class PermissionsBukkitListener extends PermissionListener {
-    public void processCommand(CommandSender sender, String command, Cancellable event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
+    public void processCommand(CommandSender sender, String command, Event event) {
         String[] args = command.split(" ");
         if (args.length > 3 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("perms") || args[0].equalsIgnoreCase("permissions"))) {
             //Make sure the user has permissions to run the value, otherwise we are just wasting time...

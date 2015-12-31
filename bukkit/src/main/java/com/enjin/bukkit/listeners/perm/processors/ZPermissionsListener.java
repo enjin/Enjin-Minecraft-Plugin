@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsRankChangeEvent;
 
@@ -15,7 +16,7 @@ public class ZPermissionsListener extends PermissionListener {
     }
 
     @Override
-    public void processCommand(CommandSender sender, String command, Cancellable event) {
+    public void processCommand(CommandSender sender, String command, Event event) {
         String[] args = command.split(" ");
         if (args.length >= 5 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("perms") || args[0].equalsIgnoreCase("permissions"))) {
             if (args[1].equalsIgnoreCase("player")) {

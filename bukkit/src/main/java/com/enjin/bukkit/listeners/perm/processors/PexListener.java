@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -28,11 +29,7 @@ public class PexListener extends PermissionListener {
 
     }
 
-    public void processCommand(CommandSender sender, String command, Cancellable event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
+    public void processCommand(CommandSender sender, String command, Event event) {
         //Make sure the user has permissions to run the value, otherwise we are just wasting time...
         if (command.toLowerCase().startsWith("pex group ")) {
             String[] args = command.split(" ");
