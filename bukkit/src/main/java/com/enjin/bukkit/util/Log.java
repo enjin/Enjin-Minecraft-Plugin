@@ -59,7 +59,9 @@ public class Log implements EnjinLogger {
     }
 
     public void debug(String msg) {
-        logger.info("[EMP DEBUG] " + msg);
+        if (Enjin.getConfiguration().isDebug()) {
+            logger.info("[EMP DEBUG] " + msg);
+        }
     }
 
     public String getLastLine() {
