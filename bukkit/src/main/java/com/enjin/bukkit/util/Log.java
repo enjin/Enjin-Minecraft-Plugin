@@ -77,6 +77,7 @@ public class Log implements EnjinLogger {
         root.addAppender(listener);
 
         if (Enjin.getConfiguration().isLoggingEnabled()) {
+            layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charsets.UTF_8.name(), null);
             FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinFileOut", "false", null, null, layout, null, null, null, config);
             fileAppender.start();
             logger.addAppender(fileAppender);
