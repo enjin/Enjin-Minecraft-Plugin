@@ -259,8 +259,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void initTasks() {
         debug("Starting tasks.");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 4L);
+        if (Enjin.getConfiguration(EMPConfig.class).isListenForBans()) {
+            Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L);
+        }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 2L);
         if (Enjin.getConfiguration().isAutoUpdate() && isUpdateFromCurseForge()) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CurseUpdater(this, 44560, this.getFile(), CurseUpdater.UpdateType.DEFAULT, true), 0, 20L * 60L * 30L);
         }

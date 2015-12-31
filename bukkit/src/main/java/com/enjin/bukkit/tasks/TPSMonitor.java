@@ -5,12 +5,21 @@ package com.enjin.bukkit.tasks;
 
 import lombok.Getter;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 
 public class TPSMonitor implements Runnable {
     @Getter
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#.####");
+
+    static {
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+    }
+
+    @Getter
     private static TPSMonitor instance;
-    private LinkedList<Double> list = new LinkedList<Double>();
+    private LinkedList<Double> list = new LinkedList<>();
     private long last = System.currentTimeMillis();
     private int interval = 40;
     private int max = 25;
@@ -41,7 +50,8 @@ public class TPSMonitor implements Runnable {
                 averageTps += tps.floatValue();
             }
 
-            return averageTps / (double) list.size();
+            double average = averageTps / (double) list.size();
+            return average > 20.0 ? 20.0 : average;
         }
 
         return -1;
@@ -49,7 +59,8 @@ public class TPSMonitor implements Runnable {
 
     public synchronized double getLastTPSMeasurement() {
         if (list.size() > 0) {
-            return list.getLast();
+            double latest = list.getLast();
+            return latest > 20.0 ? 20.0 : latest;
         }
 
         return -1;

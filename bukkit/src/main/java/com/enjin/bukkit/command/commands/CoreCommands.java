@@ -410,10 +410,10 @@ public class CoreCommands {
     @Permission(value = "enjin.lag")
     @Directive(parent = "enjin", value = "lag", requireValidKey = false)
     public static void lag(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+        TPSMonitor monitor = TPSMonitor.getInstance();
 
-        sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + TPSMonitor.getInstance().getTPSAverage());
-        sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + TPSMonitor.getInstance().getLastTPSMeasurement());
+        sender.sendMessage(ChatColor.GOLD + "Average TPS: " + ChatColor.GREEN + TPSMonitor.getDecimalFormat().format(monitor.getTPSAverage()));
+        sender.sendMessage(ChatColor.GOLD + "Last TPS measurement: " + ChatColor.GREEN + TPSMonitor.getDecimalFormat().format(monitor.getLastTPSMeasurement()));
 
         Runtime runtime = Runtime.getRuntime();
         long memused = (runtime.maxMemory() - runtime.freeMemory()) / (1024 * 1024);
