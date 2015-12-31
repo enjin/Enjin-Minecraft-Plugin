@@ -117,13 +117,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public boolean initVersion() {
-        if (VersionUtil.validate("8f9ff9f")) {
-            Enjin.getLogger().info(Bukkit.getVersion() + " is compatible with this version of EMP!");
-        } else {
-            Enjin.getLogger().warning(Bukkit.getVersion() + " is not compatible with this version of EMP, please update to the latest version!");
-            return false;
-        }
-
         String bukkitVersion = Bukkit.getBukkitVersion();
         String[] versionParts = bukkitVersion.split("-");
         mcVersion = versionParts.length >= 1 ? versionParts[0] : "UNKNOWN";
