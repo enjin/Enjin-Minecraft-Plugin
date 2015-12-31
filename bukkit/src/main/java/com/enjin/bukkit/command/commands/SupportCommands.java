@@ -11,6 +11,7 @@ import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
 import com.enjin.rpc.mappings.mappings.tickets.*;
 import com.enjin.rpc.mappings.services.TicketService;
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -104,7 +105,9 @@ public class SupportCommands {
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
-                                TicketViewBuilder.buildTicketList(tickets).send(player);
+                                for (FancyMessage message : TicketViewBuilder.buildTicketList(tickets)) {
+                                    message.send(player);
+                                }
                             } else {
                                 player.sendMessage("You do not have any tickets at this time!");
                             }
@@ -128,7 +131,9 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")).send(player);
+                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private"))) {
+                                    message.send(player);
+                                }
                             } else {
                                 player.sendMessage("You entered an invalid ticket code!");
                             }
@@ -160,7 +165,9 @@ public class SupportCommands {
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
-                                TicketViewBuilder.buildTicketList(tickets).send(player);
+                                for (FancyMessage message : TicketViewBuilder.buildTicketList(tickets)) {
+                                    message.send(player);
+                                }
                             } else {
                                 player.sendMessage("There are no open tickets at this time.");
                             }
@@ -184,7 +191,9 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private")).send(player);
+                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private"))) {
+                                    message.send(player);
+                                }
                             } else {
                                 player.sendMessage("You entered an invalid ticket code!");
                             }
