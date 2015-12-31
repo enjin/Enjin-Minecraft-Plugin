@@ -53,12 +53,12 @@ public class CommandNode extends net.md_5.bungee.api.plugin.Command {
         }
 
         try {
-            if (method.getParameters()[0].getType() == ProxiedPlayer.class && !(sender instanceof ProxiedPlayer)) {
+            if (method.getParameterTypes()[0] == ProxiedPlayer.class && !(sender instanceof ProxiedPlayer)) {
                 sender.sendMessage(ChatColor.RED + "This command can only be used in-game by a player.");
                 return;
             }
 
-            if (method.getParameters()[0].getType() == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
+            if (method.getParameterTypes()[0] == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
                 sender.sendMessage(ChatColor.RED + "This command can only be used by the console.");
                 return;
             }

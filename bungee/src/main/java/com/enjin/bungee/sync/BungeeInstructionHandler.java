@@ -4,7 +4,9 @@ import com.enjin.bungee.EnjinMinecraftPlugin;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.EnjinConfig;
+import com.google.common.base.Optional;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.io.File;
 import java.util.List;
@@ -35,7 +37,7 @@ public class BungeeInstructionHandler implements InstructionHandler {
     }
 
     @Override
-    public void execute(long id, String command, long delay) {
+    public void execute(long id, String command, long delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
     }
 
     @Override
@@ -63,7 +65,12 @@ public class BungeeInstructionHandler implements InstructionHandler {
 
     @Override
     public void notify(List<String> players, String message, long time) {
-        players.stream().filter(p -> ProxyServer.getInstance().getPlayer(p) != null).forEach(p -> ProxyServer.getInstance().getPlayer(p).sendMessage(message));
+        for (String player : players) {
+            ProxiedPlayer p = ProxyServer.getInstance().getPlayer(player);
+            if (p != null) {
+                p.sendMessage(message);
+            }
+        }
     }
 
     @Override

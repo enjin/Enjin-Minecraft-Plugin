@@ -1,7 +1,6 @@
 package com.enjin.bungee;
 
 import java.io.File;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import com.enjin.bungee.command.CommandBank;
@@ -17,10 +16,10 @@ import com.enjin.core.EnjinPlugin;
 import com.enjin.core.EnjinServices;
 import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
-import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -90,7 +89,7 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 Optional<Integer> port = getPort();
-                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.empty(), port.isPresent() ? port.get() : null, true);
+                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), port.isPresent() ? port.get() : null, true);
                 if (data == null) {
                     authKeyInvalid = true;
                     debug("Auth key is invalid. Data could not be retrieved.");
@@ -151,9 +150,9 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
     public static Optional<Integer> getPort() {
         for (ListenerInfo info : ProxyServer.getInstance().getConfig().getListeners()) {
-            return Optional.ofNullable(info.getHost().getPort());
+            return Optional.fromNullable(info.getHost().getPort());
         }
 
-        return Optional.empty();
+        return Optional.absent();
     }
 }

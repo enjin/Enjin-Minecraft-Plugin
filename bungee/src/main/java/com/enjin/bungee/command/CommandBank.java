@@ -2,6 +2,7 @@ package com.enjin.bungee.command;
 
 import com.enjin.bungee.EnjinMinecraftPlugin;
 import com.enjin.core.Enjin;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
@@ -16,7 +17,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @NoArgsConstructor
 public class CommandBank implements Listener {
@@ -56,7 +56,7 @@ public class CommandBank implements Listener {
                     continue;
                 }
 
-                if (method.getParameterCount() != 2) {
+                if (method.getParameterTypes().length != 2) {
                     Enjin.getPlugin().debug(method.getName() + " does not have 2 parameters.");
                     continue;
                 }
@@ -172,7 +172,7 @@ public class CommandBank implements Listener {
         String[] parts = c.startsWith("/") ? c.replaceFirst("/", "").split(" ") : c.split(" ");
         String command = parts[0];
 
-        Optional<CommandNode> w = Optional.ofNullable(nodes.get(command));
+        Optional<CommandNode> w = Optional.fromNullable(nodes.get(command));
         if (w.isPresent()) {
             CommandNode wrapper = w.get();
             String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[]{};

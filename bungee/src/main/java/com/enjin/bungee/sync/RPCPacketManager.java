@@ -15,7 +15,9 @@ import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.services.BungeeCordService;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -26,7 +28,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
@@ -37,7 +38,10 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
-        Status status = new Status(null,
+        final Status status = new Status(System.getProperty("java.version"),
+                null,
+                getPlugins(),
+                null,
                 plugin.getDescription().getVersion(),
                 null,
                 null,
@@ -49,42 +53,53 @@ public class RPCPacketManager implements Runnable {
                 null,
                 null);
 
-        Map<String, NodeState> servers = getServers();
-        ProxyServer.getInstance().getScheduler().schedule(plugin, () -> {
-            BungeeCordService service = EnjinServices.getService(BungeeCordService.class);
-            RPCData<SyncResponse> data = service.get(status, servers);
+        final Map<String, NodeState> servers = getServers();
+        ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
+            @Override
+            public void run() {
+                BungeeCordService service = EnjinServices.getService(BungeeCordService.class);
+                RPCData<SyncResponse> data = service.get(status, servers);
 
-            if (data == null) {
-                Enjin.getPlugin().debug("Data is null while requesting sync update from Bungeecord.get.");
-                return;
-            }
+                if (data == null) {
+                    Enjin.getPlugin().debug("Data is null while requesting sync update from Bungeecord.get.");
+                    return;
+                }
 
-            if (data.getError() != null) {
-                plugin.getLogger().warning(data.getError().getMessage());
-            } else {
-                SyncResponse result = data.getResult();
-                if (result != null && result.getStatus().equalsIgnoreCase("ok")) {
-                    for (Instruction instruction : result.getInstructions()) {
-                        switch (instruction.getCode()) {
-                            case CONFIG:
-                                RemoteConfigUpdateInstruction.handle((Map<String, Object>) instruction.getData());
-                                break;
-                            case RESPONSE_STATUS:
-                                Enjin.getPlugin().getInstructionHandler().statusReceived((String) instruction.getData());
-                                break;
-                            case NOTIFICATIONS:
-                                NotificationsInstruction.handle((NotificationData) instruction.getData());
-                                break;
-                            case PLUGIN_VERSION:
-                                NewerVersionInstruction.handle((String) instruction.getData());
-                                break;
-                            default:
-                                continue;
+                if (data.getError() != null) {
+                    plugin.getLogger().warning(data.getError().getMessage());
+                } else {
+                    SyncResponse result = data.getResult();
+                    if (result != null && result.getStatus().equalsIgnoreCase("ok")) {
+                        for (Instruction instruction : result.getInstructions()) {
+                            switch (instruction.getCode()) {
+                                case CONFIG:
+                                    RemoteConfigUpdateInstruction.handle((Map<String, Object>) instruction.getData());
+                                    break;
+                                case RESPONSE_STATUS:
+                                    Enjin.getPlugin().getInstructionHandler().statusReceived((String) instruction.getData());
+                                    break;
+                                case NOTIFICATIONS:
+                                    NotificationsInstruction.handle((NotificationData) instruction.getData());
+                                    break;
+                                case PLUGIN_VERSION:
+                                    NewerVersionInstruction.handle((String) instruction.getData());
+                                    break;
+                                default:
+                                    continue;
+                            }
                         }
                     }
                 }
             }
         }, 5, TimeUnit.SECONDS);
+    }
+
+    private List<String> getPlugins() {
+        List<String> plugins = new ArrayList<>();
+        for (Plugin plugin : ProxyServer.getInstance().getPluginManager().getPlugins()) {
+            plugins.add(plugin.getDescription().getName());
+        }
+        return plugins;
     }
 
     private Integer getMaxPlayers() {
@@ -96,30 +111,45 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<PlayerInfo> getOnlinePlayers() {
-        return ProxyServer.getInstance().getPlayers().stream().map(player -> new PlayerInfo(player.getName(), player.getUniqueId())).collect(Collectors.toList());
+        List<PlayerInfo> players = new ArrayList<>();
+        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+            players.add(new PlayerInfo(player.getName(), player.getUniqueId()));
+        }
+        return players;
     }
 
     private Map<String, NodeState> getServers() {
-        Map<String, NodeState> servers = new ConcurrentHashMap<>();
+        final Map<String, NodeState> servers = new ConcurrentHashMap<>();
 
-        for (Map.Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
+        for (final Map.Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
             if (servers == null || server == null) {
                 continue;
             }
 
-            ServerInfo info = server.getValue();
-            info.ping((ping, throwable) -> {
-                if (throwable != null) {
-                    servers.put(server.getKey(), new NodeState(null, null));
-                    return;
-                }
+            final ServerInfo info = server.getValue();
+            info.ping(new Callback<ServerPing>() {
+                @Override
+                public void done(ServerPing ping, Throwable throwable) {
+                    if (throwable != null) {
+                        servers.put(server.getKey(), new NodeState(null, null));
+                        return;
+                    }
 
-                List<String> players = isRedisBungeeEnabled() ? getPlayersFromRedisBungee(info) : info.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
-                servers.put(server.getKey(), new NodeState(players, ping.getPlayers().getMax()));
+                    List<String> players = isRedisBungeeEnabled() ? getPlayersFromRedisBungee(info) : getPlayersFromProxy(info);
+                    servers.put(server.getKey(), new NodeState(players, ping.getPlayers().getMax()));
+                }
             });
         }
 
         return servers;
+    }
+
+    private List<String> getPlayersFromProxy(ServerInfo info) {
+        List<String> players = new ArrayList<>();
+        for (ProxiedPlayer player : info.getPlayers()) {
+            players.add(player.getName());
+        }
+        return players;
     }
 
     private List<String> getPlayersFromRedisBungee(ServerInfo info) {
