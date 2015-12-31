@@ -39,12 +39,12 @@ public class DirectiveNode {
         }
 
         try {
-            if (method.getParameters()[0].getType() == Player.class && !(sender instanceof Player)) {
+            if (method.getParameterTypes()[0] == Player.class && !(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "This directive can only be used in-game by a player.");
                 return;
             }
 
-            if (method.getParameters()[0].getType() == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
+            if (method.getParameterTypes()[0] == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
                 sender.sendMessage(ChatColor.RED + "This directive can only be used by the console.");
                 return;
             }
