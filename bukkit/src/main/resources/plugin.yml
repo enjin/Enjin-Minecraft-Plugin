@@ -8,11 +8,9 @@ softdepend: [Vault,Votifier,NuVotifier,mcMMO,Essentials,VanishNoPacket,Permissio
 commands:
   enjinkey:
     description: Sets the enjin online key to the specified string.
-    usage: Cannot cancel server command event, update to 1.8.8 or newer to prevent this from showing up.
     aliases: [ek]
   enjin:
     description: General enjin commands
-    usage: Cannot cancel server command event, update to 1.8.8 or newer to prevent this from showing up.
     aliases: [e]
 permissions:
   enjin.setkey:
