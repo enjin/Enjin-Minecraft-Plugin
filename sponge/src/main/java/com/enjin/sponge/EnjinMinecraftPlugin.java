@@ -13,6 +13,7 @@ import com.enjin.sponge.commands.store.BuyCommand;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.sync.RPCPacketManager;
+import com.enjin.sponge.utils.Log;
 import com.enjin.sponge.utils.commands.CommandWrapper;
 import com.enjin.rpc.EnjinRPC;
 import com.google.common.base.Optional;
@@ -88,7 +89,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
             firstRun = false;
             initConfig();
 
-            //Enjin.setLogger(new Log());
+            Enjin.setLogger(new Log(configDir));
             debug("Init config done.");
 
             initCommands();
@@ -205,13 +206,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
     @Override
     public void debug(String s) {
-        if (Enjin.getConfiguration().isDebug()) {
-            getLogger().info("Enjin Debug: " + s);
-        }
-
-        if (Enjin.getConfiguration().isLoggingEnabled()) {
-            //Log.debug(s);
-        }
+        Enjin.getLogger().debug(s);
     }
 
     public static void saveConfiguration() {
