@@ -7,7 +7,7 @@ import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.List;
@@ -36,19 +36,19 @@ public class RPCShopFetcher implements Runnable {
         RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(player.getName());
 
         if (data == null) {
-            player.sendMessage(Texts.builder("Failed to fetch shop data.").color(TextColors.RED).build());
+            player.sendMessage(Text.builder("Failed to fetch shop data.").color(TextColors.RED).build());
             return;
         }
 
         if (data.getError() != null) {
-            player.sendMessage(Texts.of(data.getError().getMessage()));
+            player.sendMessage(Text.of(data.getError().getMessage()));
             return;
         }
 
         List<Shop> shops = data.getResult();
 
         if (shops == null || shops.isEmpty()) {
-            player.sendMessage(Texts.builder("There are no shops available at this time.").color(TextColors.RED).build());
+            player.sendMessage(Text.builder("There are no shops available at this time.").color(TextColors.RED).build());
             return;
         }
 

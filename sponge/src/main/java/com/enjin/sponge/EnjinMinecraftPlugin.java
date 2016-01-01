@@ -15,6 +15,7 @@ import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.sync.RPCPacketManager;
 import com.enjin.sponge.utils.commands.CommandWrapper;
 import com.enjin.rpc.EnjinRPC;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import lombok.Getter;
@@ -29,15 +30,10 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "EnjinMinecraftPlugin", name = "Enjin Minecraft Plugin", version = "2.8.3-sponge")
@@ -99,7 +95,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
             debug("Init commands done.");
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
-                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.empty(), getPort(), true);
+                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.absent(), getPort(), true);
                 if (data == null) {
                     authKeyInvalid = true;
                     debug("Auth key is invalid. Data could not be retrieved.");
@@ -147,23 +143,23 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         }
 
         CommandSpec.Builder enjinCommandBuilder = CommandSpec.builder()
-                .description(Texts.of("/enjin"))
+                .description(Text.of("/enjin"))
                 .executor(new EnjinCommand());
         enjinCommandBuilder.child(CommandSpec.builder()
-                .description(Texts.of("Set the authentication key for this server"))
+                .description(Text.of("Set the authentication key for this server"))
                 .permission("enjin.setkey")
-                .arguments(GenericArguments.string(Texts.of("key")))
+                .arguments(GenericArguments.string(Text.of("key")))
                 .executor(new SetKeyCommand()).build(), "setkey", "key", "sk");
 
         CommandSpec.Builder buyCommandBuilder = CommandSpec.builder()
-                .description(Texts.of("/buy"))
+                .description(Text.of("/buy"))
                 .permission("enjin.buy")
-                .arguments(GenericArguments.optional(GenericArguments.integer(Texts.of("#"))))
+                .arguments(GenericArguments.optional(GenericArguments.integer(Text.of("#"))))
                 .executor(new BuyCommand());
         buyCommandBuilder.child(CommandSpec.builder()
-                .description(Texts.of("/buy shop <#>"))
+                .description(Text.of("/buy shop <#>"))
                 .permission("enjin.buy")
-                .arguments(GenericArguments.integer(Texts.of("#")))
+                .arguments(GenericArguments.integer(Text.of("#")))
                 .executor(new BuyCommand.ShopCommand())
                 .build(), "shop");
 

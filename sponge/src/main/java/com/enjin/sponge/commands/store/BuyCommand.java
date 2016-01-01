@@ -11,7 +11,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class BuyCommand implements CommandExecutor {
                         } else {
                             if (instance.getActiveCategory().getItems().size() == 0) {
                                 plugin.debug("No items found in category: " + category.getName());
-                                player.sendMessage(Texts.builder("There are no items in this category.").color(TextColors.RED).build());
+                                player.sendMessage(Text.builder("There are no items in this category.").color(TextColors.RED).build());
                             } else if (number == 0) {
                                 plugin.debug("Sending first item to " + player.getName());
                                 ShopUtil.sendItemInfo(player, instance, 0);

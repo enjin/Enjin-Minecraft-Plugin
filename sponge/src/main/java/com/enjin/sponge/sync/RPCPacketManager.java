@@ -7,6 +7,8 @@ import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
 import com.enjin.rpc.mappings.mappings.plugin.Status;
 import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.services.PluginService;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
 
 import java.util.List;
@@ -21,7 +23,10 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
-        Status status = new Status(false,
+        Status status = new Status(System.getProperty("java.version"),
+                null,
+                getPlugins(),
+                false,
                 plugin.getContainer().getVersion(),
                 getWorlds(),
                 getGroups(),
@@ -48,6 +53,10 @@ public class RPCPacketManager implements Runnable {
                 // TODO: Process result
             }
         }
+    }
+
+    private List<String> getPlugins() {
+        return Sponge.getPluginManager().getPlugins().stream().map(PluginContainer::getName).collect(Collectors.toList());
     }
 
     private List<String> getWorlds() {
