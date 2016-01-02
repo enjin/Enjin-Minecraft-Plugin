@@ -26,21 +26,23 @@ public class GroupManagerListener extends PermissionListener {
     @Override
     public void processCommand(CommandSender sender, String command, Event event) {
         String[] parts = command.split(" ");
-        if (parts.length >= 3) {
-            if (parts[0].equalsIgnoreCase("manudel") || parts[0].equalsIgnoreCase("manudelsub")) {
-                if (parts[1].length() > 16 || !VaultManager.isVaultEnabled()) {
-                    return;
-                }
+        if (parts.length >= 2) {
+            if (parts[1].length() > 16 || !VaultManager.isVaultEnabled()) {
+                return;
+            }
 
-                OfflinePlayer op = Bukkit.getOfflinePlayer(parts[1]);
-                if (op == null) {
-                    return;
-                }
+            OfflinePlayer op = Bukkit.getOfflinePlayer(parts[1]);
+            if (op == null) {
+                return;
+            }
 
+            if (parts[0].equalsIgnoreCase("manudelsub") && parts.length >= 3) {
                 Permission permission = VaultManager.getPermission();
                 if (permission != null && groupExists(permission, parts[2])) {
                     update(op);
                 }
+            } else if (parts[0].equalsIgnoreCase("manudel")) {
+                update(op);
             }
         }
     }
