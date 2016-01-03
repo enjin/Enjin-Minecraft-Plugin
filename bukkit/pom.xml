@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>bukkit</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
 
     <properties>
         <platform>-bukkit</platform>
@@ -89,6 +89,33 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>true</minimizeJar>
+                            <relocations>
+                                <relocation>
+                                    <pattern>mkremins.fanciful.shaded.gson</pattern>
+                                    <shadedPattern>com.enjin.shaded.gson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>mkremins.fanciful</pattern>
+                                    <shadedPattern>com.enjin.shaded.fanciful</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.minidev.json</pattern>
+                                    <shadedPattern>com.enjin.shaded.json</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.amoebaman</pattern>
+                                    <shadedPattern>com.enjin.shaded.amoebaman</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>com.enjin.shaded.gson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.thetransactioncompany.jsonrpc2</pattern>
+                                    <shadedPattern>com.enjin.shaded.jsonrpc2</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
