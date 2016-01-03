@@ -24,7 +24,7 @@ public class EnjinRPC {
 
     private static Integer nextRequestId = 0;
 
-    private static URL getUrl(String clazz) {
+    public static URL getUrl(String clazz) {
         try {
             EnjinConfig config = Enjin.getConfiguration();
             String apiUrl = config.getApiUrl();

@@ -26,7 +26,7 @@ public class ConnectionUtil {
         boolean ok = false;
 
         try {
-            URL url = new URL((https ? "https" : "http") + Enjin.getConfiguration().getApiUrl() + "api.php");
+            URL url = EnjinRPC.getUrl("api.php");
             Enjin.getPlugin().debug(url.toExternalForm());
             URLConnection con = url.openConnection();
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -35,12 +35,6 @@ public class ConnectionUtil {
             if (line != null) {
                 ok = true;
             }
-        } catch (SSLHandshakeException e) {
-            return false;
-        } catch (SocketTimeoutException e) {
-            return false;
-        } catch (MalformedURLException e) {
-            return false;
         } catch (IOException e) {
             return false;
         } finally {
