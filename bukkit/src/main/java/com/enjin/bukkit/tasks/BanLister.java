@@ -30,7 +30,7 @@ public class BanLister implements Runnable {
         if (firstRun) {
             for (OfflinePlayer player : bannedPlayersList) {
                 if (player != null && player.getName() != null) {
-                    currentBannedPlayers.add(player.getUniqueId().toString());
+                    currentBannedPlayers.add(player.getName().toString());
                 }
             }
 
