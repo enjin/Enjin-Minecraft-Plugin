@@ -14,7 +14,6 @@ import com.enjin.rpc.mappings.services.VoteService;
 
 public class VoteSender implements Runnable {
     private EnjinMinecraftPlugin plugin;
-    private boolean firstrun = true;
 
     public VoteSender(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -22,16 +21,7 @@ public class VoteSender implements Runnable {
 
     @Override
     public void run() {
-        EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
         if (plugin.getPlayerVotes().size() > 0) {
-            if (firstrun && config.isHttps()) {
-                if (!ConnectionUtil.testHTTPSconnection()) {
-                    config.setHttps(false);
-                    plugin.getLogger().warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
-                    Enjin.getLogger().warning("SSL test connection failed, The plugin will use http without SSL. This may be less secure.");
-                }
-            }
-
             Map<String, List<Object[]>> votes = new HashMap<>(plugin.getPlayerVotes());
             plugin.getPlayerVotes().clear();
 
