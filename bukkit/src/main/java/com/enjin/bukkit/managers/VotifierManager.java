@@ -10,7 +10,7 @@ public class VotifierManager {
     public static void init(EnjinMinecraftPlugin plugin) {
         if (isVotifierEnabled()) {
             Enjin.getPlugin().debug("Initializing votifier support.");
-            Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new VoteSender(plugin), 20L * 60L, 20L * 60L).getTaskId();
+            Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new VoteSender(plugin), 20L * 60L, 20L * 60L);
             Bukkit.getPluginManager().registerEvents(new VotifierListener(plugin), plugin);
         }
     }
