@@ -22,6 +22,15 @@ public class BanListeners implements Listener {
         if (event.isCancelled()) {
             return;
         }
+
+        if (BanLister.getInstance() == null) {
+            return;
+        }
+
+        if (event.getPlayer() == null) {
+            return;
+        }
+
         if (event.getPlayer().isBanned() && !BanLister.getInstance().playerIsBanned(event.getPlayer())) {
             BanLister.getInstance().addBannedPlayer(event.getPlayer());
             plugin.getBannedPlayers().put(event.getPlayer().getName(), "");
