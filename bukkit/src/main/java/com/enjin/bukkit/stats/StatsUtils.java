@@ -9,9 +9,7 @@ import org.json.simple.parser.ParseException;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 
 public class StatsUtils {
-
     public static void parseStats(String stats, EnjinMinecraftPlugin plugin) {
-
         JSONParser parser = new JSONParser();
         try {
             JSONObject jstats = (JSONObject) parser.parse(stats);

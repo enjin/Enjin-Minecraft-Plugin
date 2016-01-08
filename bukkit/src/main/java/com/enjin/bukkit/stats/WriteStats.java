@@ -1,9 +1,6 @@
 package com.enjin.bukkit.stats;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -20,6 +17,19 @@ public class WriteStats {
     }
 
     public boolean write(String file) {
+        File f = new File(file);
+        if (!f.exists()) {
+            if (!f.getParentFile().exists()) {
+                f.mkdirs();
+            }
+
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         try {
             BufferedWriter outChannel = new BufferedWriter(new FileWriter(file));
             String jsonString = getStatsJSON();

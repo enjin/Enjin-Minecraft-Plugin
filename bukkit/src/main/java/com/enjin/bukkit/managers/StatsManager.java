@@ -33,6 +33,18 @@ public class StatsManager {
     private static EnjinStatsListener listener;
 
     public static void init(EnjinMinecraftPlugin plugin) {
+        File stats = new File("enjin-stats.json");
+        try {
+            if (stats.exists()) {
+                String content = FileUtil.readFile(stats, Charset.forName("UTF-8"));
+                StatsUtils.parseStats(content, plugin);
+            } else {
+                stats.createNewFile();
+            }
+        } catch (IOException e) {
+            Enjin.getPlugin().debug(e.getMessage());
+        }
+
         if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
             try {
                 List<SkillType> skills = SkillType.NON_CHILD_SKILLS;
@@ -83,19 +95,6 @@ public class StatsManager {
 
             if (!configuration.getStatsCollected().getServer().isPlayerKicks()) {
                 PlayerKickEvent.getHandlerList().unregister(listener);
-            }
-
-            File stats = new File("enjin-stats.json");
-            try {
-                if (stats.exists()) {
-                    String content = FileUtil.readFile(stats, Charset.forName("UTF-8"));
-                    StatsUtils.parseStats(content, plugin);
-                } else {
-                    stats.mkdirs();
-                    stats.createNewFile();
-                }
-            } catch (IOException e) {
-                Enjin.getPlugin().debug(e.getMessage());
             }
         }
     }
