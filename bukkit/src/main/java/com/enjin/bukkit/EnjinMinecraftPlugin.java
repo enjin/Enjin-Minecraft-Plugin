@@ -130,6 +130,15 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
 
         if (firstRun) {
+            menuAPI = new MenuAPI(this);
+
+            try {
+                MetricsLite metrics = new MetricsLite(this);
+                metrics.start();
+            } catch (IOException e) {
+                debug("Failed to start metrics.");
+            }
+
             firstRun = false;
             initConfig();
 
@@ -164,7 +173,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
         }
 
-        menuAPI = new MenuAPI(this);
         debug("Init gui api done.");
         initManagers();
         debug("Init managers done.");
@@ -176,13 +184,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         debug("Init listeners done.");
         initTasks();
         debug("Init tasks done.");
-
-        try {
-            MetricsLite metrics = new MetricsLite(this);
-            metrics.start();
-        } catch (IOException e) {
-            debug("Failed to start metrics.");
-        }
     }
 
     public void initConfig() {
