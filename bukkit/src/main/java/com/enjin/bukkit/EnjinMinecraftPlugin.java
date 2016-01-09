@@ -125,11 +125,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void init() {
-        if (authKeyInvalid) {
-            return;
-        }
-
         if (firstRun) {
+            getLogger().info("Initializing for the first time.");
             menuAPI = new MenuAPI(this);
 
             try {
@@ -139,17 +136,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 debug("Failed to start metrics.");
             }
 
-            firstRun = false;
             initConfig();
 
             Enjin.setLogger(new Log(getDataFolder()));
-
-            if (!initVersion()) {
-                return;
-            }
-
-            initCommands();
-            debug("Init commands done.");
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true);
@@ -171,6 +160,24 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 debug("Auth key is invalid. Must be 50 characters in length.");
                 return;
             }
+
+            if (!initVersion()) {
+                debug("Could not initialize versioning.");
+                return;
+            }
+
+            initCommands();
+            debug("Init commands done.");
+            initListeners();
+            debug("Init listeners done.");
+
+            firstRun = false;
+            authKeyInvalid = false;
+        }
+
+        if (authKeyInvalid) {
+            debug("Auth key is invalid. Stopping initialization.");
+            return;
         }
 
         debug("Init gui api done.");
@@ -180,8 +187,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         debug("Init plugins done.");
         initPermissions();
         debug("Init permissions done.");
-        initListeners();
-        debug("Init listeners done.");
         initTasks();
         debug("Init tasks done.");
     }
