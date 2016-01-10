@@ -184,8 +184,8 @@ public class StatSignManager {
 
     public static void updateItems() {
         for (SignData data : new ArrayList<>(config.getSigns())) {
-            if (data.getType() == SignType.DONATION && data.getSubType() != null && data.getSubType().equals(SignType.SubType.ITEMID) && data.getItemId() != null) {
-                if (items.contains(data.getItemId())) {
+            if (data.getType() == SignType.DONATION && data.getSubType() == SignType.SubType.ITEMID && data.getItemId() != null) {
+                if (!items.contains(data.getItemId())) {
                     items.add(data.getItemId());
                 }
             }
