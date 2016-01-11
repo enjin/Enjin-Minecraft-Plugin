@@ -116,12 +116,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         disableManagers();
     }
 
-    public boolean initVersion() {
+    public void initVersion() {
         String bukkitVersion = Bukkit.getBukkitVersion();
         String[] versionParts = bukkitVersion.split("-");
         mcVersion = versionParts.length >= 1 ? versionParts[0] : "UNKNOWN";
-
-        return true;
     }
 
     public void init() {
@@ -145,34 +143,26 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 if (data == null) {
                     authKeyInvalid = true;
                     debug("Auth key is invalid. Data could not be retrieved.");
-                    return;
                 } else if (data.getError() != null) {
                     authKeyInvalid = true;
                     debug("Auth key is invalid. " + data.getError().getMessage());
-                    return;
                 } else if (!data.getResult()) {
                     authKeyInvalid = true;
                     debug("Auth key is invalid. Failed to authenticate.");
-                    return;
                 }
             } else {
                 authKeyInvalid = true;
                 debug("Auth key is invalid. Must be 50 characters in length.");
-                return;
             }
 
-            if (!initVersion()) {
-                debug("Could not initialize versioning.");
-                return;
-            }
-
+            initVersion();
+            debug("Init version done.");
             initCommands();
             debug("Init commands done.");
             initListeners();
             debug("Init listeners done.");
 
             firstRun = false;
-            authKeyInvalid = false;
         }
 
         if (authKeyInvalid) {
