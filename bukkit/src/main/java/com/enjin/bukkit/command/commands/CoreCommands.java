@@ -396,6 +396,7 @@ public class CoreCommands {
                     sender.sendMessage(ChatColor.GREEN + "The key has been successfully validated.");
                     Enjin.getConfiguration().setAuthKey(args[0]);
                     EnjinMinecraftPlugin.saveConfiguration();
+                    EnjinMinecraftPlugin.getInstance().setAuthKeyInvalid(false);
                     EnjinMinecraftPlugin.getInstance().init();
                 } else {
                     sender.sendMessage(ChatColor.RED + "We were unable to validate the provided key.");
