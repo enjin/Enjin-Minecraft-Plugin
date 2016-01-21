@@ -3,6 +3,7 @@ package com.enjin.bukkit.listeners;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.listeners.perm.processors.PermissionsBukkitListener;
 import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
 import net.milkbowl.vault.permission.Permission;
@@ -67,11 +68,18 @@ public class ConnectionListener implements Listener {
     }
 
     public static void updatePlayerRanks(OfflinePlayer player) {
-        if (player == null) {
+        if (player == null || player.getName() == null) {
+            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
             return;
         }
 
         PlayerGroupInfo info = new PlayerGroupInfo(player.getUniqueId());
+
+        if (info == null) {
+            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] PlayerGroupInfo is null. Unable to update " + player.getName() + "'s ranks.");
+            return;
+        }
+
         info.getWorlds().putAll(getPlayerGroups(player));
         EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
         EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
