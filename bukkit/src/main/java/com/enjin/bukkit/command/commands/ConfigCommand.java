@@ -7,8 +7,6 @@ import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.lang.reflect.Type;
-
 public class ConfigCommand {
     @Directive(parent = "enjin", value = "config", aliases = "conf", requireValidKey = false)
     public static void config(CommandSender sender, String[] args) {
@@ -103,7 +101,7 @@ public class ConfigCommand {
 
         private Class<?> type;
 
-        private ConfigKey(Class<?> type) {
+        ConfigKey(Class<?> type) {
             this.type = type;
         }
     }

@@ -1,7 +1,6 @@
 package com.enjin.bungee.tasks;
 
 import com.enjin.bungee.EnjinMinecraftPlugin;
-import com.enjin.bungee.util.Log;
 import com.enjin.core.Enjin;
 
 import java.io.File;

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 @ToString(callSuper = true)
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 public class FilteredItem extends Item {
     @Getter
     @SerializedName(value = "preset_id")

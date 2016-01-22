@@ -116,7 +116,6 @@ public class BuyCommand {
         PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
         if (instance == null || instance.getActiveShop() == null) {
             player.sendMessage(ChatColor.RED + "You must select a shop before attempting to paginate.");
-            return;
         } else {
             TextShopUtil.sendTextShop(player, instance, selection.isPresent() ? selection.get() : -1);
         }
@@ -201,14 +200,12 @@ public class BuyCommand {
         if (!selection.isPresent()) {
             instance.updateShop(-1);
             TextShopUtil.sendTextShop(player, instance, -1);
-            return;
         } else {
             int value = selection.get() < 1 ? -1 : selection.get() - 1;
             instance.updateShop(value);
             TextShopUtil.sendTextShop(player, instance, -1);
         }
 
-        return;
     }
 
     private static boolean shouldUpdate(PlayerShopInstance instance) {

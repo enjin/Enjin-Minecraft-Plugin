@@ -133,10 +133,8 @@ public class ShopUtil {
             prefix = prefix.substring(0, 4);
         }
 
-        header.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
-                .append(prefix + " ")
-                .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorTitle(), '&'))
-                .append(title + " ")
+        header.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&')).append(prefix).append(" ")
+                .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorTitle(), '&')).append(title).append(" ")
                 .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'));
 
         for (int i = 0; i < 40; i++) {
@@ -150,12 +148,10 @@ public class ShopUtil {
         StringBuilder builder = new StringBuilder()
                 .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                 .append(shop.getBorderV())
-                .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorText(), '&'))
-                .append(" " + shop.getInfo().trim() + "\n")
+                .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorText(), '&')).append(" ").append(shop.getInfo().trim()).append("\n")
                 .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                 .append(shop.getBorderV())
-                .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorText(), '&'))
-                .append(" " + "Prices are in " + shop.getCurrency() + ". Choose " + (items ? "an item" : "a category") + " with ")
+                .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorText(), '&')).append(" " + "Prices are in ").append(shop.getCurrency()).append(". Choose ").append(items ? "an item" : "a category").append(" with ")
                 .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBottom(), '&'))
                 .append("/buy #")
                 .append("\n");
@@ -192,8 +188,7 @@ public class ShopUtil {
 
             builder.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                     .append(shop.getBorderV())
-                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorId(), '&'))
-                    .append(" " + (i + 1) + ".")
+                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorId(), '&')).append(" ").append(i + 1).append(".")
                     .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBracket(), '&'))
                     .append(" [ ")
                     .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorName(), '&'))
@@ -205,16 +200,14 @@ public class ShopUtil {
             if (category.getInfo() != null && !category.getInfo().isEmpty()) {
                 descriptionBuilder.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                         .append(shop.getBorderV())
-                        .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorInfo(), '&'))
-                        .append(" " + category.getInfo().trim());
+                        .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorInfo(), '&')).append(" ").append(category.getInfo().trim());
             }
 
             if (descriptionBuilder.length() > 0) {
-                builder.append(TextUtils.trim(descriptionBuilder.toString(), null) + "\n");
+                builder.append(TextUtils.trim(descriptionBuilder.toString(), null)).append("\n");
             }
 
-            builder.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
-                    .append(shop.getBorderV() + "\n");
+            builder.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&')).append(shop.getBorderV()).append("\n");
         }
 
         return Text.builder(builder.toString()).build();
@@ -253,8 +246,7 @@ public class ShopUtil {
             builder = new StringBuilder();
             builder.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                     .append(shop.getBorderV())
-                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorId(), '&'))
-                    .append(" " + (i + 1) + ". ")
+                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorId(), '&')).append(" ").append(i + 1).append(". ")
                     .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorName(), '&'))
                     .append(item.getName().trim())
                     .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBracket(), '&'))
@@ -272,8 +264,7 @@ public class ShopUtil {
                     URL url = new URL(shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
                     urlBuilder.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                             .append(shop.getBorderV())
-                            .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorUrl(), '&'))
-                            .append(" " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+                            .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorUrl(), '&')).append(" ").append(shop.getBuyUrl()).append(item.getId()).append("?player=").append(player.getName());
 
                     if (urlBuilder.length() > 0) {
                         Text text = Text.builder(TextUtils.trim(urlBuilder.toString(), null))
@@ -290,8 +281,7 @@ public class ShopUtil {
                 if (item.getInfo() != null && !item.getInfo().isEmpty()) {
                     descriptionBuilder.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                             .append(shop.getBorderV())
-                            .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorInfo(), '&'))
-                            .append(" " + item.getInfo().trim());
+                            .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorInfo(), '&')).append(" ").append(item.getInfo().trim());
                 }
 
                 if (descriptionBuilder.length() > 0) {
@@ -300,8 +290,7 @@ public class ShopUtil {
             }
 
             builder = new StringBuilder()
-                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
-                    .append(shop.getBorderV() + "\n");
+                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&')).append(shop.getBorderV()).append("\n");
 
             textBuilder.append(Text.of(builder.toString()));
         }
@@ -328,8 +317,7 @@ public class ShopUtil {
         StringBuilder info = new StringBuilder()
                 .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                 .append(shop.getBorderV())
-                .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorInfo(), '&'))
-                .append(" " + item.getInfo());
+                .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorInfo(), '&')).append(" ").append(item.getInfo());
         Text.Builder textBuilder = Text.builder(builder.toString())
                 .append(Text.of(TextUtils.trim(info.toString(), "")))
                 .append(Text.builder(TextUtils.translateAlternateColorCodes("\n&" + shop.getColorBorder() + shop.getBorderV(), '&')).build())
@@ -341,8 +329,7 @@ public class ShopUtil {
             URL url = new URL(shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
             urlBuilder.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
                     .append(shop.getBorderV())
-                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorUrl(), '&'))
-                    .append(" " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorUrl(), '&')).append(" ").append(shop.getBuyUrl()).append(item.getId()).append("?player=").append(player.getName());
 
             if (urlBuilder.length() > 0) {
                 Text text = Text.builder(TextUtils.trim(urlBuilder.toString(), null))
@@ -400,12 +387,9 @@ public class ShopUtil {
 
             pagination = "Page " + page + " of " + (int) Math.ceil((double) shop.getCategories().size() / 4);
 
-            footer.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBottom(), '&'))
-                    .append(" " + title + " ")
-                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'))
-                    .append(separator + " ")
-                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBottom(), '&'))
-                    .append(pagination + " ")
+            footer.append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBottom(), '&')).append(" ").append(title).append(" ")
+                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&')).append(separator).append(" ")
+                    .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBottom(), '&')).append(pagination).append(" ")
                     .append(TextUtils.translateAlternateColorCodes("&" + shop.getColorBorder(), '&'));
         }
 

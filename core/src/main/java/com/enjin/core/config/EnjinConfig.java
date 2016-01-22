@@ -3,31 +3,31 @@ package com.enjin.core.config;
 import java.io.File;
 
 public interface EnjinConfig {
-    public boolean isDebug();
+    boolean isDebug();
 
-    public void setDebug(boolean debug);
+    void setDebug(boolean debug);
 
-    public String getAuthKey();
+    String getAuthKey();
 
-    public void setAuthKey(String key);
+    void setAuthKey(String key);
 
-    public boolean isHttps();
+    boolean isHttps();
 
-    public void setHttps(boolean https);
+    void setHttps(boolean https);
 
-    public boolean isAutoUpdate();
+    boolean isAutoUpdate();
 
-    public void setAutoUpdate(boolean autoUpdate);
+    void setAutoUpdate(boolean autoUpdate);
 
-    public boolean isLoggingEnabled();
+    boolean isLoggingEnabled();
 
-    public void setLoggingEnabled(boolean loggingEnabled);
+    void setLoggingEnabled(boolean loggingEnabled);
 
-    public String getApiUrl();
+    String getApiUrl();
 
-    public void setApiUrl(String apiUrl);
+    void setApiUrl(String apiUrl);
 
-    public boolean save(File file);
+    boolean save(File file);
 
-    public boolean update(File file, Object data);
+    boolean update(File file, Object data);
 }

@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.gmail.nossr50.api.ExperienceAPI;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 
@@ -385,7 +384,7 @@ public class StatsPlayer {
         player.put("blocks", blocks);
         player.put("username", name);
         player.put("uuid", uuid);
-        player.put("firsttimeplayer", new Boolean(firsttimeplayer));
+        player.put("firsttimeplayer", Boolean.valueOf(firsttimeplayer));
         player.put("deaths", new Integer(deaths));
         player.put("killed", new Integer(killed));
         JSONObject jdistance = new JSONObject();
@@ -407,7 +406,7 @@ public class StatsPlayer {
                     OfflinePlayer oplayer = null;
                     try {
                         oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUUID()));
-                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalArgumentException ignored) {
 
                     }
 
@@ -419,13 +418,13 @@ public class StatsPlayer {
                         if (economy.hasAccount(oplayer)) {
                             player.put("moneyamount", economy.getBalance(oplayer));
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception ignored) {}
                 } else {
                     try {
                         if (economy.hasAccount(getName())) {
                             player.put("moneyamount", economy.getBalance(getName()));
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception ignored) {}
                 }
             }
         }
@@ -433,7 +432,7 @@ public class StatsPlayer {
         JSONObject pveentitykills = new JSONObject();
         for (Entry<EntityType, Integer> ent : creaturekills.entrySet()) {
             try {
-                pveentitykills.put(ent.getKey().name(), new Integer(ent.getValue()));
+                pveentitykills.put(ent.getKey().name(), ent.getValue());
             } catch (Exception e) {
                 //Somehow we are getting an NPE sometimes? Ignore it.
             }
@@ -453,7 +452,7 @@ public class StatsPlayer {
                         level = ExperienceAPI.getLevelOffline(name, type.toString());
                     }
                     mcmmoskills.put(type.toString(), new Integer(level));
-                } catch (Exception e) {
+                } catch (Exception ignored) {
 
                 }
             }

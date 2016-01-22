@@ -28,7 +28,7 @@ public class ConfigUpdateTest {
 
         System.out.println(config.toString());
         config.update(file, EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(data), Object.class));
-        config = config.load(file, EMPConfig.class);
+        config = JsonConfig.load(file, EMPConfig.class);
         System.out.println(config.toString());
     }
 

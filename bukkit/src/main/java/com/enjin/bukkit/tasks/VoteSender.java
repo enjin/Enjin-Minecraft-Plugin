@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.common.utils.ConnectionUtil;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;

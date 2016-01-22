@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -92,54 +91,52 @@ public class SupportCommands {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (args.length == 0) {
-            final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
                     TicketService service = EnjinServices.getService(TicketService.class);
-                    RPCData<TicketResults> data = service.getPlayerTickets(-1, player.getName());
+                    RPCData<TicketResults> data = service.getPlayerTickets(-1, sender.getName());
 
                     if (data != null) {
                         if (data.getError() != null) {
-                            player.sendMessage(data.getError().getMessage());
+                            sender.sendMessage(data.getError().getMessage());
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
                                 for (FancyMessage message : TicketViewBuilder.buildTicketList(tickets)) {
-                                    message.send(player);
+                                    message.send(sender);
                                 }
                             } else {
-                                player.sendMessage("You do not have any tickets at this time!");
+                                sender.sendMessage("You do not have any tickets at this time!");
                             }
                         }
                     } else {
-                        player.sendMessage("Could not fetch your tickets.");
+                        sender.sendMessage("Could not fetch your tickets.");
                     }
                 }
             });
         } else {
-            final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
                     TicketService service = EnjinServices.getService(TicketService.class);
-                    RPCData<ReplyResults> data = service.getReplies(-1, args[0], player.getName());
+                    RPCData<ReplyResults> data = service.getReplies(-1, args[0], sender.getName());
 
                     if (data != null) {
                         if (data.getError() != null) {
-                            player.sendMessage(data.getError().getMessage());
+                            sender.sendMessage(data.getError().getMessage());
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private"))) {
-                                    message.send(player);
+                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, sender.hasPermission("enjin.ticket.private"))) {
+                                    message.send(sender);
                                 }
                             } else {
-                                player.sendMessage("You entered an invalid ticket code!");
+                                sender.sendMessage("You entered an invalid ticket code!");
                             }
                         }
                     } else {
-                        player.sendMessage("Could not fetch ticket replies.");
+                        sender.sendMessage("Could not fetch ticket replies.");
                     }
                 }
             });
@@ -152,7 +149,6 @@ public class SupportCommands {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (args.length == 0) {
-            final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
@@ -161,45 +157,44 @@ public class SupportCommands {
 
                     if (data != null) {
                         if (data.getError() != null) {
-                            player.sendMessage(data.getError().getMessage());
+                            sender.sendMessage(data.getError().getMessage());
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
                                 for (FancyMessage message : TicketViewBuilder.buildTicketList(tickets)) {
-                                    message.send(player);
+                                    message.send(sender);
                                 }
                             } else {
-                                player.sendMessage("There are no open tickets at this time.");
+                                sender.sendMessage("There are no open tickets at this time.");
                             }
                         }
                     } else {
-                        player.sendMessage("Could not fetch open tickets.");
+                        sender.sendMessage("Could not fetch open tickets.");
                     }
                 }
             });
         } else {
-            final Player player = sender;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
                     TicketService service = EnjinServices.getService(TicketService.class);
-                    RPCData<ReplyResults> data = service.getReplies(-1, args[0], player.getName());
+                    RPCData<ReplyResults> data = service.getReplies(-1, args[0], sender.getName());
 
                     if (data != null) {
                         if (data.getError() != null) {
-                            player.sendMessage(data.getError().getMessage());
+                            sender.sendMessage(data.getError().getMessage());
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, player.hasPermission("enjin.ticket.private"))) {
-                                    message.send(player);
+                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, sender.hasPermission("enjin.ticket.private"))) {
+                                    message.send(sender);
                                 }
                             } else {
-                                player.sendMessage("You entered an invalid ticket code!");
+                                sender.sendMessage("You entered an invalid ticket code!");
                             }
                         }
                     } else {
-                        player.sendMessage("Could not fetch ticket replies.");
+                        sender.sendMessage("Could not fetch ticket replies.");
                     }
                 }
             });
@@ -213,7 +208,6 @@ public class SupportCommands {
 
         if (args.length < 3) {
             sender.sendMessage("Usage: /e reply <module_id> <ticket_code> <message>");
-            return;
         } else {
             final int preset;
 

@@ -1,7 +1,6 @@
 package com.enjin.bukkit.managers;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;

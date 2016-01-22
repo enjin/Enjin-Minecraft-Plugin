@@ -7,12 +7,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionOptions;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Logger;
 
 public class EnjinRPC {
     public static Gson gson = new GsonBuilder()

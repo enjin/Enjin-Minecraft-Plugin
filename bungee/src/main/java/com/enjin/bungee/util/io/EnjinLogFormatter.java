@@ -12,10 +12,10 @@ public class EnjinLogFormatter extends Formatter {
 
     public String format(LogRecord rec) {
         StringBuffer buf = new StringBuffer(5);
-        buf.append(calcDate(rec.getMillis()) + " ");
-        buf.append("[" + rec.getLevel() + "]");
+        buf.append(calcDate(rec.getMillis())).append(" ");
+        buf.append("[").append(rec.getLevel()).append("]");
         buf.append(' ');
-        buf.append(formatMessage(rec) + "\n");
+        buf.append(formatMessage(rec)).append("\n");
         return buf.toString();
     }
 

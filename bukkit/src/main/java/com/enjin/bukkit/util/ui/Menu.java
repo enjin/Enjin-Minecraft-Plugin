@@ -60,6 +60,7 @@ public class Menu extends MenuHolder {
         return this.inventory;
     }
 
+    @Override
     protected MenuHolder clone() {
         MenuHolder clone = new Menu(title, rows);
         clone.setExitOnClickOutside(exitOnClickOutside);

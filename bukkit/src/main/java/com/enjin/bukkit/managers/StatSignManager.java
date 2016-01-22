@@ -215,7 +215,6 @@ public class StatSignManager {
         block = sign.getBlock().getRelative(0, 2, 0);
         if (block.getType() == Material.SKULL) {
             updateHead(block, data, name);
-            return;
         }
     }
 

@@ -116,8 +116,7 @@ public class MapFont {
          * @return True if the pixel is solid, false if transparent.
          */
         public boolean get(int row, int col) {
-            if (row < 0 || col < 0 || row >= height || col >= width) return false;
-            return data[row * width + col];
+            return !(row < 0 || col < 0 || row >= height || col >= width) && data[row * width + col];
         }
 
         /**

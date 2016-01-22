@@ -136,12 +136,12 @@ public class CoreCommands {
         sender.sendMessage(ChatColor.GREEN + "Please wait while we generate the report");
 
         StringBuilder report = new StringBuilder();
-        report.append("Enjin Debug Report generated on " + format.format(date) + "\n");
-        report.append("Enjin plugin version: " + plugin.getDescription().getVersion() + "\n");
+        report.append("Enjin Debug Report generated on ").append(format.format(date)).append("\n");
+        report.append("Enjin plugin version: ").append(plugin.getDescription().getVersion()).append("\n");
 
-        report.append("BungeeCord version: " + ProxyServer.getInstance().getVersion() + "\n");
-        report.append("Java version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n");
-        report.append("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") + "\n");
+        report.append("BungeeCord version: ").append(ProxyServer.getInstance().getVersion()).append("\n");
+        report.append("Java version: ").append(System.getProperty("java.version")).append(" ").append(System.getProperty("java.vendor")).append("\n");
+        report.append("Operating system: ").append(System.getProperty("os.name")).append(" ").append(System.getProperty("os.version")).append(" ").append(System.getProperty("os.arch")).append("\n");
 
         if (plugin.isAuthKeyInvalid()) {
             report.append("ERROR: Authkey reported by plugin as invalid!\n");
@@ -153,7 +153,7 @@ public class CoreCommands {
 
         report.append("\nPlugins: \n");
         for (Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
-            report.append(p.getDescription().getName() + " version " + p.getDescription().getVersion() + "\n");
+            report.append(p.getDescription().getName()).append(" version ").append(p.getDescription().getVersion()).append("\n");
         }
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, new ReportPublisher(plugin, report, sender));

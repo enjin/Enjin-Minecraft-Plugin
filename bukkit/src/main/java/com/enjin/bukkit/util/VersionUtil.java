@@ -20,11 +20,8 @@ public class VersionUtil {
         int minDistance = getDistance("craftbukkit", hash);
         Enjin.getLogger().debug("minDistance: " + minDistance);
 
-        if (minDistance == -1 || cbDistance == -1) {
-            return false;
-        }
+        return !(minDistance == -1 || cbDistance == -1) && minDistance >= cbDistance;
 
-        return minDistance >= cbDistance;
     }
 
     private static int getCraftBukkitDistance() {

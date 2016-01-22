@@ -8,7 +8,6 @@ import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import mkremins.fanciful.FancyMessage;
-import mkremins.fanciful.TextualComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -161,10 +160,8 @@ public class TextShopUtil {
             prefix = prefix.substring(0, 4);
         }
 
-        header.append(ChatColor.getByChar(shop.getColorBorder()))
-                .append(prefix + " ")
-                .append(ChatColor.getByChar(shop.getColorTitle()))
-                .append(title + " ")
+        header.append(ChatColor.getByChar(shop.getColorBorder())).append(prefix).append(" ")
+                .append(ChatColor.getByChar(shop.getColorTitle())).append(title).append(" ")
                 .append(ChatColor.getByChar(shop.getColorBorder()));
 
         for (int i = 0; i < 40; i++) {
@@ -235,8 +232,7 @@ public class TextShopUtil {
             if (category.getInfo() != null && !category.getInfo().isEmpty()) {
                 descriptionBuilder.append(ChatColor.getByChar(shop.getColorBorder()).toString())
                         .append(shop.getBorderV())
-                        .append(ChatColor.getByChar(shop.getColorInfo()).toString())
-                        .append(" " + category.getInfo().trim());
+                        .append(ChatColor.getByChar(shop.getColorInfo()).toString()).append(" ").append(category.getInfo().trim());
             }
 
             if (descriptionBuilder.length() > 0) {
@@ -320,8 +316,7 @@ public class TextShopUtil {
                     URL url = new URL(shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
                     urlBuilder.append(ChatColor.getByChar(shop.getColorBorder()).toString())
                             .append(shop.getBorderV())
-                            .append(ChatColor.getByChar(shop.getColorUrl()))
-                            .append(" " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+                            .append(ChatColor.getByChar(shop.getColorUrl())).append(" ").append(shop.getBuyUrl()).append(item.getId()).append("?player=").append(player.getName());
 
                     if (urlBuilder.length() > 0) {
                         message = new FancyMessage(TextUtils.trim(urlBuilder.toString(), null))
@@ -336,8 +331,7 @@ public class TextShopUtil {
                 if (item.getInfo() != null && !item.getInfo().isEmpty()) {
                     descriptionBuilder.append(ChatColor.getByChar(shop.getColorBorder()))
                             .append(shop.getBorderV())
-                            .append(ChatColor.getByChar(shop.getColorInfo()))
-                            .append(" " + item.getInfo().trim());
+                            .append(ChatColor.getByChar(shop.getColorInfo())).append(" ").append(item.getInfo().trim());
                 }
 
                 if (descriptionBuilder.length() > 0) {
@@ -401,8 +395,7 @@ public class TextShopUtil {
         StringBuilder info = new StringBuilder()
                 .append(ChatColor.getByChar(shop.getColorBorder()))
                 .append(shop.getBorderV())
-                .append(ChatColor.getByChar(shop.getColorInfo()))
-                .append(" " + item.getInfo());
+                .append(ChatColor.getByChar(shop.getColorInfo())).append(" ").append(item.getInfo());
         message = new FancyMessage(TextUtils.trim(info.toString(), ""));
         messages.add(message);
         message = new FancyMessage(shop.getBorderV())
@@ -419,8 +412,7 @@ public class TextShopUtil {
             URL url = new URL(shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
             urlBuilder.append(ChatColor.getByChar(shop.getColorBorder()))
                     .append(shop.getBorderV())
-                    .append(ChatColor.getByChar(shop.getColorUrl()))
-                    .append(" " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+                    .append(ChatColor.getByChar(shop.getColorUrl())).append(" ").append(shop.getBuyUrl()).append(item.getId()).append("?player=").append(player.getName());
 
             if (urlBuilder.length() > 0) {
                 message = new FancyMessage(TextUtils.trim(urlBuilder.toString(), null))
@@ -478,12 +470,9 @@ public class TextShopUtil {
             int lastPage = (int) Math.ceil((double) entries / 4);
             pagination = "Page " + (page > lastPage ? lastPage : page) + " of " + lastPage;
 
-            footer.append(ChatColor.getByChar(shop.getColorBottom()))
-                    .append(" " + title + " ")
-                    .append(ChatColor.getByChar(shop.getColorBorder()))
-                    .append(separator + " ")
-                    .append(ChatColor.getByChar(shop.getColorBottom()))
-                    .append(pagination + " ")
+            footer.append(ChatColor.getByChar(shop.getColorBottom())).append(" ").append(title).append(" ")
+                    .append(ChatColor.getByChar(shop.getColorBorder())).append(separator).append(" ")
+                    .append(ChatColor.getByChar(shop.getColorBottom())).append(pagination).append(" ")
                     .append(ChatColor.getByChar(shop.getColorBorder()));
         }
 

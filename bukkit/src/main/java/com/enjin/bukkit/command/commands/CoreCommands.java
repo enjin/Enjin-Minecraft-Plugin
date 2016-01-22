@@ -443,8 +443,8 @@ public class CoreCommands {
         sender.sendMessage(ChatColor.GREEN + "Please wait while we generate the report");
 
         StringBuilder report = new StringBuilder();
-        report.append("Enjin Debug Report generated on " + format.format(date) + "\n");
-        report.append("Enjin plugin version: " + plugin.getDescription().getVersion() + "\n");
+        report.append("Enjin Debug Report generated on ").append(format.format(date)).append("\n");
+        report.append("Enjin plugin version: ").append(plugin.getDescription().getVersion()).append("\n");
 
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             Plugin permissions = null;
@@ -453,7 +453,7 @@ public class CoreCommands {
             }
 
             if (permissions != null) {
-                report.append("Permissions plugin used: " + permissions.getDescription().getName() + " version " + permissions.getDescription().getVersion() + "\n");
+                report.append("Permissions plugin used: ").append(permissions.getDescription().getName()).append(" version ").append(permissions.getDescription().getVersion()).append("\n");
             }
 
             Plugin economy = null;
@@ -462,25 +462,25 @@ public class CoreCommands {
             }
 
             if (economy != null) {
-                report.append("Economy plugin used: " + economy.getDescription().getName() + " version " + economy.getDescription().getVersion() + "\n");
+                report.append("Economy plugin used: ").append(economy.getDescription().getName()).append(" version ").append(economy.getDescription().getVersion()).append("\n");
             }
         }
 
         Plugin votifier = Bukkit.getPluginManager().getPlugin("Votifier");
         if (votifier != null) {
-            report.append("Votifier version: " + votifier.getDescription().getVersion() + "\n");
+            report.append("Votifier version: ").append(votifier.getDescription().getVersion()).append("\n");
             FileConfiguration votifierConfig = votifier.getConfig();
             String port = votifierConfig.getString("port", "");
             String host = votifierConfig.getString("host", "");
-            report.append("Votifier Enabled: " + votifier.isEnabled() + "\n");
+            report.append("Votifier Enabled: ").append(votifier.isEnabled()).append("\n");
             if (!port.isEmpty() && !host.isEmpty()) {
-                report.append("Votifier is listening on: " + host + ":" + port + "\n");
+                report.append("Votifier is listening on: ").append(host).append(":").append(port).append("\n");
             }
         }
 
-        report.append("Bukkit version: " + Bukkit.getVersion() + "\n");
-        report.append("Java version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n");
-        report.append("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch") + "\n");
+        report.append("Bukkit version: ").append(Bukkit.getVersion()).append("\n");
+        report.append("Java version: ").append(System.getProperty("java.version")).append(" ").append(System.getProperty("java.vendor")).append("\n");
+        report.append("Operating system: ").append(System.getProperty("os.name")).append(" ").append(System.getProperty("os.version")).append(" ").append(System.getProperty("os.arch")).append("\n");
 
         if (plugin.isAuthKeyInvalid()) {
             report.append("ERROR: Authkey reported by plugin as invalid!\n");
@@ -496,12 +496,12 @@ public class CoreCommands {
 
         report.append("\nPlugins: \n");
         for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
-            report.append(p.getName() + " version " + p.getDescription().getVersion() + "\n");
+            report.append(p.getName()).append(" version ").append(p.getDescription().getVersion()).append("\n");
         }
 
         report.append("\nWorlds: \n");
         for (World world : Bukkit.getWorlds()) {
-            report.append(world.getName() + "\n");
+            report.append(world.getName()).append("\n");
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new ReportPublisher(plugin, report, sender));
@@ -563,7 +563,7 @@ public class CoreCommands {
                         noflags = false;
                         i--;
                     } else {
-                        name.append(args[i] + " ");
+                        name.append(args[i]).append(" ");
                         i++;
                     }
                 }
@@ -591,7 +591,7 @@ public class CoreCommands {
                             ((LeatherArmorMeta) meta).setColor(Color.fromRGB(r, g, b));
                             is.setItemMeta(meta);
                         }
-                    } catch (NumberFormatException e) {
+                    } catch (NumberFormatException ignored) {
 
                     }
                 }
@@ -605,7 +605,7 @@ public class CoreCommands {
                             ((Repairable) meta).setRepairCost(repaircost);
                             is.setItemMeta(meta);
                         }
-                    } catch (NumberFormatException e) {
+                    } catch (NumberFormatException ignored) {
 
                     }
                 }

@@ -58,7 +58,7 @@ public class ReportPublisher implements Runnable {
                         }
                     }
                     for (int i = errormessages.size(); i > 0; i--) {
-                        builder.append(errormessages.get(i - 1) + "\n");
+                        builder.append(errormessages.get(i - 1)).append("\n");
                     }
                     errorfound = true;
                 }
@@ -78,19 +78,19 @@ public class ReportPublisher implements Runnable {
                 enjinlogstuff.add(line);
             }
             for (int i = enjinlogstuff.size(); i > 0; i--) {
-                builder.append(enjinlogstuff.get(i - 1) + "\n");
+                builder.append(enjinlogstuff.get(i - 1)).append("\n");
             }
             rfrlog.close();
-        } catch (Exception e2) {
+        } catch (Exception ignored) {
         }
         if (plugin.getLastError() != null) {
             builder.append("\nLast Enjin Plugin Severe error message: \n");
             builder.append(plugin.getLastError().toString());
         }
-        builder.append("\n=========================================\nEnjin HTTPS test: " + (ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Enjin HTTP test: " + (ConnectionUtil.testHTTPconnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Enjin web connectivity test: " + (ConnectionUtil.testWebConnection() ? "passed" : "FAILED!") + "\n");
-        builder.append("Is mineshafter present: " + (ConnectionUtil.isMineshafterPresent() ? "yes" : "no") + "\n=========================================\n");
+        builder.append("\n=========================================\nEnjin HTTPS test: ").append(ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!").append("\n");
+        builder.append("Enjin HTTP test: ").append(ConnectionUtil.testHTTPconnection() ? "passed" : "FAILED!").append("\n");
+        builder.append("Enjin web connectivity test: ").append(ConnectionUtil.testWebConnection() ? "passed" : "FAILED!").append("\n");
+        builder.append("Is mineshafter present: ").append(ConnectionUtil.isMineshafterPresent() ? "yes" : "no").append("\n=========================================\n");
         //let's make sure to hide the apikey, wherever it may occurr in the file.
         String fullreport = builder.toString().replaceAll(config.getApiUrl(), "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
@@ -105,7 +105,7 @@ public class ReportPublisher implements Runnable {
             if (outChannel != null) {
                 try {
                     outChannel.close();
-                } catch (Exception e1) {
+                } catch (Exception ignored) {
                 }
             }
             sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin debug report!");

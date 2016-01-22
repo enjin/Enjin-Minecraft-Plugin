@@ -1,7 +1,6 @@
 package com.enjin.rpc.mappings.mappings.plugin.data;
 
 import com.google.gson.annotations.SerializedName;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

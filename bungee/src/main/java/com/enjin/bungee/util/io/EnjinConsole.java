@@ -19,11 +19,9 @@ public class EnjinConsole {
     protected static Pattern chatResetPattern = Pattern.compile("(?i)&([R])");
 
     public static String[] header() {
-        String[] text = new String[]{
+        return new String[]{
                 ChatColor.GREEN + "=== Enjin Minecraft Plugin ==="
         };
-
-        return text;
     }
 
     public static String translateColorCodes(String string) {

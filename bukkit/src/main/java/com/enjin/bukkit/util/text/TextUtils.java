@@ -45,7 +45,7 @@ public class TextUtils {
                 result.add(prefix + builder.toString().trim());
                 builder = new StringBuilder();
             } else {
-                builder.append(" " + part);
+                builder.append(" ").append(part);
             }
         }
 

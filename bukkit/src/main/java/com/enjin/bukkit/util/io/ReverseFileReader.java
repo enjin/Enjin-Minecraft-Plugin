@@ -71,9 +71,9 @@ public class ReverseFileReader {
     public void close() {
         try {
             randomfile.close();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }

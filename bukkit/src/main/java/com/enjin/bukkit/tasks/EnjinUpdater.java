@@ -9,7 +9,6 @@ import java.nio.channels.ReadableByteChannel;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.core.Enjin;
-import org.bukkit.Bukkit;
 
 public class EnjinUpdater implements Runnable {
     String downloadlocation = "";

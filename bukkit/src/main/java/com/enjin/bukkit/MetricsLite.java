@@ -365,8 +365,8 @@ public class MetricsLite {
     /**
      * GZip compress a string of bytes
      *
-     * @param input
-     * @return
+     * @param input The input being processed.
+     * @return byte[] The output to return.
      */
     public static byte[] gzip(String input) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -390,9 +390,9 @@ public class MetricsLite {
     /**
      * Appends a json encoded key/value pair to the given string builder.
      *
-     * @param json
-     * @param key
-     * @param value
+     * @param json The string builder to append to.
+     * @param key The key to append.
+     * @param value The value to append.
      * @throws UnsupportedEncodingException
      */
     private static void appendJSONPair(StringBuilder json, String key, String value) throws UnsupportedEncodingException {
@@ -424,8 +424,8 @@ public class MetricsLite {
     /**
      * Escape a string to create a valid JSON string
      *
-     * @param text
-     * @return
+     * @param text The text to escape.
+     * @return String The escaped text.
      */
     private static String escapeJSON(String text) {
         StringBuilder builder = new StringBuilder();
@@ -455,7 +455,7 @@ public class MetricsLite {
                 default:
                     if (chr < ' ') {
                         String t = "000" + Integer.toHexString(chr);
-                        builder.append("\\u" + t.substring(t.length() - 4));
+                        builder.append("\\u").append(t.substring(t.length() - 4));
                     } else {
                         builder.append(chr);
                     }

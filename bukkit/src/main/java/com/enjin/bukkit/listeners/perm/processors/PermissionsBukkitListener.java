@@ -7,7 +7,6 @@ import com.platymuus.bukkit.permissions.PermissionsPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
 import java.util.List;
@@ -46,6 +45,6 @@ public class PermissionsBukkitListener extends PermissionListener {
             result.add(group.getName());
         }
 
-        return result.toArray(new String[]{});
+        return result.toArray(new String[result.size()]);
     }
 }

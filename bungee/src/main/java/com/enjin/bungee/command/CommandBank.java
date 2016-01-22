@@ -26,7 +26,7 @@ public class CommandBank implements Listener {
 
     /**
      * Prepares the parent bank for operation.
-     * @param plugin
+     * @param plugin The plugin registered to this command bank.
      */
     public static void setup(Plugin plugin) {
         if (instance != null) {
@@ -91,14 +91,14 @@ public class CommandBank implements Listener {
                 }
             }
 
-            registerCommandNodes(root.toArray(new CommandNode[]{}));
-            registerDirectiveNodes(sub.toArray(new DirectiveNode[]{}));
+            registerCommandNodes(root.toArray(new CommandNode[root.size()]));
+            registerDirectiveNodes(sub.toArray(new DirectiveNode[sub.size()]));
         }
     }
 
     /**
      * Registers value nodes.
-     * @param nodes
+     * @param nodes The command nodes to be registered.
      */
     private static void registerCommandNodes(CommandNode ... nodes) {
         for (CommandNode node : nodes) {
@@ -115,7 +115,7 @@ public class CommandBank implements Listener {
 
     /**
      * Registers directives.
-     * @param nodes
+     * @param nodes The directive nodes to be registered.
      */
     private static void registerDirectiveNodes(DirectiveNode ... nodes) {
         for (DirectiveNode node : nodes) {

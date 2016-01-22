@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.METHOD)
 public @interface Directive {
-    public String parent();
+    String parent();
 
-    public String value();
+    String value();
 
-    public String[] aliases() default {};
+    String[] aliases() default {};
 
-    public boolean requireValidKey() default true;
+    boolean requireValidKey() default true;
 }

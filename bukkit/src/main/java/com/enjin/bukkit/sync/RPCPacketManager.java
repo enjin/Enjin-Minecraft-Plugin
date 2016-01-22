@@ -109,7 +109,6 @@ public class RPCPacketManager implements Runnable {
                             NewerVersionInstruction.handle((String) instruction.getData());
                             break;
                         default:
-                            continue;
                     }
                 }
             }

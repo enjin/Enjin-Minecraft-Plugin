@@ -93,7 +93,7 @@ public class StatsServer {
             for (World world : worlds) {
                 totalentities += world.getEntities().size();
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
         serverbuilder.put("totalentities", new Integer(totalentities));

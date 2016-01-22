@@ -85,7 +85,6 @@ public class RPCPacketManager implements Runnable {
                                     NewerVersionInstruction.handle((String) instruction.getData());
                                     break;
                                 default:
-                                    continue;
                             }
                         }
                     }
@@ -170,10 +169,6 @@ public class RPCPacketManager implements Runnable {
 
     private boolean isRedisBungeeEnabled() {
         Plugin plugin = ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee");
-        if (plugin != null) {
-            return true;
-        }
-
-        return false;
+        return plugin != null;
     }
 }

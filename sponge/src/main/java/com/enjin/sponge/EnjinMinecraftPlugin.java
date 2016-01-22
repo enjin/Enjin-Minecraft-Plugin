@@ -15,7 +15,6 @@ import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.sync.RPCPacketManager;
 import com.enjin.sponge.utils.Log;
 import com.enjin.sponge.utils.commands.CommandWrapper;
-import com.enjin.rpc.EnjinRPC;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;

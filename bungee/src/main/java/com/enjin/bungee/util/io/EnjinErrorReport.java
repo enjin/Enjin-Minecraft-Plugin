@@ -26,14 +26,14 @@ public class EnjinErrorReport {
         StringBuilder errorstring = new StringBuilder();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
         Date date = new Date(timethrown);
-        errorstring.append("Enjin plugin error report. Error generated on: " + dateFormat.format(date) + ":\n");
-        errorstring.append("Extra data: " + otherinformation + "\n");
+        errorstring.append("Enjin plugin error report. Error generated on: ").append(dateFormat.format(date)).append(":\n");
+        errorstring.append("Extra data: ").append(otherinformation).append("\n");
         if (e != null) {
             errorstring.append("Stack trace:\n");
-            errorstring.append(e.toString() + "\n");
+            errorstring.append(e.toString()).append("\n");
             StackTraceElement[] stacktrace = e.getStackTrace();
             for (int i = 0; i < stacktrace.length; i++) {
-                errorstring.append(stacktrace[i].toString() + "\n");
+                errorstring.append(stacktrace[i].toString()).append("\n");
             }
         } else {
             errorstring.append("More Info:\n");

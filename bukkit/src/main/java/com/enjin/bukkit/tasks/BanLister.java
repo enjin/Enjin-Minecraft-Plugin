@@ -1,7 +1,6 @@
 package com.enjin.bukkit.tasks;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.enjin.core.Enjin;
@@ -30,7 +29,7 @@ public class BanLister implements Runnable {
         if (firstRun) {
             for (OfflinePlayer player : bannedPlayersList) {
                 if (player != null && player.getName() != null) {
-                    currentBannedPlayers.add(player.getName().toString());
+                    currentBannedPlayers.add(player.getName());
                 }
             }
 

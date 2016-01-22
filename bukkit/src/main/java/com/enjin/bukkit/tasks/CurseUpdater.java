@@ -257,7 +257,7 @@ public class CurseUpdater extends BukkitRunnable {
                 if (fout != null) {
                     fout.close();
                 }
-            } catch (final Exception ex) {
+            } catch (final Exception ignored) {
             }
         }
     }

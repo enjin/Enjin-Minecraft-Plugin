@@ -6,8 +6,6 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 
 import java.io.Serializable;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 public class LineAppender extends AbstractAppender {
     @Getter

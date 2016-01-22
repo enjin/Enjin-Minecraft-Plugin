@@ -2,7 +2,6 @@ package com.enjin.sponge.utils.text;
 
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.google.common.collect.Maps;
-import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 import java.util.regex.Pattern;

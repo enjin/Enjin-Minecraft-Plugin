@@ -24,7 +24,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 
 public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
@@ -149,8 +148,8 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
 
     public static Optional<Integer> getPort() {
-        for (ListenerInfo info : ProxyServer.getInstance().getConfig().getListeners()) {
-            return Optional.fromNullable(info.getHost().getPort());
+        if (ProxyServer.getInstance().getConfig().getListeners().size() > 0) {
+            return Optional.fromNullable(ProxyServer.getInstance().getConfig().getListeners().iterator().next().getHost().getPort());
         }
 
         return Optional.absent();

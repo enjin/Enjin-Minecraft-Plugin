@@ -1,7 +1,6 @@
 package com.enjin.bukkit.tickets;
 
 import com.enjin.core.EnjinServices;
-import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.tickets.ExtraQuestion;
 import com.enjin.rpc.mappings.mappings.tickets.QuestionType;
@@ -31,11 +30,9 @@ public class TicketSubmission {
                 if (subject == null && (response.getQuestion().getType() == QuestionType.select || response.getQuestion().getType() == QuestionType.text)) {
                     subject = response;
                     answers.remove(response);
-                    continue;
                 } else if (description == null && response.getQuestion().getType() == QuestionType.multiline) {
                     description = response;
                     answers.remove(response);
-                    continue;
                 }
             }
         }

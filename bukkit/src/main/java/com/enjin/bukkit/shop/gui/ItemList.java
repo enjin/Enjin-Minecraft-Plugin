@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

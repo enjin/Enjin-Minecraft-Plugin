@@ -1,7 +1,6 @@
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.core.config.EnjinConfig;
-import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.VoteService;
 import org.junit.Assert;

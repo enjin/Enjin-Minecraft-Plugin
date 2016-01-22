@@ -3,7 +3,6 @@ package com.enjin.common.utils;
 import com.enjin.core.Enjin;
 import com.enjin.rpc.EnjinRPC;
 
-import javax.net.ssl.SSLHandshakeException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,14 +35,14 @@ public class ConnectionUtil {
                 ok = true;
             }
         } catch (IOException e) {
-            return false;
+            ok = false;
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
             } catch (IOException e) {
-                return false;
+                ok = false;
             }
         }
 
@@ -64,18 +63,18 @@ public class ConnectionUtil {
                 ok = true;
             }
         } catch (SocketTimeoutException e) {
-            return false;
+            ok = false;
         } catch (MalformedURLException e) {
-            return false;
+            ok = false;
         } catch (IOException e) {
-            return false;
+            ok = false;
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
             } catch (IOException e) {
-                return false;
+                ok = false;
             }
         }
 

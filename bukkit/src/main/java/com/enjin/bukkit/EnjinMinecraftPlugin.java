@@ -14,7 +14,6 @@ import com.enjin.bukkit.listeners.perm.PermissionListener;
 import com.enjin.bukkit.listeners.perm.processors.*;
 import com.enjin.bukkit.managers.*;
 import com.enjin.bukkit.util.Log;
-import com.enjin.bukkit.util.VersionUtil;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.listeners.*;
 import com.enjin.bukkit.shop.ShopListener;
@@ -285,7 +284,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         if (!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             Enjin.getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
             getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
-            return;
         }
     }
 
@@ -293,24 +291,19 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
             debug("PermissionsEx found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new PexListener(), this);
-            return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("bPermissions")) {
             debug("bPermissions found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new BPermissionsListener(), this);
-            return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("zPermissions")) {
             debug("zPermissions found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new ZPermissionsListener(), this);
-            return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
             debug("PermissionsBukkit found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new PermissionsBukkitListener(), this);
-            return;
         } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
             debug("GroupManager found, hooking custom events.");
             globalGroupsSupported = false;
             Bukkit.getPluginManager().registerEvents(permissionListener = new GroupManagerListener(), this);
-            return;
         } else {
             debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
             debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");

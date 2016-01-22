@@ -1,7 +1,7 @@
 package com.enjin.core;
 
 public interface EnjinPlugin {
-    public InstructionHandler getInstructionHandler();
+    InstructionHandler getInstructionHandler();
 
-    public void debug(String message);
+    void debug(String message);
 }

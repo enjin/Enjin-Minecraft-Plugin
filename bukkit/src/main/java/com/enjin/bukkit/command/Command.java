@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.METHOD)
 public @interface Command {
-    public String value();
+    String value();
 
-    public String[] aliases() default {};
+    String[] aliases() default {};
 
-    public String description() default "";
+    String description() default "";
 
-    public boolean requireValidKey() default true;
+    boolean requireValidKey() default true;
 }

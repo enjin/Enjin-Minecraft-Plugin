@@ -28,7 +28,7 @@ public class PrimitiveUtils {
         } else {
             try {
                 length = Integer.parseInt(object.toString());
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
 
             }
         }
@@ -43,7 +43,7 @@ public class PrimitiveUtils {
         if (object instanceof String) {
             try {
                 length = Double.parseDouble((String) object);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
 
             }
         } else if (object instanceof Double || object instanceof Float) {

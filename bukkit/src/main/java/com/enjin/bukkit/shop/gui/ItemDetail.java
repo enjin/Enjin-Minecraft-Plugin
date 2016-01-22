@@ -7,11 +7,8 @@ import com.enjin.bukkit.shop.TextShopUtil;
 import com.enjin.bukkit.util.text.TextUtils;
 import com.enjin.bukkit.util.ui.Menu;
 import com.enjin.bukkit.util.ui.MenuItem;
-import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,8 +16,6 @@ import org.bukkit.material.MaterialData;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class ItemDetail extends Menu {
     private static DecimalFormat priceFormat = new DecimalFormat("#.00");

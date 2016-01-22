@@ -116,7 +116,7 @@ public class TicketCreationSession {
                             plugin.debug("Question: " + question.getId() + "|" + question.getLabel() + " requires that condition be met. Checking conditions.");
                             for (Condition condition : question.getConditions()) {
                                 boolean result = conditionMet(condition);
-                                if (result == true) {
+                                if (result) {
                                     conditionsMet = true;
                                     break;
                                 }
@@ -185,7 +185,7 @@ public class TicketCreationSession {
             if (question.getType() == QuestionType.radio || question.getType() == QuestionType.select) {
                 if (response.getAnswer() instanceof String) {
                     String answer = (String) response.getAnswer();
-                    return condition.getStatus() == Condition.Status.is ? option.equalsIgnoreCase(answer) : !option.equalsIgnoreCase(answer);
+                    return (condition.getStatus() == Condition.Status.is) == option.equalsIgnoreCase(answer);
                 }
             } else if (question.getType() == QuestionType.checkbox) {
                 if (response.getAnswer() instanceof List) {
@@ -439,7 +439,7 @@ public class TicketCreationSession {
                 }
             }
 
-            responses.put(question.getId(), new QuestionResponse(question, answers.toArray(new String[]{})));
+            responses.put(question.getId(), new QuestionResponse(question, answers.toArray(new String[answers.size()])));
             TicketCreationSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }
