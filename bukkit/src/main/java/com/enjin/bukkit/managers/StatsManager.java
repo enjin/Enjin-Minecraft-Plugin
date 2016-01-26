@@ -124,6 +124,6 @@ public class StatsManager {
     }
 
     public static void setPlayerStats(StatsPlayer player) {
-        EnjinMinecraftPlugin.getInstance().getPlayerStats().put(player.getUUID().toLowerCase(), player);
+        EnjinMinecraftPlugin.getInstance().getPlayerStats().put(player.getUuid().toLowerCase(), player);
     }
 }

@@ -11,9 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.enjin.bukkit.managers.StatsManager;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.util.PrimitiveUtils;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
@@ -34,222 +36,52 @@ import com.gmail.nossr50.datatypes.skills.SkillType;
  * @author Enjin.com
  */
 public class StatsPlayer {
-
+    @Getter
     private String name;
+    @Getter
     private String uuid = "";
+    @Getter
     private boolean firsttimeplayer = false;
+    @Getter
     private int deaths = 0;
+    @Getter
     private int killed = 0;
+    @Getter
     private int pvpkills = 0;
+    @Getter
     private int pvekills = 0;
-    ConcurrentHashMap<EntityType, Integer> creaturekills = new ConcurrentHashMap<EntityType, Integer>();
-
+    @Getter
     private double footdistance = 0;
+    @Getter
     private double boatdistance = 0;
+    @Getter
     private double pigdistance = 0;
+    @Getter
     private double minecartdistance = 0;
+    @Getter
     private double horsedistance = 0;
+    @Getter
     private int brokenblocks = 0;
+    @Getter
     private int placedblocks = 0;
-    private ConcurrentHashMap<String, Integer> brokenblocktypes = new ConcurrentHashMap<String, Integer>();
-    private ConcurrentHashMap<String, Integer> placedblocktypes = new ConcurrentHashMap<String, Integer>();
-
-    private ConcurrentHashMap<String, ConcurrentHashMap<String, StatValue>> customstats = new ConcurrentHashMap<String, ConcurrentHashMap<String, StatValue>>();
-
+    @Getter
+    private ConcurrentHashMap<EntityType, Integer> creaturekills = new ConcurrentHashMap<>();
+    @Getter
+    private ConcurrentHashMap<String, Integer> brokenblocktypes = new ConcurrentHashMap<>();
+    @Getter
+    private ConcurrentHashMap<String, Integer> placedblocktypes = new ConcurrentHashMap<>();
+    @Getter
+    private ConcurrentHashMap<String, ConcurrentHashMap<String, StatValue>> customstats = new ConcurrentHashMap<>();
+    @Getter
     private int totalxp = 0;
+    @Getter
     private int xplevel = 0;
-
+    @Getter
     private int chats = 0;
 
     public StatsPlayer(OfflinePlayer player) {
         name = player.getName();
         uuid = player.getUniqueId().toString();
-    }
-
-    public void addDeath() {
-        deaths++;
-    }
-
-    public void addKilled() {
-        killed++;
-    }
-
-    public int getPvpkills() {
-        return pvpkills;
-    }
-
-    public void addPvpkill() {
-        pvpkills++;
-    }
-
-    public void setPvpkills(int pvpkills) {
-        this.pvpkills = pvpkills;
-    }
-
-    public int getTotalPvekills() {
-        return pvekills;
-    }
-
-    public int getPveEntitykills(EntityType entity) {
-        int entitykills = 0;
-        if (creaturekills.containsKey(entity)) {
-            entitykills = creaturekills.get(entity);
-        }
-        return entitykills;
-    }
-
-    public void addPvekill(EntityType entity) {
-        pvekills++;
-        int entitykills = 0;
-        if (creaturekills.containsKey(entity)) {
-            entitykills = creaturekills.get(entity);
-        }
-        entitykills++;
-        creaturekills.put(entity, new Integer(entitykills));
-    }
-
-    public void setTotalPvekills(int pvekills) {
-        this.pvekills = pvekills;
-    }
-
-    public void setPveEntitykills(EntityType entity, int killed) {
-        creaturekills.put(entity, new Integer(pvekills));
-    }
-
-    public void addBrokenBlock(org.bukkit.block.Block block) {
-        brokenblocks++;
-        String blockid = block.getType().toString() + "-" + block.getData();
-        int blocksbroken = 0;
-        if (brokenblocktypes.containsKey(blockid)) {
-            blocksbroken = brokenblocktypes.get(blockid).intValue();
-        }
-        blocksbroken++;
-        brokenblocktypes.put(blockid, new Integer(blocksbroken));
-    }
-
-    public void addPlacedBlock(org.bukkit.block.Block block) {
-        placedblocks++;
-        String blockid = block.getType().toString() + "-" + block.getData();
-        int blocksplaced = 0;
-        if (placedblocktypes.containsKey(blockid)) {
-            blocksplaced = placedblocktypes.get(blockid).intValue();
-        }
-        blocksplaced++;
-        placedblocktypes.put(blockid, new Integer(blocksplaced));
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public synchronized void setName(String name) {
-        this.name = name;
-    }
-
-    public synchronized boolean isFirsttimeplayer() {
-        return firsttimeplayer;
-    }
-
-    public synchronized void setFirsttimeplayer(boolean firsttimeplayer) {
-        this.firsttimeplayer = firsttimeplayer;
-    }
-
-    public synchronized int getDeaths() {
-        return deaths;
-    }
-
-    public synchronized void setDeaths(int deaths) {
-        this.deaths = deaths;
-    }
-
-    public synchronized int getKilled() {
-        return killed;
-    }
-
-    public synchronized void setKilled(int killed) {
-        this.killed = killed;
-    }
-
-    public synchronized double getFootdistance() {
-        return footdistance;
-    }
-
-    public synchronized void addFootdistance(double footdistance) {
-        this.footdistance += footdistance;
-    }
-
-    public synchronized void setFootdistance(double footdistance) {
-        this.footdistance = footdistance;
-    }
-
-    public synchronized double getBoatdistance() {
-        return boatdistance;
-    }
-
-    public synchronized void addBoatdistance(double boatdistance) {
-        this.boatdistance += boatdistance;
-    }
-
-    public synchronized void setBoatdistance(double boatdistance) {
-        this.boatdistance = boatdistance;
-    }
-
-    public synchronized double getPigdistance() {
-        return pigdistance;
-    }
-
-    public synchronized void addPigdistance(double pigdistance) {
-        this.pigdistance += pigdistance;
-    }
-
-    public synchronized void setPigdistance(double pigdistance) {
-        this.pigdistance = pigdistance;
-    }
-
-    public synchronized double getMinecartdistance() {
-        return minecartdistance;
-    }
-
-    public synchronized void addMinecartdistance(double minecartdistance) {
-        this.minecartdistance += minecartdistance;
-    }
-
-    public synchronized void setMinecartdistance(double minecartdistance) {
-        this.minecartdistance = minecartdistance;
-    }
-
-    public synchronized int getBrokenblocks() {
-        return brokenblocks;
-    }
-
-    public synchronized void setBrokenblocks(int brokenblocks) {
-        this.brokenblocks = brokenblocks;
-    }
-
-    public synchronized int getPlacedblocks() {
-        return placedblocks;
-    }
-
-    public synchronized void setPlacedblocks(int placedblocks) {
-        this.placedblocks = placedblocks;
-    }
-
-    public synchronized ConcurrentHashMap<String, Integer> getBrokenblocktypes() {
-        return brokenblocktypes;
-    }
-
-    public synchronized void setBrokenblocktypes(
-            ConcurrentHashMap<String, Integer> brokenblocktypes) {
-        this.brokenblocktypes = brokenblocktypes;
-    }
-
-    public synchronized ConcurrentHashMap<String, Integer> getPlacedblocktypes() {
-        return placedblocktypes;
-    }
-
-    public synchronized void setPlacedblocktypes(
-            ConcurrentHashMap<String, Integer> placedblocktypes) {
-        this.placedblocktypes = placedblocktypes;
     }
 
     public StatsPlayer(JSONObject playerstats) {
@@ -263,6 +95,7 @@ public class StatsPlayer {
         totalxp = PrimitiveUtils.getInt(playerstats.get("totalxp"));
         xplevel = PrimitiveUtils.getInt(playerstats.get("xplevel"));
         Object odistance = playerstats.get("distance");
+
         if (odistance instanceof JSONObject) {
             JSONObject distance = (JSONObject) odistance;
             footdistance = PrimitiveUtils.getDouble(distance.get("foot"));
@@ -276,6 +109,7 @@ public class StatsPlayer {
             horsedistance = PrimitiveUtils.getDouble(distance.get("horse"));
             horsedistance *= horsedistance;
         }
+
         Object oblocks = playerstats.get("blocks");
         if (oblocks instanceof JSONObject) {
             JSONObject blocks = (JSONObject) oblocks;
@@ -292,6 +126,7 @@ public class StatsPlayer {
                     brokenblocktypes.put(id, count);
                 }
             }
+
             if (oplacedblocks instanceof JSONObject) {
                 JSONObject jplacedblocks = (JSONObject) oplacedblocks;
                 Set<Map.Entry> eblocks = jplacedblocks.entrySet();
@@ -302,6 +137,7 @@ public class StatsPlayer {
                 }
             }
         }
+
         Object ocustom = playerstats.get("customstats");
         if (ocustom instanceof JSONObject) {
             JSONObject jcustom = (JSONObject) ocustom;
@@ -328,76 +164,135 @@ public class StatsPlayer {
                             cmap.put(name, svalue);
                         }
                     }
+
                     if (cmap.size() > 0) {
                         customstats.put(pluginname, cmap);
                     }
                 }
-                Object ostats = mplugin.getValue();
             }
         }
     }
 
-    public synchronized int getTotalxp() {
-        return totalxp;
+    public void addDeath() {
+        deaths++;
     }
 
-    public synchronized void setTotalxp(int totalxp) {
+    public void addKilled() {
+        killed++;
+    }
+
+    public void addPvpkill() {
+        pvpkills++;
+    }
+
+    public void addPvekill(EntityType entity) {
+        pvekills++;
+        int entitykills = 0;
+
+        if (creaturekills.containsKey(entity)) {
+            entitykills = creaturekills.get(entity);
+        }
+
+        entitykills++;
+        creaturekills.put(entity, new Integer(entitykills));
+    }
+
+    public void addBrokenBlock(Block block) {
+        brokenblocks++;
+        String blockid = block.getType().toString() + "-" + block.getData();
+        int blocksbroken = 0;
+        if (brokenblocktypes.containsKey(blockid)) {
+            blocksbroken = brokenblocktypes.get(blockid).intValue();
+        }
+        blocksbroken++;
+        brokenblocktypes.put(blockid, new Integer(blocksbroken));
+    }
+
+    public void addPlacedBlock(Block block) {
+        placedblocks++;
+        String blockid = block.getType().toString() + "-" + block.getData();
+        int blocksplaced = 0;
+
+        if (placedblocktypes.containsKey(blockid)) {
+            blocksplaced = placedblocktypes.get(blockid).intValue();
+        }
+
+        blocksplaced++;
+        placedblocktypes.put(blockid, new Integer(blocksplaced));
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void addFootdistance(double footdistance) {
+        this.footdistance += footdistance;
+    }
+
+    public void addBoatdistance(double boatdistance) {
+        this.boatdistance += boatdistance;
+    }
+
+    public void addPigdistance(double pigdistance) {
+        this.pigdistance += pigdistance;
+    }
+
+    public void addMinecartdistance(double minecartdistance) {
+        this.minecartdistance += minecartdistance;
+    }
+
+    public void setTotalXp(int totalxp) {
         this.totalxp = totalxp;
     }
 
-    public synchronized int getXplevel() {
-        return xplevel;
-    }
-
-    public synchronized void setXplevel(int xplevel) {
+    public void setXpLevel(int xplevel) {
         this.xplevel = xplevel;
     }
 
-    public synchronized void addChatLine() {
+    public void addChatLine() {
         chats++;
     }
 
-    public synchronized int getChatLines() {
-        return chats;
-    }
-
-    public synchronized void setChatLines(int chats) {
-        this.chats = chats;
-    }
-
-    @SuppressWarnings("unchecked")
-    public synchronized JSONObject getSerialized() {
+    public JSONObject getSerialized() {
         JSONObject player = new JSONObject();
         JSONObject blocks = new JSONObject();
         JSONObject jbrokenblocks = new JSONObject();
+
         for (Entry<String, Integer> blockdata : brokenblocktypes.entrySet()) {
             jbrokenblocks.put(blockdata.getKey(), blockdata.getValue());
         }
+
         blocks.put("brokenblocklist", jbrokenblocks);
         JSONObject jplacedblocks = new JSONObject();
+
         for (Entry<String, Integer> blockdata : placedblocktypes.entrySet()) {
             jplacedblocks.put(blockdata.getKey(), blockdata.getValue());
         }
+
         blocks.put("placedblocklist", jplacedblocks);
         blocks.put("broken", new Integer(brokenblocks));
         blocks.put("placed", new Integer(placedblocks));
+
         player.put("blocks", blocks);
         player.put("username", name);
         player.put("uuid", uuid);
         player.put("firsttimeplayer", Boolean.valueOf(firsttimeplayer));
         player.put("deaths", new Integer(deaths));
         player.put("killed", new Integer(killed));
+        player.put("pvekills", new Integer(pvekills));
+        player.put("pvpkills", new Integer(pvpkills));
+        player.put("totalxp", new Integer(totalxp));
+        player.put("xplevel", new Integer(xplevel));
+        player.put("chatlines", new Integer(chats));
+
         JSONObject jdistance = new JSONObject();
         jdistance.put("foot", new Double(getRealDistance(footdistance)));
         jdistance.put("boat", new Double(getRealDistance(boatdistance)));
         jdistance.put("pig", new Double(getRealDistance(pigdistance)));
         jdistance.put("minecart", new Double(getRealDistance(minecartdistance)));
         jdistance.put("horse", new Double(getRealDistance(horsedistance)));
+
         player.put("distance", jdistance);
-        player.put("pvekills", new Integer(pvekills));
-        player.put("pvpkills", new Integer(pvpkills));
-        player.put("totalxp", new Integer(totalxp));
-        player.put("xplevel", new Integer(xplevel));
 
         if (VaultManager.isVaultEnabled()) {
             Economy economy = VaultManager.getEconomy();
@@ -405,7 +300,7 @@ public class StatsPlayer {
                 if (VaultManager.isEconomyUpToDate()) {
                     OfflinePlayer oplayer = null;
                     try {
-                        oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUUID()));
+                        oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUuid()));
                     } catch (IllegalArgumentException ignored) {
 
                     }
@@ -437,12 +332,14 @@ public class StatsPlayer {
                 //Somehow we are getting an NPE sometimes? Ignore it.
             }
         }
+
         player.put("pveentitykills", pveentitykills);
-        player.put("chatlines", new Integer(chats));
+
         if (StatsManager.isMcMmoEnabled()) {
             Player bplayer = Bukkit.getPlayerExact(name);
             JSONObject mcmmoskills = new JSONObject();
             List<SkillType> skills = SkillType.NON_CHILD_SKILLS;
+
             for (SkillType type : skills) {
                 try {
                     int level = 0;
@@ -456,6 +353,7 @@ public class StatsPlayer {
 
                 }
             }
+
             player.put("mcmmo", mcmmoskills);
         }
         if (customstats.size() > 0) {
@@ -485,11 +383,7 @@ public class StatsPlayer {
         return Math.sqrt(squareddistance);
     }
 
-    public String getUUID() {
-        return uuid;
-    }
-
-    public void setUUID(String uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
