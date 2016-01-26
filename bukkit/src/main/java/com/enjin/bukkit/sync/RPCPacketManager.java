@@ -162,7 +162,7 @@ public class RPCPacketManager implements Runnable {
         Map<String, PlayerGroupInfo> update = new HashMap<>();
 
         int index = 0;
-        for (String player : groups.keySet()) {
+        for (String player : new HashSet<>(groups.keySet())) {
             if (index >= 3000) {
                 break;
             }

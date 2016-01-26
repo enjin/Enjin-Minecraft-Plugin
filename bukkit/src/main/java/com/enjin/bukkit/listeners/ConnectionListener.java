@@ -80,6 +80,16 @@ public class ConnectionListener implements Listener {
             return;
         }
 
+        if (EnjinMinecraftPlugin.getRankUpdatesConfiguration() == null) {
+            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] RankUpdatesConfiguration is null.");
+            return;
+        }
+
+        if (EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms() == null) {
+            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player perms is null.");
+            return;
+        }
+
         info.getWorlds().putAll(getPlayerGroups(player));
         EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
         EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
