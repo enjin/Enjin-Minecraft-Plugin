@@ -108,6 +108,10 @@ public class StatsManager {
     }
 
     public static StatsPlayer getPlayerStats(OfflinePlayer player) {
+        if (player.getUniqueId() == null) {
+            return null;
+        }
+
         String uuid = player.getUniqueId().toString().toLowerCase();
         StatsPlayer stats = EnjinMinecraftPlugin.getInstance().getPlayerStats().get(uuid);
 
