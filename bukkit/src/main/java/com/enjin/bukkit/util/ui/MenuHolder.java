@@ -63,6 +63,10 @@ public abstract class MenuHolder extends MenuBase implements InventoryHolder {
             return false;
         }
 
+        if (item == null) {
+            return false;
+        }
+
         ItemStack slot = getInventory().getItem(index);
 
         if (slot != null && slot.getType() != Material.AIR) {
