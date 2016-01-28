@@ -423,13 +423,9 @@ public class CoreCommands {
     @Directive(parent = "enjin", value = "push")
     public static void push(CommandSender sender, String[] args) {
         RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
-        OfflinePlayer[] players = Bukkit.getOfflinePlayers();
+        ConnectionListener.updatePlayersRanks(Bukkit.getOfflinePlayers());
 
-        for (OfflinePlayer player : players) {
-            ConnectionListener.updatePlayerRanks(player);
-        }
-
-        int minutes = Double.valueOf(Math.ceil(((double) config.getPlayerPerms().size()) / 3000.0D)).intValue();
+        int minutes = Double.valueOf(Math.ceil(((double) config.getPlayerPerms().size()) / 500.0D)).intValue();
         sender.sendMessage(ChatColor.GREEN + Integer.toString(config.getPlayerPerms().size()) + " players have been queued for synchronization. This should take approximately " + minutes + " minutes" + (minutes > 1 ? "s." : "."));
     }
 

@@ -68,6 +68,11 @@ public class ConnectionListener implements Listener {
     }
 
     public static void updatePlayerRanks(OfflinePlayer player) {
+        updatePlayerRanks1(player);
+        EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
+    }
+
+    public static void updatePlayerRanks1(OfflinePlayer player) {
         if (player == null || player.getName() == null) {
             Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
             return;
@@ -92,6 +97,13 @@ public class ConnectionListener implements Listener {
 
         info.getWorlds().putAll(getPlayerGroups(player));
         EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
+    }
+
+    public static void updatePlayersRanks(OfflinePlayer[] players) {
+        for (OfflinePlayer player : players) {
+            updatePlayerRanks1(player);
+        }
+
         EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
     }
 

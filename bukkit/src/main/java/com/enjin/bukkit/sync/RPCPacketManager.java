@@ -163,7 +163,7 @@ public class RPCPacketManager implements Runnable {
 
         int index = 0;
         for (String player : new HashSet<>(groups.keySet())) {
-            if (index >= 3000) {
+            if (index >= 500) {
                 break;
             }
 
