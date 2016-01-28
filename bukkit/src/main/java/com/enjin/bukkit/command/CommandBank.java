@@ -106,12 +106,13 @@ public class CommandBank implements Listener {
      */
     private static void registerCommandNodes(CommandNode ... nodes) {
         for (CommandNode node : nodes) {
-            if (CommandBank.nodes.containsKey(node.getData().value())) {
+            String key = node.getData().value().toLowerCase();
+            if (CommandBank.nodes.containsKey(key)) {
                 continue;
             }
 
             Enjin.getPlugin().debug("Registering command: " + node.getData().value());
-            CommandBank.nodes.put(node.getData().value(), node);
+            CommandBank.nodes.put(key, node);
             registerCommandAlias(node.getData().value(), node.getData().aliases());
         }
     }
@@ -122,46 +123,49 @@ public class CommandBank implements Listener {
      */
     private static void registerDirectiveNodes(DirectiveNode ... nodes) {
         for (DirectiveNode node : nodes) {
-            CommandNode command = CommandBank.getNodes().get(node.getData().parent());
+            CommandNode command = CommandBank.getNodes().get(node.getData().parent().toLowerCase());
 
             if (command != null) {
-                if (command.getDirectives().containsKey(node.getData().value())) {
+                String key = node.getData().value().toLowerCase();
+                if (command.getDirectives().containsKey(key)) {
                     continue;
                 }
 
                 Enjin.getPlugin().debug("Registering directive: " + node.getData().value() + " for command: " + node.getData().parent());
-                command.getDirectives().put(node.getData().value(), node);
+                command.getDirectives().put(key, node);
                 registerDirectiveAlias(node.getData().parent(), node.getData().value(), node.getData().aliases());
             }
         }
     }
 
     public static void registerCommandAlias(String command, String ... alias) {
-        if (nodes.containsKey(alias)) {
-            Enjin.getPlugin().debug("That alias has already been registered by another command.");
-            return;
-        }
-
-        CommandNode node = nodes.get(command);
+        CommandNode node = nodes.get(command.toLowerCase());
         if (node != null) {
             for (String a : alias) {
-                nodes.put(a, node);
+                String key = a.toLowerCase();
+                if (nodes.containsKey(key)) {
+                    Enjin.getPlugin().debug("That alias has already been registered by another command.");
+                    continue;
+                }
+
+                nodes.put(key, node);
             }
         }
     }
 
     public static void registerDirectiveAlias(String command, String directive, String ... alias) {
-        CommandNode node = nodes.get(command);
+        CommandNode node = nodes.get(command.toLowerCase());
         if (node != null) {
-            if (node.getDirectives().containsKey(alias)) {
-                Enjin.getPlugin().debug("That alias has already been registered by another directive.");
-                return;
-            }
-
-            DirectiveNode n = node.getDirectives().get(directive);
+            DirectiveNode n = node.getDirectives().get(directive.toLowerCase());
             if (n != null) {
                 for (String a : alias) {
-                    node.getDirectives().put(a, n);
+                    String key = a.toLowerCase();
+                    if (node.getDirectives().containsKey(key)) {
+                        Enjin.getPlugin().debug("That alias has already been registered by another directive.");
+                        continue;
+                    }
+
+                    node.getDirectives().put(key, n);
                 }
             }
         }
@@ -189,7 +193,7 @@ public class CommandBank implements Listener {
         }
 
         String[] parts = c.startsWith("/") ? c.replaceFirst("/", "").split(" ") : c.split(" ");
-        String command = parts[0];
+        String command = parts[0].toLowerCase();
 
         Optional<CommandNode> w = Optional.fromNullable(nodes.get(command));
         if (w.isPresent()) {

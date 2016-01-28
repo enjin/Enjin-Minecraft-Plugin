@@ -44,7 +44,7 @@ public class CommandNode {
         }
 
         if (args.length > 0) {
-            DirectiveNode directive = directives.get(args[0]);
+            DirectiveNode directive = directives.get(args[0].toLowerCase());
             if (directive != null) {
                 directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[]{});
                 return;

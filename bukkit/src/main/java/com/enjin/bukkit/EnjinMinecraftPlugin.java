@@ -311,7 +311,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public static void dispatchConsoleCommand(String command) {
-        if (!CommandBank.getNodes().containsKey(command.split(" ")[0])) {
+        if (!CommandBank.getNodes().containsKey(command.split(" ")[0].toLowerCase())) {
             Enjin.getPlugin().debug("[D1] Executed Command: " + command);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             return;
