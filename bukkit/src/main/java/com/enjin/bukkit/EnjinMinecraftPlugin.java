@@ -184,7 +184,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         initRankUpdatesConfiguration();
     }
 
-    private void initConfig() {
+    public void initConfig() {
         File configFile = new File(getDataFolder(), "config.json");
         EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
         Enjin.setConfiguration(configuration);
