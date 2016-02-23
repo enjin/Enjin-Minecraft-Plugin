@@ -44,9 +44,7 @@ import com.enjin.bukkit.tasks.CurseUpdater;
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
-    @Getter
     private static ExecutedCommandsConfig executedCommandsConfiguration;
-    @Getter
     private static RankUpdatesConfig rankUpdatesConfiguration;
     @Getter
     private InstructionHandler instructionHandler = new BukkitInstructionHandler();
@@ -345,5 +343,21 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public boolean isUpdateFromCurseForge() {
         return getDescription().getVersion().endsWith("-bukkit");
+    }
+
+    public static ExecutedCommandsConfig getExecutedCommandsConfiguration() {
+        if (executedCommandsConfiguration == null) {
+            instance.initCommandsConfiguration();
+        }
+
+        return executedCommandsConfiguration;
+    }
+
+    public static RankUpdatesConfig getRankUpdatesConfiguration() {
+        if (rankUpdatesConfiguration == null) {
+            instance.initRankUpdatesConfiguration();
+        }
+
+        return rankUpdatesConfiguration;
     }
 }

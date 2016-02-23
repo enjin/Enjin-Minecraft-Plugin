@@ -1,6 +1,7 @@
 package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.config.EMPConfig;
+import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.managers.VaultManager;
 import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
@@ -158,7 +159,14 @@ public class RPCPacketManager implements Runnable {
     }
 
     private Map<String, PlayerGroupInfo> getPlayerGroups() {
-        Map<String, PlayerGroupInfo> groups = EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms();
+        RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
+
+        if (config == null) {
+            Enjin.getLogger().warning("Rank updates configuration did not load properly.");
+            return null;
+        }
+
+        Map<String, PlayerGroupInfo> groups = config.getPlayerPerms();
         Map<String, PlayerGroupInfo> update = new HashMap<>();
 
         int index = 0;
