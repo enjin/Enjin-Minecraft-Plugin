@@ -133,7 +133,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 debug("Failed to start metrics.");
             }
 
-            initConfig();
+            initConfigs();
 
             Enjin.setLogger(new Log(getDataFolder()));
 
@@ -180,7 +180,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         debug("Init tasks done.");
     }
 
-    public void initConfig() {
+    public void initConfigs() {
+        initConfig();
+        initCommandsConfiguration();
+        initRankUpdatesConfiguration();
+    }
+
+    private void initConfig() {
         File configFile = new File(getDataFolder(), "config.json");
         EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
         Enjin.setConfiguration(configuration);
@@ -188,15 +194,19 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         if (!configFile.exists()) {
             configuration.save(configFile);
         }
+    }
 
-        configFile = new File(getDataFolder(), "commands.json");
+    private void initCommandsConfiguration() {
+        File configFile = new File(getDataFolder(), "commands.json");
         EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
 
         if (!configFile.exists()) {
             executedCommandsConfiguration.save(configFile);
         }
+    }
 
-        configFile = new File(getDataFolder(), "rankUpdates.json");
+    private void initRankUpdatesConfiguration() {
+        File configFile = new File(getDataFolder(), "rankUpdates.json");
         EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
 
         if (!configFile.exists()) {
@@ -205,14 +215,26 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public static void saveConfiguration() {
+        if (Enjin.getConfiguration() == null) {
+            instance.initConfig();
+        }
+
         Enjin.getConfiguration().save(new File(instance.getDataFolder(), "config.json"));
     }
 
     public static void saveExecutedCommandsConfiguration() {
+        if (executedCommandsConfiguration == null) {
+            instance.initCommandsConfiguration();
+        }
+
         executedCommandsConfiguration.save(new File(instance.getDataFolder(), "commands.json"));
     }
 
     public static void saveRankUpdatesConfiguration() {
+        if (rankUpdatesConfiguration == null) {
+            instance.initRankUpdatesConfiguration();
+        }
+
         rankUpdatesConfiguration.save(new File(instance.getDataFolder(), "rankUpdates.json"));
     }
 
