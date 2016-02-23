@@ -12,6 +12,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
