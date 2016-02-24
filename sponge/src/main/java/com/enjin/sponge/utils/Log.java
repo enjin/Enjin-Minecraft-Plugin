@@ -72,21 +72,17 @@ public class Log implements EnjinLogger {
     private void configure(Logger logger, File log) {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
-        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}] [%level] [%logger]: %msg%n", config, null, Charsets.UTF_8.name(), null);
+        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charsets.UTF_8.name(), null);
 
-        Appender appender = ConsoleAppender.createAppender(layout, null, null, "EnjinSysOut", null, null);
-        appender.start();
-        logger.addAppender(appender);
-
-        listener = new LineAppender("EnjinLineListener", layout);
+        listener = new LineAppender("EnjinLineIn", layout);
         listener.start();
         Logger root = (Logger) LogManager.getRootLogger();
         root.addAppender(listener);
 
         if (Enjin.getConfiguration().isLoggingEnabled()) {
-            appender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinFileOut", "false", null, null, layout, null, null, null, config);
-            appender.start();
-            logger.addAppender(appender);
+            FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinFileOut", "false", null, null, layout, null, null, null, config);
+            fileAppender.start();
+            logger.addAppender(fileAppender);
         }
     }
 }

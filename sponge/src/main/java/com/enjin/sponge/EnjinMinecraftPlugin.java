@@ -7,6 +7,7 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
+import com.enjin.sponge.commands.CommandListener;
 import com.enjin.sponge.commands.EnjinCommand;
 import com.enjin.sponge.commands.configuration.SetKeyCommand;
 import com.enjin.sponge.commands.store.BuyCommand;
@@ -72,6 +73,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
     public EnjinMinecraftPlugin() {
         instance = this;
+        Enjin.setPlugin(this);
     }
 
     @Listener
@@ -175,6 +177,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     }
 
     private void initListeners() {
+        game.getEventManager().registerListeners(this, new CommandListener());
         game.getEventManager().registerListeners(this, new ShopListener());
     }
 
