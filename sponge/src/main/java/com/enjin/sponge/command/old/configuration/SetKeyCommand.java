@@ -1,4 +1,4 @@
-package com.enjin.sponge.commands.configuration;
+package com.enjin.sponge.command.old.configuration;
 
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;

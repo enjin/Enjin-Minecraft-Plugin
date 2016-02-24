@@ -1,9 +1,9 @@
-package com.enjin.sponge.commands.store;
+package com.enjin.sponge.command.old.store;
 
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.sponge.shop.RPCShopFetcher;
-import com.enjin.sponge.shop.ShopUtil;
+import com.enjin.sponge.shop.TextShopUtil;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -54,13 +54,13 @@ public class BuyCommand implements CommandExecutor {
                                 player.sendMessage(Text.builder("There are no items in this category.").color(TextColors.RED).build());
                             } else if (number == 0) {
                                 plugin.debug("Sending first item to " + player.getName());
-                                ShopUtil.sendItemInfo(player, instance, 0);
+                                TextShopUtil.sendItemInfo(player, instance, 0);
                             } else if (instance.getActiveCategory().getItems().size() < number) {
                                 plugin.debug("Sending last item to " + player.getName());
-                                ShopUtil.sendItemInfo(player, instance, category.getItems().size() - 1);
+                                TextShopUtil.sendItemInfo(player, instance, category.getItems().size() - 1);
                             } else {
                                 plugin.debug("Sending item to " + player.getName());
-                                ShopUtil.sendItemInfo(player, instance, number - 1);
+                                TextShopUtil.sendItemInfo(player, instance, number - 1);
                             }
 
                             return CommandResult.success();
@@ -87,7 +87,7 @@ public class BuyCommand implements CommandExecutor {
                 }
             }
 
-            ShopUtil.sendTextShop(player, instances.get(player.getUniqueId()), -1);
+            TextShopUtil.sendTextShop(player, instances.get(player.getUniqueId()), -1);
         }
 
         return CommandResult.success();
@@ -118,7 +118,7 @@ public class BuyCommand implements CommandExecutor {
                 int value = index.get() < 1 ? -1 : index.get() - 1;
                 PlayerShopInstance instance = instances.get(player.getUniqueId());
                 instance.updateShop(value);
-                ShopUtil.sendTextShop(player, instance, -1);
+                TextShopUtil.sendTextShop(player, instance, -1);
             }
 
             return CommandResult.success();

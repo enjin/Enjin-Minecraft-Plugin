@@ -2,6 +2,8 @@ package com.enjin.sponge.utils.text;
 
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.google.common.collect.Maps;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -59,17 +61,8 @@ public class TextUtils {
         return start == null ? null : pattern.matcher(start).replaceAll("");
     }
 
-    public static String translateAlternateColorCodes(String input, char alt) {
-        char[] b = input.toCharArray();
-
-        for(int i = 0; i < b.length - 1; ++i) {
-            if(b[i] == alt && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
-                b[i] = 167;
-                b[i + 1] = Character.toLowerCase(b[i + 1]);
-            }
-        }
-
-        return new String(b);
+    public static Text translateText(String text) {
+        return TextSerializers.FORMATTING_CODE.deserializeUnchecked(text);
     }
 
 }

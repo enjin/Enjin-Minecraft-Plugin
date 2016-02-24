@@ -1,4 +1,4 @@
-package com.enjin.sponge.commands.ticket;
+package com.enjin.sponge.command.old.ticket;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;

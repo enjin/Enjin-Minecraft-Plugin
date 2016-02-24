@@ -59,6 +59,6 @@ public class RPCShopFetcher implements Runnable {
         }
 
         PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
-        ShopUtil.sendTextShop(player, instance, -1);
+        TextShopUtil.sendTextShop(player, instance, -1);
     }
 }

@@ -7,10 +7,9 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
-import com.enjin.sponge.commands.CommandListener;
-import com.enjin.sponge.commands.EnjinCommand;
-import com.enjin.sponge.commands.configuration.SetKeyCommand;
-import com.enjin.sponge.commands.store.BuyCommand;
+import com.enjin.sponge.command.CommandBank;
+import com.enjin.sponge.command.commands.BuyCommand;
+import com.enjin.sponge.command.commands.CoreCommands;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.sync.RPCPacketManager;
@@ -23,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -31,7 +29,6 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.Text;
 
 import java.io.File;
 import java.util.List;
@@ -140,44 +137,12 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
     private void initCommands() {
         logger.info("Initializing EMP Commands");
-        if (!commands.isEmpty()) {
-            commands.clear();
-        }
+        CommandBank.setup(this);
 
-        CommandSpec.Builder enjinCommandBuilder = CommandSpec.builder()
-                .description(Text.of("/enjin"))
-                .executor(new EnjinCommand());
-        enjinCommandBuilder.child(CommandSpec.builder()
-                .description(Text.of("Set the authentication key for this server"))
-                .permission("enjin.setkey")
-                .arguments(GenericArguments.string(Text.of("key")))
-                .executor(new SetKeyCommand()).build(), "setkey", "key", "sk");
-
-        CommandSpec.Builder buyCommandBuilder = CommandSpec.builder()
-                .description(Text.of("/buy"))
-                .permission("enjin.buy")
-                .arguments(GenericArguments.optional(GenericArguments.integer(Text.of("#"))))
-                .executor(new BuyCommand());
-        buyCommandBuilder.child(CommandSpec.builder()
-                .description(Text.of("/buy shop <#>"))
-                .permission("enjin.buy")
-                .arguments(GenericArguments.integer(Text.of("#")))
-                .executor(new BuyCommand.ShopCommand())
-                .build(), "shop");
-
-        CommandSpec buySpec = buyCommandBuilder.build();
-        enjinCommandBuilder.child(buySpec, "buy");
-
-        CommandSpec enjinSpec = enjinCommandBuilder.build();
-        commands.add(enjinSpec);
-        commands.add(buySpec);
-
-        game.getCommandManager().register(this, enjinSpec, "enjin", "emp", "e");
-        game.getCommandManager().register(this, buySpec, "buy");
+        CommandBank.register(BuyCommand.class, CoreCommands.class);
     }
 
     private void initListeners() {
-        game.getEventManager().registerListeners(this, new CommandListener());
         game.getEventManager().registerListeners(this, new ShopListener());
     }
 
