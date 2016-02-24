@@ -9,7 +9,6 @@ import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.shop.TextShopUtil;
-import com.enjin.sponge.sync.RPCPacketManager;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,7 +17,6 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 public class PurchaseManager {
     @Getter
@@ -33,6 +31,7 @@ public class PurchaseManager {
         if (item == null) {
             player.sendMessage(Text.of(TextColors.RED, "You must select an item from a category first."));
         } else if (item.getPoints() == null || (item.getVariables() != null && !item.getVariables().isEmpty())) {
+            // FIXME: 2/24/2016 text shop not displaying
             TextShopUtil.sendItemInfo(player, shop, item);
         } else {
             PurchaseManager.getPendingPurchases().put(player.getName(), item.getId());

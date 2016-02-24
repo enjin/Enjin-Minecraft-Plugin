@@ -1,12 +1,16 @@
 package com.enjin.sponge.command.commands;
 
 import com.enjin.core.Enjin;
+import com.enjin.core.EnjinServices;
+import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.command.Command;
 import com.enjin.sponge.command.Directive;
 import com.enjin.sponge.command.Permission;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.utils.io.EnjinConsole;
+import com.google.common.base.Optional;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -103,5 +107,52 @@ public class CoreCommands {
         EnjinMinecraftPlugin.saveConfiguration();
 
         sender.sendMessage(Text.of(TextColors.GREEN, "Debugging has been set to ", config.isDebug()));
+    }
+
+    @Permission(value = "enjin.setkey")
+    @Command(value = "enjinkey", aliases = "ek", requireValidKey = false)
+    @Directive(parent = "enjin", value = "key", aliases = {"setkey", "sk", "enjinkey", "ek"}, requireValidKey = false)
+    public static void key(final CommandSource sender, final String[] args) {
+        if (args.length != 1) {
+            sender.sendMessage(Text.of("USAGE: /enjin key <key>"));
+            return;
+        }
+
+        Enjin.getLogger().info("Checking if key is valid");
+
+        Runnable runnable = (Runnable) () -> {
+            if (Enjin.getConfiguration().getAuthKey().equals(args[0])) {
+                sender.sendMessage(Text.of(TextColors.GREEN, "That key has already been validated."));
+                return;
+            }
+
+            PluginService service = EnjinServices.getService(PluginService.class);
+            RPCData<Boolean> data = service.auth(Optional.of(args[0]), EnjinMinecraftPlugin.getInstance().getPort(), true);
+
+            if (data == null) {
+                sender.sendMessage(Text.of("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+                return;
+            }
+
+            if (data.getError() != null) {
+                sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
+                return;
+            }
+
+            if (data.getResult().booleanValue()) {
+                sender.sendMessage(Text.of(TextColors.GREEN, "The key has been successfully validated."));
+                Enjin.getConfiguration().setAuthKey(args[0]);
+                EnjinMinecraftPlugin.saveConfiguration();
+                EnjinMinecraftPlugin.getInstance().setAuthKeyInvalid(false);
+                EnjinMinecraftPlugin.getInstance().init();
+            } else {
+                sender.sendMessage(Text.of(TextColors.RED, "We were unable to validate the provided key."));
+            }
+        };
+
+        EnjinMinecraftPlugin.getInstance().getGame().getScheduler().createTaskBuilder()
+                .execute(runnable)
+                .async()
+                .submit(Enjin.getPlugin());
     }
 }
