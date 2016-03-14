@@ -27,7 +27,7 @@ public class RPCPacketManager implements Runnable {
                 null,
                 getPlugins(),
                 false,
-                plugin.getContainer().getVersion(),
+                plugin.getContainer().getVersion().get(),
                 getWorlds(),
                 getGroups(),
                 getMaxPlayers(),
