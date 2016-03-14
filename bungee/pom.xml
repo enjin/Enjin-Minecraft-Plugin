@@ -90,14 +90,14 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-bootstrap</artifactId>
-            <version>1.8-SNAPSHOT</version>
+            <version>1.9-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.imaginarycode.minecraft</groupId>
             <artifactId>RedisBungee</artifactId>
-            <version>0.3.8-SNAPSHOT</version>
+            <version>0.3.9-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
