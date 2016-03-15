@@ -10,9 +10,12 @@ import com.enjin.sponge.command.Directive;
 import com.enjin.sponge.command.Permission;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.utils.io.EnjinConsole;
+import com.enjin.sponge.utils.text.TextUtils;
 import com.google.common.base.Optional;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 
 public class CoreCommands {
@@ -98,6 +101,26 @@ public class CoreCommands {
         sender.sendMessage(Text.of(TextColors.GOLD, "/buy page <#>: ", TextColors.RESET, "View the next page of results."));
         sender.sendMessage(Text.of(TextColors.GOLD, "/buy <ID>: ", TextColors.RESET, "Purchase the specified item ID in the server shop."));
     }
+
+	@Permission(value = "enjin.broadcast")
+	@Directive(parent = "enjin", value = "broadcast", requireValidKey = false)
+	public static void broadcast(CommandSource sender, String[] args) {
+		if (args.length < 1) {
+			sender.sendMessage(Text.of(TextColors.RED, "To broadcast a message do: /enjin broadcast <message>"));
+			return;
+		}
+
+		StringBuilder message = new StringBuilder();
+		for (int i = 0; i < args.length; i++) {
+			if (i > 0) {
+				message.append(" ");
+			}
+
+			message.append(args[i]);
+		}
+
+		MessageChannel.TO_ALL.send(Text.of(TextUtils.translateText(message.toString())));
+	}
 
     @Permission(value = "enjin.debug")
     @Directive(parent = "enjin", value = "debug", requireValidKey = false)
