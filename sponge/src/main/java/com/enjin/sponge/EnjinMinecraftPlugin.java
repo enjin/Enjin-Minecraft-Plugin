@@ -10,6 +10,7 @@ import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.sponge.command.CommandBank;
 import com.enjin.sponge.command.commands.BuyCommand;
 import com.enjin.sponge.command.commands.CoreCommands;
+import com.enjin.sponge.command.commands.PointCommands;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.sync.RPCPacketManager;
@@ -140,7 +141,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         logger.info("Initializing EMP Commands");
         CommandBank.setup(this);
 
-        CommandBank.register(BuyCommand.class, CoreCommands.class);
+        CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class);
     }
 
     private void initListeners() {

@@ -69,25 +69,25 @@ public class CoreCommands {
         }
 
         // Points commands
-//        if (sender.hasPermission("enjin.points.getself")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin points: ", TextColors.RESET, "Shows your current website points."));
-//        }
-//
-//        if (sender.hasPermission("enjin.points.getothers")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin points <NAME>: ", TextColors.RESET, "Shows another player's current website points."));
-//        }
-//
-//        if (sender.hasPermission("enjin.points.add")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin addpoints <NAME> <AMOUNT>: ", TextColors.RESET, "Add points to a player."));
-//        }
-//
-//        if (sender.hasPermission("enjin.points.remove")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin removepoints <NAME> <AMOUNT>: ", TextColors.RESET, "Remove points from a player."));
-//        }
-//
-//        if (sender.hasPermission("enjin.points.set")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin setpoints <NAME> <AMOUNT>: ", TextColors.RESET, "Set a player's total points."));
-//        }
+        if (sender.hasPermission("enjin.points.getself")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin points: ", TextColors.RESET, "Shows your current website points."));
+        }
+
+        if (sender.hasPermission("enjin.points.getothers")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin points <NAME>: ", TextColors.RESET, "Shows another player's current website points."));
+        }
+
+        if (sender.hasPermission("enjin.points.add")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin addpoints <NAME> <AMOUNT>: ", TextColors.RESET, "Add points to a player."));
+        }
+
+        if (sender.hasPermission("enjin.points.remove")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin removepoints <NAME> <AMOUNT>: ", TextColors.RESET, "Remove points from a player."));
+        }
+
+        if (sender.hasPermission("enjin.points.set")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin setpoints <NAME> <AMOUNT>: ", TextColors.RESET, "Set a player's total points."));
+        }
 //
 //        if (sender.hasPermission("enjin.support")) {
 //            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin support: ", TextColors.RESET, "Starts ticket session or informs player of available modules."));
