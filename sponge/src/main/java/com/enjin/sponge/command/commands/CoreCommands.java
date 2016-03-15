@@ -14,9 +14,11 @@ import com.enjin.sponge.utils.text.TextUtils;
 import com.google.common.base.Optional;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 
 public class CoreCommands {
     @Command(value = "enjin", aliases = "e", requireValidKey = false)
@@ -131,6 +133,33 @@ public class CoreCommands {
 
         sender.sendMessage(Text.of(TextColors.GREEN, "Debugging has been set to ", config.isDebug()));
     }
+
+	@Permission(value = "enjin.inform")
+	@Directive(parent = "enjin", value = "inform", requireValidKey = false)
+	public static void inform(CommandSource sender, String[] args) {
+		if (args.length < 2) {
+			sender.sendMessage(Text.of(TextColors.RED, "To send a message do: /enjin inform <player> <message>"));
+			return;
+		}
+
+		Player player = Sponge.getServer().getPlayer(args[0]).get();
+		if (player == null || !player.isOnline()) {
+			sender.sendMessage(Text.of(TextColors.RED, "That player isn't online at the moment."));
+			return;
+		}
+
+		StringBuilder message = new StringBuilder();
+		for (int i = 1; i < args.length; i++) {
+			if (i > 1) {
+				message.append(' ');
+			}
+
+			message.append(args[i]);
+		}
+
+		player.sendMessage(Text.of(TextUtils.translateText(message.toString())));
+		sender.sendMessage(Text.of(TextColors.GREEN, "Your have successfully informed ", player.getName()));
+	}
 
     @Permission(value = "enjin.setkey")
     @Command(value = "enjinkey", aliases = "ek", requireValidKey = false)
