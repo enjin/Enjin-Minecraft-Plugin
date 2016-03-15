@@ -9,17 +9,25 @@ import com.enjin.sponge.command.Command;
 import com.enjin.sponge.command.Directive;
 import com.enjin.sponge.command.Permission;
 import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.tasks.ReportPublisher;
 import com.enjin.sponge.tasks.TPSMonitor;
 import com.enjin.sponge.utils.io.EnjinConsole;
 import com.enjin.sponge.utils.text.TextUtils;
 import com.google.common.base.Optional;
+import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.world.World;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CoreCommands {
     @Command(value = "enjin", aliases = "e", requireValidKey = false)
@@ -236,5 +244,74 @@ public class CoreCommands {
 				"Memory Used: ",
 				TextColors.GREEN,
 				memused, "MB/", maxmemory, "MB"));
+	}
+
+	@Permission(value = "enjin.report")
+	@Directive(parent = "enjin", value = "report", requireValidKey = false)
+	public static void report(CommandSource sender, String[] args) {
+		EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+		Date date = new Date();
+		DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+
+		sender.sendMessage(Text.of(TextColors.GREEN, "Please wait while we generate the report"));
+
+		StringBuilder report = new StringBuilder();
+		report.append("Enjin Debug Report generated on ")
+				.append(format.format(date))
+				.append('\n')
+				.append("Enjin Minecraft Plugin Version: ")
+				.append(plugin.getContainer().getVersion().get())
+				.append('\n');
+
+		Platform platform = Sponge.getPlatform();
+		report.append("Minecraft Version: ")
+				.append(platform.getMinecraftVersion().getName())
+				.append('\n')
+				.append("Sponge API Version: ")
+				.append(platform.getApi().getVersion().get())
+				.append('\n')
+				.append("Sponge Implementation Version: ")
+				.append(platform.getImplementation().getVersion().get())
+				.append('\n')
+				.append("Java Version: ")
+				.append(System.getProperty("java.version"))
+				.append(' ')
+				.append(System.getProperty("java.vendor"))
+				.append('\n')
+				.append("Operating System: ")
+				.append(System.getProperty("os.name"))
+				.append(' ')
+				.append(System.getProperty("os.version"))
+				.append(' ')
+				.append(System.getProperty("os.arch"))
+				.append('\n');
+
+		if (plugin.isAuthKeyInvalid()) {
+			report.append("ERROR: The authentication key is invalid.")
+					.append('\n');
+		}
+
+		report.append('\n')
+				.append("Plugins:")
+				.append('\n');
+		for (PluginContainer container : Sponge.getPluginManager().getPlugins()) {
+			report.append(container.getName())
+					.append(" Version: ")
+					.append(container.getVersion().get())
+					.append('\n');
+		}
+
+		report.append('\n')
+				.append("Worlds:")
+				.append('\n');
+		for (World world : Sponge.getServer().getWorlds()) {
+			report.append(world.getName())
+					.append('\n');
+		}
+
+		Sponge.getGame().getScheduler().createTaskBuilder()
+				.execute(new ReportPublisher(sender, report))
+				.async()
+				.submit(plugin);
 	}
 }
