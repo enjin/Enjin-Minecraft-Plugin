@@ -13,6 +13,7 @@ import com.enjin.sponge.command.commands.CoreCommands;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.sync.RPCPacketManager;
+import com.enjin.sponge.tasks.TPSMonitor;
 import com.enjin.sponge.utils.Log;
 import com.enjin.sponge.utils.commands.CommandWrapper;
 import com.google.common.base.Optional;
@@ -155,6 +156,11 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
                 .execute(new RPCPacketManager(this))
                 .async().interval(60, TimeUnit.SECONDS)
                 .submit(this);
+
+		game.getScheduler().createTaskBuilder()
+				.execute(new TPSMonitor())
+				.async().interval(2, TimeUnit.SECONDS)
+				.submit(this);
     }
 
     public void stopTasks() {

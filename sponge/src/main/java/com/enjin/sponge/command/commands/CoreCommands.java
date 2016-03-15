@@ -9,6 +9,7 @@ import com.enjin.sponge.command.Command;
 import com.enjin.sponge.command.Directive;
 import com.enjin.sponge.command.Permission;
 import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.tasks.TPSMonitor;
 import com.enjin.sponge.utils.io.EnjinConsole;
 import com.enjin.sponge.utils.text.TextUtils;
 import com.google.common.base.Optional;
@@ -212,4 +213,28 @@ public class CoreCommands {
                 .async()
                 .submit(Enjin.getPlugin());
     }
+
+	@Permission(value = "enjin.lag")
+	@Directive(parent = "enjin", value = "lag", requireValidKey = false)
+	public static void lag(CommandSource sender, String[] args) {
+		TPSMonitor monitor = TPSMonitor.getInstance();
+
+		sender.sendMessage(Text.of(TextColors.GOLD,
+				"Average TPS: ",
+				TextColors.GREEN,
+				TPSMonitor.getDecimalFormat().format(monitor.getTPSAverage())));
+		sender.sendMessage(Text.of(TextColors.GOLD,
+				"Last TPS Measurement: ",
+				TextColors.GREEN,
+				TPSMonitor.getDecimalFormat().format(monitor.getLastTPSMeasurement())));
+
+		Runtime runtime = Runtime.getRuntime();
+		long memused = (runtime.maxMemory() - runtime.freeMemory()) / (1024 * 1024);
+		long maxmemory = runtime.maxMemory() / (1024 * 1024);
+
+		sender.sendMessage(Text.of(TextColors.GOLD,
+				"Memory Used: ",
+				TextColors.GREEN,
+				memused, "MB/", maxmemory, "MB"));
+	}
 }
