@@ -12,7 +12,11 @@ import com.enjin.sponge.command.commands.BuyCommand;
 import com.enjin.sponge.command.commands.CoreCommands;
 import com.enjin.sponge.command.commands.PointCommands;
 import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.managers.PurchaseManager;
+import com.enjin.sponge.managers.StatsManager;
 import com.enjin.sponge.shop.ShopListener;
+import com.enjin.sponge.stats.StatsPlayer;
+import com.enjin.sponge.stats.StatsServer;
 import com.enjin.sponge.sync.RPCPacketManager;
 import com.enjin.sponge.tasks.TPSMonitor;
 import com.enjin.sponge.utils.Log;
@@ -28,12 +32,15 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "enjinminecraftplugin", name = "Enjin Minecraft Plugin", description = "Enjin Minecraft Plugin for Sponge", version = "2.8.3-sponge")
@@ -70,6 +77,11 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter @Setter
     private boolean authKeyInvalid = false;
 
+	@Getter
+	private StatsServer serverStats = new StatsServer();
+	@Getter
+	private Map<String, StatsPlayer> playerStats = new ConcurrentHashMap<>();
+
     public EnjinMinecraftPlugin() {
         instance = this;
         Enjin.setPlugin(this);
@@ -79,6 +91,11 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     public void initialization(GameInitializationEvent event) {
         init();
     }
+
+	@Listener
+	public void stopping(GameStoppingEvent event) {
+		disable();
+	}
 
     public void init() {
         if (authKeyInvalid) {
@@ -119,8 +136,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
         //menuAPI = new MenuAPI(this);
         //debug("Init gui api done.");
-        //initManagers();
-        //debug("Init managers done.");
+        initManagers();
+        debug("Init managers done.");
         //initPlugins();
         //debug("Init plugins done.");
         //initPermissions();
@@ -144,7 +161,14 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class);
     }
 
+	private void initManagers() {
+		logger.info("Initializing EMP Managers");
+		PurchaseManager.init();
+		StatsManager.init(this);
+	}
+
     private void initListeners() {
+		logger.info("Initializing EMP Listeners");
         game.getEventManager().registerListeners(this, new ShopListener());
     }
 
@@ -163,6 +187,10 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 				.async().interval(2, TimeUnit.SECONDS)
 				.submit(this);
     }
+
+	public void disable() {
+		StatsManager.disable();
+	}
 
     public void stopTasks() {
         syncTask.cancel();

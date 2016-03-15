@@ -12,4 +12,7 @@ public class EMPConfig extends GenericEnjinConfig {
     @Getter @Setter
     @SerializedName(value = "use-buy-gui")
     private boolean useBuyGUI = true;
+	@Getter @Setter
+	@SerializedName(value = "collect-player-stats")
+	private boolean collectPlayerStats = true;
 }
