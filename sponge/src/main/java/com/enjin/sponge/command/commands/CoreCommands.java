@@ -3,6 +3,7 @@ package com.enjin.sponge.command.commands;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.command.Command;
@@ -28,6 +29,8 @@ import org.spongepowered.api.world.World;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class CoreCommands {
     @Command(value = "enjin", aliases = "e", requireValidKey = false)
@@ -313,5 +316,51 @@ public class CoreCommands {
 				.execute(new ReportPublisher(sender, report))
 				.async()
 				.submit(plugin);
+	}
+
+	@Permission(value = "enjin.tags")
+	@Directive(parent = "enjin", value = "tags", requireValidKey = true)
+	public static void tags(CommandSource sender, String[] args) {
+		if (args.length == 0) {
+			sender.sendMessage(Text.of(TextColors.RED, "/enjin tags <player>"));
+			return;
+		}
+
+		String name = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
+		PluginService service = EnjinServices.getService(PluginService.class);
+		RPCData<List<TagData>> data = service.getTags(name);
+
+		if (data == null) {
+			sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+			return;
+		}
+
+		if (data.getError() != null) {
+			sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
+			return;
+		}
+
+		List<TagData> tags = data.getResult();
+
+		if (tags.size() == 0) {
+			sender.sendMessage(Text.of(TextColors.RED, "The user ", name," currently doesn't have any tags."));
+			return;
+		}
+
+		Text.Builder builder = Text.builder();
+		if (tags != null) {
+			Iterator<TagData> iterator = tags.iterator();
+			while (iterator.hasNext()) {
+				if (!builder.toText().isEmpty()) {
+					builder.append(Text.of(TextColors.GOLD, ", "));
+				}
+
+				TagData tag = iterator.next();
+				builder.append(Text.of(TextColors.GREEN, tag.getName()));
+			}
+		}
+
+		builder.insert(0, Text.of(TextColors.GOLD, name, "'s Tags: "));
+		sender.sendMessage(builder.build());
 	}
 }
