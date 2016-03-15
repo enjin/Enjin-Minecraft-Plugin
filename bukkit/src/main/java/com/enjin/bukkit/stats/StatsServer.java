@@ -100,22 +100,21 @@ public class StatsServer {
         Runtime runtime = Runtime.getRuntime();
         long memused = runtime.totalMemory() / (1024 * 1024);
         long maxmemory = runtime.maxMemory() / (1024 * 1024);
-        JSONObject serverinfo = new JSONObject();
-        serverinfo.put("maxmemory", new Integer((int) maxmemory));
-        serverinfo.put("memoryused", new Integer((int) memused));
-        serverinfo.put("javaversion", System.getProperty("java.version") + " " + System.getProperty("java.vendor"));
-        serverinfo.put("os", System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"));
-        serverinfo.put("corecount", new Integer(runtime.availableProcessors()));
-        serverinfo.put("serverversion", plugin.getServer().getVersion());
-        serverinfo.put("laststarttime", new Integer((int) (lastserverstarttime / 1000)));
+		serverbuilder.put("maxmemory", new Integer((int) maxmemory));
+		serverbuilder.put("memoryused", new Integer((int) memused));
+		serverbuilder.put("javaversion", System.getProperty("java.version") + " " + System.getProperty("java.vendor"));
+		serverbuilder.put("os", System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"));
+		serverbuilder.put("corecount", new Integer(runtime.availableProcessors()));
+		serverbuilder.put("serverversion", plugin.getServer().getVersion());
+		serverbuilder.put("laststarttime", new Integer((int) (lastserverstarttime / 1000)));
         JSONObject kickedplayers = new JSONObject();
         Set<Entry<String, Integer>> kicks = playerkicks.entrySet();
         for (Entry<String, Integer> kick : kicks) {
             kickedplayers.put(kick.getKey(), kick.getValue());
         }
-        serverinfo.put("playerskickedlist", kickedplayers);
-        serverinfo.put("totalkicks", new Integer(totalkicks));
-        return serverinfo;
+		serverbuilder.put("playerskickedlist", kickedplayers);
+		serverbuilder.put("totalkicks", new Integer(totalkicks));
+        return serverbuilder;
     }
 
     public ConcurrentHashMap<String, Integer> getPlayerkicks() {
