@@ -34,7 +34,7 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "com.enjin.sponge.emp", name = "Enjin Minecraft Plugin", description = "Enjin Minecraft Plugin for Sponge", version = "2.8.3-sponge")
+@Plugin(id = "enjinminecraftplugin", name = "Enjin Minecraft Plugin", description = "Enjin Minecraft Plugin for Sponge", version = "2.8.3-sponge")
 public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;

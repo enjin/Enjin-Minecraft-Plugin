@@ -120,11 +120,16 @@ public class CoreCommands {
 
         Enjin.getLogger().info("Checking if key is valid");
 
-        Runnable runnable = (Runnable) () -> {
+        Runnable runnable = () -> {
             if (Enjin.getConfiguration().getAuthKey().equals(args[0])) {
                 sender.sendMessage(Text.of(TextColors.GREEN, "That key has already been validated."));
                 return;
             }
+
+			if (args[0].length() != 50) {
+				sender.sendMessage(Text.of(TextColors.RED, "That authentication key is not 50 characters in length."));
+				return;
+			}
 
             PluginService service = EnjinServices.getService(PluginService.class);
             RPCData<Boolean> data = service.auth(Optional.of(args[0]), EnjinMinecraftPlugin.getInstance().getPort(), true);
