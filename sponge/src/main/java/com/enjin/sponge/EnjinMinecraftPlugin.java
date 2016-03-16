@@ -11,6 +11,7 @@ import com.enjin.sponge.command.CommandBank;
 import com.enjin.sponge.command.commands.BuyCommand;
 import com.enjin.sponge.command.commands.CoreCommands;
 import com.enjin.sponge.command.commands.PointCommands;
+import com.enjin.sponge.command.commands.StatCommands;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.managers.PurchaseManager;
 import com.enjin.sponge.managers.StatsManager;
@@ -158,7 +159,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         logger.info("Initializing EMP Commands");
         CommandBank.setup(this);
 
-        CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class);
+        CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
+				StatCommands.class);
     }
 
 	private void initManagers() {

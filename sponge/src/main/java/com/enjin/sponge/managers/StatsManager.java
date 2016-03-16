@@ -9,6 +9,7 @@ import com.enjin.sponge.stats.StatsPlayer;
 import com.enjin.sponge.stats.StatsUtils;
 import com.enjin.sponge.stats.WriteStats;
 import com.enjin.sponge.utils.io.FileUtil;
+import lombok.Getter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -18,6 +19,7 @@ import java.nio.charset.Charset;
 
 public class StatsManager {
     private static EnjinStatsListener listener;
+	@Getter
 	private static File statFile;
 
     public static void init(EnjinMinecraftPlugin plugin) {

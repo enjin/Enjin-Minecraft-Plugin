@@ -188,7 +188,7 @@ public class StatsPlayer {
 
     public void addBrokenBlock(BlockType type) {
         brokenblocks++;
-        String blockid = type.getId();
+        String blockid = type.getId().replace("minecraft:", "");
         int blocksbroken = 0;
         if (brokenblocktypes.containsKey(blockid)) {
             blocksbroken = brokenblocktypes.get(blockid).intValue();
@@ -199,7 +199,7 @@ public class StatsPlayer {
 
     public void addPlacedBlock(BlockType type) {
         placedblocks++;
-        String blockid = type.getId();
+        String blockid = type.getId().replace("minecraft:", "");
         int blocksplaced = 0;
 
         if (placedblocktypes.containsKey(blockid)) {

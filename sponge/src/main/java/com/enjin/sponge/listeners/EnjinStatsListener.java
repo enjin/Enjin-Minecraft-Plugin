@@ -82,7 +82,7 @@ public class EnjinStatsListener {
 			StatsPlayer player = StatsManager.getPlayerStats(event.getCause().first(Player.class).get());
 
 			for (Transaction<BlockSnapshot> snapshot : event.getTransactions()) {
-				player.addPlacedBlock(snapshot.getOriginal().getState().getType());
+				player.addPlacedBlock(snapshot.getFinal().getState().getType());
 			}
 		}).async().submit(Enjin.getPlugin());
     }
