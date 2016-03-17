@@ -17,15 +17,15 @@ public class PexListener extends PermissionListener {
 		if (command.startsWith("pex")) {
 			Matcher matcher = PEX_USER_PARENT_ADD_GROUP.matcher(command);
 			if (matcher.find()) {
-				String player = matcher.group(1);
-				// TODO
+				final String player = matcher.group(1);
+				update(player);
 			}
 		} else if (command.startsWith("promote") || command.startsWith("prom")
 				|| command.startsWith("demote") || command.startsWith("dem")) {
 			Matcher matcher = PROMOTE_DEMOTE_USER.matcher(command);
 			if (matcher.find()) {
-				String player = matcher.group(1);
-				// TODO
+				final String player = matcher.group(1);
+				update(player);
 			}
 		}
     }
