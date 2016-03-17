@@ -13,6 +13,7 @@ import com.enjin.sponge.command.commands.CoreCommands;
 import com.enjin.sponge.command.commands.PointCommands;
 import com.enjin.sponge.command.commands.StatCommands;
 import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.listeners.perm.processors.PexListener;
 import com.enjin.sponge.managers.PurchaseManager;
 import com.enjin.sponge.managers.StatsManager;
 import com.enjin.sponge.shop.ShopListener;
@@ -29,6 +30,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -37,6 +39,8 @@ import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.ServiceManager;
+import org.spongepowered.api.service.permission.PermissionService;
 
 import java.io.File;
 import java.util.List;
@@ -44,7 +48,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "enjinminecraftplugin", name = "Enjin Minecraft Plugin", description = "Enjin Minecraft Plugin for Sponge", version = "2.8.3-sponge")
+@Plugin(id = "enjinminecraftplugin", name = "EnjinMinecraftPlugin", description = "Enjin Minecraft Plugin for Sponge", version = "2.8.3-sponge")
 public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
@@ -141,8 +145,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         debug("Init managers done.");
         //initPlugins();
         //debug("Init plugins done.");
-        //initPermissions();
-        //debug("Init permissions done.");
+        initPermissions();
+        debug("Init permissions done.");
         initListeners();
         debug("Init listeners done.");
         initTasks();
@@ -167,6 +171,17 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 		logger.info("Initializing EMP Managers");
 		PurchaseManager.init();
 		StatsManager.init(this);
+	}
+
+	private void initPermissions() {
+		final ServiceManager services = game.getServiceManager();
+		if (services.isRegistered(PermissionService.class)) {
+			final PluginContainer plugin = services.getRegistration(PermissionService.class).get().getPlugin();
+			if (plugin.getId().equals("ninja.leaping.permissionsex")) {
+				logger.info("PermissionsEX has been detected. Enabling PEX processor.");
+				Sponge.getEventManager().registerListeners(this, new PexListener());
+			}
+		}
 	}
 
     private void initListeners() {
