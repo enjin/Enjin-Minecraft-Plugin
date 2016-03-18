@@ -13,6 +13,8 @@ import com.enjin.sponge.command.commands.CoreCommands;
 import com.enjin.sponge.command.commands.PointCommands;
 import com.enjin.sponge.command.commands.StatCommands;
 import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.config.RankUpdatesConfig;
+import com.enjin.sponge.listeners.ConnectionListener;
 import com.enjin.sponge.listeners.perm.processors.PexListener;
 import com.enjin.sponge.managers.PurchaseManager;
 import com.enjin.sponge.managers.StatsManager;
@@ -56,6 +58,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     private static List<CommandSpec> commands = Lists.newArrayList();
     @Getter
     private static List<CommandWrapper> processedCommands = Lists.newArrayList();
+	private static RankUpdatesConfig rankUpdatesConfiguration;
 
     @Inject
     @Getter
@@ -109,7 +112,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
         if (firstRun) {
             firstRun = false;
-            initConfig();
+            initConfigs();
 
             Enjin.setLogger(new Log(configDir));
             debug("Init config done.");
@@ -153,11 +156,25 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         debug("Init tasks done.");
     }
 
+	private void initConfigs() {
+		initConfig();
+		initRankUpdatesConfiguration();
+	}
+
     private void initConfig() {
         logger.info("Initializing EMP Config");
         EMPConfig config = JsonConfig.load(new File(configDir, "config.json"), EMPConfig.class);
         Enjin.setConfiguration(config);
     }
+
+	private void initRankUpdatesConfiguration() {
+		File configFile = new File(configDir, "rankUpdates.json");
+		EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
+
+		if (!configFile.exists()) {
+			rankUpdatesConfiguration.save(configFile);
+		}
+	}
 
     private void initCommands() {
         logger.info("Initializing EMP Commands");
@@ -187,6 +204,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     private void initListeners() {
 		logger.info("Initializing EMP Listeners");
         game.getEventManager().registerListeners(this, new ShopListener());
+		game.getEventManager().registerListeners(this, new ConnectionListener());
     }
 
     public void initTasks() {
@@ -231,4 +249,20 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     public static void saveConfiguration() {
         Enjin.getConfiguration().save(new File(instance.configDir, "config.json"));
     }
+
+	public static void saveRankUpdatesConfiguration() {
+		if (rankUpdatesConfiguration == null) {
+			instance.initRankUpdatesConfiguration();
+		}
+
+		rankUpdatesConfiguration.save(new File(instance.configDir, "rankUpdates.json"));
+	}
+
+	public static RankUpdatesConfig getRankUpdatesConfiguration() {
+		if (rankUpdatesConfiguration == null) {
+			instance.initRankUpdatesConfiguration();
+		}
+
+		return rankUpdatesConfiguration;
+	}
 }
