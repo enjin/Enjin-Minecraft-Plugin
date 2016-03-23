@@ -46,7 +46,7 @@ public class ConnectionListener {
 
 		final PluginContainer container = registration.getPlugin();
 		if (container.getId().equals("ninja.leaping.permissionsex")) {
-			permissionHandler = new PEXHandler();
+			permissionHandler = new PEXHandler(registration.getProvider());
 		}
 	}
 
@@ -54,6 +54,8 @@ public class ConnectionListener {
 	public void onJoin(Join event) {
 		if (permissionHandler != null) {
 			permissionHandler.onJoin(event);
+
+			updatePlayerRanks(event.getTargetEntity());
 		}
 	}
 
@@ -65,11 +67,23 @@ public class ConnectionListener {
 	}
 
 	public static void updatePlayerRanks(Player player) {
-		updatePlayerRanks1(player);
-		EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
+		if (instance.permissionHandler != null) {
+			updatePlayerRanks1(player);
+			EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
+		}
 	}
 
-	public static void updatePlayerRanks1(Player player) {
+	public static void updatePlayersRanks(Player[] players) {
+		if (instance.permissionHandler != null) {
+			for (Player player : players) {
+				updatePlayerRanks1(player);
+			}
+
+			EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
+		}
+	}
+
+	private static void updatePlayerRanks1(Player player) {
 		if (player == null || player.getName() == null) {
 			Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
 			return;
@@ -96,57 +110,23 @@ public class ConnectionListener {
 		EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
 	}
 
-	public static void updatePlayersRanks(Player[] players) {
-		for (Player player : players) {
-			updatePlayerRanks1(player);
+	public static Map<String, List<String>> getPlayerGroups(Player player) {
+		Map<String, List<String>> worlds = null;
+
+		if (instance.permissionHandler != null) {
+			worlds = instance.permissionHandler.fetchPlayerGroups(player);
 		}
 
-		EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
+		return worlds;
 	}
 
-	public static Map<String, List<String>> getPlayerGroups(Player player) {
-		Map<String, List<String>> groups = new HashMap<>();
+	public static List<String> getGroups() {
+		List<String> groups = null;
 
-		ServiceManager services = Sponge.getServiceManager();
-		if (services.isRegistered(PermissionService.class)) {
-			ProviderRegistration<PermissionService> registration = services.getRegistration(PermissionService.class).get();
-			ConnectionListener.fetchGroups(registration);
+		if (instance.permissionHandler != null) {
+			groups = instance.permissionHandler.fetchGroups();
 		}
-		// TODO
-//		if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
-//			Permission permission = VaultManager.getPermission();
-//			if (permission.hasGroupSupport()) {
-//				String[] g = permission.getPlayerGroups(null, player);
-//				if (g.length == 0 && Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
-//					g = PermissionsBukkitListener.getGroups(player);
-//				}
-//
-//				if (g.length > 0) {
-//					groups.put("*", Arrays.asList(g));
-//				}
-//
-//				for (World world : Bukkit.getWorlds()) {
-//					g = permission.getPlayerGroups(world.getName(), player);
-//					if (g.length > 0) {
-//						groups.put(world.getName(), Arrays.asList(g));
-//					}
-//				}
-//			}
-//		}
 
 		return groups;
-	}
-
-	public static void fetchGroups (ProviderRegistration registration) {
-		// TODO
-		PluginContainer plugin = registration.getPlugin();
-		if (plugin.getId().equalsIgnoreCase("ninja.leaping.permissionsex")) {
-			PermissionService service = (PermissionService) registration.getProvider();
-			for (Subject subject : service.getUserSubjects().getAllSubjects()) {
-				for (Subject parent : subject.getParents()) {
-					Enjin.getLogger().info("Group: " + parent.getIdentifier());
-				}
-			}
-		}
 	}
 }

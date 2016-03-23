@@ -1,17 +1,24 @@
 package com.enjin.sponge.sync;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
+import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
 import com.enjin.rpc.mappings.mappings.plugin.Status;
 import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.services.PluginService;
+import com.enjin.sponge.config.RankUpdatesConfig;
+import com.enjin.sponge.listeners.ConnectionListener;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
@@ -33,7 +40,7 @@ public class RPCPacketManager implements Runnable {
                 getMaxPlayers(),
                 getOnlineCount(),
                 getOnlinePlayers(),
-                null,
+                getPlayerGroups(),
                 null,
                 null,
                 null);
@@ -64,7 +71,7 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<String> getGroups() {
-        return null;
+        return ConnectionListener.getGroups();
     }
 
     private int getMaxPlayers() {
@@ -78,4 +85,32 @@ public class RPCPacketManager implements Runnable {
     private List<PlayerInfo> getOnlinePlayers() {
         return plugin.getGame().getServer().getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(), player.getUniqueId())).collect(Collectors.toList());
     }
+
+	private Map<String, PlayerGroupInfo> getPlayerGroups() {
+		RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
+
+		if (config == null) {
+			Enjin.getLogger().warning("Rank updates configuration did not load properly.");
+			return null;
+		}
+
+		Map<String, PlayerGroupInfo> groups = config.getPlayerPerms();
+		Map<String, PlayerGroupInfo> update = new HashMap<>();
+
+		int index = 0;
+		for (String player : new HashSet<>(groups.keySet())) {
+			if (index >= 500) {
+				break;
+			}
+
+			update.put(player, groups.get(player));
+		}
+
+		for (Map.Entry<String, PlayerGroupInfo> entry : update.entrySet()) {
+			groups.remove(entry.getKey());
+		}
+
+		EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
+		return update;
+	}
 }
