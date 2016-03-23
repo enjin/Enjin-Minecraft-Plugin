@@ -52,7 +52,7 @@ public class ConnectionListener {
 
 	@Listener
 	public void onJoin(Join event) {
-		if (permissionHandler != null) {
+		if (permissionsEnabled()) {
 			permissionHandler.onJoin(event);
 
 			updatePlayerRanks(event.getTargetEntity());
@@ -61,20 +61,24 @@ public class ConnectionListener {
 
 	@Listener
 	public void onDisconnect(Disconnect event) {
-		if (permissionHandler != null) {
+		if (permissionsEnabled()) {
 			permissionHandler.onDisconnect(event);
 		}
 	}
 
+	public static boolean permissionsEnabled() {
+		return instance.permissionHandler != null;
+	}
+
 	public static void updatePlayerRanks(Player player) {
-		if (instance.permissionHandler != null) {
+		if (permissionsEnabled()) {
 			updatePlayerRanks1(player);
 			EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
 		}
 	}
 
 	public static void updatePlayersRanks(Player[] players) {
-		if (instance.permissionHandler != null) {
+		if (permissionsEnabled()) {
 			for (Player player : players) {
 				updatePlayerRanks1(player);
 			}
@@ -113,7 +117,7 @@ public class ConnectionListener {
 	public static Map<String, List<String>> getPlayerGroups(Player player) {
 		Map<String, List<String>> worlds = null;
 
-		if (instance.permissionHandler != null) {
+		if (permissionsEnabled()) {
 			worlds = instance.permissionHandler.fetchPlayerGroups(player);
 		}
 
@@ -123,7 +127,7 @@ public class ConnectionListener {
 	public static List<String> getGroups() {
 		List<String> groups = null;
 
-		if (instance.permissionHandler != null) {
+		if (permissionsEnabled()) {
 			groups = instance.permissionHandler.fetchGroups();
 		}
 

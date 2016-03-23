@@ -13,6 +13,7 @@ import com.enjin.sponge.command.commands.CoreCommands;
 import com.enjin.sponge.command.commands.PointCommands;
 import com.enjin.sponge.command.commands.StatCommands;
 import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.config.ExecutedCommandsConfig;
 import com.enjin.sponge.config.RankUpdatesConfig;
 import com.enjin.sponge.listeners.ConnectionListener;
 import com.enjin.sponge.managers.PurchaseManager;
@@ -21,6 +22,7 @@ import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.stats.StatsPlayer;
 import com.enjin.sponge.stats.StatsServer;
 import com.enjin.sponge.sync.RPCPacketManager;
+import com.enjin.sponge.sync.SpongeInstructionHandler;
 import com.enjin.sponge.tasks.TPSMonitor;
 import com.enjin.sponge.utils.Log;
 import com.enjin.sponge.utils.commands.CommandWrapper;
@@ -55,6 +57,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private static List<CommandWrapper> processedCommands = Lists.newArrayList();
 	private static RankUpdatesConfig rankUpdatesConfiguration;
+	private static ExecutedCommandsConfig executedCommandsConfiguration;
 
     @Inject
     @Getter
@@ -76,6 +79,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private Task syncTask;
 
+	@Getter
+	private InstructionHandler instructionHandler = new SpongeInstructionHandler();
     @Getter
     private boolean firstRun = true;
     @Getter @Setter
@@ -148,14 +153,24 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
 	private void initConfigs() {
 		initConfig();
+		initCommandsConfiguration();
 		initRankUpdatesConfiguration();
 	}
 
-    private void initConfig() {
+    public void initConfig() {
         logger.info("Initializing EMP Config");
         EMPConfig config = JsonConfig.load(new File(configDir, "config.json"), EMPConfig.class);
         Enjin.setConfiguration(config);
     }
+
+	private void initCommandsConfiguration() {
+		File configFile = new File(configDir, "commands.json");
+		EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
+
+		if (!configFile.exists()) {
+			executedCommandsConfiguration.save(configFile);
+		}
+	}
 
 	private void initRankUpdatesConfiguration() {
 		File configFile = new File(configDir, "rankUpdates.json");
@@ -217,7 +232,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
     @Override
     public InstructionHandler getInstructionHandler() {
-        return null;
+        return instructionHandler;
     }
 
     @Override
@@ -229,12 +244,28 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         Enjin.getConfiguration().save(new File(instance.configDir, "config.json"));
     }
 
+	public static void saveExecutedCommandsConfiguration() {
+		if (executedCommandsConfiguration == null) {
+			instance.initCommandsConfiguration();
+		}
+
+		executedCommandsConfiguration.save(new File(instance.configDir, "commands.json"));
+	}
+
 	public static void saveRankUpdatesConfiguration() {
 		if (rankUpdatesConfiguration == null) {
 			instance.initRankUpdatesConfiguration();
 		}
 
 		rankUpdatesConfiguration.save(new File(instance.configDir, "rankUpdates.json"));
+	}
+
+	public static ExecutedCommandsConfig getExecutedCommandsConfiguration() {
+		if (executedCommandsConfiguration == null) {
+			instance.initCommandsConfiguration();
+		}
+
+		return executedCommandsConfiguration;
 	}
 
 	public static RankUpdatesConfig getRankUpdatesConfiguration() {
