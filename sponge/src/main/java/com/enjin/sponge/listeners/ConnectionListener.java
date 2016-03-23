@@ -36,7 +36,7 @@ public class ConnectionListener {
 		if (services.isRegistered(PermissionService.class)) {
 			final Optional<ProviderRegistration<PermissionService>> potential = services.getRegistration(PermissionService.class);
 			if (potential.isPresent()) {
-				initPermissions(permissionProviderRegistration);
+				initPermissions(potential.get());
 			}
 		}
 	}
