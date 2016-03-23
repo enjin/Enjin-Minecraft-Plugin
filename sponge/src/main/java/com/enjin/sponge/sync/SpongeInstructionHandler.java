@@ -5,6 +5,7 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.listeners.ConnectionListener;
 import com.google.common.base.Optional;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -40,12 +41,12 @@ public class SpongeInstructionHandler implements InstructionHandler {
 
 	@Override
 	public void addToGroup (String player, String group, String world) {
-		// TODO
+		ConnectionListener.addGroup(player, group, world);
 	}
 
 	@Override
 	public void removeFromGroup (String player, String group, String world) {
-		// TODO
+		ConnectionListener.removeGroup(player, group, world);
 	}
 
 	@Override

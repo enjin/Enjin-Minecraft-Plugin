@@ -98,6 +98,36 @@ public class PEXHandler implements PermissionHandler {
 		return groups;
 	}
 
+	@Override
+	public void addGroup (String player, String group, String world) {
+		StringBuilder builder = new StringBuilder()
+				.append("pex user ")
+				.append(player)
+				.append(" parent add group ")
+				.append(group);
+		if (world != null && !world.isEmpty() && !world.equals("*")) {
+			builder.append(" -c world=")
+					.append(world);
+		}
+
+		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), builder.toString());
+	}
+
+	@Override
+	public void removeGroup (String player, String group, String world) {
+		StringBuilder builder = new StringBuilder()
+				.append("pex user ")
+				.append(player)
+				.append(" parent remove group ")
+				.append(group);
+		if (world != null && !world.isEmpty() && !world.equals("*")) {
+			builder.append(" -c world=")
+					.append(world);
+		}
+
+		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), builder.toString());
+	}
+
 	private boolean groupExists(String group) {
 		boolean matched = false;
 

@@ -15,4 +15,8 @@ public interface PermissionHandler {
 	Map<String, List<String>> fetchPlayerGroups(Player player);
 
 	List<String> fetchGroups();
+
+	void addGroup(String player, String group, String world);
+
+	void removeGroup(String player, String group, String world);
 }

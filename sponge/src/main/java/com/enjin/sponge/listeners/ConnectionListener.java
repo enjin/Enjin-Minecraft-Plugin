@@ -133,4 +133,16 @@ public class ConnectionListener {
 
 		return groups;
 	}
+
+	public static void addGroup(String player, String group, String world) {
+		if (permissionsEnabled()) {
+			instance.permissionHandler.addGroup(player, group, world);
+		}
+	}
+
+	public static void removeGroup(String player, String group, String world) {
+		if (permissionsEnabled()) {
+			instance.permissionHandler.removeGroup(player, group, world);
+		}
+	}
 }
