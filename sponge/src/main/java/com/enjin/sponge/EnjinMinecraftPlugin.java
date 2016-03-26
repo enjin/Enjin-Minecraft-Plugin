@@ -211,7 +211,6 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 		logger.info("Initializing EMP Listeners");
         game.getEventManager().registerListeners(this, new ShopListener());
 		game.getEventManager().registerListeners(this, new ConnectionListener());
-		game.getEventManager().registerListeners(this, new SignListener());
     }
 
     public void initTasks() {
