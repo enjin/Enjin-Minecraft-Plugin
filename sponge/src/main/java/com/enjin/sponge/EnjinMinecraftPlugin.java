@@ -16,7 +16,9 @@ import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.config.ExecutedCommandsConfig;
 import com.enjin.sponge.config.RankUpdatesConfig;
 import com.enjin.sponge.listeners.ConnectionListener;
+import com.enjin.sponge.listeners.SignListener;
 import com.enjin.sponge.managers.PurchaseManager;
+import com.enjin.sponge.managers.StatSignManager;
 import com.enjin.sponge.managers.StatsManager;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.stats.StatsPlayer;
@@ -33,6 +35,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -40,6 +43,7 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.SpongeExecutorService;
 import org.spongepowered.api.scheduler.Task;
 
 import java.io.File;
@@ -75,6 +79,10 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Inject
     @Getter
     private Game game;
+	@Getter
+	private SpongeExecutorService sync;
+	@Getter
+	private SpongeExecutorService async;
 
     @Getter
     private Task syncTask;
@@ -112,7 +120,10 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         }
 
         if (firstRun) {
-            firstRun = false;
+			sync = Sponge.getScheduler().createSyncExecutor(this);
+			async = Sponge.getScheduler().createAsyncExecutor(this);
+
+			firstRun = false;
             initConfigs();
 
             Enjin.setLogger(new Log(configDir));
@@ -193,12 +204,14 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 		logger.info("Initializing EMP Managers");
 		PurchaseManager.init();
 		StatsManager.init(this);
+		StatSignManager.init(this);
 	}
 
     private void initListeners() {
 		logger.info("Initializing EMP Listeners");
         game.getEventManager().registerListeners(this, new ShopListener());
 		game.getEventManager().registerListeners(this, new ConnectionListener());
+		game.getEventManager().registerListeners(this, new SignListener());
     }
 
     public void initTasks() {
