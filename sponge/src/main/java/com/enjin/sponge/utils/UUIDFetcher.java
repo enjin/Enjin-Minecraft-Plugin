@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 public class UUIDFetcher implements Callable<Map<String, UUID>> {
@@ -91,6 +92,19 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 	}
 
 	public static UUID getUUIDOf(String name) throws Exception {
-		return new UUIDFetcher(Arrays.asList(name)).call().get(name);
+		Map<String, UUID> uuids = new UUIDFetcher(Arrays.asList(name)).call();
+		UUID uuid = null;
+
+		for (Entry<String, UUID> entry : uuids.entrySet()) {
+			if (entry.getKey().equalsIgnoreCase(name)) {
+				uuid = entry.getValue();
+			}
+		}
+
+		return uuid;
+	}
+
+	public static Map<String, UUID> getUUIDsOf(String ... names) throws Exception {
+		return new UUIDFetcher(Arrays.asList(names)).call();
 	}
 }
