@@ -41,7 +41,14 @@ public class InteractiveService {
 		Optional<PluginContainer> container = conversation.getContext().getPlugin();
 		if (container.isPresent()) {
 			setup(container.get());
-			instance.conversations.add(conversation);
+
+			Optional<InteractiveConversation> optionalConversation = instance.conversations.stream()
+					.filter(c -> c.getContext().getReceiver().equals(conversation.getContext().getReceiver()))
+					.findFirst();
+
+			if (!optionalConversation.isPresent()) {
+				instance.conversations.add(conversation);
+			}
 		}
 	}
 
