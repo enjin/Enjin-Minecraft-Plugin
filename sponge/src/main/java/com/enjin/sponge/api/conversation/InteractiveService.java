@@ -8,6 +8,7 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent.Chat;
+import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.util.Tristate;
 
@@ -84,6 +85,16 @@ public class InteractiveService {
 			if (!conversation.isAllowCommands()) {
 				event.setCancelled(true);
 			}
+		}
+	}
+
+	@Listener(order = Order.FIRST)
+	public void onDisconnect(final Disconnect event) {
+		Optional<InteractiveConversation> optionalConversation = conversations.stream()
+				.filter(c -> c.getContext().getReceiver().equals(event.getTargetEntity()))
+				.findFirst();
+		if (optionalConversation.isPresent()) {
+			conversations.remove(optionalConversation.get());
 		}
 	}
 }
