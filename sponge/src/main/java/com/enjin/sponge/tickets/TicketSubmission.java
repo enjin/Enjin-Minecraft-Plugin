@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TicketSubmission {
     public static void submit(Player player, int moduleId, List<QuestionResponse> responses) {
-        List<QuestionResponse> answers = new ArrayList<QuestionResponse>(responses);
+        List<QuestionResponse> answers = new ArrayList<>(responses);
         TicketService service = EnjinServices.getService(TicketService.class);
 
         Collections.sort(responses, (o1, o2) -> Integer.compare(o1.getQuestion().getId(), o2.getQuestion().getId()));

@@ -41,16 +41,13 @@ public class TicketCreationSession {
         this.moduleId = moduleId;
         this.idMap = module.getIdMappedQuestions();
         this.questions = new ArrayList<>(module.getQuestions());
-        Collections.sort(this.questions, new Comparator<Question>() {
-            @Override
-            public int compare(Question q1, Question q2) {
-                if (q1.getOrder() == q2.getOrder()) {
-                    return Integer.compare(q1.getId(), q2.getId());
-                } else {
-                    return Integer.compare(q1.getOrder(), q2.getOrder());
-                }
-            }
-        });
+        Collections.sort(this.questions, (q1, q2) -> {
+			if (q1.getOrder() == q2.getOrder()) {
+				return Integer.compare(q1.getId(), q2.getId());
+			} else {
+				return Integer.compare(q1.getOrder(), q2.getOrder());
+			}
+		});
 
         for (Question question : new ArrayList<>(questions)) {
             plugin.debug("Processing question: " + question.getId() + " of type " + question.getType());
@@ -271,7 +268,7 @@ public class TicketCreationSession {
 
 		@Override
 		public InteractivePrompt acceptInput (InteractiveContext context, Text input) {
-			responses.put(question.getId(), new QuestionResponse(question, input));
+			responses.put(question.getId(), new QuestionResponse(question, input.toPlain()));
 			TicketCreationSession session = sessions.get(((Player) context.getReceiver()).getUniqueId());
 			return session != null ? session.getNextPrompt() : null;
 		}
@@ -335,7 +332,7 @@ public class TicketCreationSession {
                 return this;
             }
 
-            responses.put(question.getId(), new QuestionResponse(question, answer));
+            responses.put(question.getId(), new QuestionResponse(question, dateFormat.format(answer)));
             TicketCreationSession session = sessions.get(((Player) context.getReceiver()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }

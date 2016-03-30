@@ -63,7 +63,7 @@ public class CoreCommands {
 //        if (sender.hasPermission("enjin.sign.set")) {
 //            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin heads: ", TextColors.RESET, "Shows in game help for the heads and sign stats part of the plugin."));
 //        }
-//
+
         if (sender.hasPermission("enjin.tags.view")) {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin tags <player>: ", TextColors.RESET, "Shows the tags on the website for the player."));
         }
@@ -88,26 +88,26 @@ public class CoreCommands {
         if (sender.hasPermission("enjin.points.set")) {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin setpoints <NAME> <AMOUNT>: ", TextColors.RESET, "Set a player's total points."));
         }
-//
-//        if (sender.hasPermission("enjin.support")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin support: ", TextColors.RESET, "Starts ticket session or informs player of available modules."));
-//        }
-//
-//        if (sender.hasPermission("enjin.ticket.self")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin ticket: ", TextColors.RESET, "Sends player a list of their tickets."));
-//        }
-//
-//        if (sender.hasPermission("enjin.ticket.open")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin openticket: ", TextColors.RESET, "Sends player a list of open tickets."));
-//        }
-//
-//        if (sender.hasPermission("enjin.ticket.reply")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin reply <module #> <ticket id> <message>: ", TextColors.RESET, "Sends a reply to a ticket."));
-//        }
-//
-//        if (sender.hasPermission("enjin.ticket.status")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: ", TextColors.RESET, "Sets the status of a ticket."));
-//        }
+
+        if (sender.hasPermission("enjin.support")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin support: ", TextColors.RESET, "Starts ticket session or informs player of available modules."));
+        }
+
+        if (sender.hasPermission("enjin.ticket.self")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin ticket: ", TextColors.RESET, "Sends player a list of their tickets."));
+        }
+
+        if (sender.hasPermission("enjin.ticket.open")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin openticket: ", TextColors.RESET, "Sends player a list of open tickets."));
+        }
+
+        if (sender.hasPermission("enjin.ticket.reply")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin reply <module #> <ticket id> <message>: ", TextColors.RESET, "Sends a reply to a ticket."));
+        }
+
+        if (sender.hasPermission("enjin.ticket.status")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: ", TextColors.RESET, "Sets the status of a ticket."));
+        }
 
         // Shop buy commands
         sender.sendMessage(Text.of(TextColors.GOLD, "/buy: ", TextColors.RESET, "Display items available for purchase."));
