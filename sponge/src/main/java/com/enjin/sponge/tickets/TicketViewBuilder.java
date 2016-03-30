@@ -21,7 +21,7 @@ public class TicketViewBuilder {
 		Text.Builder builder = Text.builder();
 
 		Text message = Text.of(TextColors.GOLD, "Your Tickets:");
-        builder.append(message);
+        builder.append(message).append(Text.NEW_LINE);
 
         for (Ticket ticket : tickets) {
 			message = Text.of(TextColors.GREEN, ticket.getCode(), ") ", ticket.getSubject(), " (", ticket.getReplyCount(),
@@ -29,7 +29,7 @@ public class TicketViewBuilder {
 			message = Text.builder().append(message)
 					.onClick(TextActions.runCommand("/e ticket " + ticket.getCode()))
 					.build();
-            builder.append(message);
+            builder.append(message).append(Text.NEW_LINE);
         }
 
 		message = Text.of(TextColors.GOLD, "[Please click a ticket or type /e ticket <#> to view it]");
@@ -44,7 +44,7 @@ public class TicketViewBuilder {
         Text.Builder builder = Text.builder();
 
         for (Reply reply : replies) {
-            Text message = Text.of(TextColors.GOLD, "---------------");
+            Text message = Text.of(TextColors.GOLD, "---------------", Text.NEW_LINE);
             builder.append(message);
 
             if (!showPrivate && reply.getMode().equalsIgnoreCase("private")) {
@@ -55,13 +55,15 @@ public class TicketViewBuilder {
 					TextColors.GRAY, " (",
 					TextColors.GREEN, dateFormat.format(new Date(reply.getSent() * 1000)),
 					TextColors.GRAY, ")",
-					TextColors.DARK_GRAY, ":");
+					TextColors.DARK_GRAY, ":",
+					Text.NEW_LINE);
             builder.append(message);
 
             if (showPrivate && reply.getMode().equalsIgnoreCase("private")) {
 				message = Text.of(TextColors.DARK_GRAY, "(",
 						TextColors.GRAY, "Private",
-						TextColors.DARK_GRAY, ")");
+						TextColors.DARK_GRAY, ")",
+						Text.NEW_LINE);
 				builder.append(message);
             }
 
@@ -77,20 +79,20 @@ public class TicketViewBuilder {
         Reply reply = replies.get(0);
 		Text message = Text.of(TextColors.GRAY, "[",
 				TextColors.GOLD, "To reply to this ticket please type:");
-		builder.append(message);
+		builder.append(Text.NEW_LINE).append(message);
 
-		message = Text.of(TextColors.GREEN, "/e reply ", reply.getPresetId(), ' ', ticketCode, "<message>");
+		message = Text.of(TextColors.GREEN, "/e reply ", reply.getPresetId(), ' ', ticketCode, " <message>");
 		message = Text.builder().append(message).onClick(TextActions.suggestCommand(message.toPlain())).build();
-        builder.append(message);
+        builder.append(Text.NEW_LINE).append(message);
 
 		message = Text.of(TextColors.GOLD, "or to set the status of this ticket type:");
-		builder.append(message);
+		builder.append(Text.NEW_LINE).append(message);
 
 		message = Text.of(TextColors.GREEN, "/e ticketstatus ", reply.getPresetId(), ' ', ticketCode, " <open/pending/closed>");
 		message = Text.builder().append(message)
 				.onClick(TextActions.suggestCommand(message.toPlain()))
 				.append(Text.of(TextColors.GRAY, "]")).build();
-		builder.append(message);
+		builder.append(Text.NEW_LINE).append(message);
 
         return builder.build();
     }
