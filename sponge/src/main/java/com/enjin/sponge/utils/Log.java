@@ -7,11 +7,13 @@ import com.enjin.sponge.utils.io.LineAppender;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.filter.ThresholdFilter;
 import org.apache.logging.log4j.core.helpers.Charsets;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
@@ -95,5 +97,7 @@ public class Log implements EnjinLogger {
 		Appender appender = ConsoleAppender.createAppender(layout, null, null, "EnjinConsole", null, null);
 		appender.start();
 		logger.addAppender(appender);
+
+		logger.setLevel(Level.DEBUG);
     }
 }

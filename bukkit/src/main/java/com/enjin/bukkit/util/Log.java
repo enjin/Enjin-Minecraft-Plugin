@@ -7,11 +7,13 @@ import com.enjin.core.util.EnjinLogger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.filter.ThresholdFilter;
 import org.apache.logging.log4j.core.helpers.Charsets;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
@@ -92,10 +94,22 @@ public class Log implements EnjinLogger {
             logger.addAppender(fileAppender);
         }
 
+		// Appender for everything but debug log level.
+		Filter filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "DENY", "ACCEPT");
 		layout = PatternLayout.createLayout("[%d{HH:mm:ss} %level]: [%logger] %msg%n", config, null, Charsets.UTF_8.name(), null);
-		Appender appender = ConsoleAppender.createAppender(layout, null, null, "EnjinConsole", null, null);
-		appender.start();
-		logger.addAppender(appender);
+		ConsoleAppender consoleAppender = ConsoleAppender.createAppender(layout, null, null, "EnjinConsole", null, null);
+		consoleAppender.addFilter(filter);
+		consoleAppender.start();
+		logger.addAppender(consoleAppender);
+
+		// Appender only for debug log level.
+		filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "ACCEPT", "DENY");
+		layout = PatternLayout.createLayout("[%d{HH:mm:ss} %t/%level]: [%logger] %msg%n", config, null, Charsets.UTF_8.name(), null);
+		consoleAppender = ConsoleAppender.createAppender(layout, null, null, "EnjinDebug", null, null);
+		consoleAppender.addFilter(filter);
+		consoleAppender.start();
+		logger.addAppender(consoleAppender);
+
 		logger.setLevel(Level.DEBUG);
     }
 }
