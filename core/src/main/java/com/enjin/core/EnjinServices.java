@@ -12,7 +12,7 @@ public class EnjinServices {
     public static void registerServices(Class<? extends Service> ... clazzes) {
         for (Class<? extends Service> clazz : clazzes) {
             try {
-                System.out.println("Registering service: " + clazz.getSimpleName());
+				Enjin.getLogger().debug("Registering service: " + clazz.getSimpleName());
                 services.put(clazz, clazz.newInstance());
             } catch (InstantiationException e) {
                 e.printStackTrace();

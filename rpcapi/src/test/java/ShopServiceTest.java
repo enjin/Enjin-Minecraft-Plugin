@@ -29,11 +29,6 @@ public class ShopServiceTest {
         List<Shop> shops = data.getResult();
 
         Assert.assertNotNull("shops is null", shops);
-
-        System.out.println("# of shops: " + shops.size());
-        for (Shop shop : shops) {
-            System.out.println(shop.toString());
-        }
     }
 
     @Test
@@ -47,11 +42,6 @@ public class ShopServiceTest {
         List<Purchase> purchases = data.getResult();
 
         Assert.assertNotNull("purchases is null", purchases);
-
-        System.out.println("# of purchases: " + purchases.size());
-        for (Purchase purchase : purchases) {
-            System.out.println(purchase.toString());
-        }
     }
 
     @Test
@@ -65,11 +55,6 @@ public class ShopServiceTest {
         List<FilteredItem> items = data.getResult();
 
         Assert.assertNotNull("items is null", items);
-
-        System.out.println("# of items: " + items.size());
-        for (FilteredItem item : items) {
-            System.out.println(item.toString());
-        }
     }
 
     @BeforeClass

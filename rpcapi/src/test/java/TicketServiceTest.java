@@ -32,11 +32,6 @@ public class TicketServiceTest {
         Map<Integer, Module> modules = data.getResult();
 
         Assert.assertNotNull("modules is null", modules);
-
-        System.out.println("# of modules: " + modules.size());
-        for (Module shop : modules.values()) {
-            System.out.println(shop.toString());
-        }
     }
 
     @Test
@@ -50,8 +45,6 @@ public class TicketServiceTest {
         List<Ticket> tickets = data.getResult().getResults();
 
         Assert.assertNotNull("tickets is null", tickets);
-
-        System.out.println("# of tickets: " + tickets.size());
     }
 
     @Test
@@ -65,8 +58,6 @@ public class TicketServiceTest {
         List<Ticket> tickets = data.getResult().getResults();
 
         Assert.assertNotNull("tickets is null", tickets);
-
-        System.out.println("# of tickets: " + tickets.size());
     }
 
     @Test
@@ -80,8 +71,6 @@ public class TicketServiceTest {
         List<Reply> replies = data.getResult().getResults();
 
         Assert.assertNotNull("replies is null", replies);
-
-        System.out.println("# of replies: " + replies.size());
     }
 
     @Test
@@ -94,15 +83,12 @@ public class TicketServiceTest {
         if (data.getError() == null) {
             Assert.assertNotNull("data result is null", data.getResult());
         } else {
-            System.out.println("Error: " + data.getError().getMessage());
             return;
         }
 
         Boolean success = data.getResult();
 
         Assert.assertNotNull("success is null", success);
-
-        System.out.println("Created ticket: " + success.booleanValue());
     }
 
     @Test
@@ -115,15 +101,12 @@ public class TicketServiceTest {
         if (data.getError() == null) {
             Assert.assertNotNull("data result is null", data.getResult());
         } else {
-            System.out.println("Error: " + data.getError().getMessage());
             return;
         }
 
         RPCSuccess success = data.getResult();
 
         Assert.assertNotNull("success is null", success);
-
-        System.out.println("Replied to ticket: " + success.getSuccess().booleanValue());
     }
 
     @Test
@@ -136,15 +119,12 @@ public class TicketServiceTest {
         if (data.getError() == null) {
             Assert.assertNotNull("data result is null", data.getResult());
         } else {
-            System.out.println("Error: " + data.getError().getMessage());
             return;
         }
 
         Boolean success = data.getResult();
 
         Assert.assertNotNull("success is null", success);
-
-        System.out.println("Set ticket status: " + success.booleanValue());
     }
 
     @BeforeClass

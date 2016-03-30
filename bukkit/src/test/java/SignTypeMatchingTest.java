@@ -18,16 +18,12 @@ public class SignTypeMatchingTest {
     public void test1MatchPositive() {
         String line = "[" + SignType.DONATION.name() + "1]";
         Optional<Integer> index = SignType.DONATION.matches(line);
-
-        System.out.println("Matched Index: " + (index.isPresent() ? index.get() : "null"));
     }
 
     @Test
     public void test2MatchNegative() {
         String line = "[" + SignType.DONATION.name() + "11]";
         Optional<Integer> index = SignType.DONATION.matches(line);
-
-        System.out.println("Matched Index: " + (index.isPresent() ? index.get() : "null"));
     }
 
     @BeforeClass

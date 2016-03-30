@@ -31,8 +31,6 @@ public class PluginServiceTest {
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());
         Assert.assertTrue("result is not true", data.getResult());
-
-        System.out.println("Successfully authenticated: " + data.getResult().booleanValue());
     }
 
     @Test
@@ -67,8 +65,6 @@ public class PluginServiceTest {
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());
-
-        System.out.println(data.getResult().toString());
     }
 
     @Test
@@ -78,8 +74,6 @@ public class PluginServiceTest {
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());
-
-        System.out.println("# of tags: " + data.getResult().size());
     }
 
     @Test
@@ -92,8 +86,6 @@ public class PluginServiceTest {
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());
-
-        System.out.println(data.getResult().toString());
     }
 
     @BeforeClass

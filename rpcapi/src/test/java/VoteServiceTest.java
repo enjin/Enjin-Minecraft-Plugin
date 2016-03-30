@@ -33,10 +33,6 @@ public class VoteServiceTest {
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
         Assert.assertTrue("result is not equal to ok", data.getResult().equalsIgnoreCase("ok"));
-
-        System.out.println(data.getRequest().toJSONString());
-        System.out.println(data.getResponse().toJSONString());
-        System.out.println("Sent votes to enjin!");
     }
 
     @BeforeClass

@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.deserializers;
 
+import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.tickets.ExtraQuestion;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
 import com.enjin.rpc.mappings.services.TicketService;
@@ -28,8 +29,8 @@ public class TicketDeserializer implements JsonDeserializer<Ticket> {
                         }.getType());
                         object.add("extra_questions", EnjinRPC.gson.toJsonTree(questions));
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        return null;
+						Enjin.getLogger().warning(e.getMessage());
+						return null;
                     }
                 }
             } else {

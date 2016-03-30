@@ -32,8 +32,6 @@ public class MinecraftServiceTest {
         Assert.assertTrue(data.getResult().size() > 0);
 
         List<ServerInfo> servers = data.getResult();
-
-        System.out.println(servers.toString());
     }
 
     @Test
@@ -52,8 +50,6 @@ public class MinecraftServiceTest {
         Assert.assertTrue(data.getResult().size() > 0);
 
         List<MinecraftPlayerInfo> players = data.getResult();
-
-        System.out.println(players.toString());
     }
 
     @BeforeClass

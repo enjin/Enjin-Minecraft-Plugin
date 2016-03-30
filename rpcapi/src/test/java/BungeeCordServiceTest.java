@@ -53,8 +53,6 @@ public class BungeeCordServiceTest {
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());
-
-        System.out.println(data.getResult().toString());
     }
 
     @BeforeClass

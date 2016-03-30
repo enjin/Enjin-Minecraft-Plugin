@@ -29,6 +29,7 @@
 package com.enjin.bukkit;
 
 import com.enjin.common.utils.ConnectionUtil;
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -338,8 +339,8 @@ public class MetricsLite {
         connection.setDoOutput(true);
 
         if (debug) {
-            System.out.println("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
-        }
+			Enjin.getLogger().debug("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
+		}
 
         OutputStream os = connection.getOutputStream();
         os.write(compressed);
