@@ -60,9 +60,9 @@ public class CoreCommands {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin report: ", TextColors.RESET, "Generate a report file that you can send to Enjin Support for troubleshooting."));
         }
 
-//        if (sender.hasPermission("enjin.sign.set")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin heads: ", TextColors.RESET, "Shows in game help for the heads and sign stats part of the plugin."));
-//        }
+        if (sender.hasPermission("enjin.sign.set")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin heads: ", TextColors.RESET, "Shows in game help for the heads and sign stats part of the plugin."));
+        }
 
         if (sender.hasPermission("enjin.tags.view")) {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin tags <player>: ", TextColors.RESET, "Shows the tags on the website for the player."));

@@ -194,7 +194,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         CommandBank.setup(this);
 
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
-				StatCommands.class, SupportCommands.class, ConfigCommand.class);
+				StatCommands.class, SupportCommands.class, ConfigCommand.class, HeadCommands.class);
     }
 
 	private void initManagers() {
