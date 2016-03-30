@@ -3,6 +3,7 @@ package com.enjin.bukkit.sync;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.managers.VotifierManager;
 import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
 import com.enjin.bukkit.tasks.TPSMonitor;
@@ -52,6 +53,7 @@ public class RPCPacketManager implements Runnable {
                 getPlayerGroups(),
                 TPSMonitor.getInstance().getLastTPSMeasurement(),
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
+				getVotes(),
                 stats);
 
         PluginService service = EnjinServices.getService(PluginService.class);
@@ -185,6 +187,15 @@ public class RPCPacketManager implements Runnable {
         EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
         return update;
     }
+
+	private Map<String, List<Object[]>> getVotes() {
+		Map<String, List<Object[]>> votes = null;
+		if (VotifierManager.isVotifierEnabled() && !plugin.getPlayerVotes().isEmpty()) {
+			votes = new HashMap<>(plugin.getPlayerVotes());
+			plugin.getPlayerVotes().clear();
+		}
+		return votes;
+	}
 
     private String getStats() {
         return new WriteStats(plugin).getStatsJSON();

@@ -2,7 +2,6 @@ package com.enjin.sponge.managers;
 
 import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
-import com.enjin.sponge.tasks.VoteSender;
 import com.google.common.collect.Lists;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.sponge.event.VotifierEvent;
@@ -66,7 +65,6 @@ public class VotifierManager {
 			if (optionalContainer.isPresent()) {
 				plugin.getLogger().info(optionalContainer.get().getName() + " detected, listening for votes.");
 				Sponge.getEventManager().registerListeners(plugin, new VotifierManager());
-				plugin.getAsync().schedule(new VoteSender(plugin), 60, TimeUnit.SECONDS);
 				return;
 			}
 		});

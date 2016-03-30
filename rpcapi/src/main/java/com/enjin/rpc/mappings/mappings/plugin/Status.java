@@ -47,6 +47,9 @@ public class Status {
     @Getter
     @SerializedName(value = "executed_commands")
     private List<ExecutedCommand> executedCommands;
+	@Getter
+	@SerializedName(value = "votifier")
+	private Map<String, List<Object[]>> votes;
 
     /**
      * gzipped and base64 encoded

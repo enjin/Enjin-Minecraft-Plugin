@@ -13,6 +13,7 @@ import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.config.RankUpdatesConfig;
 import com.enjin.sponge.listeners.ConnectionListener;
+import com.enjin.sponge.managers.VotifierManager;
 import com.enjin.sponge.stats.WriteStats;
 import com.enjin.sponge.sync.data.*;
 import org.spongepowered.api.Sponge;
@@ -52,6 +53,7 @@ public class RPCPacketManager implements Runnable {
                 getPlayerGroups(),
                 null,
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
+				getVotes(),
                 stats);
 
         PluginService service = EnjinServices.getService(PluginService.class);
@@ -165,6 +167,15 @@ public class RPCPacketManager implements Runnable {
 
 		EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
 		return update;
+	}
+
+	private Map<String, List<Object[]>> getVotes() {
+		Map<String, List<Object[]>> votes = null;
+		if (VotifierManager.isEnabled() && !VotifierManager.getPlayerVotes().isEmpty()) {
+			votes = new HashMap<>(VotifierManager.getPlayerVotes());
+			VotifierManager.getPlayerVotes().clear();
+		}
+		return votes;
 	}
 
 	private String getStats() {
