@@ -15,4 +15,7 @@ public class EMPConfig extends GenericEnjinConfig {
 	@Getter @Setter
 	@SerializedName(value = "collect-player-stats")
 	private boolean collectPlayerStats = true;
+	@Getter @Setter
+	@SerializedName(value = "send-stats-interval")
+	private int sendStatsInterval = 5;
 }
