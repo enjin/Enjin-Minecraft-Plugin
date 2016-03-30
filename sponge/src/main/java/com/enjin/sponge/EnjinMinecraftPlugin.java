@@ -17,6 +17,7 @@ import com.enjin.sponge.listeners.SignListener;
 import com.enjin.sponge.managers.PurchaseManager;
 import com.enjin.sponge.managers.StatSignManager;
 import com.enjin.sponge.managers.StatsManager;
+import com.enjin.sponge.managers.VotifierManager;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.stats.StatsPlayer;
 import com.enjin.sponge.stats.StatsServer;
@@ -194,7 +195,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         CommandBank.setup(this);
 
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
-				StatCommands.class, SupportCommands.class, ConfigCommand.class, HeadCommands.class);
+				StatCommands.class, SupportCommands.class, ConfigCommand.class, HeadCommands.class,
+				VoteCommands.class);
     }
 
 	private void initManagers() {
@@ -202,6 +204,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 		PurchaseManager.init();
 		StatsManager.init(this);
 		StatSignManager.init(this);
+		VotifierManager.init(this);
 	}
 
     private void initListeners() {
