@@ -8,10 +8,7 @@ import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.sponge.command.CommandBank;
-import com.enjin.sponge.command.commands.BuyCommand;
-import com.enjin.sponge.command.commands.CoreCommands;
-import com.enjin.sponge.command.commands.PointCommands;
-import com.enjin.sponge.command.commands.StatCommands;
+import com.enjin.sponge.command.commands.*;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.config.ExecutedCommandsConfig;
 import com.enjin.sponge.config.RankUpdatesConfig;
@@ -197,7 +194,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         CommandBank.setup(this);
 
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
-				StatCommands.class);
+				StatCommands.class, SupportCommands.class);
     }
 
 	private void initManagers() {
