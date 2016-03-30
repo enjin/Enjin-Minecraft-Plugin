@@ -64,7 +64,7 @@ public class RPCPacketManager implements Runnable {
         }
 
         if (data.getError() != null) {
-            plugin.getLogger().warn(data.getError().getMessage());
+            Enjin.getLogger().warning(data.getError().getMessage());
         } else {
             SyncResponse result = data.getResult();
             if (result != null && result.getStatus().equalsIgnoreCase("ok")) {

@@ -125,29 +125,29 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
             initConfigs();
 
             Enjin.setLogger(new Log(configDir));
-            debug("Init config done.");
+			Enjin.getLogger().debug("Init config done.");
 
             initCommands();
-            debug("Init commands done.");
+			Enjin.getLogger().debug("Init commands done.");
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.absent(), getPort(), true);
                 if (data == null) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. Data could not be retrieved.");
+					Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
                     return;
                 } else if (data.getError() != null) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. " + data.getError().getMessage());
+					Enjin.getLogger().debug("Auth key is invalid. " + data.getError().getMessage());
                     return;
                 } else if (!data.getResult()) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. Failed to authenticate.");
+					Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
                     return;
                 }
             } else {
                 authKeyInvalid = true;
-                debug("Auth key is invalid. Must be 50 characters in length.");
+				Enjin.getLogger().debug("Auth key is invalid. Must be 50 characters in length.");
                 return;
             }
         }
@@ -167,7 +167,6 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 	}
 
     public void initConfig() {
-        logger.info("Initializing EMP Config");
         EMPConfig config = JsonConfig.load(new File(configDir, "config.json"), EMPConfig.class);
         Enjin.setConfiguration(config);
     }
@@ -191,7 +190,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 	}
 
     private void initCommands() {
-        logger.info("Initializing EMP Commands");
+        Enjin.getLogger().info("Initializing EMP Commands");
         CommandBank.setup(this);
 
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
@@ -200,7 +199,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     }
 
 	private void initManagers() {
-		logger.info("Initializing EMP Managers");
+		Enjin.getLogger().info("Initializing EMP Managers");
 		PurchaseManager.init();
 		StatsManager.init(this);
 		StatSignManager.init(this);
@@ -208,7 +207,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 	}
 
     private void initListeners() {
-		logger.info("Initializing EMP Listeners");
+		Enjin.getLogger().info("Initializing EMP Listeners");
         game.getEventManager().registerListeners(this, new ShopListener());
 		game.getEventManager().registerListeners(this, new ConnectionListener());
     }

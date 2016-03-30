@@ -48,20 +48,20 @@ public class Log implements EnjinLogger {
     }
 
     public void info(String msg) {
-        logger.info(msg);
+        logger.info(hideSensitiveText(msg));
     }
 
     public void fine(String msg) {
-        debug(msg);
+        debug(hideSensitiveText(msg));
     }
 
     public void warning(String msg) {
-        logger.warn(msg);
+        logger.warn(hideSensitiveText(msg));
     }
 
     public void debug(String msg) {
         if (Enjin.getConfiguration().isDebug()) {
-            logger.debug(msg);
+            logger.debug(hideSensitiveText(msg));
         }
     }
 
@@ -69,20 +69,29 @@ public class Log implements EnjinLogger {
         return listener.getLine();
     }
 
+	private String hideSensitiveText(String msg) {
+		return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
+				"**************************************************");
+	}
+
     private void configure(Logger logger, File log) {
+		logger.getAppenders().forEach((string, appender) -> {
+			if (appender instanceof ConsoleAppender) {
+				logger.removeAppender(appender);
+			}
+		});
+
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
         PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charsets.UTF_8.name(), null);
-
-        listener = new LineAppender("EnjinLineIn", layout);
-        listener.start();
-        Logger root = (Logger) LogManager.getRootLogger();
-        root.addAppender(listener);
 
         if (Enjin.getConfiguration().isLoggingEnabled()) {
             FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinFileOut", "false", null, null, layout, null, null, null, config);
             fileAppender.start();
             logger.addAppender(fileAppender);
         }
+
+		layout = PatternLayout.createLayout("[%d{HH:mm:ss}] [%t/%level] [%logger]: %msg%n", config, null, Charsets.UTF_8.name(), null);
+		logger.addAppender(ConsoleAppender.createAppender(layout, null, null, "EnjinConsole", null, null));
     }
 }

@@ -63,7 +63,7 @@ public class VotifierManager {
 		supportedPlugins.forEach(id -> {
 			Optional<PluginContainer> optionalContainer = Sponge.getPluginManager().getPlugin(id);
 			if (optionalContainer.isPresent()) {
-				plugin.getLogger().info(optionalContainer.get().getName() + " detected, listening for votes.");
+				Enjin.getLogger().info(optionalContainer.get().getName() + " detected, listening for votes.");
 				Sponge.getEventManager().registerListeners(plugin, new VotifierManager());
 				return;
 			}
