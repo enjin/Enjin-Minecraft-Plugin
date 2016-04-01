@@ -5,6 +5,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
+version = '3.0.1-sponge'
+
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -27,4 +29,36 @@ shadowJar {
     relocate 'net.minidev.json', 'com.enjin.shaded.json'
     relocate 'com.google.gson', 'com.enjin.shaded.gson'
     relocate 'com.thetransactioncompany.jsonrpc2', 'com.enjin.shaded.jsonrpc2'
+}
+
+import java.util.regex.*
+
+def String filterMain(String key, String value, String line) {
+    Pattern pattern = Pattern.compile("@" + key + "@");
+    Matcher matcher = pattern.matcher(line);
+    if (matcher.find()) {
+        line = matcher.replaceFirst(value);
+    }
+    return (line);
+}
+
+task filterMain(type: Copy) {
+    from ("${projectDir}/src/main/java/com/enjin/sponge") {
+        include "EnjinMinecraftPlugin.java"
+        filter { String line -> filterMain("version", version, line) }
+    }
+    into "${buildDir}/tmp/filterJava"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs ("${projectDir}/src/main/java", "${buildDir}/tmp/filterJava")
+            exclude ("com/enjin/sponge/EnjinMinecraftPlugin.java")
+        }
+    }
+}
+
+compileJava {
+    dependsOn filterMain
 }

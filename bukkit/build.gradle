@@ -2,9 +2,19 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'com.github.johnrengelman.shadow'
 
+import org.apache.tools.ant.filters.*
+
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+version = '3.0.11'
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            "version": project.property("version")
+    ]
+}
 
 uploadArchives {
     repositories {
