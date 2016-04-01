@@ -1,0 +1,26 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'com.enjin'
+                artifactId 'common'
+                packaging 'jar'
+                description 'EMP commons library'
+            }
+        }
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(project(':rpcapi'))
+    }
+}

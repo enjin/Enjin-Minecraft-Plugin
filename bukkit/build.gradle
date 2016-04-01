@@ -1,0 +1,34 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'com.enjin'
+                artifactId 'bukkit'
+                packaging 'jar'
+                description 'EMP bukkit plugin'
+            }
+        }
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(project(':common'))
+        include(dependency('.*:fanciful'))
+    }
+
+    relocate 'mkremins.fanciful.compiled', 'com.enjin.shaded'
+    relocate 'mkremins.fanciful', 'com.enjin.shaded.fanciful'
+    relocate 'net.minidev.json', 'com.enjin.shaded.json'
+    relocate 'net.amoebaman', 'com.enjin.shaded.amoebaman'
+    relocate 'com.google.gson', 'com.enjin.shaded.gson'
+    relocate 'com.thetransactioncompany.jsonrpc2', 'com.enjin.shaded.jsonrpc2'
+}

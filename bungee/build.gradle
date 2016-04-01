@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'com.enjin'
+                artifactId 'bungee'
+                packaging 'jar'
+                description 'EMP bungeecord plugin'
+            }
+        }
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(project(':common'))
+    }
+
+    relocate 'net.minidev.json', 'com.enjin.shaded.json'
+    relocate 'com.google.gson', 'com.enjin.shaded.gson'
+    relocate 'com.thetransactioncompany.jsonrpc2', 'com.enjin.shaded.jsonrpc2'
+}
