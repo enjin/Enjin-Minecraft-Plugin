@@ -65,6 +65,10 @@ public class Log implements EnjinLogger {
         fine("Enjin Debug: " + msg);
     }
 
+	public void catching(Throwable e) {
+		logger.log(Level.SEVERE, "EMP Error: ", e);
+	}
+
     @Override
     public String getLastLine() {
         return "";

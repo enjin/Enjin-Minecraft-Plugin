@@ -68,6 +68,10 @@ public class Log implements EnjinLogger {
 		}
 	}
 
+	public void catching(Throwable e) {
+		logger.catching(e);
+	}
+
 	public String getLastLine() {
 		return listener.getLine();
 	}

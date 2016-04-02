@@ -38,7 +38,7 @@ public class SkullUtil {
 								if (future.isCancelled())
 									return;
 								else if (future.isCompletedExceptionally()) {
-									Enjin.getLogger().warning(e.getMessage());
+									Enjin.getLogger().catching(e);
 									return;
 								}
 
@@ -50,7 +50,7 @@ public class SkullUtil {
 						}
 					}
 				} catch (Exception e) {
-					Enjin.getLogger().warning(e.getMessage());
+					Enjin.getLogger().catching(e);
 				}
 			});
 		}
