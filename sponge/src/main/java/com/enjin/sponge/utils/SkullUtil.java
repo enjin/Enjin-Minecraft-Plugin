@@ -35,7 +35,7 @@ public class SkullUtil {
 					try {
 						profile = manager.get(name).get(10, TimeUnit.SECONDS);
 					} catch (Exception e) {
-						profile = null;
+						profile = getProfile(name);
 					}
 
 					if (profile != null) {
