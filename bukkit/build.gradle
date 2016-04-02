@@ -10,6 +10,10 @@ targetCompatibility = 1.7
 
 version = '3.0.11'
 
+jar {
+    archiveName = 'EnjinMinecraftPlugin.jar'
+}
+
 processResources {
     filter ReplaceTokens, tokens: [
             "version": project.property("version")
@@ -30,6 +34,8 @@ uploadArchives {
 }
 
 shadowJar {
+    archiveName = 'EnjinMinecraftPlugin.jar'
+
     dependencies {
         include(project(':common'))
         include(dependency('.*:fanciful'))

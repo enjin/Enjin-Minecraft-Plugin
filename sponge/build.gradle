@@ -7,6 +7,10 @@ targetCompatibility = 1.8
 
 version = '3.0.1-sponge'
 
+jar {
+    archiveName = 'EnjinMinecraftPlugin.jar'
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -21,6 +25,8 @@ uploadArchives {
 }
 
 shadowJar {
+    archiveName = 'EnjinMinecraftPlugin.jar'
+
     dependencies {
         include(project(':common'))
         include(dependency('.*:fanciful'))
