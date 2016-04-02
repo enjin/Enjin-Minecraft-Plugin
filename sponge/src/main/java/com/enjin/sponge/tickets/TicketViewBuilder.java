@@ -72,14 +72,14 @@ public class TicketViewBuilder {
             for (String part : parts) {
                 String line = part.replace("<b>", "&7&l").replace("</b>", "&7");
                 message = Text.of(TextColors.GRAY, TextUtils.translateText(line));
-				builder.append(message);
+				builder.append(message).append(Text.NEW_LINE);
             }
         }
 
         Reply reply = replies.get(0);
 		Text message = Text.of(TextColors.GRAY, "[",
 				TextColors.GOLD, "To reply to this ticket please type:");
-		builder.append(Text.NEW_LINE).append(message);
+		builder.append(message);
 
 		message = Text.of(TextColors.GREEN, "/e reply ", reply.getPresetId(), ' ', ticketCode, " <message>");
 		message = Text.builder().append(message).onClick(TextActions.suggestCommand(message.toPlain())).build();
