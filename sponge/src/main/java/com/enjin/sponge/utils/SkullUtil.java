@@ -14,6 +14,7 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class SkullUtil {
 	public static void updateSkullOwner(Location<World> location, String name) {
@@ -25,11 +26,17 @@ public class SkullUtil {
 
 	public static void updateSkullOwner(TileEntity entity, String name) {
 		if (entity.supports(SkullData.class) && entity.supports(RepresentedPlayerData.class)) {
+			Enjin.getLogger().debug("Updating skull owner to " + name);
 			EnjinMinecraftPlugin.getInstance().getAsync().execute(() -> {
 				try {
 					GameProfileManager manager = Sponge.getServer().getGameProfileManager();
-					Optional<GameProfile> optionalProfile = manager.getCache().getByName(name);
-					GameProfile profile = optionalProfile.isPresent() ? optionalProfile.get() : getProfile(name);
+					GameProfile profile;
+
+					try {
+						profile = manager.get(name).get(10, TimeUnit.SECONDS);
+					} catch (Exception e) {
+						profile = null;
+					}
 
 					if (profile != null) {
 						if (!profile.getPropertyMap().containsKey("textures")) {
