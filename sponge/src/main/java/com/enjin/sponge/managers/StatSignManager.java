@@ -63,9 +63,10 @@ public class StatSignManager {
     public static void schedule(final EnjinMinecraftPlugin plugin, boolean delayed) {
         Runnable runnable = () -> {
 			updateItems();
-			fetchStats();
-			update();
-			schedule(plugin, true);
+			if (fetchStats()) {
+				update();
+				schedule(plugin, true);
+			}
 		};
 
 		if (delayed) {
@@ -80,7 +81,7 @@ public class StatSignManager {
 		}
     }
 
-    public static void fetchStats() {
+    public static boolean fetchStats() {
         RPCData<Stats> data = EnjinServices.getService(PluginService.class).getStats(Optional.fromNullable(items));
 
         if (data == null) {
@@ -89,7 +90,10 @@ public class StatSignManager {
             Enjin.getPlugin().debug(data.getError().getMessage());
         } else {
             stats = data.getResult();
+			return true;
         }
+
+		return false;
     }
 
     public static void add(final EnjinSignData data) {
@@ -99,8 +103,9 @@ public class StatSignManager {
 
             if (data.getSubType() != null && data.getSubType() == EnjinSignType.SubType.ITEMID && data.getItemId() != null) {
 				Runnable runnable = () -> {
-					fetchStats();
-					update(data);
+					if (fetchStats()) {
+						update(data);
+					}
 				};
 
                 updateItems();

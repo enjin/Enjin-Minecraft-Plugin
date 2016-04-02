@@ -39,9 +39,10 @@ public class HeadCommands {
     public static void update(final CommandSource sender, final String[] args) {
 		EnjinMinecraftPlugin.getInstance().getAsync().execute(() -> {
 			sender.sendMessage(Text.of(TextColors.GREEN, "Fetching stat sign updates."));
-			StatSignManager.fetchStats();
-			StatSignManager.update();
-			sender.sendMessage(Text.of(TextColors.GREEN, "Stat signs have been updated."));
+			if (StatSignManager.fetchStats()) {
+				StatSignManager.update();
+				sender.sendMessage(Text.of(TextColors.GREEN, "Stat signs have been updated."));
+			}
 		});
     }
 }
