@@ -10,6 +10,10 @@ import java.util.Map;
 
 public class WriteStats {
     public boolean write(File file) {
+		if (file == null) {
+			return false;
+		}
+
         if (!file.exists()) {
             if (!file.getParentFile().exists()) {
                 file.mkdirs();
