@@ -10,6 +10,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.permission.PermissionService;
@@ -57,7 +58,7 @@ public class PEXHandler implements PermissionHandler {
 		references.remove(player.getUniqueId());
 	}
 
-	public Map<String, List<String>> fetchPlayerGroups(Player player) {
+	public Map<String, List<String>> fetchPlayerGroups(GameProfile player) {
 		Map<String, List<String>> worlds = new HashMap<>();
 
 		ImmutableSubjectData data = references.get(player.getUniqueId()).get();

@@ -1,8 +1,8 @@
 package com.enjin.sponge.permissions;
 
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+import org.spongepowered.api.profile.GameProfile;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ public interface PermissionHandler {
 
 	void onDisconnect(Disconnect event);
 
-	Map<String, List<String>> fetchPlayerGroups(Player player);
+	Map<String, List<String>> fetchPlayerGroups(GameProfile player);
 
 	List<String> fetchGroups();
 

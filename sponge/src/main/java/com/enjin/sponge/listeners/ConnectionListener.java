@@ -13,6 +13,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.permission.PermissionService;
@@ -72,14 +73,14 @@ public class ConnectionListener {
 
 	public static void updatePlayerRanks(Player player) {
 		if (permissionsEnabled()) {
-			updatePlayerRanks1(player);
+			updatePlayerRanks1(player.getProfile());
 			EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
 		}
 	}
 
-	public static void updatePlayersRanks(Player[] players) {
+	public static void updatePlayersRanks(GameProfile[] players) {
 		if (permissionsEnabled()) {
-			for (Player player : players) {
+			for (GameProfile player : players) {
 				updatePlayerRanks1(player);
 			}
 
@@ -87,8 +88,8 @@ public class ConnectionListener {
 		}
 	}
 
-	private static void updatePlayerRanks1(Player player) {
-		if (player == null || player.getName() == null) {
+	private static void updatePlayerRanks1(GameProfile player) {
+		if (player == null || !player.getName().isPresent()) {
 			Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
 			return;
 		}
@@ -111,10 +112,10 @@ public class ConnectionListener {
 		}
 
 		info.getWorlds().putAll(getPlayerGroups(player));
-		EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
+		EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName().get(), info);
 	}
 
-	public static Map<String, List<String>> getPlayerGroups(Player player) {
+	public static Map<String, List<String>> getPlayerGroups(GameProfile player) {
 		Map<String, List<String>> worlds = null;
 
 		if (permissionsEnabled()) {

@@ -10,6 +10,8 @@ import com.enjin.sponge.command.Command;
 import com.enjin.sponge.command.Directive;
 import com.enjin.sponge.command.Permission;
 import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.config.RankUpdatesConfig;
+import com.enjin.sponge.listeners.ConnectionListener;
 import com.enjin.sponge.tasks.ReportPublisher;
 import com.enjin.sponge.tasks.TPSMonitor;
 import com.enjin.sponge.utils.io.EnjinConsole;
@@ -20,6 +22,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
@@ -40,13 +44,17 @@ public class CoreCommands {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin key <KEY>: ", TextColors.RESET, "Enter the secret key from your ", TextColors.GRAY, "Admin - Games - Minecraft - Enjin Plugin ", TextColors.RESET, "page."));
         }
 
+		if (sender.hasPermission("enjin.inform")) {
+			sender.sendMessage(Text.of(TextColors.GOLD, "/enjin inform <player> <MESSAGE>: ", TextColors.RESET, "Send a private message to a player."));
+		}
+
         if (sender.hasPermission("enjin.broadcast")) {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin broadcast <MESSAGE>: ", TextColors.RESET, "Broadcast a message to all players."));
         }
 
-//        if (sender.hasPermission("enjin.push")) {
-//            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin push: ", TextColors.RESET, "Sync your website tags with the current ranks."));
-//        }
+        if (sender.hasPermission("enjin.push")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin push: ", TextColors.RESET, "Sync your website tags with the current ranks."));
+        }
 
         if (sender.hasPermission("enjin.lag")) {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin lag: ", TextColors.RESET, "Display TPS average and memory usage."));
@@ -247,6 +255,19 @@ public class CoreCommands {
 				"Memory Used: ",
 				TextColors.GREEN,
 				memused, "MB/", maxmemory, "MB"));
+	}
+
+	@Permission(value = "enjin.push")
+	@Directive(parent = "enjin", value = "push")
+	public static void push(CommandSource sender, String[] args) {
+		RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
+		java.util.Optional<UserStorageService> service = Sponge.getServiceManager().provide(UserStorageService.class);
+		if (service.isPresent()) {
+			ConnectionListener.updatePlayersRanks(service.get().getAll().toArray(new GameProfile[]{}));
+
+			int minutes = Double.valueOf(Math.ceil(((double) config.getPlayerPerms().size()) / 500.0D)).intValue();
+			sender.sendMessage(Text.of(TextColors.GREEN, Integer.toString(config.getPlayerPerms().size()), " players have been queued for synchronization. This should take approximately ", minutes, " minutes", (minutes > 1 ? "s." : ".")));
+		}
 	}
 
 	@Permission(value = "enjin.report")
