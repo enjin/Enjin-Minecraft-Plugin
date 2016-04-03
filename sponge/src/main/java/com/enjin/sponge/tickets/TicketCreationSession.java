@@ -55,7 +55,7 @@ public class TicketCreationSession {
             if (question.getType() == QuestionType.file) {
                 plugin.debug("File question type detected. Required: " + question.getRequired().booleanValue());
                 if (question.getRequired().booleanValue()) {
-                    player.sendMessage(Text.of(TextColors.GOLD + "This support ticket requires a file upload and must be submitted on the website."));
+                    player.sendMessage(Text.of(TextColors.GOLD, "This support ticket requires a file upload and must be submitted on the website."));
                     return;
                 } else {
                     this.questions.remove(question);
@@ -78,9 +78,13 @@ public class TicketCreationSession {
 					sessions.remove(p.getUniqueId());
 				}
 			});
-            factory.withCancellers((InteractiveCanceller) (context, input) -> {
-				return input.toPlain().equalsIgnoreCase("abandon-ticket");
+			factory.withCompletedListeners(event -> {
+				if (event.getContext().getReceiver() instanceof Player) {
+					Player p = (Player) event.getContext().getReceiver();
+					sessions.remove(p.getUniqueId());
+				}
 			});
+            factory.withCancellers((InteractiveCanceller) (context, input) -> input.toPlain().equalsIgnoreCase("abandon-ticket"));
             factory.withFirstPrompt(new StartPrompt());
         }
 

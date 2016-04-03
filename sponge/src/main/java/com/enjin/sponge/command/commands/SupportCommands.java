@@ -29,7 +29,7 @@ public class SupportCommands {
         final Map<Integer, Module> modules = TicketManager.getModules();
 
         if (TicketCreationSession.getSessions().containsKey(sender.getUniqueId())) {
-            sender.sendMessage(Text.of(TextColors.RED + "A ticket session is already in progress..."));
+            sender.sendMessage(Text.of(TextColors.RED, "A ticket session is already in progress..."));
             return;
         }
 
