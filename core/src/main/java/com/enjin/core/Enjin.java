@@ -6,16 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Enjin {
-    @Setter
+    @Getter @Setter
     private static EnjinPlugin plugin;
     @Getter @Setter
     private static EnjinLogger logger;
     @Getter @Setter
     private static EnjinConfig configuration;
-
-    public static EnjinPlugin getPlugin() {
-        return plugin;
-    }
+	@Getter @Setter
+	private static EnjinAPI api = new EnjinAPI();
 
     public static <T extends EnjinConfig> T getConfiguration(Class<T> clazz) {
         return clazz.cast(configuration);

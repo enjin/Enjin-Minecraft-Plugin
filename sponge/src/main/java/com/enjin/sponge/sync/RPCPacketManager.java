@@ -138,7 +138,9 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<PlayerInfo> getOnlinePlayers() {
-        return plugin.getGame().getServer().getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(), player.getUniqueId())).collect(Collectors.toList());
+        return plugin.getGame().getServer().getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(),
+				Enjin.getApi().getVanishState(player.getUniqueId()),
+				player.getUniqueId())).collect(Collectors.toList());
     }
 
 	private Map<String, PlayerGroupInfo> getPlayerGroups() {

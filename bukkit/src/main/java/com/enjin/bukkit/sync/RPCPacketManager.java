@@ -155,7 +155,7 @@ public class RPCPacketManager implements Runnable {
     private List<PlayerInfo> getOnlinePlayers() {
         List<PlayerInfo> infos = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            infos.add(new PlayerInfo(player.getName(), player.getUniqueId()));
+            infos.add(new PlayerInfo(player.getName(), Enjin.getApi().getVanishState(player.getUniqueId()), player.getUniqueId()));
         }
         return infos;
     }
