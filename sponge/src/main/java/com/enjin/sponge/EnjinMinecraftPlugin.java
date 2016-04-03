@@ -14,10 +14,7 @@ import com.enjin.sponge.config.ExecutedCommandsConfig;
 import com.enjin.sponge.config.RankUpdatesConfig;
 import com.enjin.sponge.listeners.ConnectionListener;
 import com.enjin.sponge.listeners.SignListener;
-import com.enjin.sponge.managers.PurchaseManager;
-import com.enjin.sponge.managers.StatSignManager;
-import com.enjin.sponge.managers.StatsManager;
-import com.enjin.sponge.managers.VotifierManager;
+import com.enjin.sponge.managers.*;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.stats.StatsPlayer;
 import com.enjin.sponge.stats.StatsServer;
@@ -204,6 +201,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 		StatsManager.init(this);
 		StatSignManager.init(this);
 		VotifierManager.init(this);
+		TicketManager.init(this);
 	}
 
     private void initListeners() {
