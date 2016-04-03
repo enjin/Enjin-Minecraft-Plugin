@@ -3,6 +3,7 @@ package com.enjin.bukkit.stats;
 import java.io.*;
 import java.util.Map;
 
+import com.enjin.core.Enjin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -26,7 +27,7 @@ public class WriteStats {
             try {
                 f.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+				Enjin.getLogger().catching(e);
             }
         }
 
@@ -37,10 +38,10 @@ public class WriteStats {
             outChannel.close();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);;
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
 
         return true;

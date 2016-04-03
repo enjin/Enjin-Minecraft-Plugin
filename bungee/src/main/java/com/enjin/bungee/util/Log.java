@@ -2,6 +2,7 @@ package com.enjin.bungee.util;
 
 import com.enjin.bungee.EnjinMinecraftPlugin;
 import com.enjin.bungee.util.io.EnjinLogFormatter;
+import com.enjin.core.Enjin;
 import com.enjin.core.util.EnjinLogger;
 import lombok.Getter;
 
@@ -31,7 +32,7 @@ public class Log implements EnjinLogger {
             try {
                 log.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+				Enjin.getLogger().catching(e);
             }
         }
 
@@ -40,7 +41,7 @@ public class Log implements EnjinLogger {
         try {
             handler = new FileHandler(EnjinMinecraftPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
         } catch (IOException e) {
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
 
         handler.setFormatter(formatter);

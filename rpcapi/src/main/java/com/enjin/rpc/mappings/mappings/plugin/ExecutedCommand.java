@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.mappings.plugin;
 
+import com.enjin.core.Enjin;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -46,9 +47,9 @@ public class ExecutedCommand {
 
             return hash;
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
 
         return null;

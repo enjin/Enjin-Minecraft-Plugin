@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.deserializers;
 
+import com.enjin.core.Enjin;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.tickets.Condition;
 import com.enjin.rpc.mappings.mappings.tickets.MetaOptions;
@@ -28,7 +29,7 @@ public class QuestionDeserializer implements JsonDeserializer<Question> {
                         }.getType());
                         object.add("conditions", EnjinRPC.gson.toJsonTree(conditions));
                     } catch (Exception e) {
-                        e.printStackTrace();
+						Enjin.getLogger().catching(e);
                         return null;
                     }
                 }
@@ -47,7 +48,7 @@ public class QuestionDeserializer implements JsonDeserializer<Question> {
                         }.getType());
                         object.add("options", EnjinRPC.gson.toJsonTree(options));
                     } catch (Exception e) {
-                        e.printStackTrace();
+						Enjin.getLogger().catching(e);
                         return null;
                     }
                 }
@@ -68,7 +69,7 @@ public class QuestionDeserializer implements JsonDeserializer<Question> {
                         }.getType());
                         object.add("other_options", EnjinRPC.gson.toJsonTree(options));
                     } catch (Exception e) {
-                        e.printStackTrace();
+						Enjin.getLogger().catching(e);
                         return null;
                     }
                 }

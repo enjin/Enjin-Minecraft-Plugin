@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.enjin.core.Enjin;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -191,7 +192,7 @@ public class CurseUpdater extends BukkitRunnable {
             try {
                 this.thread.join();
             } catch (final InterruptedException e) {
-                e.printStackTrace();
+				Enjin.getLogger().catching(e);
             }
         }
     }
@@ -331,10 +332,10 @@ public class CurseUpdater extends BukkitRunnable {
             }
             new File(zipPath).delete();
             fSourceZip.delete();
-        } catch (final IOException ex) {
+        } catch (final IOException e) {
             this.plugin.getLogger().warning("The auto-updater tried to unzip a new update file, but was unsuccessful.");
             this.result = CurseUpdater.UpdateResult.FAIL_DOWNLOAD;
-            ex.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
         new File(file).delete();
     }
@@ -465,7 +466,7 @@ public class CurseUpdater extends BukkitRunnable {
                 updaterConfigFile.createNewFile();
             } catch (final IOException e) {
                 plugin.getLogger().severe("The updater could not create a configuration in " + updaterFile.getAbsolutePath());
-                e.printStackTrace();
+				Enjin.getLogger().catching(e);
             }
         }
         this.config = YamlConfiguration.loadConfiguration(updaterConfigFile);
@@ -482,7 +483,7 @@ public class CurseUpdater extends BukkitRunnable {
                 this.config.save(updaterConfigFile);
             } catch (final IOException e) {
                 plugin.getLogger().severe("The updater could not save the configuration in " + updaterFile.getAbsolutePath());
-                e.printStackTrace();
+				Enjin.getLogger().catching(e);
             }
         }
 
@@ -503,7 +504,7 @@ public class CurseUpdater extends BukkitRunnable {
         } catch (final MalformedURLException e) {
             plugin.getLogger().severe("The project ID provided for updating, " + id + " is invalid.");
             this.result = UpdateResult.FAIL_BADID;
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
 
         this.thread = new Thread(new UpdateRunnable());

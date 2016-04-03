@@ -70,9 +70,9 @@ public class CommandNode {
             Enjin.getPlugin().debug("Executing command: " + data.value());
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
     }
 }

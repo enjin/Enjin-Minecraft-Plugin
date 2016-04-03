@@ -76,7 +76,7 @@ public class ReportPublisher implements Runnable {
             rfr.close();
         } catch (Exception e) {
             if (Enjin.getConfiguration().isDebug()) {
-                e.printStackTrace();
+				Enjin.getLogger().catching(e);
             }
         }
         try {
@@ -143,7 +143,7 @@ public class ReportPublisher implements Runnable {
                     builder.append("\nTimings file output not enabled!\n");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+				Enjin.getLogger().catching(e);
             }
         }
         //let's make sure to hide the apikey, wherever it may occurr in the file.
@@ -164,7 +164,7 @@ public class ReportPublisher implements Runnable {
                 }
             }
             sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin debug report!");
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
     }
 

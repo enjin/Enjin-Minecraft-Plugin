@@ -1,5 +1,6 @@
 package ninja.leaping.permissionsex.sponge;
 
+import com.enjin.core.Enjin;
 import com.enjin.sponge.listeners.ConnectionListener;
 import com.enjin.sponge.permissions.PermissionHandler;
 import ninja.leaping.permissionsex.PermissionsEx;
@@ -48,7 +49,7 @@ public class PEXHandler implements PermissionHandler {
 
 				references.put(player.getUniqueId(), reference);
 			} catch (ExecutionException e) {
-				e.printStackTrace();
+				Enjin.getLogger().catching(e);
 			}
 		}
 	}

@@ -377,7 +377,7 @@ public class MetricsLite {
             gzos = new GZIPOutputStream(baos);
             gzos.write(input.getBytes("UTF-8"));
         } catch (IOException e) {
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         } finally {
             if (gzos != null) try {
                 gzos.close();

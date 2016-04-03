@@ -1,5 +1,6 @@
 package com.enjin.sponge.stats;
 
+import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -22,7 +23,7 @@ public class WriteStats {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+				Enjin.getLogger().catching(e);
             }
         }
 
@@ -33,10 +34,10 @@ public class WriteStats {
             outChannel.close();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
 
         return true;

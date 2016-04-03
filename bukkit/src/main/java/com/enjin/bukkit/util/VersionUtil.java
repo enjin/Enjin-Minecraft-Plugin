@@ -65,14 +65,14 @@ public class VersionUtil {
             try {
                 JSONObject obj = (JSONObject) new JSONParser().parse(reader);
                 return ((Number) obj.get("totalCount")).intValue();
-            } catch (ParseException ex) {
-                ex.printStackTrace();
+            } catch (ParseException e) {
+				Enjin.getLogger().catching(e);
                 return -1;
             } finally {
                 reader.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
             return -1;
         }
     }

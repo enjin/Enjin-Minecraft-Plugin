@@ -1,5 +1,6 @@
 package com.enjin.rpc.mappings.mappings.tickets;
 
+import com.enjin.core.Enjin;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,10 +25,15 @@ public class Module {
     private String help;
 
     public Map<Integer, Question> getIdMappedQuestions() {
-        Map<Integer, Question> map = new HashMap<Integer, Question>();
+        Map<Integer, Question> map = new HashMap<>();
 
         if (questions != null) {
+			int i = -1;
             for (Question question : questions) {
+				if (question == null) {
+					continue;
+				}
+
                 map.put(question.getId(), question);
             }
         }

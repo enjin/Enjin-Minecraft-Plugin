@@ -42,7 +42,7 @@ public class Log implements EnjinLogger {
                 log.createNewFile();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+			Enjin.getLogger().catching(e);
         }
 
         configure(logger, log);
