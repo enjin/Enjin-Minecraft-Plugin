@@ -90,6 +90,11 @@ public class Log implements EnjinLogger {
             logger.addAppender(fileAppender);
         }
 
+		listener = new LineAppender("EnjinLineIn", layout);
+		listener.start();
+		Logger root = (Logger) LogManager.getRootLogger();
+		root.addAppender(listener);
+
 		// Appender only for debug log level.
 		Filter filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "ACCEPT", "DENY");
 		layout = PatternLayout.createLayout("[%d{HH:mm:ss} %t/%level]: [%logger] %msg%n", config, null, Charsets.UTF_8.name(), null);

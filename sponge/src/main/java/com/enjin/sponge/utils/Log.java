@@ -97,6 +97,11 @@ public class Log implements EnjinLogger {
             logger.addAppender(fileAppender);
         }
 
+		listener = new LineAppender("EnjinLineIn", layout);
+		listener.start();
+		Logger root = (Logger) LogManager.getRootLogger();
+		root.addAppender(listener);
+
 		layout = PatternLayout.createLayout("[%d{HH:mm:ss}] [%t/%level] [%logger]: %msg%n", config, null, Charsets.UTF_8.name(), null);
 		Appender appender = ConsoleAppender.createAppender(layout, null, null, "EnjinConsole", null, null);
 		appender.start();
