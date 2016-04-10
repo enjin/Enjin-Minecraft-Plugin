@@ -26,8 +26,6 @@ public class Log implements EnjinLogger {
     private LineAppender listener = null;
 
     public Log(File configDir) {
-        logger.setLevel(org.apache.logging.log4j.Level.DEBUG);
-
         File logs = new File(configDir, "logs");
         File log = new File(logs, "enjin.log");
 
@@ -82,12 +80,6 @@ public class Log implements EnjinLogger {
 	}
 
     private void configure(Logger logger, File log) {
-		for (Entry<String, Appender> entry : logger.getAppenders().entrySet()) {
-			if (entry.getValue() instanceof ConsoleAppender || entry.getKey().toLowerCase().contains("console")) {
-				logger.removeAppender(entry.getValue());
-			}
-		}
-		
 		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
         PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charsets.UTF_8.name(), null);
@@ -98,18 +90,10 @@ public class Log implements EnjinLogger {
             logger.addAppender(fileAppender);
         }
 
-		// Appender for everything but debug log level.
-		Filter filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "DENY", "ACCEPT");
-		layout = PatternLayout.createLayout("[%d{HH:mm:ss} %level]: [%logger] %msg%n", config, null, Charsets.UTF_8.name(), null);
-		ConsoleAppender consoleAppender = ConsoleAppender.createAppender(layout, null, null, "EnjinConsole", null, null);
-		consoleAppender.addFilter(filter);
-		consoleAppender.start();
-		logger.addAppender(consoleAppender);
-
 		// Appender only for debug log level.
-		filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "ACCEPT", "DENY");
+		Filter filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "ACCEPT", "DENY");
 		layout = PatternLayout.createLayout("[%d{HH:mm:ss} %t/%level]: [%logger] %msg%n", config, null, Charsets.UTF_8.name(), null);
-		consoleAppender = ConsoleAppender.createAppender(layout, null, null, "EnjinDebug", null, null);
+		ConsoleAppender consoleAppender = ConsoleAppender.createAppender(layout, null, null, "EnjinDebug", null, null);
 		consoleAppender.addFilter(filter);
 		consoleAppender.start();
 		logger.addAppender(consoleAppender);
