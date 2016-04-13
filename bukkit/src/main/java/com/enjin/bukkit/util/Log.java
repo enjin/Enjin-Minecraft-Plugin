@@ -75,8 +75,12 @@ public class Log implements EnjinLogger {
 	}
 
 	private String hideSensitiveText(String msg) {
-		return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
-				"**************************************************");
+		if (Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
+			return msg;
+		} else {
+			return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
+					"**************************************************");
+		}
 	}
 
     private void configure(Logger logger, File log) {

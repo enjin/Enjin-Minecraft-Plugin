@@ -114,20 +114,23 @@ public class ConnectionListener implements Listener {
             Permission permission = VaultManager.getPermission();
             if (permission.hasGroupSupport()) {
                 String[] g = permission.getPlayerGroups(null, player);
-				if (g != null) {
-					if (g.length == 0 && Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
+
+				if (g == null || g.length == 0) {
+					if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
 						g = PermissionsBukkitListener.getGroups(player);
 					}
+				}
 
+				if (g != null) {
 					if (g.length > 0) {
 						groups.put("*", Arrays.asList(g));
 					}
+				}
 
-					for (World world : Bukkit.getWorlds()) {
-						g = permission.getPlayerGroups(world.getName(), player);
-						if (g.length > 0) {
-							groups.put(world.getName(), Arrays.asList(g));
-						}
+				for (World world : Bukkit.getWorlds()) {
+					g = permission.getPlayerGroups(world.getName(), player);
+					if (g != null && g.length > 0) {
+						groups.put(world.getName(), Arrays.asList(g));
 					}
 				}
             }

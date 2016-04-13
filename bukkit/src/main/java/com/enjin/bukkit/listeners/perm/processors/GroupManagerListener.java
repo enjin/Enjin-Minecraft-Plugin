@@ -12,39 +12,37 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class GroupManagerListener extends PermissionListener {
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void userGroupChangeListener(GMUserEvent event) {
-        Action action = event.getAction();
-        if (action == Action.USER_ADDED || action == Action.USER_GROUP_CHANGED || action == Action.USER_SUBGROUP_CHANGED || action == Action.USER_REMOVED) {
-            String player = event.getUser().getName();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(player);
-            update(op);
-        }
-    }
+	private Pattern pattern = Pattern.compile("^(?:mandemote|manpromote|manuadd|manudel|manuaddsub|manudelsub) ([a-zA-Z0-9]{2,16}) ([a-zA-Z0-9]{1,32})(?: ?)(?:[a-zA-Z0-9_]*)$");
 
     @Override
     public void processCommand(CommandSender sender, String command, Event event) {
         String[] parts = command.split(" ");
-        if (parts.length >= 2) {
-            if (parts[1].length() > 16 || !VaultManager.isVaultEnabled()) {
-                return;
-            }
+        if (parts.length == 2 && parts[0].equalsIgnoreCase("manudel")) {
+			if (parts[1].length() >= 2 && parts[1].length() <= 16) {
+				OfflinePlayer player = Bukkit.getOfflinePlayer(parts[1]);
+				if (player != null) {
+					update(player);
+				}
+			}
+		} else if (parts.length > 2  && parts.length < 5 && parts[0].toLowerCase().startsWith("man")) {
+			Matcher matcher = pattern.matcher(command);
 
-            OfflinePlayer op = Bukkit.getOfflinePlayer(parts[1]);
-            if (op == null) {
-                return;
-            }
-
-            if (parts[0].equalsIgnoreCase("manudelsub") && parts.length >= 3) {
-                Permission permission = VaultManager.getPermission();
-                if (permission != null && groupExists(permission, parts[2])) {
-                    update(op);
-                }
-            } else if (parts[0].equalsIgnoreCase("manudel")) {
-                update(op);
-            }
-        }
+			if (matcher != null && matcher.matches()) {
+				if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
+					Permission permission = VaultManager.getPermission();
+					if (groupExists(permission, parts[2])) {
+						OfflinePlayer player = Bukkit.getOfflinePlayer(parts[1]);
+						if (player != null) {
+							update(player);
+						}
+					}
+				}
+			}
+		}
     }
 
     private boolean groupExists(Permission permission, String group) {
