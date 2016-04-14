@@ -41,7 +41,7 @@ shadowJar {
         include(dependency('.*:fanciful'))
     }
 
-    relocate 'mkremins.fanciful.compiled', 'com.enjin.shaded'
+    relocate 'mkremins.fanciful.shaded', 'com.enjin.shaded'
     relocate 'mkremins.fanciful', 'com.enjin.shaded.fanciful'
     relocate 'net.minidev.json', 'com.enjin.shaded.json'
     relocate 'net.amoebaman', 'com.enjin.shaded.amoebaman'
