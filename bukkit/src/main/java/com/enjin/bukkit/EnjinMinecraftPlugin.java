@@ -122,7 +122,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void init() {
         if (firstRun) {
             getLogger().info("Initializing for the first time.");
-            menuAPI = new MenuAPI(this);
 
             try {
                 MetricsLite metrics = new MetricsLite(this);
@@ -132,8 +131,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
 
             initConfigs();
-
             Enjin.setLogger(new Log(getDataFolder()));
+
+			menuAPI = new MenuAPI(this);
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true);

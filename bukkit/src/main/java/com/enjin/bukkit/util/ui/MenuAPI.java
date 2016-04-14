@@ -1,5 +1,6 @@
 package com.enjin.bukkit.util.ui;
 
+import com.enjin.core.Enjin;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +22,7 @@ public class MenuAPI implements Listener {
         if (!listener) {
             MenuAPI.listener = true;
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            plugin.getLogger().info("Registering MenuAPI listener to " + plugin.getName());
+            Enjin.getLogger().debug("Registering MenuAPI listener to " + plugin.getName());
         }
     }
 
