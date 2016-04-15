@@ -2,15 +2,10 @@ package com.enjin.bukkit.listeners.perm.processors;
 
 import com.enjin.bukkit.listeners.perm.PermissionListener;
 import com.enjin.bukkit.managers.VaultManager;
-import net.milkbowl.vault.permission.Permission;
-import org.anjocaido.groupmanager.events.GMUserEvent;
-import org.anjocaido.groupmanager.events.GMUserEvent.Action;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,8 +28,7 @@ public class GroupManagerListener extends PermissionListener {
 
 			if (matcher != null && matcher.matches()) {
 				if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
-					Permission permission = VaultManager.getPermission();
-					if (groupExists(permission, parts[2])) {
+					if (VaultManager.groupExists(parts[2])) {
 						OfflinePlayer player = Bukkit.getOfflinePlayer(parts[1]);
 						if (player != null) {
 							update(player);
@@ -43,15 +37,5 @@ public class GroupManagerListener extends PermissionListener {
 				}
 			}
 		}
-    }
-
-    private boolean groupExists(Permission permission, String group) {
-        String[] groups = permission.getGroups();
-        for (String g : groups) {
-            if (group.equalsIgnoreCase(g)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

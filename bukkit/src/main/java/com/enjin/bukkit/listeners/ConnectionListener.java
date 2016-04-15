@@ -3,10 +3,10 @@ package com.enjin.bukkit.listeners;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.listeners.perm.processors.PermissionsBukkitListener;
 import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.util.Plugins;
 import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -73,6 +73,10 @@ public class ConnectionListener implements Listener {
     }
 
     public static void updatePlayerRanks1(OfflinePlayer player) {
+		if (!Plugins.isEnabled("Vault")) {
+			return;
+		}
+
         if (player == null || player.getName() == null) {
             Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
             return;
@@ -95,7 +99,7 @@ public class ConnectionListener implements Listener {
             return;
         }
 
-        info.getWorlds().putAll(getPlayerGroups(player));
+        info.getWorlds().putAll(VaultManager.getPlayerGroups(player));
         EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
     }
 
@@ -105,37 +109,5 @@ public class ConnectionListener implements Listener {
         }
 
         EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
-    }
-
-    public static Map<String, List<String>> getPlayerGroups(OfflinePlayer player) {
-        Map<String, List<String>> groups = new HashMap<>();
-
-        if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
-            Permission permission = VaultManager.getPermission();
-            if (permission.hasGroupSupport()) {
-                String[] g = permission.getPlayerGroups(null, player);
-
-				if (g == null || g.length == 0) {
-					if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
-						g = PermissionsBukkitListener.getGroups(player);
-					}
-				}
-
-				if (g != null) {
-					if (g.length > 0) {
-						groups.put("*", Arrays.asList(g));
-					}
-				}
-
-				for (World world : Bukkit.getWorlds()) {
-					g = permission.getPlayerGroups(world.getName(), player);
-					if (g != null && g.length > 0) {
-						groups.put(world.getName(), Arrays.asList(g));
-					}
-				}
-            }
-        }
-
-        return groups;
     }
 }

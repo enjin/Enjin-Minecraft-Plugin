@@ -14,6 +14,7 @@ import com.enjin.bukkit.listeners.perm.PermissionListener;
 import com.enjin.bukkit.listeners.perm.processors.*;
 import com.enjin.bukkit.managers.*;
 import com.enjin.bukkit.util.Log;
+import com.enjin.bukkit.util.Plugins;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.listeners.*;
 import com.enjin.bukkit.shop.ShopListener;
@@ -172,8 +173,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         debug("Init managers done.");
         initPlugins();
         debug("Init plugins done.");
-        initPermissions();
-        debug("Init permissions done.");
+
+		if (Plugins.isEnabled("Vault")) {
+			initPermissions();
+			debug("Init permissions done.");
+		}
+
         initTasks();
         debug("Init tasks done.");
     }
@@ -253,16 +258,22 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private void initManagers() {
         Enjin.getLogger().debug("Initializing Purchase Manager");
         PurchaseManager.init();
-        Enjin.getLogger().debug("Initializing Vault Manager");
-        VaultManager.init(this);
-        Enjin.getLogger().debug("Initializing Votifier Manager");
-        VotifierManager.init(this);
-        Enjin.getLogger().debug("Initializing Ticket Manager");
-        TicketManager.init(this);
-        Enjin.getLogger().debug("Initializing Stats Manager");
-        StatsManager.init(this);
-        Enjin.getLogger().debug("Initializing Sign Manager");
-        StatSignManager.init(this);
+		Enjin.getLogger().debug("Initializing Ticket Manager");
+		TicketManager.init(this);
+		Enjin.getLogger().debug("Initializing Stats Manager");
+		StatsManager.init(this);
+		Enjin.getLogger().debug("Initializing Sign Manager");
+		StatSignManager.init(this);
+
+		if (Plugins.isEnabled("Vault")) {
+			Enjin.getLogger().debug("Initializing Vault Manager");
+			VaultManager.init(this);
+		}
+
+		if (Plugins.isEnabled("Votifier")) {
+			Enjin.getLogger().debug("Initializing Votifier Manager");
+			VotifierManager.init(this);
+		}
     }
 
     private void disableManagers() {
@@ -273,10 +284,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void initTasks() {
         debug("Starting tasks.");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 2L);
+
         if (Enjin.getConfiguration(EMPConfig.class).isListenForBans()) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L);
         }
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 2L);
+
         if (Enjin.getConfiguration().isAutoUpdate() && isUpdateFromCurseForge()) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CurseUpdater(this, 44560, this.getFile(), CurseUpdater.UpdateType.DEFAULT, true), 0, 20L * 60L * 30L);
         }

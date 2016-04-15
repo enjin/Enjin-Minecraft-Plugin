@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.enjin.bukkit.managers.StatsManager;
 import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.util.Plugins;
 import com.enjin.bukkit.util.PrimitiveUtils;
 import lombok.Getter;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -294,34 +293,8 @@ public class StatsPlayer {
 
         player.put("distance", jdistance);
 
-        if (VaultManager.isVaultEnabled()) {
-            Economy economy = VaultManager.getEconomy();
-            if (economy != null) {
-                if (VaultManager.isEconomyUpToDate()) {
-                    OfflinePlayer oplayer = null;
-                    try {
-                        oplayer = Bukkit.getOfflinePlayer(UUID.fromString(getUuid()));
-                    } catch (IllegalArgumentException ignored) {
-
-                    }
-
-                    if (oplayer == null || oplayer.getName() == null || oplayer.getName().equals("")) {
-                        oplayer = Bukkit.getOfflinePlayer(getName());
-                    }
-
-                    try {
-                        if (economy.hasAccount(oplayer)) {
-                            player.put("moneyamount", economy.getBalance(oplayer));
-                        }
-                    } catch (Exception ignored) {}
-                } else {
-                    try {
-                        if (economy.hasAccount(getName())) {
-                            player.put("moneyamount", economy.getBalance(getName()));
-                        }
-                    } catch (Exception ignored) {}
-                }
-            }
+        if (Plugins.isEnabled("Vault")) {
+			VaultManager.setEconomyStats(getUuid(), getName(), player);
         }
 
         JSONObject pveentitykills = new JSONObject();
