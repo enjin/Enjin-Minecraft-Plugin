@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 apply plugin: 'java'
 apply plugin: 'maven'
 
@@ -9,6 +11,12 @@ version = '3.0.1'
 
 jar {
     archiveName = 'EnjinMinecraftPlugin.jar'
+}
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            "version": project.property("version")
+    ]
 }
 
 uploadArchives {
