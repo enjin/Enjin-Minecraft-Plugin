@@ -41,6 +41,8 @@ shadowJar {
         include(dependency('.*:fanciful'))
     }
 
+    exclude('mkremins/fanciful/shaded/**')
+
     relocate 'mkremins.fanciful.shaded', 'com.enjin.shaded'
     relocate 'mkremins.fanciful', 'com.enjin.shaded.fanciful'
     relocate 'net.minidev.json', 'com.enjin.shaded.json'
