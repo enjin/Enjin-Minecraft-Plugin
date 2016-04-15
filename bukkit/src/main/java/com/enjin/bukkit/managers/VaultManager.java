@@ -19,7 +19,9 @@ public class VaultManager {
         if (isVaultEnabled()) {
             initPermissions(plugin);
             initEconomy(plugin);
-        }
+        } else {
+			Enjin.getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
+		}
     }
 
     private static void initEconomy(final EnjinMinecraftPlugin plugin) {

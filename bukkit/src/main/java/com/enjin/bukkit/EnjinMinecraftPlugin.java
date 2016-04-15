@@ -300,11 +300,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             Enjin.getLogger().info("TuxTwoLib is installed. Offline players can be given items.");
             getLogger().info("TuxTwoLib is installed. Offline players can be given items.");
         }
-
-        if (!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-            Enjin.getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
-            getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
-        }
     }
 
     private void initPermissions() {
