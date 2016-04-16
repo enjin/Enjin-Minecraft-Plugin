@@ -10,7 +10,7 @@ targetCompatibility = 1.7
 version = '3.0.1'
 
 jar {
-    archiveName = 'EnjinMinecraftPlugin.jar'
+    archiveName = 'EMPBungee.jar'
 }
 
 processResources {
@@ -33,7 +33,7 @@ uploadArchives {
 }
 
 shadowJar {
-    archiveName = 'EnjinMinecraftPlugin.jar'
+    archiveName = 'EMPBungee.jar'
 
     dependencies {
         include(project(':common'))
