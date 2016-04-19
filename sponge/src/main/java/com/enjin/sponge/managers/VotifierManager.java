@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 public class VotifierManager {
 	@Getter
@@ -26,7 +25,7 @@ public class VotifierManager {
 	private static List<String> supportedPlugins = Lists.newArrayList();
 
 	static {
-		supportedPlugins.add("Votifier");
+		supportedPlugins.add("com.vexsoftware");
 		supportedPlugins.add("nuvotifier");
 	}
 

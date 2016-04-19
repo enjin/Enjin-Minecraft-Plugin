@@ -25,8 +25,6 @@ public class Log implements EnjinLogger {
     private LineAppender listener;
 
     public Log(File configDir) {
-        logger.setLevel(Level.DEBUG);
-
         File logs = new File(configDir, "logs");
         File log = new File(logs, "enjin.log");
 
@@ -86,9 +84,7 @@ public class Log implements EnjinLogger {
 
     private void configure(Logger logger, File log) {
 		logger.getAppenders().forEach((string, appender) -> {
-			if (appender instanceof ConsoleAppender) {
-				logger.removeAppender(appender);
-			}
+			logger.removeAppender(appender);
 		});
 
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
@@ -106,11 +102,12 @@ public class Log implements EnjinLogger {
 		Logger root = (Logger) LogManager.getRootLogger();
 		root.addAppender(listener);
 
-		layout = PatternLayout.createLayout("[%d{HH:mm:ss}] [%t/%level] [%logger]: %msg%n", config, null, Charsets.UTF_8.name(), null);
-		Appender appender = ConsoleAppender.createAppender(layout, null, null, "EnjinConsole", null, null);
-		appender.start();
-		logger.addAppender(appender);
-
-		logger.setLevel(Level.DEBUG);
+		// Appender only for debug log level.
+		Filter filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "ACCEPT", "DENY");
+		layout = PatternLayout.createLayout("[%d{HH:mm:ss} %t/%level]: [%logger] %msg%n", config, null, Charsets.UTF_8.name(), null);
+		ConsoleAppender consoleAppender = ConsoleAppender.createAppender(layout, null, null, "EnjinDebug", null, null);
+		consoleAppender.addFilter(filter);
+		consoleAppender.start();
+		logger.addAppender(consoleAppender);
     }
 }
