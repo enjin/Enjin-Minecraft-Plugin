@@ -88,11 +88,11 @@ public class TicketViewBuilder {
             String text = reply.getText().replaceAll("\\s+", " ");
             String[] parts = text.split("<br>");
             for (String part : parts) {
-                String line = part.replace("<b>", ChatColor.GRAY.toString() + ChatColor.BOLD.toString()).replace("</b>", ChatColor.GRAY.toString());
+                String line = part.replace("<b>", ChatColor.GRAY.toString() + ChatColor.BOLD.toString()).replace("</b>", ChatColor.GRAY.toString()) + '\n';
                 if (showPrivate && message != null) {
-                    message.then(text);
+                    message.then(line);
                 } else {
-                    message = new FancyMessage(text);
+                    message = new FancyMessage(line);
                 }
 
                 message.color(ChatColor.GRAY);
