@@ -1,7 +1,7 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.managers.StatsManager;
+import com.enjin.bukkit.modules.impl.StatsModule;
 import com.enjin.bukkit.stats.StatsPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -34,7 +34,10 @@ public class EnjinStatsListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        StatsManager.getPlayerStats(event.getPlayer());
+		StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
+        if (module != null) {
+			module.getPlayerStats(event.getPlayer());
+		}
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -76,9 +79,11 @@ public class EnjinStatsListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
-                StatsPlayer player = StatsManager.getPlayerStats(event.getPlayer());
-
-                player.addBrokenBlock(event.getBlock());
+				StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
+				if (module != null) {
+					StatsPlayer player = module.getPlayerStats(event.getPlayer());
+					player.addBrokenBlock(event.getBlock());
+				}
             }
         });
     }
@@ -92,9 +97,11 @@ public class EnjinStatsListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
-                StatsPlayer player = StatsManager.getPlayerStats(event.getPlayer());
-
-                player.addPlacedBlock(event.getBlock());
+				StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
+				if (module != null) {
+					StatsPlayer player = module.getPlayerStats(event.getPlayer());
+					player.addPlacedBlock(event.getBlock());
+				}
             }
         });
     }
@@ -105,10 +112,12 @@ public class EnjinStatsListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
-                Player p = event.getEntity();
-                StatsPlayer player = StatsManager.getPlayerStats(p);
-
-                player.addDeath();
+				StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
+				if (module != null) {
+					Player p = event.getEntity();
+					StatsPlayer player = module.getPlayerStats(p);
+					player.addDeath();
+				}
             }
         });
     }
@@ -123,16 +132,19 @@ public class EnjinStatsListener implements Listener {
                 Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
                     @Override
                     public void run() {
-                        Player p = (Player) damageEvent.getDamager();
-                        StatsPlayer player = StatsManager.getPlayerStats(p);
+						StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
+						if (module != null) {
+							Player p = (Player) damageEvent.getDamager();
+							StatsPlayer player = module.getPlayerStats(p);
 
-                        player.addKilled();
-                        //Let's add to the player's pvp or pve kills
-                        if (event.getEntityType() == EntityType.PLAYER) {
-                            player.addPvpkill();
-                        } else {
-                            player.addPvekill(event.getEntityType());
-                        }
+							player.addKilled();
+							//Let's add to the player's pvp or pve kills
+							if (event.getEntityType() == EntityType.PLAYER) {
+								player.addPvpkill();
+							} else {
+								player.addPvekill(event.getEntityType());
+							}
+						}
                     }
                 });
             }
@@ -149,40 +161,43 @@ public class EnjinStatsListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
-                StatsPlayer player = StatsManager.getPlayerStats(event.getPlayer());
-                Player p = event.getPlayer();
+				StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
+				if (module != null) {
+					StatsPlayer player = module.getPlayerStats(event.getPlayer());
+					Player p = event.getPlayer();
 
-                Location from = event.getFrom();
-                Location to = event.getTo();
+					Location from = event.getFrom();
+					Location to = event.getTo();
 
-                //Make sure we didn't teleport between two worlds or something
-                if (!from.getWorld().getName().equals(to.getWorld().getName())) {
-                    return;
-                }
+					//Make sure we didn't teleport between two worlds or something
+					if (!from.getWorld().getName().equals(to.getWorld().getName())) {
+						return;
+					}
 
-                double distance = (to.getX() - from.getX()) * (to.getX() - from.getX()) + (to.getY() - from.getY()) * (to.getY() - from.getY()) + (to.getZ() - from.getZ()) * (to.getZ() - from.getZ());
+					double distance = (to.getX() - from.getX()) * (to.getX() - from.getX()) + (to.getY() - from.getY()) * (to.getY() - from.getY()) + (to.getZ() - from.getZ()) * (to.getZ() - from.getZ());
 
-                //You can't go over 4 blocks before a teleport event happens, otherwise you are using hacks to move.
-                if (distance > 36) {
-                    return;
-                }
+					//You can't go over 4 blocks before a teleport event happens, otherwise you are using hacks to move.
+					if (distance > 36) {
+						return;
+					}
 
-                if (p.isInsideVehicle()) {
-                    Entity vehicle = p.getVehicle();
-                    if (vehicle instanceof Minecart) {
-                        player.addMinecartdistance(distance);
-                    } else if (vehicle instanceof Boat) {
-                        player.addBoatdistance(distance);
-                    } else if (vehicle instanceof Pig) {
-                        player.addPigdistance(distance);
-                    } else {
-                        //They are riding an entity we can't identify
-                        //In the future we should allow custom entities
-                    }
-                } else {
-                    //The player could also be flying, so we need to add that
-                    player.addFootdistance(distance);
-                }
+					if (p.isInsideVehicle()) {
+						Entity vehicle = p.getVehicle();
+						if (vehicle instanceof Minecart) {
+							player.addMinecartdistance(distance);
+						} else if (vehicle instanceof Boat) {
+							player.addBoatdistance(distance);
+						} else if (vehicle instanceof Pig) {
+							player.addPigdistance(distance);
+						} else {
+							//They are riding an entity we can't identify
+							//In the future we should allow custom entities
+						}
+					} else {
+						//The player could also be flying, so we need to add that
+						player.addFootdistance(distance);
+					}
+				}
             }
         });
     }
@@ -196,13 +211,16 @@ public class EnjinStatsListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
-                StatsPlayer player = StatsManager.getPlayerStats(event.getPlayer());
-                Player p = event.getPlayer();
+				StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
+				if (module != null) {
+					StatsPlayer player = module.getPlayerStats(event.getPlayer());
+					Player p = event.getPlayer();
 
-                if (player != null && p != null) {
-                    player.setXpLevel(p.getLevel());
-                    player.setTotalXp(p.getTotalExperience());
-                }
+					if (player != null && p != null) {
+						player.setXpLevel(p.getLevel());
+						player.setTotalXp(p.getTotalExperience());
+					}
+				}
             }
         });
     }

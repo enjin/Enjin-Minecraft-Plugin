@@ -1,24 +1,19 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.listeners.perm.processors.PermissionsBukkitListener;
-import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.util.Plugins;
 import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import java.util.*;
 
 public class ConnectionListener implements Listener {
     @Getter
@@ -56,8 +51,9 @@ public class ConnectionListener implements Listener {
             p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");
         }
 
-        if (VaultManager.isVaultEnabled() && VaultManager.getEconomy() != null && !VaultManager.isEconomyUpToDate() && p.hasPermission("enjin.notify.econoutdated")) {
-            p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + VaultManager.getEconomy().getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
+		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        if (module != null && module.isEconomyAvailable() && !module.isEconomyUpToDate() && p.hasPermission("enjin.notify.econoutdated")) {
+            p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + module.getEconomy().getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
         }
     }
 
@@ -73,7 +69,8 @@ public class ConnectionListener implements Listener {
     }
 
     public static void updatePlayerRanks1(OfflinePlayer player) {
-		if (!Plugins.isEnabled("Vault")) {
+		VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
+		if (module == null || !module.isPermissionsAvailable()) {
 			return;
 		}
 
@@ -99,7 +96,7 @@ public class ConnectionListener implements Listener {
             return;
         }
 
-        info.getWorlds().putAll(VaultManager.getPlayerGroups(player));
+        info.getWorlds().putAll(module.getPlayerGroups(player));
         EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
     }
 

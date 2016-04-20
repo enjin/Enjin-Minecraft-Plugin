@@ -34,7 +34,7 @@ public class TicketCreationSession {
         dateFormat.setLenient(false);
     }
 
-    public TicketCreationSession(Player player, int moduleId, Module module) {
+    public TicketCreationSession(Player player, int moduleId, TicketModule module) {
         this.uuid = player.getUniqueId();
         this.moduleId = moduleId;
         this.idMap = module.getIdMappedQuestions();

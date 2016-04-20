@@ -1,6 +1,7 @@
 package com.enjin.bukkit.shop;
 
-import com.enjin.bukkit.managers.PurchaseManager;
+import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.modules.impl.PurchaseModule;
 import com.enjin.bukkit.util.ui.Menu;
 import com.enjin.common.shop.PlayerShopInstance;
 import com.google.common.collect.Maps;
@@ -18,7 +19,12 @@ public class ShopListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        PurchaseManager.getPendingPurchases().remove(event.getPlayer().getName());
+		PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+
+		if (module != null) {
+			module.getPendingPurchases().remove(event.getPlayer().getName());
+		}
+
         PlayerShopInstance.getInstances().remove(event.getPlayer().getUniqueId());
         Menu menu = guiInstances.remove(event.getPlayer().getUniqueId());
 

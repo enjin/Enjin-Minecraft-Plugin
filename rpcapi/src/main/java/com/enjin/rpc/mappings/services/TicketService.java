@@ -103,7 +103,7 @@ public class TicketService implements Service {
         }
     }
 
-    public RPCData<Map<Integer, Module>> getModules() {
+    public RPCData<Map<Integer, TicketModule>> getModules() {
         String method = "Tickets.getModules";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -122,7 +122,7 @@ public class TicketService implements Service {
             EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
             EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Map<Integer, Module>> data = GSON_QUESTION.fromJson(response.toJSONString(), new TypeToken<RPCData<HashMap<Integer, Module>>>() {}.getType());
+            RPCData<Map<Integer, TicketModule>> data = GSON_QUESTION.fromJson(response.toJSONString(), new TypeToken<RPCData<HashMap<Integer, TicketModule>>>() {}.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;

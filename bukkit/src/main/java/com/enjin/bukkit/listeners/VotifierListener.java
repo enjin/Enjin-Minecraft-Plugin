@@ -3,6 +3,7 @@ package com.enjin.bukkit.listeners;
 import java.util.ArrayList;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.modules.impl.VotifierModule;
 import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -36,10 +37,11 @@ public class VotifierListener implements Listener {
         String userid = username + "|" + Bukkit.getOfflinePlayer(username).getUniqueId().toString();
         String listname = event.getVote().getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 
-        if (!plugin.getPlayerVotes().containsKey(listname)) {
-            plugin.getPlayerVotes().put(listname, new ArrayList<Object[]>());
+		VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+        if (!module.getPlayerVotes().containsKey(listname)) {
+			module.getPlayerVotes().put(listname, new ArrayList<Object[]>());
         }
 
-        plugin.getPlayerVotes().get(listname).add(new Object[]{userid, System.currentTimeMillis() / 1000});
+		module.getPlayerVotes().get(listname).add(new Object[]{userid, System.currentTimeMillis() / 1000});
     }
 }

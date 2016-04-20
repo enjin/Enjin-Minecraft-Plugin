@@ -1,7 +1,7 @@
 package com.enjin.bukkit.command.commands;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.managers.StatSignManager;
+import com.enjin.bukkit.modules.impl.SignStatsModule;
 import com.enjin.bukkit.util.io.EnjinConsole;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
@@ -37,12 +37,17 @@ public class HeadCommands {
     @Permission("enjin.updateheads")
     @Directive(parent = "enjin", value = "updateheads", requireValidKey = true)
     public static void update(final CommandSender sender, final String[] args) {
+		final SignStatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(SignStatsModule.class);
+		if (module == null) {
+			return;
+		}
+
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
                 sender.sendMessage(ChatColor.GREEN + "Fetching stat sign updates.");
-                StatSignManager.fetchStats();
-                StatSignManager.update();
+                module.fetchStats();
+                module.update();
                 sender.sendMessage(ChatColor.GREEN + "Stat signs have been updated.");
             }
         });

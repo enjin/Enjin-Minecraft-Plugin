@@ -3,7 +3,7 @@ package com.enjin.sponge.managers;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.tickets.Module;
+import com.enjin.rpc.mappings.mappings.tickets.TicketModule;
 import com.enjin.rpc.mappings.services.TicketService;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.tickets.TicketCreationSession;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class TicketManager {
     @Getter
-    private static Map<Integer, Module> modules = new HashMap<>();
+    private static Map<Integer, TicketModule> modules = new HashMap<>();
     @Getter
     private static long modulesLastPolled = 0;
     @Getter
@@ -41,7 +41,7 @@ public class TicketManager {
     public static void pollModules() {
         if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
             modulesLastPolled = System.currentTimeMillis();
-            RPCData<Map<Integer, Module>> data = EnjinServices.getService(TicketService.class).getModules();
+            RPCData<Map<Integer, TicketModule>> data = EnjinServices.getService(TicketService.class).getModules();
 
             if (data == null || data.getError() != null) {
                 Enjin.getPlugin().debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
@@ -53,7 +53,7 @@ public class TicketManager {
                 modules.clear();
             }
 
-            for (Map.Entry<Integer, Module> entry : data.getResult().entrySet()) {
+            for (Map.Entry<Integer, TicketModule> entry : data.getResult().entrySet()) {
                 modules.put(entry.getKey(), entry.getValue());
             }
         }

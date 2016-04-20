@@ -2,8 +2,8 @@ package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.RankUpdatesConfig;
-import com.enjin.bukkit.managers.VaultManager;
-import com.enjin.bukkit.managers.VotifierManager;
+import com.enjin.bukkit.modules.impl.VaultModule;
+import com.enjin.bukkit.modules.impl.VotifierModule;
 import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
 import com.enjin.bukkit.tasks.TPSMonitor;
@@ -43,7 +43,7 @@ public class RPCPacketManager implements Runnable {
         Status status = new Status(System.getProperty("java.version"),
                 plugin.getMcVersion(),
                 getPlugins(),
-                VaultManager.isPermissionsAvailable(),
+                isPermissionsAvailable(),
                 plugin.getDescription().getVersion(),
                 getWorlds(),
                 getGroups(),
@@ -137,8 +137,9 @@ public class RPCPacketManager implements Runnable {
     private List<String> getGroups() {
         List<String> groups = new ArrayList<>();
 
-        if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
-            groups.addAll(Arrays.asList(VaultManager.getPermission().getGroups()));
+		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        if (module != null && module.isPermissionsAvailable()) {
+            groups.addAll(Arrays.asList(module.getPermission().getGroups()));
         }
 
         return groups;
@@ -190,9 +191,10 @@ public class RPCPacketManager implements Runnable {
 
 	private Map<String, List<Object[]>> getVotes() {
 		Map<String, List<Object[]>> votes = null;
-		if (VotifierManager.isVotifierEnabled() && !plugin.getPlayerVotes().isEmpty()) {
-			votes = new HashMap<>(plugin.getPlayerVotes());
-			plugin.getPlayerVotes().clear();
+		VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+		if (module != null && !module.getPlayerVotes().isEmpty()) {
+			votes = new HashMap<>(module.getPlayerVotes());
+			module.getPlayerVotes().clear();
 		}
 		return votes;
 	}
@@ -200,4 +202,9 @@ public class RPCPacketManager implements Runnable {
     private String getStats() {
         return new WriteStats(plugin).getStatsJSON();
     }
+
+	private boolean isPermissionsAvailable() {
+		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+		return module == null ? null : module.isPermissionsAvailable();
+	}
 }

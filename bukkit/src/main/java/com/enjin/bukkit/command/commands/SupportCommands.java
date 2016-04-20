@@ -3,7 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
-import com.enjin.bukkit.managers.TicketManager;
+import com.enjin.bukkit.modules.impl.SupportModule;
 import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketViewBuilder;
 import com.enjin.core.EnjinServices;
@@ -25,7 +25,13 @@ public class SupportCommands {
     @Directive(parent = "enjin", value = "support", requireValidKey = true)
     public static void support(final Player sender, final String[] args) {
         final EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-        final Map<Integer, Module> modules = TicketManager.getModules();
+		final SupportModule module = plugin.getModuleManager().getModule(SupportModule.class);
+
+		if (module == null) {
+			return;
+		}
+
+        final Map<Integer, TicketModule> modules = module.getModules();
 
         if (TicketCreationSession.getSessions().containsKey(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "A ticket session is already in progress...");
@@ -35,7 +41,7 @@ public class SupportCommands {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                TicketManager.pollModules();
+                module.pollModules();
 
                 if (modules.size() == 0) {
                     sender.sendMessage("Support tickets are not available on this server.");
@@ -53,7 +59,7 @@ public class SupportCommands {
                     }
 
                     plugin.debug("Checking if module with id \"" + moduleId + "\" exists.");
-                    final Module module = modules.get(moduleId);
+                    final TicketModule module = modules.get(moduleId);
                     if (module != null) {
                         new TicketCreationSession(sender, moduleId, module);
                     } else {
@@ -65,7 +71,7 @@ public class SupportCommands {
                     }
                 } else {
                     if (modules.size() == 1) {
-                        final Map.Entry<Integer, Module> entry = modules.entrySet().iterator().next();
+                        final Map.Entry<Integer, TicketModule> entry = modules.entrySet().iterator().next();
                         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                             @Override
                             public void run() {
@@ -74,9 +80,9 @@ public class SupportCommands {
                         });
                     } else {
                         plugin.debug(String.valueOf(modules.size()));
-                        for (Map.Entry<Integer, Module> entry : modules.entrySet()) {
+                        for (Map.Entry<Integer, TicketModule> entry : modules.entrySet()) {
                             int id = entry.getKey();
-                            Module module = entry.getValue();
+                            TicketModule module = entry.getValue();
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', (module.getHelp() != null && !module.getHelp().isEmpty()) ? module.getHelp() : "Type /e support " + id + " to create a support ticket for " + module.getName().replaceAll("\\s+", " ")));
                         }
                     }

@@ -24,12 +24,12 @@ public class TicketServiceTest {
     @Test
     public void test1GetModules() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<Map<Integer, Module>> data = service.getModules();
+        RPCData<Map<Integer, TicketModule>> data = service.getModules();
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
 
-        Map<Integer, Module> modules = data.getResult();
+        Map<Integer, TicketModule> modules = data.getResult();
 
         Assert.assertNotNull("modules is null", modules);
     }

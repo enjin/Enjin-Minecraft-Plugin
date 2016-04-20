@@ -3,7 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
-import com.enjin.bukkit.managers.StatsManager;
+import com.enjin.bukkit.modules.impl.StatsModule;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.WriteStats;
 import org.bukkit.Bukkit;
@@ -19,6 +19,11 @@ public class StatCommands {
     @Permission("enjin.customstat")
     @Directive(parent = "enjin", value = "customstat")
     public static void customStat(CommandSender sender, String[] args) {
+		StatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
+		if (module == null) {
+			return;
+		}
+
         if (args.length == 5) {
             String player = args[0].trim();
             String plugin = args[1].trim();
@@ -27,7 +32,7 @@ public class StatCommands {
             String cumulative = args[4].trim();
             boolean existing = cumulative.equalsIgnoreCase("true");
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
-            StatsPlayer statsPlayer = StatsManager.getPlayerStats(offlinePlayer);
+            StatsPlayer statsPlayer = module.getPlayerStats(offlinePlayer);
 
             try {
                 statsPlayer.addCustomStat(plugin, statName, statValue.indexOf(".") > -1 ? Double.parseDouble(statValue) : Integer.parseInt(statValue), existing);

@@ -26,7 +26,7 @@ public class SupportCommands {
     @Directive(parent = "enjin", value = "support", requireValidKey = true)
     public static void support(final Player sender, final String[] args) {
         final EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-        final Map<Integer, Module> modules = TicketManager.getModules();
+        final Map<Integer, TicketModule> modules = TicketManager.getModules();
 
         if (TicketCreationSession.getSessions().containsKey(sender.getUniqueId())) {
             sender.sendMessage(Text.of(TextColors.RED, "A ticket session is already in progress..."));
@@ -52,7 +52,7 @@ public class SupportCommands {
 				}
 
 				plugin.debug("Checking if module with id \"" + moduleId + "\" exists.");
-				final Module module = modules.get(moduleId);
+				final TicketModule module = modules.get(moduleId);
 				if (module != null) {
 					new TicketCreationSession(sender, moduleId, module);
 				} else {
@@ -64,13 +64,13 @@ public class SupportCommands {
 				}
 			} else {
 				if (modules.size() == 1) {
-					final Entry<Integer, Module> entry = modules.entrySet().iterator().next();
+					final Entry<Integer, TicketModule> entry = modules.entrySet().iterator().next();
 					plugin.getSync().execute(() -> new TicketCreationSession(sender, entry.getKey(), entry.getValue()));
 				} else {
 					plugin.debug(String.valueOf(modules.size()));
-					for (Entry<Integer, Module> entry : modules.entrySet()) {
+					for (Entry<Integer, TicketModule> entry : modules.entrySet()) {
 						int id = entry.getKey();
-						Module module = entry.getValue();
+						TicketModule module = entry.getValue();
 						sender.sendMessage(TextUtils.translateText((module.getHelp() != null
 								&& !module.getHelp().isEmpty()) ? module.getHelp() : "Type /e support " + id + " to create a support ticket for " + module.getName().replaceAll("\\s+", " ")));
 					}

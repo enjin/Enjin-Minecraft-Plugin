@@ -1,6 +1,7 @@
-package com.enjin.bukkit.managers;
+package com.enjin.bukkit.modules.impl;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.modules.Module;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
 import com.enjin.common.shop.PlayerShopInstance;
@@ -18,27 +19,33 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PurchaseManager {
+@Module(name = "Purchase")
+public class PurchaseModule {
+	private EnjinMinecraftPlugin plugin;
     @Getter
-    private static Map<String, Integer> pendingPurchases = new ConcurrentHashMap<>();
+    private Map<String, Integer> pendingPurchases = new ConcurrentHashMap<>();
 
-    public static void init() {
+	public PurchaseModule() {
+		this.plugin = EnjinMinecraftPlugin.getInstance();
+	}
+
+    public void init() {
         PlayerShopInstance.getInstances().clear();
         ShopListener.getGuiInstances().clear();
     }
 
-    public static void processItemPurchase(Player player, Shop shop, Item item) {
+    public void processItemPurchase(Player player, Shop shop, Item item) {
         if (item == null) {
             player.sendMessage(ChatColor.RED + "You must select an item from a category first.");
         } else if (item.getPoints() == null || (item.getVariables() != null && !item.getVariables().isEmpty())) {
             TextShopUtil.sendItemInfo(player, shop, item);
         } else {
-            PurchaseManager.getPendingPurchases().put(player.getName(), item.getId());
+            pendingPurchases.put(player.getName(), item.getId());
             player.sendMessage(ChatColor.GREEN + "Type \"/buy confirm\" to complete your pending purchase.");
         }
     }
 
-    public static void confirmPurchase(final Player player) {
+    public void confirmPurchase(final Player player) {
         if (!pendingPurchases.containsKey(player.getName())) {
             player.sendMessage(ChatColor.RED + "You do not have a pending purchase.");
             return;

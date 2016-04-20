@@ -48,6 +48,8 @@ allprojects {
         bungeecord = '1.9-SNAPSHOT'
         redis_bungee = '0.3.9-SNAPSHOT'
         sponge = '4.1.0-SNAPSHOT'
+        reflections = '0.9.10'
+        javassist = '3.12.1.GA'
     }
 
     repositories {
@@ -102,6 +104,8 @@ project(':bukkit') {
     dependencies {
         compile project(path: ':common', configuration: 'shadow')
         compile group: 'mkremins', name: 'fanciful', version: fanciful
+        compile group: 'org.reflections', name: 'reflections', version: reflections
+        compile group: 'javassist', name: 'javassist', version: javassist
         provided project(':core')
         provided project(':rpcapi')
         provided group: 'org.bukkit', name: 'bukkit', version: bukkit

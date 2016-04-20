@@ -1,7 +1,8 @@
-package com.enjin.bukkit.managers;
+package com.enjin.bukkit.modules.impl;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.config.StatSignConfig;
+import com.enjin.bukkit.modules.Module;
 import com.enjin.bukkit.statsigns.SignData;
 import com.enjin.bukkit.statsigns.SignType;
 import com.enjin.bukkit.statsigns.StatSignProcessor;
@@ -25,17 +26,23 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatSignManager {
+@Module(name = "SignStats")
+public class SignStatsModule {
+	private EnjinMinecraftPlugin plugin;
     @Getter
-    private static File file;
+    private File file;
     @Getter
-    private static StatSignConfig config;
+    private StatSignConfig config;
     @Getter
-    private static Stats stats;
+    private Stats stats;
     @Getter
-    private static List<Integer> items = Lists.newArrayList();
+    private List<Integer> items = Lists.newArrayList();
 
-    public static void init(EnjinMinecraftPlugin plugin) {
+	public SignStatsModule() {
+		this.plugin = EnjinMinecraftPlugin.getInstance();
+	}
+
+    public void init() {
         file = new File(plugin.getDataFolder(), "stat-signs.json");
         config = JsonConfig.load(file, StatSignConfig.class);
 
@@ -47,13 +54,13 @@ public class StatSignManager {
         schedule(plugin, false);
     }
 
-    public static void disable() {
+    public void disable() {
         if (config != null) {
             config.save(file);
         }
     }
 
-    public static void schedule(final EnjinMinecraftPlugin plugin, boolean delayed) {
+    public void schedule(final EnjinMinecraftPlugin plugin, boolean delayed) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -73,7 +80,7 @@ public class StatSignManager {
         }
     }
 
-    public static void fetchStats() {
+    public void fetchStats() {
         RPCData<Stats> data = EnjinServices.getService(PluginService.class).getStats(Optional.fromNullable(items));
 
         if (data == null) {
@@ -85,7 +92,7 @@ public class StatSignManager {
         }
     }
 
-    public static void add(final SignData data) {
+    public void add(final SignData data) {
         if (config != null) {
             config.getSigns().add(data);
             config.save(file);
@@ -105,7 +112,7 @@ public class StatSignManager {
         }
     }
 
-    public static void remove(SerializableLocation location) {
+    public void remove(SerializableLocation location) {
         boolean removed = false;
         for (SignData data : new ArrayList<>(config.getSigns())) {
             if (data.getLocation().equals(location)) {
@@ -119,13 +126,16 @@ public class StatSignManager {
         }
     }
 
-    public static void update() {
-        for (SignData data : new ArrayList<>(config.getSigns())) {
-            StatSignManager.update(data);
-        }
+    public void update() {
+		SignStatsModule module = plugin.getModuleManager().getModule(SignStatsModule.class);
+		if (module != null) {
+			for (SignData data : new ArrayList<>(config.getSigns())) {
+				module.update(data);
+			}
+		}
     }
 
-    public static void update(final SignData data) {
+    public void update(final SignData data) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
@@ -182,7 +192,7 @@ public class StatSignManager {
         });
     }
 
-    public static void updateItems() {
+    public void updateItems() {
         for (SignData data : new ArrayList<>(config.getSigns())) {
             if (data.getType() == SignType.DONATION && data.getSubType() == SignType.SubType.ITEMID && data.getItemId() != null) {
                 if (!items.contains(data.getItemId())) {
@@ -192,7 +202,7 @@ public class StatSignManager {
         }
     }
 
-    public static void updateHead(Sign sign, SignData data, String name) {
+    public void updateHead(Sign sign, SignData data, String name) {
         Block block = null;
         if (data.getHeadLocation() != null) {
             block = data.getHeadLocation().toLocation().getBlock();
@@ -218,7 +228,7 @@ public class StatSignManager {
         }
     }
 
-    public static void updateHead(Block block, SignData data, String name) {
+    public void updateHead(Block block, SignData data, String name) {
         SerializableLocation location = new SerializableLocation(block.getLocation());
         for (SignData d : new ArrayList<>(config.getSigns())) {
             if (d != data && d.getHeadLocation() != null && d.getHeadLocation().equals(location)) {

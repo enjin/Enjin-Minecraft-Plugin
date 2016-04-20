@@ -1,7 +1,8 @@
 package com.enjin.bukkit.listeners.perm.processors;
 
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.listeners.perm.PermissionListener;
-import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.modules.impl.VaultModule;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -15,23 +16,26 @@ public class GroupManagerListener extends PermissionListener {
 
     @Override
     public void processCommand(CommandSender sender, String command, Event event) {
-        String[] parts = command.split(" ");
-        if (parts.length == 2 && parts[0].equalsIgnoreCase("manudel")) {
-			if (parts[1].length() >= 2 && parts[1].length() <= 16) {
-				OfflinePlayer player = Bukkit.getOfflinePlayer(parts[1]);
-				if (player != null) {
-					update(player);
+		VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
+        if (module != null) {
+			String[] parts = command.split(" ");
+			if (parts.length == 2 && parts[0].equalsIgnoreCase("manudel")) {
+				if (parts[1].length() >= 2 && parts[1].length() <= 16) {
+					OfflinePlayer player = Bukkit.getOfflinePlayer(parts[1]);
+					if (player != null) {
+						update(player);
+					}
 				}
-			}
-		} else if (parts.length > 2  && parts.length < 5 && parts[0].toLowerCase().startsWith("man")) {
-			Matcher matcher = pattern.matcher(command);
+			} else if (parts.length > 2  && parts.length < 5 && parts[0].toLowerCase().startsWith("man")) {
+				Matcher matcher = pattern.matcher(command);
 
-			if (matcher != null && matcher.matches()) {
-				if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
-					if (VaultManager.groupExists(parts[2])) {
-						OfflinePlayer player = Bukkit.getOfflinePlayer(parts[1]);
-						if (player != null) {
-							update(player);
+				if (matcher != null && matcher.matches()) {
+					if (module.isPermissionsAvailable()) {
+						if (module.groupExists(parts[2])) {
+							OfflinePlayer player = Bukkit.getOfflinePlayer(parts[1]);
+							if (player != null) {
+								update(player);
+							}
 						}
 					}
 				}

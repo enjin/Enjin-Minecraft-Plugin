@@ -1,7 +1,7 @@
 package com.enjin.bukkit.shop.gui;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.managers.PurchaseManager;
+import com.enjin.bukkit.modules.impl.PurchaseModule;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
 import com.enjin.bukkit.util.text.TextUtils;
@@ -60,7 +60,10 @@ public class ItemDetail extends Menu {
                 @Override
                 public void onClick(Player player) {
                     closeMenu(player);
-                    PurchaseManager.processItemPurchase(player, shop, item);
+					PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+                    if (module != null) {
+						module.processItemPurchase(player, shop, item);
+					}
                 }
             };
             pointOption.setDescriptions(new ArrayList<String>(){{

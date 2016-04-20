@@ -39,12 +39,16 @@ shadowJar {
     dependencies {
         include(project(':common'))
         include(dependency('.*:fanciful'))
+        include(dependency('.*:reflections'))
+        include(dependency('.*:javassist'))
     }
 
     exclude('mkremins/fanciful/shaded/**')
 
     relocate 'mkremins.fanciful.shaded', 'com.enjin.shaded'
     relocate 'mkremins.fanciful', 'com.enjin.shaded.fanciful'
+    relocate 'org.reflections', 'com.enjin.shaded.reflections'
+    relocate 'javassist', 'com.enjin.shaded.javassist'
     relocate 'net.minidev.json', 'com.enjin.shaded.json'
     relocate 'net.amoebaman', 'com.enjin.shaded.amoebaman'
     relocate 'com.google.gson', 'com.enjin.shaded.gson'

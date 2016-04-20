@@ -3,6 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.modules.impl.VotifierModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -15,6 +16,11 @@ public class VoteCommands {
     @Directive(parent = "enjin", value = "vote")
     public static void vote(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+		VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+
+		if (module == null) {
+			return;
+		}
 
         if (args.length != 2) {
             sender.sendMessage("Usage: /enjin vote <username> <list>");
@@ -29,11 +35,11 @@ public class VoteCommands {
             username = username.concat("|" + player.getUniqueId().toString());
         }
 
-        if (!plugin.getPlayerVotes().containsKey(listname)) {
-            plugin.getPlayerVotes().put(listname, new ArrayList<Object[]>());
+        if (!module.getPlayerVotes().containsKey(listname)) {
+            module.getPlayerVotes().put(listname, new ArrayList<Object[]>());
         }
 
-        plugin.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});
+		module.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});
         sender.sendMessage(ChatColor.GREEN + "You just added a vote for player " + username + " on list " + listname);
     }
 }

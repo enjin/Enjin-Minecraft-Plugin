@@ -1,9 +1,10 @@
-package com.enjin.bukkit.managers;
+package com.enjin.bukkit.modules.impl;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ChatListener;
 import com.enjin.bukkit.listeners.EnjinStatsListener;
+import com.enjin.bukkit.modules.Module;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.StatsUtils;
 import com.enjin.bukkit.stats.WriteStats;
@@ -27,12 +28,18 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-public class StatsManager {
+@Module(name = "Stats")
+public class StatsModule {
+	private EnjinMinecraftPlugin plugin;
     @Getter
-    private static boolean mcMmoEnabled = false;
-    private static EnjinStatsListener listener;
+    private boolean mcMmoEnabled = false;
+    private EnjinStatsListener listener;
 
-    public static void init(EnjinMinecraftPlugin plugin) {
+	public StatsModule() {
+		plugin = EnjinMinecraftPlugin.getInstance();
+	}
+
+    public void init() {
         File stats = new File("enjin-stats.json");
         try {
             if (stats.exists()) {
@@ -47,7 +54,6 @@ public class StatsManager {
 
         if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
             try {
-                List<SkillType> skills = SkillType.NON_CHILD_SKILLS;
                 mcMmoEnabled = true;
             } catch (NoSuchFieldError e) {
                 mcMmoEnabled = false;
@@ -99,7 +105,7 @@ public class StatsManager {
         }
     }
 
-    public static void disable(EnjinMinecraftPlugin plugin) {
+    public void disable() {
         EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
         if (configuration.isCollectPlayerStats()) {
             new WriteStats(plugin).write("enjin-stats.json");
@@ -107,7 +113,7 @@ public class StatsManager {
         }
     }
 
-    public static StatsPlayer getPlayerStats(OfflinePlayer player) {
+    public StatsPlayer getPlayerStats(OfflinePlayer player) {
         if (player.getUniqueId() == null) {
             return null;
         }
@@ -123,7 +129,7 @@ public class StatsManager {
         return stats;
     }
 
-    public static void setPlayerStats(StatsPlayer player) {
+    public void setPlayerStats(StatsPlayer player) {
         EnjinMinecraftPlugin.getInstance().getPlayerStats().put(player.getUuid().toLowerCase(), player);
     }
 }

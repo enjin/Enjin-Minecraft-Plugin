@@ -12,7 +12,7 @@ import java.util.Map;
 
 @ToString
 @EqualsAndHashCode
-public class Module {
+public class TicketModule {
     @Getter
     private List<Question> questions;
     @Getter

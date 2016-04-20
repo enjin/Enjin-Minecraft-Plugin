@@ -10,7 +10,7 @@ import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.config.EMPConfig;
-import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.tasks.ReportPublisher;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
@@ -433,6 +433,12 @@ public class CoreCommands {
     @Directive(parent = "enjin", value = "report", requireValidKey = false)
     public static void report(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+
+		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+		if (module == null) {
+			return;
+		}
+
         Date date = new Date();
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
@@ -444,8 +450,8 @@ public class CoreCommands {
 
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             Plugin permissions = null;
-            if (VaultManager.getPermission() != null) {
-                permissions = Bukkit.getPluginManager().getPlugin(VaultManager.getPermission().getName());
+            if (module.getPermission() != null) {
+                permissions = Bukkit.getPluginManager().getPlugin(module.getPermission().getName());
             }
 
             if (permissions != null) {
@@ -453,8 +459,8 @@ public class CoreCommands {
             }
 
             Plugin economy = null;
-            if (VaultManager.getEconomy() != null) {
-                economy = Bukkit.getPluginManager().getPlugin(VaultManager.getEconomy().getName());
+            if (module.getEconomy() != null) {
+                economy = Bukkit.getPluginManager().getPlugin(module.getEconomy().getName());
             }
 
             if (economy != null) {

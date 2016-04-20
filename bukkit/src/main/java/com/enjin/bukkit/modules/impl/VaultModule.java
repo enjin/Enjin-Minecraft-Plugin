@@ -1,7 +1,8 @@
-package com.enjin.bukkit.managers;
+package com.enjin.bukkit.modules.impl;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.listeners.perm.processors.PermissionsBukkitListener;
+import com.enjin.bukkit.modules.Module;
 import com.enjin.core.Enjin;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
@@ -14,25 +15,36 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 
-public class VaultManager {
+@Module(name = "Vault", hardPluginDependencies = {"Vault"})
+public class VaultModule {
+	private EnjinMinecraftPlugin plugin;
     @Getter
-    private static Permission permission = null;
+    private Permission permission = null;
     @Getter
-    private static Economy economy = null;
-    private static boolean economyCompatibilityMode = false;
+    private Economy economy = null;
+    private boolean economyCompatibilityMode = false;
 
-    public static void init(EnjinMinecraftPlugin plugin) {
-        if (isVaultEnabled()) {
-            initPermissions(plugin);
-            initEconomy(plugin);
-        } else {
-			Enjin.getLogger().warning("Couldn't find the vault plugin! Please get it from dev.bukkit.org/bukkit-plugins/vault/!");
-		}
+	public VaultModule() {
+		this.plugin = EnjinMinecraftPlugin.getInstance();
+	}
+
+    public void init() {
+		initPermissions();
+		initEconomy();
     }
 
-    private static void initEconomy(final EnjinMinecraftPlugin plugin) {
+	private void initPermissions() {
+		RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
+		if (provider != null && provider.getProvider() != null) {
+			permission = provider.getProvider();
+		} else {
+			Enjin.getLogger().info("No Vault compatible permissions plugin was found. Vault permissions will be disabled.");
+		}
+	}
+
+    private void initEconomy() {
         RegisteredServiceProvider<Economy> provider = Bukkit.getServicesManager().getRegistration(Economy.class);
-        if (provider != null) {
+        if (provider != null && provider.getProvider() != null) {
             economy = provider.getProvider();
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
@@ -42,49 +54,34 @@ public class VaultManager {
                     } catch (AbstractMethodError e) {
                         economyCompatibilityMode = true;
                         Enjin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
-                        plugin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
                     }
                 }
             });
-        }
+        } else {
+			Enjin.getLogger().info("No Vault compatible economy plugin was found. Vault economy will be disabled.");
+		}
     }
 
-    private static void initPermissions(EnjinMinecraftPlugin plugin) {
-        RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
-        if (provider == null || provider.getProvider() == null) {
-            Enjin.getLogger().warning("Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
-            Bukkit.getLogger().warning("[Enjin Minecraft Plugin] Couldn't find a vault compatible permission plugin! Please install one before using the Enjin Minecraft Plugin.");
-            return;
-        }
-        permission = provider.getProvider();
-    }
-
-    public static boolean isVaultEnabled() {
-        return Bukkit.getPluginManager().isPluginEnabled("Vault");
-    }
-
-    public static boolean isPermissionsAvailable() {
+    public boolean isPermissionsAvailable() {
         return permission != null;
     }
 
-    public static boolean isEconomyAvailable() {
+    public boolean isEconomyAvailable() {
         return economy != null;
     }
 
-    public static boolean isEconomyUpToDate() {
+    public boolean isEconomyUpToDate() {
         return !economyCompatibilityMode;
     }
 
-	public static void setEconomyStats(String uuid, String name, JSONObject stats) {
+	public void setEconomyStats(String uuid, String name, JSONObject stats) {
 		if (isEconomyAvailable()) {
-			if (VaultManager.isEconomyUpToDate()) {
+			if (isEconomyUpToDate()) {
 				OfflinePlayer player = null;
 
 				try {
 					player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-				} catch (IllegalArgumentException ignored) {
-
-				}
+				} catch (IllegalArgumentException e) {}
 
 				if (player == null || player.getName() == null || player.getName().equals("")) {
 					player = Bukkit.getOfflinePlayer(name);
@@ -105,7 +102,7 @@ public class VaultManager {
 		}
 	}
 
-	public static boolean groupExists(String group) {
+	public boolean groupExists(String group) {
 		if (isPermissionsAvailable()) {
 			String[] groups = permission.getGroups();
 			for (String g : groups) {
@@ -118,10 +115,10 @@ public class VaultManager {
 		return false;
 	}
 
-	public static Map<String, List<String>> getPlayerGroups(OfflinePlayer player) {
+	public Map<String, List<String>> getPlayerGroups(OfflinePlayer player) {
 		Map<String, List<String>> groups = new HashMap<>();
 
-		if (VaultManager.isVaultEnabled() && VaultManager.isPermissionsAvailable()) {
+		if (isPermissionsAvailable()) {
 			if (permission.hasGroupSupport()) {
 				String[] g = permission.getPlayerGroups(null, player);
 

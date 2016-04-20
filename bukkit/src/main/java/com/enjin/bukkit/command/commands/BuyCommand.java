@@ -4,7 +4,7 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.config.EMPConfig;
-import com.enjin.bukkit.managers.PurchaseManager;
+import com.enjin.bukkit.modules.impl.PurchaseModule;
 import com.enjin.bukkit.shop.RPCShopFetcher;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
@@ -123,6 +123,11 @@ public class BuyCommand {
 
     @Directive(parent = "buy", value = "item")
     public static void item(Player player, String[] args) {
+		PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+		if (module == null) {
+			return;
+		}
+
         if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
             player.sendMessage(ChatColor.RED + "The text shop has been disabled. Please use the gui to make point purchases.");
             return;
@@ -136,7 +141,7 @@ public class BuyCommand {
 
         if (args.length == 0) {
             Item item = instance.getActiveItem();
-            PurchaseManager.processItemPurchase(player, instance.getActiveShop(), item);
+            module.processItemPurchase(player, instance.getActiveShop(), item);
         } else {
             Integer index;
 
@@ -163,14 +168,19 @@ public class BuyCommand {
                 }
 
                 Item item = category.getItems().get(index - 1);
-                PurchaseManager.processItemPurchase(player, instance.getActiveShop(), item);
+                module.processItemPurchase(player, instance.getActiveShop(), item);
             }
         }
     }
 
     @Directive(parent = "buy", value = "confirm")
     public static void confirm(Player player, String[] args) {
-        PurchaseManager.confirmPurchase(player);
+		PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+		if (module == null) {
+			return;
+		}
+
+        module.confirmPurchase(player);
     }
 
     @Directive(parent = "buy", value = "shop")

@@ -7,8 +7,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.enjin.bukkit.managers.StatsManager;
-import com.enjin.bukkit.managers.VaultManager;
+import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.modules.impl.StatsModule;
+import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.util.Plugins;
 import com.enjin.bukkit.util.PrimitiveUtils;
 import lombok.Getter;
@@ -293,8 +294,9 @@ public class StatsPlayer {
 
         player.put("distance", jdistance);
 
-        if (Plugins.isEnabled("Vault")) {
-			VaultManager.setEconomyStats(getUuid(), getName(), player);
+		VaultModule vaultModule = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
+        if (vaultModule != null && vaultModule.isEconomyAvailable()) {
+			vaultModule.setEconomyStats(getUuid(), getName(), player);
         }
 
         JSONObject pveentitykills = new JSONObject();
@@ -308,7 +310,8 @@ public class StatsPlayer {
 
         player.put("pveentitykills", pveentitykills);
 
-        if (StatsManager.isMcMmoEnabled()) {
+		StatsModule statsModule = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
+        if (statsModule != null && statsModule.isMcMmoEnabled()) {
             Player bplayer = Bukkit.getPlayerExact(name);
             JSONObject mcmmoskills = new JSONObject();
             List<SkillType> skills = SkillType.NON_CHILD_SKILLS;
@@ -329,6 +332,7 @@ public class StatsPlayer {
 
             player.put("mcmmo", mcmmoskills);
         }
+
         if (customstats.size() > 0) {
             JSONObject jcustomstats = new JSONObject();
             Iterator<Entry<String, ConcurrentHashMap<String, StatValue>>> statsiterator = customstats.entrySet().iterator();

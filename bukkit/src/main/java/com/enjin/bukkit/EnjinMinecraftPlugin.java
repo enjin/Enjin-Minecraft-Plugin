@@ -12,7 +12,8 @@ import com.enjin.bukkit.config.ExecutedCommandsConfig;
 import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.listeners.perm.PermissionListener;
 import com.enjin.bukkit.listeners.perm.processors.*;
-import com.enjin.bukkit.managers.*;
+import com.enjin.bukkit.modules.ModuleManager;
+import com.enjin.bukkit.modules.impl.*;
 import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.Plugins;
 import com.enjin.bukkit.util.io.EnjinErrorReport;
@@ -91,10 +92,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
     private PermissionListener permissionListener;
 
-    @Getter
-    private Map<String, List<Object[]>> playerVotes = new ConcurrentHashMap<>();
     @Getter @Setter
     private EnjinErrorReport lastError = null;
+
+	@Getter
+	private ModuleManager moduleManager = null;
 
     @Override
     public void debug(String s) {
@@ -136,6 +138,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
 			menuAPI = new MenuAPI(this);
 
+			moduleManager = new ModuleManager(this);
+
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true);
                 if (data == null) {
@@ -169,8 +173,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
 
         debug("Init gui api done.");
-        initManagers();
-        debug("Init managers done.");
+        moduleManager.init();
+        debug("Init modules done.");
         initPlugins();
         debug("Init plugins done.");
 
@@ -255,30 +259,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
     }
 
-    private void initManagers() {
-        Enjin.getLogger().debug("Initializing Purchase Manager");
-        PurchaseManager.init();
-		Enjin.getLogger().debug("Initializing Ticket Manager");
-		TicketManager.init(this);
-		Enjin.getLogger().debug("Initializing Stats Manager");
-		StatsManager.init(this);
-		Enjin.getLogger().debug("Initializing Sign Manager");
-		StatSignManager.init(this);
-
-		if (Plugins.isEnabled("Vault")) {
-			Enjin.getLogger().debug("Initializing Vault Manager");
-			VaultManager.init(this);
-		}
-
-		if (Plugins.isEnabled("Votifier")) {
-			Enjin.getLogger().debug("Initializing Votifier Manager");
-			VotifierManager.init(this);
-		}
-    }
-
     private void disableManagers() {
-        StatsManager.disable(this);
-        StatSignManager.disable();
+		StatsModule stats = moduleManager.getModule(StatsModule.class);
+		SignStatsModule signStats = moduleManager.getModule(SignStatsModule.class);
+
+        if (stats != null) {
+			stats.disable();
+		}
+
+		if (signStats != null) {
+			signStats.disable();
+		}
     }
 
     public void initTasks() {
