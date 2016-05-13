@@ -56,6 +56,7 @@ public class VotifierManager {
 		}
 
 		playerVotes.get(listname).add(new Object[]{userid, System.currentTimeMillis() / 1000});
+		Enjin.getPlugin().debug("Vote successfully stored for " +vote.getUsername() + " using " + vote.getServiceName());
 	}
 
 	public static void init(EnjinMinecraftPlugin plugin) {
@@ -64,6 +65,7 @@ public class VotifierManager {
 			if (optionalContainer.isPresent()) {
 				Enjin.getLogger().info(optionalContainer.get().getName() + " detected, listening for votes.");
 				Sponge.getEventManager().registerListeners(plugin, new VotifierManager());
+				enabled = true;
 				return;
 			}
 		});

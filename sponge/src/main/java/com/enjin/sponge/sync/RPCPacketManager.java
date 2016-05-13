@@ -173,6 +173,7 @@ public class RPCPacketManager implements Runnable {
 
 	private Map<String, List<Object[]>> getVotes() {
 		Map<String, List<Object[]>> votes = null;
+		Enjin.getLogger().debug("Votifier Enabled: " + VotifierManager.isEnabled() + ", Pending Votes: " + !VotifierManager.getPlayerVotes().isEmpty());
 		if (VotifierManager.isEnabled() && !VotifierManager.getPlayerVotes().isEmpty()) {
 			votes = new HashMap<>(VotifierManager.getPlayerVotes());
 			VotifierManager.getPlayerVotes().clear();
