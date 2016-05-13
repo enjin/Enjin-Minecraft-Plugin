@@ -255,7 +255,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
 
         if (Enjin.getConfiguration(EMPConfig.class).getBuyCommand() != null && !Enjin.getConfiguration(EMPConfig.class).getBuyCommand().isEmpty()) {
-            CommandBank.registerCommandAlias("buy", Enjin.getConfiguration(EMPConfig.class).getBuyCommand());
+            CommandBank.replaceCommandWithAlias("buy", Enjin.getConfiguration(EMPConfig.class).getBuyCommand());
         }
     }
 

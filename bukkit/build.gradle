@@ -8,7 +8,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-version = '3.0.14'
+version = '3.0.15'
 
 jar {
     archiveName = 'EnjinMinecraftPlugin.jar'

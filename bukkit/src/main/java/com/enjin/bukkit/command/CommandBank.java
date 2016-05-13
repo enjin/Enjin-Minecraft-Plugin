@@ -153,6 +153,11 @@ public class CommandBank implements Listener {
         }
     }
 
+	public static void replaceCommandWithAlias(String command, String ... alias) {
+		registerCommandAlias(command, alias);
+		nodes.remove(command);
+	}
+
     public static void registerDirectiveAlias(String command, String directive, String ... alias) {
         CommandNode node = nodes.get(command.toLowerCase());
         if (node != null) {

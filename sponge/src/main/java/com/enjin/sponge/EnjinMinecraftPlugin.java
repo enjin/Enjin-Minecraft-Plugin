@@ -193,6 +193,10 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
 				StatCommands.class, SupportCommands.class, ConfigCommand.class, HeadCommands.class,
 				VoteCommands.class);
+
+		if (Enjin.getConfiguration(EMPConfig.class).getBuyCommand() != null && !Enjin.getConfiguration(EMPConfig.class).getBuyCommand().isEmpty()) {
+			CommandBank.replaceCommandWithAlias("buy", Enjin.getConfiguration(EMPConfig.class).getBuyCommand());
+		}
     }
 
 	private void initManagers() {
