@@ -109,29 +109,39 @@ public class SignStatsModule {
             } else {
                 update(data);
             }
-        }
+        } else {
+			Enjin.getLogger().debug("Heads configuration file is null!");
+		}
     }
 
     public void remove(SerializableLocation location) {
-        boolean removed = false;
-        for (SignData data : new ArrayList<>(config.getSigns())) {
-            if (data.getLocation().equals(location)) {
-                removed = config.getSigns().remove(data);
-            }
-        }
+        if (config != null) {
+			boolean removed = false;
+			for (SignData data : new ArrayList<>(config.getSigns())) {
+				if (data.getLocation().equals(location)) {
+					removed = config.getSigns().remove(data);
+				}
+			}
 
-        if (config != null && removed) {
-            config.save(file);
-            updateItems();
-        }
+			if (removed) {
+				config.save(file);
+				updateItems();
+			}
+		} else {
+			Enjin.getLogger().debug("Heads configuration file is null!");
+		}
     }
 
     public void update() {
-		SignStatsModule module = plugin.getModuleManager().getModule(SignStatsModule.class);
-		if (module != null) {
-			for (SignData data : new ArrayList<>(config.getSigns())) {
-				module.update(data);
+		if (config != null) {
+			SignStatsModule module = plugin.getModuleManager().getModule(SignStatsModule.class);
+			if (module != null) {
+				for (SignData data : new ArrayList<>(config.getSigns())) {
+					module.update(data);
+				}
 			}
+		} else {
+			Enjin.getLogger().debug("Heads configuration file is null!");
 		}
     }
 
