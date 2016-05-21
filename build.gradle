@@ -60,6 +60,7 @@ allprojects {
         maven { url 'https://oss.sonatype.org/content/groups/public/' }
         maven { url 'https://hub.spigotmc.org/nexus/content/groups/public/' }
         maven { url 'http://repo.stealthyone.com/content/groups/public' }
+        maven { url 'http://repo.spongepowered.org/maven' }
     }
 
     dependencies {
