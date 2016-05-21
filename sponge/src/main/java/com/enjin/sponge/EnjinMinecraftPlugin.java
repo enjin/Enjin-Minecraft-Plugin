@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "com.enjin.sponge", name = "EnjinMinecraftPlugin", description = "Enjin Minecraft Plugin for Sponge", version = "@version@")
+@Plugin(id = "com.enjin.sponge")
 public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
