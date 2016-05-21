@@ -71,7 +71,7 @@ public class StatSignManager {
 
 		if (delayed) {
 			Sponge.getScheduler().createTaskBuilder().async()
-					.delay(60, TimeUnit.MINUTES)
+					.delay(60, TimeUnit.SECONDS)
 					.execute(runnable)
 					.submit(Enjin.getPlugin());
 		} else {
