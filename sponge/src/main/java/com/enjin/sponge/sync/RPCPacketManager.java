@@ -16,6 +16,7 @@ import com.enjin.sponge.listeners.ConnectionListener;
 import com.enjin.sponge.managers.VotifierManager;
 import com.enjin.sponge.stats.WriteStats;
 import com.enjin.sponge.sync.data.*;
+import com.enjin.sponge.tasks.TPSMonitor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
@@ -51,7 +52,7 @@ public class RPCPacketManager implements Runnable {
                 getOnlineCount(),
                 getOnlinePlayers(),
                 getPlayerGroups(),
-                null,
+				TPSMonitor.getInstance().getLastTPSMeasurement(),
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
 				getVotes(),
                 stats);
