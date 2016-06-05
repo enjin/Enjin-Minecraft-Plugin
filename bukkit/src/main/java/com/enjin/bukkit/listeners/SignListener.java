@@ -4,6 +4,7 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.statsigns.SignData;
 import com.enjin.bukkit.statsigns.SignType;
 import com.enjin.bukkit.modules.impl.SignStatsModule;
+import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.bukkit.util.serialization.SerializableLocation;
 import com.google.common.base.Optional;
 import org.bukkit.ChatColor;
@@ -27,7 +28,7 @@ public class SignListener implements Listener {
 				Optional<Integer> itemId = Optional.absent();
 
 				if (index.isPresent()) {
-					if (event.getPlayer().hasPermission("enjin.sign.set")) {
+					if (PermissionsUtil.hasPermission(event.getPlayer(), "enjin.sign.set")) {
 						if (!type.getSupportedSubTypes().isEmpty()) {
 							String line2 = event.getLine(1);
 
@@ -89,7 +90,7 @@ public class SignListener implements Listener {
 
 				for (SignData data : new ArrayList<>(module.getConfig().getSigns())) {
 					if (data.getLocation().equals(location)) {
-						if (!event.getPlayer().hasPermission("enjin.sign.remove")) {
+						if (!PermissionsUtil.hasPermission(event.getPlayer(), "enjin.sign.remove")) {
 							event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to remove Enjin stat signs.");
 							event.setCancelled(true);
 						} else {

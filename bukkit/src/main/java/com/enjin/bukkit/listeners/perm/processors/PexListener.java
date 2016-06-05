@@ -1,6 +1,7 @@
 package com.enjin.bukkit.listeners.perm.processors;
 
 import com.enjin.bukkit.listeners.perm.PermissionListener;
+import com.enjin.bukkit.util.PermissionsUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -32,7 +33,7 @@ public class PexListener extends PermissionListener {
         //Make sure the user has permissions to run the value, otherwise we are just wasting time...
         if (command.toLowerCase().startsWith("pex group ")) {
             String[] args = command.split(" ");
-            if (args.length > 5 && sender.hasPermission("permissions.manage.membership." + args[2])) {
+            if (args.length > 5 && PermissionsUtil.hasPermission(sender, "permissions.manage.membership." + args[2])) {
                 if (args[3].equalsIgnoreCase("user") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
                     //This value accepts csv lists of players
                     if (args[5].contains(",")) {
@@ -53,7 +54,7 @@ public class PexListener extends PermissionListener {
             }
         } else if (command.toLowerCase().startsWith("pex user ")) {
             String[] args = command.split(" ");
-            if (args.length > 5 && sender.hasPermission("permissions.manage.membership." + args[5])) {
+            if (args.length > 5 && PermissionsUtil.hasPermission(sender, "permissions.manage.membership." + args[5])) {
                 if (args[3].equalsIgnoreCase("group") && (args[4].equalsIgnoreCase("add") || args[4].equalsIgnoreCase("remove") || args[4].equalsIgnoreCase("set"))) {
                     String ep = args[2];
                     OfflinePlayer op = Bukkit.getOfflinePlayer(ep);

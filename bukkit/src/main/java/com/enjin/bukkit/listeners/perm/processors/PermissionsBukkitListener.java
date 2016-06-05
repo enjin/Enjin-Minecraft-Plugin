@@ -1,6 +1,7 @@
 package com.enjin.bukkit.listeners.perm.processors;
 
 import com.enjin.bukkit.listeners.perm.PermissionListener;
+import com.enjin.bukkit.util.PermissionsUtil;
 import com.google.common.collect.Lists;
 import com.platymuus.bukkit.permissions.Group;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
@@ -17,16 +18,16 @@ public class PermissionsBukkitListener extends PermissionListener {
         if (args.length > 3 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("perms") || args[0].equalsIgnoreCase("permissions"))) {
             //Make sure the user has permissions to run the value, otherwise we are just wasting time...
             if (args[1].equalsIgnoreCase("setrank") || args[1].equalsIgnoreCase("rank")) {
-                if (args.length >= 4 && sender.hasPermission("permissions.setrank." + args[3])) {
+                if (args.length >= 4 && PermissionsUtil.hasPermission(sender, "permissions.setrank." + args[3])) {
                     String ep = args[2];
                     OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                     update(op);
                 }
             } else if (args[1].equalsIgnoreCase("player")) {
                 if (args.length >= 5) {
-                    if ((args[2].equalsIgnoreCase("setgroup") && sender.hasPermission("permissions.player.setgroup")) ||
-                            (args[2].equalsIgnoreCase("addgroup") && sender.hasPermission("permissions.player.addgroup")) ||
-                            (args[2].equalsIgnoreCase("removegroup") && sender.hasPermission("permissions.player.removegroup"))) {
+                    if ((args[2].equalsIgnoreCase("setgroup") && PermissionsUtil.hasPermission(sender, "permissions.player.setgroup")) ||
+                            (args[2].equalsIgnoreCase("addgroup") && PermissionsUtil.hasPermission(sender, "permissions.player.addgroup")) ||
+                            (args[2].equalsIgnoreCase("removegroup") && PermissionsUtil.hasPermission(sender, "permissions.player.removegroup"))) {
                         String ep = args[3];
                         OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                         update(op);

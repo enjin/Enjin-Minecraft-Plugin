@@ -1,6 +1,7 @@
 package com.enjin.bukkit.listeners.perm.processors;
 
 import com.enjin.bukkit.listeners.perm.PermissionListener;
+import com.enjin.bukkit.util.PermissionsUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ public class BPermissionsListener extends PermissionListener {
 
     public void processCommand(CommandSender sender, String command, Event event) {
         //Make sure the user has permissions to run the value, otherwise we are just wasting time...
-        if (sender.hasPermission("bPermissions.admin") && command.toLowerCase().startsWith("user ")) {
+        if (PermissionsUtil.hasPermission(sender, "bPermissions.admin") && command.toLowerCase().startsWith("user ")) {
             String[] args = command.split(" ");
             update(sender, args);
         }

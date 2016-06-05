@@ -2,6 +2,7 @@ package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.modules.impl.VaultModule;
+import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.bukkit.util.Plugins;
 import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
@@ -30,29 +31,29 @@ public class ConnectionListener implements Listener {
         Player p = e.getPlayer();
         updatePlayerRanks(p);
 
-        if (!plugin.getNewVersion().equals("") && p.hasPermission("enjin.notify.update")) {
+        if (!plugin.getNewVersion().equals("") && PermissionsUtil.hasPermission(p, "enjin.notify.update")) {
             p.sendMessage(ChatColor.GREEN + "EnjinMinecraftplugin was updated to version " + plugin.getNewVersion() + ". Please restart your server.");
         }
 
-        if (plugin.isUpdateFailed() && p.hasPermission("enjin.notify.failedupdate")) {
+        if (plugin.isUpdateFailed() && PermissionsUtil.hasPermission(p, "enjin.notify.failedupdate")) {
             p.sendMessage(ChatColor.DARK_RED + "EnjinMinecraftPlugin failed to update to the newest version. Please download it manually.");
         }
 
-        if (plugin.isAuthKeyInvalid() && p.hasPermission("enjin.notify.invalidauthkey")) {
+        if (plugin.isAuthKeyInvalid() && PermissionsUtil.hasPermission(p, "enjin.notify.invalidauthkey")) {
             p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Auth key is invalid. Please generate a new one.");
         }
 
-        if (plugin.isUnableToContactEnjin() && p.hasPermission("enjin.notify.connectionstatus")) {
+        if (plugin.isUnableToContactEnjin() && PermissionsUtil.hasPermission(p, "enjin.notify.connectionstatus")) {
             p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Unable to connect to enjin, please check your settings.");
             p.sendMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin log");
         }
 
-        if (plugin.isPermissionsNotWorking() && p.hasPermission("enjin.notify.permissionsnotworking")) {
+        if (plugin.isPermissionsNotWorking() && PermissionsUtil.hasPermission(p, "enjin.notify.permissionsnotworking")) {
             p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");
         }
 
 		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
-        if (module != null && module.isEconomyAvailable() && !module.isEconomyUpToDate() && p.hasPermission("enjin.notify.econoutdated")) {
+        if (module != null && module.isEconomyAvailable() && !module.isEconomyUpToDate() && PermissionsUtil.hasPermission(p, "enjin.notify.econoutdated")) {
             p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + module.getEconomy().getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
         }
     }

@@ -4,6 +4,7 @@ import Tux2.TuxTwoLib.TuxTwoPlayer;
 import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.tasks.TPSMonitor;
+import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.bukkit.util.io.EnjinConsole;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Command;
@@ -48,76 +49,76 @@ public class CoreCommands {
     public static void enjin(CommandSender sender, String[] args) {
         sender.sendMessage(EnjinConsole.header());
 
-        if (sender.hasPermission("enjin.setkey")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.setkey")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin key <KEY>: " + ChatColor.RESET + "Enter the secret key from your " + ChatColor.GRAY + "Admin - Games - Minecraft - Enjin Plugin " + ChatColor.RESET + "page.");
         }
 
-        if (sender.hasPermission("enjin.broadcast")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.broadcast")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin broadcast <MESSAGE>: " + ChatColor.RESET + "Broadcast a message to all players.");
         }
 
-        if (sender.hasPermission("enjin.push")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.push")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin push: " + ChatColor.RESET + "Sync your website tags with the current ranks.");
         }
 
-        if (sender.hasPermission("enjin.lag")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.lag")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin lag: " + ChatColor.RESET + "Display TPS average and memory usage.");
         }
 
-        if (sender.hasPermission("enjin.debug")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.debug")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin debug: " + ChatColor.RESET + "Enable debug mode and display extra information in console.");
         }
 
-        if (sender.hasPermission("enjin.report")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.report")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin report: " + ChatColor.RESET + "Generate a report file that you can send to Enjin Support for troubleshooting.");
         }
 
-        if (sender.hasPermission("enjin.sign.set")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.sign.set")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin heads: " + ChatColor.RESET + "Shows in game help for the heads and sign stats part of the plugin.");
         }
 
-        if (sender.hasPermission("enjin.tags.view")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.tags.view")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin tags <player>: " + ChatColor.RESET + "Shows the tags on the website for the player.");
         }
 
         // Points commands
-        if (sender.hasPermission("enjin.points.getself")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.points.getself")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin points: " + ChatColor.RESET + "Shows your current website points.");
         }
 
-        if (sender.hasPermission("enjin.points.getothers")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.points.getothers")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin points <NAME>: " + ChatColor.RESET + "Shows another player's current website points.");
         }
 
-        if (sender.hasPermission("enjin.points.add")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.points.add")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin addpoints <NAME> <AMOUNT>: " + ChatColor.RESET + "Add points to a player.");
         }
 
-        if (sender.hasPermission("enjin.points.remove")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.points.remove")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin removepoints <NAME> <AMOUNT>: " + ChatColor.RESET + "Remove points from a player.");
         }
 
-        if (sender.hasPermission("enjin.points.set")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.points.set")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin setpoints <NAME> <AMOUNT>: " + ChatColor.RESET + "Set a player's total points.");
         }
 
-        if (sender.hasPermission("enjin.support")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.support")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin support: " + ChatColor.RESET + "Starts ticket session or informs player of available modules.");
         }
 
-        if (sender.hasPermission("enjin.ticket.self")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.ticket.self")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin ticket: " + ChatColor.RESET + "Sends player a list of their tickets.");
         }
 
-        if (sender.hasPermission("enjin.ticket.open")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.ticket.open")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin openticket: " + ChatColor.RESET + "Sends player a list of open tickets.");
         }
 
-        if (sender.hasPermission("enjin.ticket.reply")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.ticket.reply")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin reply <module #> <ticket id> <message>: " + ChatColor.RESET + "Sends a reply to a ticket.");
         }
 
-        if (sender.hasPermission("enjin.ticket.status")) {
+        if (PermissionsUtil.hasPermission(sender, "enjin.ticket.status")) {
             sender.sendMessage(ChatColor.GOLD + "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: " + ChatColor.RESET + "Sets the status of a ticket.");
         }
 

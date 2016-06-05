@@ -1,6 +1,7 @@
 package com.enjin.bukkit.command;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.core.Enjin;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -33,7 +34,7 @@ public class DirectiveNode {
             return;
         }
 
-        if (!sender.isOp() && permission != null && !permission.value().equals("") && !sender.hasPermission(permission.value())) {
+        if (!sender.isOp() && permission != null && !permission.value().equals("") && !PermissionsUtil.hasPermission(sender, permission.value())) {
             sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + permission.value() + ChatColor.RED + "\" or OP to run that directive.");
             return;
         }

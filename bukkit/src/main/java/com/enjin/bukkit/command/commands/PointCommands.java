@@ -3,6 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PointService;
@@ -144,7 +145,7 @@ public class PointCommands {
 
             name = sender.getName();
         } else {
-            if (!sender.isOp() && !sender.hasPermission("enjin.points.getothers")) {
+            if (!sender.isOp() && !PermissionsUtil.hasPermission(sender, "enjin.points.getothers")) {
                 sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + "enjin.points.getothers" + ChatColor.RED + "\" or OP to run that directive.");
                 return;
             }

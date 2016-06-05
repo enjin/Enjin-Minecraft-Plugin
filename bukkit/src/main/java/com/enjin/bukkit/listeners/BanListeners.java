@@ -2,6 +2,7 @@ package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.tasks.BanLister;
+import com.enjin.bukkit.util.PermissionsUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -43,7 +44,7 @@ public class BanListeners implements Listener {
             return;
         }
 
-        if (event.getMessage().toLowerCase().startsWith("/ban") && event.getPlayer().hasPermission("bukkit.permission.ban.player")) {
+        if (event.getMessage().toLowerCase().startsWith("/ban") && PermissionsUtil.hasPermission(event.getPlayer(), "bukkit.permission.ban.player")) {
             String[] args = event.getMessage().split(" ");
 
             if (args.length > 1) {
@@ -51,7 +52,7 @@ public class BanListeners implements Listener {
                 BanLister.getInstance().addBannedPlayer(player);
                 plugin.getBannedPlayers().put(args[1].toLowerCase(), event.getPlayer().getName());
             }
-        } else if (event.getMessage().toLowerCase().startsWith("/pardon") && event.getPlayer().hasPermission("bukkit.permission.unban.player")) {
+        } else if (event.getMessage().toLowerCase().startsWith("/pardon") && PermissionsUtil.hasPermission(event.getPlayer(), "bukkit.permission.unban.player")) {
             String[] args = event.getMessage().split(" ");
 
             if (args.length > 1) {

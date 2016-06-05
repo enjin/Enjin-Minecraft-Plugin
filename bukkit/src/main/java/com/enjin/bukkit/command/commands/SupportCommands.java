@@ -6,6 +6,7 @@ import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.modules.impl.SupportModule;
 import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketViewBuilder;
+import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
@@ -134,7 +135,7 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, sender.hasPermission("enjin.ticket.private"))) {
+                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, PermissionsUtil.hasPermission(sender, "enjin.ticket.private"))) {
                                     message.send(sender);
                                 }
                             } else {
@@ -192,7 +193,7 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, sender.hasPermission("enjin.ticket.private"))) {
+                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, PermissionsUtil.hasPermission(sender, "enjin.ticket.private"))) {
                                     message.send(sender);
                                 }
                             } else {
