@@ -16,7 +16,7 @@ public class JsonConfig {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static <T extends JsonConfig> T load(File file, Class<T> clazz) {
-        JsonConfig config;
+        JsonConfig config = null;
 
         try {
             try {
@@ -30,7 +30,7 @@ public class JsonConfig {
                 return clazz.newInstance();
             }
         } catch (ReflectiveOperationException e) {
-            return null;
+            Enjin.getLogger().warning("There was an error while loading the " + clazz.getSimpleName() + " config: " + e.getMessage());
         }
 
         return config == null ? null : clazz.cast(config);
@@ -48,6 +48,7 @@ public class JsonConfig {
             fw.write(gson.toJson(this));
             fw.close();
         } catch (IOException e) {
+            Enjin.getLogger().warning("Could not save the config to " + file.getName());
             return false;
         }
 
@@ -59,7 +60,7 @@ public class JsonConfig {
         JsonElement updates = gson.toJsonTree(data);
 
         if (!old.isJsonObject() && !updates.isJsonObject()) {
-            Enjin.getPlugin().debug("Config or data is not a json object.");
+            Enjin.getLogger().warning("Could not update the config at " + file.getName() + " as it or the updated data is not an object.");
             return false;
         }
 
@@ -73,7 +74,7 @@ public class JsonConfig {
             fw.write(gson.toJson(oldObj));
             fw.close();
         } catch (IOException e) {
-            Enjin.getPlugin().debug("Could not write the config.");
+            Enjin.getLogger().warning("Could not save the updated config to " + file.getName());
             return false;
         }
 
