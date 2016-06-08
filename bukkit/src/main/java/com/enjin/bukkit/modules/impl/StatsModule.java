@@ -37,6 +37,7 @@ public class StatsModule {
 
 	public StatsModule() {
 		plugin = EnjinMinecraftPlugin.getInstance();
+        init();
 	}
 
     public void init() {

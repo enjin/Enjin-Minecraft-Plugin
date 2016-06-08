@@ -27,6 +27,7 @@ public class PurchaseModule {
 
 	public PurchaseModule() {
 		this.plugin = EnjinMinecraftPlugin.getInstance();
+        init();
 	}
 
     public void init() {

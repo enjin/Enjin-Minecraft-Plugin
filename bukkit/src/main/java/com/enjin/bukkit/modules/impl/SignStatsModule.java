@@ -40,6 +40,7 @@ public class SignStatsModule {
 
 	public SignStatsModule() {
 		this.plugin = EnjinMinecraftPlugin.getInstance();
+        init();
 	}
 
     public void init() {

@@ -26,6 +26,7 @@ public class VaultModule {
 
 	public VaultModule() {
 		this.plugin = EnjinMinecraftPlugin.getInstance();
+		init();
 	}
 
     public void init() {
