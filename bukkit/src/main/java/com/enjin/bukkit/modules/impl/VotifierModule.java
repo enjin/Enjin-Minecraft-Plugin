@@ -19,9 +19,11 @@ public class VotifierModule {
 
 	public VotifierModule() {
 		this.plugin = EnjinMinecraftPlugin.getInstance();
+        init(plugin);
 	}
 
     public void init(EnjinMinecraftPlugin plugin) {
+		Enjin.getLogger().debug("Registering vote listener!");
 		Bukkit.getPluginManager().registerEvents(new VotifierListener(plugin), plugin);
     }
 }
