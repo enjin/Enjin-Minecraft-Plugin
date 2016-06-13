@@ -4,6 +4,7 @@ import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.permissions.PermissionHandler;
+import com.enjin.sponge.permissions.handlers.PermissionManagerHandler;
 import lombok.Getter;
 import ninja.leaping.permissionsex.data.SubjectDataReference;
 import ninja.leaping.permissionsex.sponge.PEXHandler;
@@ -48,6 +49,8 @@ public class ConnectionListener {
 		final PluginContainer container = registration.getPlugin();
 		if (container.getId().equals("ninja.leaping.permissionsex")) {
 			permissionHandler = new PEXHandler(registration.getProvider());
+		} else if (container.getId().equalsIgnoreCase("permissionmanager")) {
+			permissionHandler = new PermissionManagerHandler(registration.getProvider());
 		}
 	}
 

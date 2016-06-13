@@ -23,11 +23,14 @@ public class StatsManager {
 	private static File statFile;
 
     public static void init(EnjinMinecraftPlugin plugin) {
+        int i = 1;
         statFile = new File(plugin.getConfigDir(), "enjin-stats.json");
         try {
             if (statFile.exists()) {
                 String content = FileUtil.readFile(statFile, Charset.forName("UTF-8"));
-                StatsUtils.parseStats(content);
+                if (content != null && !content.isEmpty()) {
+                    StatsUtils.parseStats(content);
+                }
             } else {
 				statFile.createNewFile();
             }
