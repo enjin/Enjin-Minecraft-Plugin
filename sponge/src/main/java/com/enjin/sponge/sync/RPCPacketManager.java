@@ -35,12 +35,16 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
+		Enjin.getLogger().debug("Syncing...");
 		String stats = null;
-		if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
-			stats = getStats();
-			nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
-		}
+//		if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
+//			Enjin.getLogger().debug("Collecting stats...");
+//			stats = getStats();
+//			nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+//			Enjin.getLogger().debug("Stats collected...");
+//		}
 
+		Enjin.getLogger().debug("Constructing status...");
         Status status = new Status(System.getProperty("java.version"),
                 Sponge.getPlatform().getMinecraftVersion().getName(),
                 getPlugins(),
@@ -57,13 +61,17 @@ public class RPCPacketManager implements Runnable {
 				getVotes(),
                 stats);
 
+		Enjin.getLogger().debug("Fetching service...");
         PluginService service = EnjinServices.getService(PluginService.class);
+		Enjin.getLogger().debug("Sending sync request...");
         RPCData<SyncResponse> data = service.sync(status);
 
         if (data == null) {
+			Enjin.getLogger().debug("Sync data is null");
             return;
         }
 
+		Enjin.getLogger().debug("Sync data received...");
         if (data.getError() != null) {
             Enjin.getLogger().warning(data.getError().getMessage());
         } else {

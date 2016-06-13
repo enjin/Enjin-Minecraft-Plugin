@@ -36,6 +36,7 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
@@ -47,7 +48,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "com.enjin.sponge")
+@Plugin(id = "com.enjin.sponge", dependencies = {@Dependency(id = "ninja.leaping.permissionsex", optional = true),
+        @Dependency(id = "permissionmanager", optional = true),
+        @Dependency(id = "com.vexsoftware", optional = true),
+        @Dependency(id = "nuvotifier", optional = true)})
 public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
@@ -203,7 +207,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 	private void initManagers() {
 		Enjin.getLogger().info("Initializing EMP Managers");
 		PurchaseManager.init();
-		StatsManager.init(this);
+//		StatsManager.init(this);
 		StatSignManager.init(this);
 		VotifierManager.init(this);
 		TicketManager.init(this);
@@ -220,15 +224,11 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
             stopTasks();
         }
 
-        syncTask = game.getScheduler().createTaskBuilder()
-                .execute(new RPCPacketManager(this))
-                .async().interval(60, TimeUnit.SECONDS)
-                .submit(this);
+        Enjin.getLogger().debug("Registering Sync Task");
+        async.scheduleAtFixedRate(new RPCPacketManager(this), 0, 60, TimeUnit.SECONDS).getTask();
 
-		game.getScheduler().createTaskBuilder()
-				.execute(new TPSMonitor())
-				.async().interval(2, TimeUnit.SECONDS)
-				.submit(this);
+        Enjin.getLogger().debug("Registering TPS Task");
+        async.scheduleAtFixedRate(new TPSMonitor(), 0, 2, TimeUnit.SECONDS);
     }
 
 	public void disable() {

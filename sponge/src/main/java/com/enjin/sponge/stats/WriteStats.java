@@ -47,14 +47,19 @@ public class WriteStats {
     public String getStatsJSON() {
 		EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
+        Enjin.getLogger().debug("Getting serialized server stats");
         JSONObject stats = plugin.getServerStats().getSerialized();
+        Enjin.getLogger().debug("Creating players array");
         JSONArray players = new JSONArray();
 
+        Enjin.getLogger().debug("Getting all serialized player stats");
         for (Map.Entry<String, StatsPlayer> player : plugin.getPlayerStats().entrySet()) {
             players.add(player.getValue().getSerialized());
         }
 
+        Enjin.getLogger().debug("Adding players to stats");
         stats.put("players", players);
+        Enjin.getLogger().debug("Returning as JSON string");
         return JSONValue.toJSONString(stats);
     }
 

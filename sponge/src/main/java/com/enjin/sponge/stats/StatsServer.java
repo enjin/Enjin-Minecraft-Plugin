@@ -85,8 +85,8 @@ public class StatsServer {
 			for (World world : worlds) {
                 totalentities += world.getEntities().size();
             }
-        } catch (Exception ignored) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         serverbuilder.put("totalentities", new Integer(totalentities));
         Runtime runtime = Runtime.getRuntime();
