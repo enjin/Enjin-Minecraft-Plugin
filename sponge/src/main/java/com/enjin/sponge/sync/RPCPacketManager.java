@@ -35,7 +35,6 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
-		Enjin.getLogger().info("Test");
 		String stats = null;
 		if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
 			stats = getStats();
