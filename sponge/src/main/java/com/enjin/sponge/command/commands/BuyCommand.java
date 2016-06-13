@@ -40,10 +40,10 @@ public class BuyCommand {
             fetchShop(player);
         } else {
             if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
-                //Menu menu = ShopListener.getGuiInstances().containsKey(player.getUniqueId()) ? ShopListener.getGuiInstances().get(player.getUniqueId()) : new ShopList(player);
-                //menu.openMenu(player);
-
-                return;
+//                Menu menu = ShopListener.getGuiInstances().containsKey(player.getUniqueId()) ? ShopListener.getGuiInstances().get(player.getUniqueId()) : new ShopList(player);
+//                menu.openMenu(player);
+//
+//                return;
             }
 
             PlayerShopInstance instance = instances.get(player.getUniqueId());
@@ -122,8 +122,8 @@ public class BuyCommand {
     @Directive(parent = "buy", value = "item")
     public static void item(Player player, String[] args) {
         if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
-            player.sendMessage(Text.of(TextColors.RED, "The text shop has been disabled. Please use the gui to make point purchases."));
-            return;
+//            player.sendMessage(Text.of(TextColors.RED, "The text shop has been disabled. Please use the gui to make point purchases."));
+//            return;
         }
 
         PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
@@ -188,10 +188,10 @@ public class BuyCommand {
         }
 
         if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
-            //Menu menu = new ShopList(player);
-            //menu.openMenu(player);
-
-            return;
+//            Menu menu = new ShopList(player);
+//            menu.openMenu(player);
+//
+//            return;
         }
 
         PlayerShopInstance instance = instances.get(player.getUniqueId());
