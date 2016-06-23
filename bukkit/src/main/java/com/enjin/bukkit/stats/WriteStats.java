@@ -18,7 +18,7 @@ public class WriteStats {
     }
 
     public boolean write(String file) {
-        File f = new File(file);
+        File f = new File(EnjinMinecraftPlugin.getInstance().getDataFolder(), file);
         if (!f.exists()) {
             if (!f.getParentFile().exists()) {
                 f.mkdirs();
