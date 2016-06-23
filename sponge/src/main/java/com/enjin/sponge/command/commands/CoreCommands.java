@@ -163,8 +163,14 @@ public class CoreCommands {
 		}
 
 		Player player = Sponge.getServer().getPlayer(args[0]).get();
+		for (Player p : Sponge.getServer().getOnlinePlayers()) {
+			if (p.getName().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().replace("-", "").equals(args[0])) {
+				player = p;
+			}
+		}
+
 		if (player == null || !player.isOnline()) {
-			sender.sendMessage(Text.of(TextColors.RED, "That player isn't online at the moment."));
+			sender.sendMessage(Text.of(TextColors.RED, args[0] + " isn't online at the moment."));
 			return;
 		}
 

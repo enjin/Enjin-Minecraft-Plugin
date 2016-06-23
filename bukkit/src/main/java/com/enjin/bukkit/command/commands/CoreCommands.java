@@ -337,12 +337,18 @@ public class CoreCommands {
             return;
         }
 
-        Player player = Bukkit.getPlayer(args[0]);
-        if (player == null) {
+        Player player = null;
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getName().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().replace("-", "").equals(args[0])) {
+                player = p;
+            }
+        }
+
+        if (player == null || !player.isOnline()) {
             if (sender instanceof Player) {
-                sender.sendMessage(ChatColor.RED + "That player isn't on the server at the moment.");
+                sender.sendMessage(ChatColor.RED + args[0] + " isn't online at the moment.");
             } else {
-                Enjin.getLogger().info(ChatColor.RED + "That player isn't on the server at the moment.");
+                Enjin.getLogger().info(ChatColor.RED + args[0] + " isn't online at the moment.");
             }
 
             return;
