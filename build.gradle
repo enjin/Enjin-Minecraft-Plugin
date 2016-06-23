@@ -43,7 +43,7 @@ allprojects {
         log4j = '2.0-beta9'
         jsonrpc2 = '1.15'
         bukkit = '1.9-R0.1-SNAPSHOT'
-        fanciful = '0.3.3-SNAPSHOT'
+        fanciful = '0.3.5-SNAPSHOT'
         json_simple = '1.1'
         bungeecord = '1.9-SNAPSHOT'
         redis_bungee = '0.3.9-SNAPSHOT'
