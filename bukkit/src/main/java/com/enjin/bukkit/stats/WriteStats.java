@@ -11,7 +11,7 @@ import org.json.simple.JSONValue;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 
 public class WriteStats {
-    EnjinMinecraftPlugin plugin;
+    private EnjinMinecraftPlugin plugin;
 
     public WriteStats(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;

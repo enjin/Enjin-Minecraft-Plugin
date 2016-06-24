@@ -233,9 +233,16 @@ public class SignStatsModule {
             return;
         }
 
+        block = sign.getBlock().getRelative(0, 1, 0);
+        if (block.getType() == Material.SKULL) {
+            updateHead(block, data, name);
+            return;
+        }
+
         block = sign.getBlock().getRelative(0, 2, 0);
         if (block.getType() == Material.SKULL) {
             updateHead(block, data, name);
+            return;
         }
     }
 

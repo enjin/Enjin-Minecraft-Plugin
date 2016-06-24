@@ -226,7 +226,13 @@ public class StatSignManager {
 			}
 		}
 
-		Location<World> loc = sign.getLocation().add(0, 2, 0);
+		Location<World> loc = sign.getLocation().getRelative(Direction.UP);
+        if (loc.getBlock().getType() == BlockTypes.SKULL) {
+            updateHead(loc.getBlock(), loc, data, name);
+            return;
+        }
+
+        loc = sign.getLocation().add(0, 2, 0);
         if (loc.getBlock().getType() == BlockTypes.SKULL) {
             updateHead(loc.getBlock(), loc, data, name);
 			return;
