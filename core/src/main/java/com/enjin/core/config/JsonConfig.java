@@ -1,10 +1,7 @@
 package com.enjin.core.config;
 
 import com.enjin.core.Enjin;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -28,6 +25,19 @@ public class JsonConfig {
                 }
             } catch (IOException e) {
                 return clazz.newInstance();
+            } catch (JsonSyntaxException e) {
+                int i = 0;
+                while (true) {
+                    File f = new File(file.getParent(), file.getName() + "-old" + i);
+                    if (!f.exists()) {
+                        file.renameTo(f);
+                        file.delete();
+                        break;
+                    }
+                }
+
+                config = clazz.newInstance();
+                config.save(file);
             }
         } catch (ReflectiveOperationException e) {
             Enjin.getLogger().warning("There was an error while loading the " + clazz.getSimpleName() + " config: " + e.getMessage());
