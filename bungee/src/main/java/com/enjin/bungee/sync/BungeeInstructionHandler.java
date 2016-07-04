@@ -56,7 +56,7 @@ public class BungeeInstructionHandler implements InstructionHandler {
 
     @Override
     public void statusReceived(String status) {
-        Enjin.getPlugin().debug("Enjin Status: " + status);
+        Enjin.getLogger().debug("Enjin Status: " + status);
     }
 
     @Override

@@ -25,19 +25,19 @@ public class TextShopUtil {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (instance.getActiveShop() == null) {
-            plugin.debug("Sending a list of shops to " + player.getName());
+            Enjin.getLogger().debug("Sending a list of shops to " + player.getName());
             sendAvailableShops(player, instance);
         } else {
             if (instance.getActiveCategory() == null) {
-                plugin.debug("Sending a list of categories to " + player.getName());
+                Enjin.getLogger().debug("Sending a list of categories to " + player.getName());
                 sendAvailableCategories(player, instance, page < 1 ? 1 : page);
             } else {
                 Category category = instance.getActiveCategory();
                 if (category.getCategories() != null && !category.getCategories().isEmpty()) {
-                    plugin.debug("Sending " + category.getCategories().size() + " sub-categories to " + player.getName());
+                    Enjin.getLogger().debug("Sending " + category.getCategories().size() + " sub-categories to " + player.getName());
                     sendAvailableCategories(player, instance, page < 1 ? 1 : page);
                 } else {
-                    plugin.debug("Sending a list of items to " + player.getName());
+                    Enjin.getLogger().debug("Sending a list of items to " + player.getName());
                     sendAvailableItems(player, instance, page);
                 }
             }
@@ -324,7 +324,7 @@ public class TextShopUtil {
                         messages.add(message);
                     }
                 } catch (MalformedURLException e) {
-                    Enjin.getPlugin().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+                    Enjin.getLogger().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
                 }
 
                 StringBuilder descriptionBuilder = new StringBuilder();
@@ -420,7 +420,7 @@ public class TextShopUtil {
                 messages.add(message);
             }
         } catch (MalformedURLException e) {
-            Enjin.getPlugin().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+            Enjin.getLogger().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
         }
 
         message = new FancyMessage(shop.getBorderV())

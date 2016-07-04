@@ -154,11 +154,11 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         }
 
         initManagers();
-        debug("Init managers done.");
+        Enjin.getLogger().debug("Init managers done.");
         initListeners();
-        debug("Init listeners done.");
+        Enjin.getLogger().debug("Init listeners done.");
         initTasks();
-        debug("Init tasks done.");
+        Enjin.getLogger().debug("Init tasks done.");
     }
 
 	private void initConfigs() {
@@ -247,11 +247,6 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Override
     public InstructionHandler getInstructionHandler() {
         return instructionHandler;
-    }
-
-    @Override
-    public void debug(String s) {
-        Enjin.getLogger().debug(s);
     }
 
     public static void saveConfiguration() {

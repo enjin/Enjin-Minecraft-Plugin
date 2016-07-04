@@ -35,7 +35,7 @@ public class StatsManager {
 				statFile.createNewFile();
             }
         } catch (IOException e) {
-            Enjin.getPlugin().debug(e.getMessage());
+            Enjin.getLogger().debug(e.getMessage());
         }
 
         EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
@@ -51,7 +51,7 @@ public class StatsManager {
         EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
         if (configuration.isCollectPlayerStats()) {
             new WriteStats().write(statFile);
-            Enjin.getPlugin().debug("Stats saved to enjin-stats.json.");
+            Enjin.getLogger().debug("Stats saved to enjin-stats.json.");
         }
     }
 

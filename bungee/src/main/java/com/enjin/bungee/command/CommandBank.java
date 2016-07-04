@@ -30,12 +30,12 @@ public class CommandBank implements Listener {
      */
     public static void setup(Plugin plugin) {
         if (instance != null) {
-            Enjin.getPlugin().debug("Command bank has already been initialized.");
+            Enjin.getLogger().debug("Command bank has already been initialized.");
             return;
         }
 
         ProxyServer.getInstance().getPluginManager().registerListener(plugin, instance = new CommandBank());
-        Enjin.getPlugin().debug("Command bank initialized.");
+        Enjin.getLogger().debug("Command bank initialized.");
     }
 
     /**
@@ -44,7 +44,7 @@ public class CommandBank implements Listener {
      */
     public static void register(Class<?> ... handles) {
         for (Class<?> clazz : handles) {
-            Enjin.getPlugin().debug("Registering commands and directives for " + clazz.getSimpleName());
+            Enjin.getLogger().debug("Registering commands and directives for " + clazz.getSimpleName());
             List<Method> methods = Lists.newArrayList();
             for (Method method : clazz.getMethods()) {
                 if (!(method.isAnnotationPresent(Command.class) || method.isAnnotationPresent(Directive.class))) {
@@ -52,23 +52,23 @@ public class CommandBank implements Listener {
                 }
 
                 if (!Modifier.isStatic(method.getModifiers())) {
-                    Enjin.getPlugin().debug(method.getName() + " is not static.");
+                    Enjin.getLogger().debug(method.getName() + " is not static.");
                     continue;
                 }
 
                 if (method.getParameterTypes().length != 2) {
-                    Enjin.getPlugin().debug(method.getName() + " does not have 2 parameters.");
+                    Enjin.getLogger().debug(method.getName() + " does not have 2 parameters.");
                     continue;
                 }
 
                 Class<?>[] types = method.getParameterTypes();
                 if (!CommandSender.class.isAssignableFrom(types[0])) {
-                    Enjin.getPlugin().debug(method.getName() + "'s first argument is not assignable from CommandSender.");
+                    Enjin.getLogger().debug(method.getName() + "'s first argument is not assignable from CommandSender.");
                     continue;
                 }
 
                 if (!String[].class.isAssignableFrom(types[1])) {
-                    Enjin.getPlugin().debug(method.getName() + "'s second argument is not assignable from String[].");
+                    Enjin.getLogger().debug(method.getName() + "'s second argument is not assignable from String[].");
                     continue;
                 }
 
@@ -106,7 +106,7 @@ public class CommandBank implements Listener {
                 continue;
             }
 
-            Enjin.getPlugin().debug("Registering command: " + node.getData().value());
+            Enjin.getLogger().debug("Registering command: " + node.getData().value());
             CommandBank.nodes.put(node.getData().value(), node);
             registerCommandAlias(node.getData().value(), node.getData().aliases());
             ProxyServer.getInstance().getPluginManager().registerCommand(EnjinMinecraftPlugin.getInstance(), node);
@@ -126,7 +126,7 @@ public class CommandBank implements Listener {
                     continue;
                 }
 
-                Enjin.getPlugin().debug("Registering directive: " + node.getData().value() + " for command: " + node.getData().parent());
+                Enjin.getLogger().debug("Registering directive: " + node.getData().value() + " for command: " + node.getData().parent());
                 command.getDirectives().put(node.getData().value(), node);
                 registerDirectiveAlias(node.getData().parent(), node.getData().value(), node.getData().aliases());
             }
@@ -135,7 +135,7 @@ public class CommandBank implements Listener {
 
     public static void registerCommandAlias(String command, String ... alias) {
         if (nodes.containsKey(alias)) {
-            Enjin.getPlugin().debug("That alias has already been registered by another command.");
+            Enjin.getLogger().debug("That alias has already been registered by another command.");
             return;
         }
 
@@ -151,7 +151,7 @@ public class CommandBank implements Listener {
         CommandNode node = nodes.get(command);
         if (node != null) {
             if (node.getDirectives().containsKey(alias)) {
-                Enjin.getPlugin().debug("That alias has already been registered by another directive.");
+                Enjin.getLogger().debug("That alias has already been registered by another directive.");
                 return;
             }
 

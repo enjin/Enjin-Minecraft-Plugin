@@ -68,7 +68,7 @@ public class CommandNode {
                 return;
             }
 
-            Enjin.getPlugin().debug("Executing command: " + data.value());
+            Enjin.getLogger().debug("Executing command: " + data.value());
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
 			Enjin.getLogger().catching(e);

@@ -45,7 +45,7 @@ public class Log implements EnjinLogger {
         }
 
         configure(logger, log);
-        debug("Log Utility Initialized");
+        Enjin.getLogger().debug("Log Utility Initialized");
     }
 
 	public void info(String msg) {
@@ -61,7 +61,7 @@ public class Log implements EnjinLogger {
 	}
 
 	public void debug(String msg) {
-		if (Enjin.getConfiguration().isDebug()) {
+		if (Enjin.getConfiguration() != null && Enjin.getConfiguration().isDebug()) {
 			logger.debug(hideSensitiveText(msg));
 		}
 	}
@@ -98,14 +98,6 @@ public class Log implements EnjinLogger {
 		listener.start();
 		Logger root = (Logger) LogManager.getRootLogger();
 		root.addAppender(listener);
-
-		// Appender only for debug log level.
-		Filter filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "ACCEPT", "DENY");
-		layout = PatternLayout.createLayout("[%d{HH:mm:ss} %t/%level]: [%logger] %msg%n", config, null, Charsets.UTF_8.name(), null);
-		ConsoleAppender consoleAppender = ConsoleAppender.createAppender(layout, null, null, "EnjinDebug", null, null);
-		consoleAppender.addFilter(filter);
-		consoleAppender.start();
-		logger.addAppender(consoleAppender);
 
 		logger.setLevel(Level.DEBUG);
     }

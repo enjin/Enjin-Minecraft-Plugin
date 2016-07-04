@@ -62,7 +62,7 @@ public class RPCPacketManager implements Runnable {
                 RPCData<SyncResponse> data = service.get(status, servers);
 
                 if (data == null) {
-                    Enjin.getPlugin().debug("Data is null while requesting sync update from Bungeecord.get.");
+                    Enjin.getLogger().debug("Data is null while requesting sync update from Bungeecord.get.");
                     return;
                 }
 

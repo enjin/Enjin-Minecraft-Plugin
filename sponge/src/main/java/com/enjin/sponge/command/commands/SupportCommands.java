@@ -1,5 +1,6 @@
 package com.enjin.sponge.command.commands;
 
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
@@ -51,15 +52,15 @@ public class SupportCommands {
 					return;
 				}
 
-				plugin.debug("Checking if module with id \"" + moduleId + "\" exists.");
+				Enjin.getLogger().debug("Checking if module with id \"" + moduleId + "\" exists.");
 				final TicketModule module = modules.get(moduleId);
 				if (module != null) {
 					new TicketCreationSession(sender, moduleId, module);
 				} else {
 					sender.sendMessage(Text.of(TextColors.RED, "No module with id \"", moduleId, "\" exists."));
-					plugin.debug("Existing modules:");
+					Enjin.getLogger().debug("Existing modules:");
 					for (Integer id : modules.keySet()) {
-						plugin.debug(String.valueOf(id));
+						Enjin.getLogger().debug(String.valueOf(id));
 					}
 				}
 			} else {
@@ -67,7 +68,7 @@ public class SupportCommands {
 					final Entry<Integer, TicketModule> entry = modules.entrySet().iterator().next();
 					plugin.getSync().execute(() -> new TicketCreationSession(sender, entry.getKey(), entry.getValue()));
 				} else {
-					plugin.debug(String.valueOf(modules.size()));
+					Enjin.getLogger().debug(String.valueOf(modules.size()));
 					for (Entry<Integer, TicketModule> entry : modules.entrySet()) {
 						int id = entry.getKey();
 						TicketModule module = entry.getValue();

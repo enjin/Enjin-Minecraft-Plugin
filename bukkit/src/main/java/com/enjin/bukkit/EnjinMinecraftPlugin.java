@@ -99,11 +99,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 	private ModuleManager moduleManager = null;
 
     @Override
-    public void debug(String s) {
-        Enjin.getLogger().debug(s);
-    }
-
-    @Override
     public void onEnable() {
         instance = this;
         Enjin.setPlugin(instance);
@@ -124,17 +119,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public void init() {
         if (firstRun) {
-            getLogger().info("Initializing for the first time.");
+            Enjin.setLogger(new Log(getDataFolder()));
+
+            Enjin.getLogger().info("Initializing for the first time.");
+            initConfigs();
 
             try {
                 MetricsLite metrics = new MetricsLite(this);
                 metrics.start();
             } catch (IOException e) {
-                debug("Failed to start metrics.");
+                Enjin.getLogger().debug("Failed to start metrics.");
             }
-
-            initConfigs();
-            Enjin.setLogger(new Log(getDataFolder()));
 
 			menuAPI = new MenuAPI(this);
 
@@ -144,47 +139,47 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true);
                 if (data == null) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. Data could not be retrieved.");
+                    Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
                 } else if (data.getError() != null) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. " + data.getError().getMessage());
+                    Enjin.getLogger().debug("Auth key is invalid. " + data.getError().getMessage());
                 } else if (!data.getResult()) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. Failed to authenticate.");
+                    Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
                 }
             } else {
                 authKeyInvalid = true;
-                debug("Auth key is invalid. Must be 50 characters in length.");
+                Enjin.getLogger().debug("Auth key is invalid. Must be 50 characters in length.");
             }
 
             initVersion();
-            debug("Init version done.");
+            Enjin.getLogger().debug("Init version done.");
             initCommands();
-            debug("Init commands done.");
+            Enjin.getLogger().debug("Init commands done.");
             initListeners();
-            debug("Init listeners done.");
+            Enjin.getLogger().debug("Init listeners done.");
 
             firstRun = false;
         }
 
         if (authKeyInvalid) {
-            debug("Auth key is invalid. Stopping initialization.");
+            Enjin.getLogger().debug("Auth key is invalid. Stopping initialization.");
             return;
         }
 
-        debug("Init gui api done.");
+        Enjin.getLogger().debug("Init gui api done.");
         moduleManager.init();
-        debug("Init modules done.");
+        Enjin.getLogger().debug("Init modules done.");
         initPlugins();
-        debug("Init plugins done.");
+        Enjin.getLogger().debug("Init plugins done.");
 
 		if (Plugins.isEnabled("Vault")) {
 			initPermissions();
-			debug("Init permissions done.");
+            Enjin.getLogger().debug("Init permissions done.");
 		}
 
         initTasks();
-        debug("Init tasks done.");
+        Enjin.getLogger().debug("Init tasks done.");
     }
 
     public void initConfigs() {
@@ -274,7 +269,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void initTasks() {
-        debug("Starting tasks.");
+        Enjin.getLogger().debug("Starting tasks.");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
 		Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 2L);
 
@@ -288,12 +283,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void disableTasks() {
-        debug("Stopping tasks.");
+        Enjin.getLogger().debug("Stopping tasks.");
         Bukkit.getScheduler().cancelTasks(this);
     }
 
     private void initListeners() {
-        debug("Initializing Listeners");
+        Enjin.getLogger().debug("Initializing Listeners");
         Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BanListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new ShopListener(), this);
@@ -309,35 +304,35 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     private void initPermissions() {
         if (Bukkit.getPluginManager().isPluginEnabled("PermissionsEx")) {
-            debug("PermissionsEx found, hooking custom events.");
+            Enjin.getLogger().debug("PermissionsEx found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new PexListener(), this);
         } else if (Bukkit.getPluginManager().isPluginEnabled("bPermissions")) {
-            debug("bPermissions found, hooking custom events.");
+            Enjin.getLogger().debug("bPermissions found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new BPermissionsListener(), this);
         } else if (Bukkit.getPluginManager().isPluginEnabled("zPermissions")) {
-            debug("zPermissions found, hooking custom events.");
+            Enjin.getLogger().debug("zPermissions found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new ZPermissionsListener(), this);
         } else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
-            debug("PermissionsBukkit found, hooking custom events.");
+            Enjin.getLogger().debug("PermissionsBukkit found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new PermissionsBukkitListener(), this);
         } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
-            debug("GroupManager found, hooking custom events.");
+            Enjin.getLogger().debug("GroupManager found, hooking custom events.");
             globalGroupsSupported = false;
             Bukkit.getPluginManager().registerEvents(permissionListener = new GroupManagerListener(), this);
         } else {
-            debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
-            debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
+            Enjin.getLogger().debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
+            Enjin.getLogger().debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
         }
     }
 
     public static void dispatchConsoleCommand(String command) {
         if (!CommandBank.getNodes().containsKey(command.split(" ")[0].toLowerCase())) {
-            Enjin.getPlugin().debug("[D1] Executed Command: " + command);
+            Enjin.getLogger().debug("[D1] Executed Command: " + command);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             return;
         }
 
-        Enjin.getPlugin().debug("[D2] Executed Command: " + command);
+        Enjin.getLogger().debug("[D2] Executed Command: " + command);
         Bukkit.getPluginManager().callEvent(new ServerCommandEvent(Bukkit.getConsoleSender(), command));
     }
 

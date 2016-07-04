@@ -32,7 +32,7 @@ public class RPCShopFetcher implements Runnable {
         Optional<Player> p = OptionalUtil.getPlayer(uuid);
 
         if (!p.isPresent()) {
-            plugin.debug("Player is not present. No longer fetching shop data.");
+            Enjin.getLogger().debug("Player is not present. No longer fetching shop data.");
             return;
         }
 

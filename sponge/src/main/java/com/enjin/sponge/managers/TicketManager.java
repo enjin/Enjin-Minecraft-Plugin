@@ -44,7 +44,7 @@ public class TicketManager {
             RPCData<Map<Integer, TicketModule>> data = EnjinServices.getService(TicketService.class).getModules();
 
             if (data == null || data.getError() != null) {
-                Enjin.getPlugin().debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
+                Enjin.getLogger().debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
                 modules.clear();
                 return;
             }

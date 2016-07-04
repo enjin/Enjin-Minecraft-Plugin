@@ -54,7 +54,7 @@ public class DirectiveNode {
                 return;
             }
 
-            Enjin.getPlugin().debug("Executing directive: " + data.parent() + "-" + data.value());
+            Enjin.getLogger().debug("Executing directive: " + data.parent() + "-" + data.value());
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
 			Enjin.getLogger().catching(e);

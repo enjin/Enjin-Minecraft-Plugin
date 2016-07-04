@@ -17,7 +17,7 @@ public class Log implements EnjinLogger {
     private final static Logger logger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
 
     public Log() {
-        debug("Initializing internal logger");
+        Enjin.getLogger().debug("Initializing internal logger");
         logger.setLevel(Level.FINEST);
 
         File logs = new File(EnjinMinecraftPlugin.getInstance().getDataFolder(), "logs");
@@ -47,7 +47,7 @@ public class Log implements EnjinLogger {
         handler.setFormatter(formatter);
         logger.addHandler(handler);
         logger.setUseParentHandlers(false);
-        debug("Logger initialized.");
+        Enjin.getLogger().debug("Logger initialized.");
     }
 
     public void info(String msg) {

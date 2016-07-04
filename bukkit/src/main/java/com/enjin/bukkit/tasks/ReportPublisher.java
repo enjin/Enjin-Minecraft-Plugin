@@ -109,7 +109,7 @@ public class ReportPublisher implements Runnable {
                 if (ymlbukkit.getBoolean("settings.plugin-profiling", false)) {
                     plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), "timings merged");
                     try {
-                        Enjin.getPlugin().debug("Waiting for timings file to be totally written...");
+                        Enjin.getLogger().debug("Waiting for timings file to be totally written...");
                         //Make sure the timings file is written before we continue!
                         wait(2000);
                     } catch (InterruptedException e) {
@@ -117,7 +117,7 @@ public class ReportPublisher implements Runnable {
                     }
                     boolean foundtimings = false;
                     File timingsfile;
-                    Enjin.getPlugin().debug("Searching for timings file");
+                    Enjin.getLogger().debug("Searching for timings file");
                     //If the server owner has over 99 timings files, I don't know what to say...
                     for (int i = 99; i >= 0 && !foundtimings; i--) {
                         if (i == 0) {
@@ -126,7 +126,7 @@ public class ReportPublisher implements Runnable {
                             timingsfile = new File(serverloglocation + File.separator + "timings" + File.separator + "timings" + i + ".txt");
                         }
                         if (timingsfile.exists()) {
-                            Enjin.getPlugin().debug("Found timings file at: " + timingsfile.getAbsolutePath());
+                            Enjin.getLogger().debug("Found timings file at: " + timingsfile.getAbsolutePath());
                             foundtimings = true;
                             builder.append("\nTimings file output:\n");
                             FileInputStream fstream = new FileInputStream(timingsfile);

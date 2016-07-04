@@ -90,7 +90,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
 	public void commandConfirmed (List<Long> executed) {
 		for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
 			for (long id : executed) {
-				Enjin.getPlugin().debug("Confirming Command ID: " + id);
+				Enjin.getLogger().debug("Confirming Command ID: " + id);
 				if (Long.parseLong(command.getId()) == id) {
 					EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command);
 				}

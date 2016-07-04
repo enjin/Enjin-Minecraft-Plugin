@@ -24,7 +24,7 @@ public class VotifierListener implements Listener {
     public void voteRecieved(VotifierEvent event) {
         Vote vote = event.getVote();
 
-        Enjin.getPlugin().debug("Received vote from \"" + vote.getUsername() + "\" using \"" + vote.getServiceName());
+        Enjin.getLogger().debug("Received vote from \"" + vote.getUsername() + "\" using \"" + vote.getServiceName());
         if (event.getVote().getUsername().equalsIgnoreCase("test") || event.getVote().getUsername().isEmpty()) {
             return;
         }

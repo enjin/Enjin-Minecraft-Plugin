@@ -94,17 +94,17 @@ public class JsonConfig {
     private void update(JsonObject oldObj, JsonObject update) {
         for (Map.Entry<String, JsonElement> entry : update.getAsJsonObject().entrySet()) {
             if (!oldObj.has(entry.getKey())) {
-                Enjin.getPlugin().debug(entry.getKey() + " does not exists, updating value.");
+                Enjin.getLogger().debug(entry.getKey() + " does not exists, updating value.");
                 oldObj.add(entry.getKey(), entry.getValue());
                 continue;
             }
 
             JsonElement element = oldObj.get(entry.getKey());
             if (entry.getValue().isJsonObject()) {
-                Enjin.getPlugin().debug(entry.getKey() + " is an object, processing object fields.");
+                Enjin.getLogger().debug(entry.getKey() + " is an object, processing object fields.");
                 update(element.getAsJsonObject(), element.getAsJsonObject());
             } else {
-                Enjin.getPlugin().debug("Setting " + entry.getKey() + " to " + entry.getValue().toString());
+                Enjin.getLogger().debug("Setting " + entry.getKey() + " to " + entry.getValue().toString());
                 oldObj.add(entry.getKey(), entry.getValue());
             }
         }

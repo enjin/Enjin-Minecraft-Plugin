@@ -33,7 +33,7 @@ public class VotifierManager {
 	public void onVote(VotifierEvent event) {
 		Vote vote = event.getVote();
 
-		Enjin.getPlugin().debug("Received vote from \"" + vote.getUsername() + "\" using \"" + vote.getServiceName());
+		Enjin.getLogger().debug("Received vote from \"" + vote.getUsername() + "\" using \"" + vote.getServiceName());
 		if (event.getVote().getUsername().equalsIgnoreCase("test") || event.getVote().getUsername().isEmpty()) {
 			return;
 		}
@@ -56,7 +56,7 @@ public class VotifierManager {
 		}
 
 		playerVotes.get(listname).add(new Object[]{userid, System.currentTimeMillis() / 1000});
-		Enjin.getPlugin().debug("Vote successfully stored for " +vote.getUsername() + " using " + vote.getServiceName());
+		Enjin.getLogger().debug("Vote successfully stored for " +vote.getUsername() + " using " + vote.getServiceName());
 	}
 
 	public static void init(EnjinMinecraftPlugin plugin) {

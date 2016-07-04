@@ -28,12 +28,12 @@ public abstract class MenuHolder extends MenuBase implements InventoryHolder {
         }
         
         if (getInventory().getViewers().contains(player)) {
-            Enjin.getPlugin().debug(player.getName() + " is already viewing " + getInventory().getTitle());
+            Enjin.getLogger().debug(player.getName() + " is already viewing " + getInventory().getTitle());
             return;
         }
 
         player.openInventory(getInventory());
-        Enjin.getPlugin().debug("Opening menu for player " + player.getName());
+        Enjin.getLogger().debug("Opening menu for player " + player.getName());
     }
 
     public void closeMenu(Player player) {

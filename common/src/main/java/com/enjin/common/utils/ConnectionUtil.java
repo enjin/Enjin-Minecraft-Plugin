@@ -26,7 +26,7 @@ public class ConnectionUtil {
 
         try {
             URL url = EnjinRPC.getUrl("api.php");
-            Enjin.getPlugin().debug(url.toExternalForm());
+            Enjin.getLogger().debug(url.toExternalForm());
             URLConnection con = url.openConnection();
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String line = in.readLine();

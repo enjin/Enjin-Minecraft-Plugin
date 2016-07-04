@@ -1,6 +1,7 @@
 package com.enjin.bukkit.tickets;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.tickets.*;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -51,10 +52,10 @@ public class TicketCreationSession {
         });
 
         for (Question question : new ArrayList<>(questions)) {
-            plugin.debug("Processing question: " + question.getId() + " of type " + question.getType());
+            Enjin.getLogger().debug("Processing question: " + question.getId() + " of type " + question.getType());
 
             if (question.getType() == QuestionType.file) {
-                plugin.debug("File question type detected. Required: " + question.getRequired().booleanValue());
+                Enjin.getLogger().debug("File question type detected. Required: " + question.getRequired().booleanValue());
                 if (question.getRequired().booleanValue()) {
                     player.sendMessage(ChatColor.GOLD + "This support ticket requires a file upload and must be submitted on the website.");
                     return;
@@ -101,19 +102,19 @@ public class TicketCreationSession {
     public Prompt getNextPrompt() {
         Prompt prompt = null;
 
-        plugin.debug("Getting next prompt.");
+        Enjin.getLogger().debug("Getting next prompt.");
         if (questions != null) {
             if (!questions.isEmpty()) {
                 Question question = questions.remove(0);
-                plugin.debug("Creating prompt for question: " + question.getId() + "|" + question.getLabel() + " in module: " + question.getPresetId());
+                Enjin.getLogger().debug("Creating prompt for question: " + question.getId() + "|" + question.getLabel() + " in module: " + question.getPresetId());
                 prompt = createPrompt(question);
             } else {
-                plugin.debug("Checking conditionals for next question to prompt.");
+                Enjin.getLogger().debug("Checking conditionals for next question to prompt.");
                 if (!conditional.isEmpty()) {
                     for (Question question : new ArrayList<>(conditional)) {
                         boolean conditionsMet = false;
                         if (question.getConditionQualify() == ConditionQualify.one_true) {
-                            plugin.debug("Question: " + question.getId() + "|" + question.getLabel() + " requires that condition be met. Checking conditions.");
+                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " requires that condition be met. Checking conditions.");
                             for (Condition condition : question.getConditions()) {
                                 boolean result = conditionMet(condition);
                                 if (result) {
@@ -131,24 +132,24 @@ public class TicketCreationSession {
                         }
 
                         if (conditionsMet) {
-                            plugin.debug("Question: " + question.getId() + "|" + question.getLabel() + " meets conditions.");
+                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " meets conditions.");
                             conditional.remove(question);
                             prompt = createPrompt(question);
                         } else {
-                            plugin.debug("Question: " + question.getId() + "|" + question.getLabel() + " does not meet conditions.");
-                            plugin.debug("Checking if condition relies on another conditional.");
+                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " does not meet conditions.");
+                            Enjin.getLogger().debug("Checking if condition relies on another conditional.");
                             boolean conditionalRequiresConditional = false;
                             for (Condition condition : question.getConditions()) {
                                 for (Question q : conditional) {
                                     if (condition.getQuestion() == q.getId()) {
-                                        plugin.debug("Question: " + question.getId() + "|" + question.getLabel() + " relies on conditional: " + q.getId() + "|" + q.getLabel());
+                                        Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " relies on conditional: " + q.getId() + "|" + q.getLabel());
                                         conditionalRequiresConditional = true;
                                     }
                                 }
                             }
 
                             if (!conditionalRequiresConditional) {
-                                plugin.debug("Does not rely on conditional. Removing impossible question.");
+                                Enjin.getLogger().debug("Does not rely on conditional. Removing impossible question.");
                                 conditional.remove(question);
                             }
                         }
@@ -158,7 +159,7 @@ public class TicketCreationSession {
         }
 
         if (prompt == null && questions.isEmpty() && conditional.isEmpty()) {
-            plugin.debug("No possible conditionals remaining. Submitting ticket.");
+            Enjin.getLogger().debug("No possible conditionals remaining. Submitting ticket.");
             final Player player = Bukkit.getPlayer(uuid);
 
             if (player != null) {
@@ -336,7 +337,7 @@ public class TicketCreationSession {
             try {
                 answer = dateFormat.parse(input);
             } catch (ParseException e) {
-                plugin.debug("User inputted a value that does not use format DD/MM/YYYY. Resending prompt.");
+                Enjin.getLogger().debug("User inputted a value that does not use format DD/MM/YYYY. Resending prompt.");
                 return this;
             }
 
@@ -378,13 +379,13 @@ public class TicketCreationSession {
             try {
                 int index = Integer.parseInt(input) - 1;
                 if (index >= question.getOptions().size()) {
-                    plugin.debug("User selection is out of bounds. Resending prompt");
+                    Enjin.getLogger().debug("User selection is out of bounds. Resending prompt");
                     return this;
                 }
 
                 answer = question.getOptions().get(index);
             } catch (NumberFormatException e) {
-                plugin.debug("User inputted a value that is NaN. Resending prompt.");
+                Enjin.getLogger().debug("User inputted a value that is NaN. Resending prompt.");
                 return this;
             }
 

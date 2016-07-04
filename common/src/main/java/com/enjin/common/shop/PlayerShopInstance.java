@@ -32,13 +32,13 @@ public class PlayerShopInstance {
     }
 
     public void update(List<Shop> shops) {
-        Enjin.getPlugin().debug("Updating instance shops");
+        Enjin.getLogger().debug("Updating instance shops");
         if (!this.shops.isEmpty()) {
-            Enjin.getPlugin().debug("Clearing existing shops");
+            Enjin.getLogger().debug("Clearing existing shops");
             this.shops.clear();
         }
 
-        Enjin.getPlugin().debug("Adding shops to instance");
+        Enjin.getLogger().debug("Adding shops to instance");
         this.shops.addAll(shops);
         updateShop(-1);
 
@@ -48,18 +48,18 @@ public class PlayerShopInstance {
     public void updateShop(int index) {
         if (index < 0) {
             if (shops.size() != 1) {
-                Enjin.getPlugin().debug("There is more or less than one shop. Unsetting active shop.");
+                Enjin.getLogger().debug("There is more or less than one shop. Unsetting active shop.");
                 activeShop = null;
             } else {
                 activeShop = shops.get(0);
-                Enjin.getPlugin().debug("Set active shop to: " + activeShop.getName());
+                Enjin.getLogger().debug("Set active shop to: " + activeShop.getName());
             }
         } else {
             if (index < shops.size()) {
                 activeShop = shops.get(index);
-                Enjin.getPlugin().debug("Set active shop to: " + activeShop.getName());
+                Enjin.getLogger().debug("Set active shop to: " + activeShop.getName());
             } else {
-                Enjin.getPlugin().debug("Invalid index. Unsetting active shop.");
+                Enjin.getLogger().debug("Invalid index. Unsetting active shop.");
                 activeShop = null;
             }
         }
@@ -76,7 +76,7 @@ public class PlayerShopInstance {
         List<Category> categories = activeCategory == null ? (activeShop == null ? null : activeShop.getCategories()) : activeCategory.getCategories();
 
         if (categories == null || categories.isEmpty()) {
-            Enjin.getPlugin().debug("There are no categories available. Skipping category update.");
+            Enjin.getLogger().debug("There are no categories available. Skipping category update.");
             return;
         }
 
@@ -86,9 +86,9 @@ public class PlayerShopInstance {
             activeCategory = categories.get(categories.size() - 1);
         }
 
-        Enjin.getPlugin().debug("Set active category to: " + (activeCategory == null ? "null" : activeCategory.getName()));
+        Enjin.getLogger().debug("Set active category to: " + (activeCategory == null ? "null" : activeCategory.getName()));
         if (activeCategory != null) {
-            Enjin.getPlugin().debug(activeCategory.toString());
+            Enjin.getLogger().debug(activeCategory.toString());
         }
     }
 

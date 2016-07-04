@@ -49,17 +49,6 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
     private boolean updateFailed = false;
 
     @Override
-    public void debug(String s) {
-        if (Enjin.getConfiguration().isDebug()) {
-            getLogger().info("Enjin Debug: " + s);
-        }
-
-        if (Enjin.getConfiguration().isLoggingEnabled()) {
-            Enjin.getLogger().debug(s);
-        }
-    }
-
-    @Override
     public void onEnable() {
         instance = this;
         Enjin.setPlugin(instance);
@@ -77,40 +66,41 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
         }
 
         if (firstRun) {
+            Enjin.setLogger(new Log());
+
             firstRun = false;
             initConfig();
 
-            Enjin.setLogger(new Log());
-            debug("Init config done.");
+            Enjin.getLogger().debug("Init config done.");
 
             initCommands();
-            debug("Init commands done.");
+            Enjin.getLogger().debug("Init commands done.");
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 Optional<Integer> port = getPort();
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), port.isPresent() ? port.get() : null, true);
                 if (data == null) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. Data could not be retrieved.");
+                    Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
                     return;
                 } else if (data.getError() != null) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. " + data.getError().getMessage());
+                    Enjin.getLogger().debug("Auth key is invalid. " + data.getError().getMessage());
                     return;
                 } else if (!data.getResult()) {
                     authKeyInvalid = true;
-                    debug("Auth key is invalid. Failed to authenticate.");
+                    Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
                     return;
                 }
             } else {
                 authKeyInvalid = true;
-                debug("Auth key is invalid. Must be 50 characters in length.");
+                Enjin.getLogger().debug("Auth key is invalid. Must be 50 characters in length.");
                 return;
             }
         }
 
         initTasks();
-        debug("Init tasks done.");
+        Enjin.getLogger().debug("Init tasks done.");
     }
 
     public void initConfig() {
@@ -137,12 +127,12 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
     }
 
     public void initTasks() {
-        debug("Starting tasks.");
+        Enjin.getLogger().debug("Starting tasks.");
         ProxyServer.getInstance().getScheduler().schedule(this, new RPCPacketManager(this), 60L, 60L, TimeUnit.SECONDS);
     }
 
     public void disableTasks() {
-        debug("Stopping tasks.");
+        Enjin.getLogger().debug("Stopping tasks.");
         ProxyServer.getInstance().getScheduler().cancel(this);
     }
 

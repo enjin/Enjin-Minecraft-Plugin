@@ -85,9 +85,9 @@ public class SignStatsModule {
         RPCData<Stats> data = EnjinServices.getService(PluginService.class).getStats(Optional.fromNullable(items));
 
         if (data == null) {
-            Enjin.getPlugin().debug("Failed to fetch stats from Enjin web services.");
+            Enjin.getLogger().debug("Failed to fetch stats from Enjin web services.");
         } else if (data.getError() != null) {
-            Enjin.getPlugin().debug(data.getError().getMessage());
+            Enjin.getLogger().debug(data.getError().getMessage());
         } else {
             stats = data.getResult();
         }

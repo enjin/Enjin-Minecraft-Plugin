@@ -1,6 +1,7 @@
 package com.enjin.sponge.shop;
 
 import com.enjin.common.shop.PlayerShopInstance;
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
@@ -28,7 +29,7 @@ public class RPCShopFetcher implements Runnable {
         Optional<Player> p = plugin.getGame().getServer().getPlayer(uuid);
 
         if (!p.isPresent()) {
-            plugin.debug("Player is not present. No longer fetching shop data.");
+            Enjin.getLogger().debug("Player is not present. No longer fetching shop data.");
             return;
         }
 

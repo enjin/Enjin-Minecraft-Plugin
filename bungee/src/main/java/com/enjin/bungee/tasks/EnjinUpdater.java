@@ -29,7 +29,7 @@ public class EnjinUpdater implements Runnable {
         File tempfile = new File(downloadLocation + File.separator + "EnjinMinecraftPlugin.jar.part");
 
         try {
-            Enjin.getPlugin().debug("Connecting to url " + updateJar + versionNumber + "/EnjinMinecraftPlugin.jar");
+            Enjin.getLogger().debug("Connecting to url " + updateJar + versionNumber + "/EnjinMinecraftPlugin.jar");
             URL website = new URL(updateJar + versionNumber + "/EnjinMinecraftPlugin.jar");
 
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());

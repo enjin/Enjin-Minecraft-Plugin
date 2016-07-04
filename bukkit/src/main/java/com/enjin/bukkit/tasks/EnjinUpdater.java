@@ -31,7 +31,7 @@ public class EnjinUpdater implements Runnable {
         try {
             URL website;
 
-            Enjin.getPlugin().debug("Connecting to url " + updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
+            Enjin.getLogger().debug("Connecting to url " + updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
             website = new URL(updatejar + versionnumber + "/EnjinMinecraftPlugin.jar");
 
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());

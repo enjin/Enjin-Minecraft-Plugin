@@ -62,23 +62,23 @@ public class BuyCommand {
                             }
                         } else {
                             if (instance.getActiveCategory().getItems().size() == 0) {
-                                plugin.debug("No items found in category: " + category.getName());
+                                Enjin.getLogger().debug("No items found in category: " + category.getName());
                                 player.sendMessage(ChatColor.RED.toString() + "There are no items in this category.");
                             } else if (number == 0) {
-                                plugin.debug("Sending first item to " + player.getName());
+                                Enjin.getLogger().debug("Sending first item to " + player.getName());
                                 TextShopUtil.sendItemInfo(player, instance, 0);
                             } else if (instance.getActiveCategory().getItems().size() < number) {
-                                plugin.debug("Sending last item to " + player.getName());
+                                Enjin.getLogger().debug("Sending last item to " + player.getName());
                                 TextShopUtil.sendItemInfo(player, instance, category.getItems().size() - 1);
                             } else {
-                                plugin.debug("Sending item to " + player.getName());
+                                Enjin.getLogger().debug("Sending item to " + player.getName());
                                 TextShopUtil.sendItemInfo(player, instance, number - 1);
                             }
 
                             return;
                         }
                     } else {
-                        plugin.debug("No active category has been set. Selecting category from shop.");
+                        Enjin.getLogger().debug("No active category has been set. Selecting category from shop.");
                         List<Category> categories = instance.getActiveShop().getCategories();
                         if (categories.size() < number) {
                             instance.updateCategory(categories.size() - 1);

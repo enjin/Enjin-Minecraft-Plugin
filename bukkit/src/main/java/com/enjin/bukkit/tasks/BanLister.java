@@ -35,7 +35,7 @@ public class BanLister implements Runnable {
 
             firstRun = false;
         } else {
-            Enjin.getPlugin().debug("Scanning banned player list");
+            Enjin.getLogger().debug("Scanning banned player list");
             List<String> lowercaseBans = new ArrayList<>();
 
             //Checking for bans being added by console or plugin
@@ -45,7 +45,7 @@ public class BanLister implements Runnable {
                     if (!currentBannedPlayers.contains(player.getName().toLowerCase())) {
                         currentBannedPlayers.add(player.getName().toLowerCase());
                         plugin.getBannedPlayers().put(player.getName().toLowerCase(), "");
-                        Enjin.getPlugin().debug("Adding banned player " + player.getName());
+                        Enjin.getLogger().debug("Adding banned player " + player.getName());
                     }
                 }
             }
@@ -54,7 +54,7 @@ public class BanLister implements Runnable {
                 if (!lowercaseBans.contains(player.toLowerCase())) {
                     currentBannedPlayers.remove(player.toLowerCase());
                     plugin.getPardonedPlayers().put(player.toLowerCase(), "");
-                    Enjin.getPlugin().debug(player + " was pardoned. Adding to pardoned list.");
+                    Enjin.getLogger().debug(player + " was pardoned. Adding to pardoned list.");
                 }
             }
         }

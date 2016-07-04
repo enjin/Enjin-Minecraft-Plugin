@@ -7,6 +7,7 @@ import com.enjin.bukkit.modules.impl.SupportModule;
 import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketViewBuilder;
 import com.enjin.bukkit.util.PermissionsUtil;
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
@@ -59,15 +60,15 @@ public class SupportCommands {
                         return;
                     }
 
-                    plugin.debug("Checking if module with id \"" + moduleId + "\" exists.");
+                    Enjin.getLogger().debug("Checking if module with id \"" + moduleId + "\" exists.");
                     final TicketModule module = modules.get(moduleId);
                     if (module != null) {
                         new TicketCreationSession(sender, moduleId, module);
                     } else {
                         sender.sendMessage("No module with id \"" + moduleId + "\" exists.");
-                        plugin.debug("Existing modules:");
+                        Enjin.getLogger().debug("Existing modules:");
                         for (Integer id : modules.keySet()) {
-                            plugin.debug(String.valueOf(id));
+                            Enjin.getLogger().debug(String.valueOf(id));
                         }
                     }
                 } else {
@@ -80,7 +81,7 @@ public class SupportCommands {
                             }
                         });
                     } else {
-                        plugin.debug(String.valueOf(modules.size()));
+                        Enjin.getLogger().debug(String.valueOf(modules.size()));
                         for (Map.Entry<Integer, TicketModule> entry : modules.entrySet()) {
                             int id = entry.getKey();
                             TicketModule module = entry.getValue();

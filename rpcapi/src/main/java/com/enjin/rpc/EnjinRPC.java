@@ -42,7 +42,7 @@ public class EnjinRPC {
             builder.append(clazz);
 
             URL url =  new URL(builder.toString());
-            debug("Enjin API URL: " + url.toString());
+            Enjin.getLogger().debug("Enjin API URL: " + url.toString());
             return url;
         } catch (MalformedURLException e) {
 			Enjin.getLogger().catching(e);
@@ -69,7 +69,7 @@ public class EnjinRPC {
         URL url = getUrl(clazz);
 
         if (url == null) {
-            debug("Api url is null.");
+            Enjin.getLogger().debug("Api url is null.");
             return null;
         }
 

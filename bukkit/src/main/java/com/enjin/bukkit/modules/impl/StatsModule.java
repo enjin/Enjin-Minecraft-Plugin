@@ -50,7 +50,7 @@ public class StatsModule {
                 stats.createNewFile();
             }
         } catch (IOException e) {
-            Enjin.getPlugin().debug(e.getMessage());
+            Enjin.getLogger().debug(e.getMessage());
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
@@ -110,7 +110,7 @@ public class StatsModule {
         EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
         if (configuration.isCollectPlayerStats()) {
             new WriteStats(plugin).write("enjin-stats.json");
-            Enjin.getPlugin().debug("Stats saved to enjin-stats.json.");
+            Enjin.getLogger().debug("Stats saved to enjin-stats.json.");
         }
     }
 

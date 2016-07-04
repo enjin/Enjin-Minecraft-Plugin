@@ -9,6 +9,7 @@ import com.enjin.core.InstructionHandler;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -103,6 +104,12 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
                 EnjinMinecraftPlugin.dispatchConsoleCommand(command);
                 if (id > -1) {
+                    for (ExecutedCommand executed : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
+                        if (executed.getId().equals(Long.toString(id))) {
+                            return;
+                        }
+                    }
+
                     EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
                     EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
                 }
@@ -120,7 +127,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
     public void commandConfirmed(List<Long> executed) {
         for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
             for (long id : executed) {
-                Enjin.getPlugin().debug("Confirming Command ID: " + id);
+                Enjin.getLogger().debug("Confirming Command ID: " + id);
                 if (Long.parseLong(command.getId()) == id) {
                     EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command);
                 }
@@ -142,7 +149,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void statusReceived(String status) {
-        Enjin.getPlugin().debug("Enjin Status: " + status);
+        Enjin.getLogger().debug("Enjin Status: " + status);
     }
 
     @Override

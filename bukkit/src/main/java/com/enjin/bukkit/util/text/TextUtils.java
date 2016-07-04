@@ -21,7 +21,7 @@ public class TextUtils {
 
     public static String trim(String text, String ellipses) {
         String output = text;
-        Enjin.getPlugin().debug("Text Width: " + getWidth(output));
+        Enjin.getLogger().debug("Text Width: " + getWidth(output));
         if (getWidth(output) > MINECRAFT_CONSOLE_WIDTH) {
             output = output.substring(0, output.length() - 1);
 

@@ -1,5 +1,6 @@
 package com.enjin.sponge.utils.text;
 
+import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.text.Text;
@@ -25,7 +26,7 @@ public class TextUtils {
 
     public static String trim(String text, String ellipses) {
         String output = text;
-        EnjinMinecraftPlugin.getInstance().debug("Text Width: " + getWidth(output));
+        Enjin.getLogger().debug("Text Width: " + getWidth(output));
         if (getWidth(output) > MINECRAFT_CONSOLE_WIDTH) {
             output = output.substring(0, output.length() - 1);
 

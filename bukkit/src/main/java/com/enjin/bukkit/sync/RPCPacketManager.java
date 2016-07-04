@@ -60,7 +60,7 @@ public class RPCPacketManager implements Runnable {
         RPCData<SyncResponse> data = service.sync(status);
 
         if (data == null) {
-            Enjin.getPlugin().debug("Data is null while requesting sync update from Plugin.sync.");
+            Enjin.getLogger().debug("Data is null while requesting sync update from Plugin.sync.");
             return;
         }
 

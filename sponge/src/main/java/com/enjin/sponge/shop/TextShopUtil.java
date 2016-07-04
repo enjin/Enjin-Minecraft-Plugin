@@ -1,6 +1,7 @@
 package com.enjin.sponge.shop;
 
 import com.enjin.common.shop.PlayerShopInstance;
+import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.utils.text.TextUtils;
 import com.enjin.rpc.mappings.mappings.shop.Category;
@@ -26,19 +27,19 @@ public class TextShopUtil {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (instance.getActiveShop() == null) {
-            plugin.debug("Sending a list of shops to " + player.getName());
+            Enjin.getLogger().debug("Sending a list of shops to " + player.getName());
             sendAvailableShops(player, instance);
         } else {
             if (instance.getActiveCategory() == null) {
-                plugin.debug("Sending a list of categories to " + player.getName());
+                Enjin.getLogger().debug("Sending a list of categories to " + player.getName());
                 sendAvailableCategories(player, instance, page < 1 ? 1 : page);
             } else {
                 Category category = instance.getActiveCategory();
                 if (category.getCategories() != null && !category.getCategories().isEmpty()) {
-                    plugin.debug("Sending " + category.getCategories().size() + " sub-categories to " + player.getName());
+                    Enjin.getLogger().debug("Sending " + category.getCategories().size() + " sub-categories to " + player.getName());
                     sendAvailableCategories(player, instance, page < 1 ? 1 : page);
                 } else {
-                    plugin.debug("Sending a list of items to " + player.getName());
+                    Enjin.getLogger().debug("Sending a list of items to " + player.getName());
                     sendAvailableItems(player, instance, page);
                 }
             }
@@ -295,7 +296,7 @@ public class TextShopUtil {
                                 .append(Text.NEW_LINE);
                     }
                 } catch (MalformedURLException e) {
-                    EnjinMinecraftPlugin.getInstance().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+                    Enjin.getLogger().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
                 }
 
                 StringBuilder descriptionBuilder = new StringBuilder();
@@ -371,7 +372,7 @@ public class TextShopUtil {
                         .append(Text.NEW_LINE);
             }
         } catch (MalformedURLException e) {
-            EnjinMinecraftPlugin.getInstance().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+            Enjin.getLogger().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
         }
 
         builder = new StringBuilder()
