@@ -24,10 +24,12 @@ import java.util.Map.Entry;
 public class Log implements EnjinLogger {
     private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getSimpleName());
     private LineAppender listener = null;
+	private File logs = null;
+	private File log = null;
 
     public Log(File configDir) {
-        File logs = new File(configDir, "logs");
-        File log = new File(logs, "enjin.log");
+        logs = new File(configDir, "logs");
+        log = new File(logs, "enjin.log");
 
         try {
             if (log.exists()) {
@@ -43,9 +45,6 @@ public class Log implements EnjinLogger {
         } catch (IOException e) {
 			Enjin.getLogger().catching(e);
         }
-
-        configure(logger, log);
-        Enjin.getLogger().debug("Log Utility Initialized");
     }
 
 	public void info(String msg) {
@@ -75,7 +74,7 @@ public class Log implements EnjinLogger {
 	}
 
 	private String hideSensitiveText(String msg) {
-		if (Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
+		if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
 			return msg;
 		} else {
 			return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
@@ -83,7 +82,7 @@ public class Log implements EnjinLogger {
 		}
 	}
 
-    private void configure(Logger logger, File log) {
+    public void configure() {
 		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
         PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charsets.UTF_8.name(), null);

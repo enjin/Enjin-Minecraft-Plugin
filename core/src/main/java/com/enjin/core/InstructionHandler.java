@@ -17,7 +17,7 @@ public interface InstructionHandler {
 
     void removeFromGroup(String player, String group, String world);
 
-    void execute(long id, String command, long delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid);
+    void execute(Long id, String command, Optional<Long> delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid);
 
     void commandConfirmed(List<Long> executed);
 

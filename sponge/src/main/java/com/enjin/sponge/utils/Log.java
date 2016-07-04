@@ -23,10 +23,12 @@ import java.io.IOException;
 public class Log implements EnjinLogger {
     private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getSimpleName());
     private LineAppender listener;
+    private File logs = null;
+    private File log = null;
 
     public Log(File configDir) {
-        File logs = new File(configDir, "logs");
-        File log = new File(logs, "enjin.log");
+        logs = new File(configDir, "logs");
+        log = new File(logs, "enjin.log");
 
         try {
             if (log.exists()) {
@@ -42,9 +44,6 @@ public class Log implements EnjinLogger {
         } catch (IOException e) {
 			Enjin.getLogger().catching(e);
         }
-
-        configure(logger, log);
-        debug("Log Utility Initialized");
     }
 
     public void info(String msg) {
@@ -74,7 +73,7 @@ public class Log implements EnjinLogger {
     }
 
 	private String hideSensitiveText(String msg) {
-		if (Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
+		if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
 			return msg;
 		} else {
 			return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
@@ -82,7 +81,7 @@ public class Log implements EnjinLogger {
 		}
 	}
 
-    private void configure(Logger logger, File log) {
+    public void configure() {
 		logger.getAppenders().forEach((string, appender) -> {
 			logger.removeAppender(appender);
 		});
@@ -102,12 +101,6 @@ public class Log implements EnjinLogger {
 		Logger root = (Logger) LogManager.getRootLogger();
 		root.addAppender(listener);
 
-		// Appender only for debug log level.
-		Filter filter = ThresholdFilter.createFilter(Level.DEBUG.name(), "ACCEPT", "DENY");
-		layout = PatternLayout.createLayout("[%d{HH:mm:ss} %t/%level]: [%logger] %msg%n", config, null, Charsets.UTF_8.name(), null);
-		ConsoleAppender consoleAppender = ConsoleAppender.createAppender(layout, null, null, "EnjinDebug", null, null);
-		consoleAppender.addFilter(filter);
-		consoleAppender.start();
-		logger.addAppender(consoleAppender);
+        logger.setLevel(Level.DEBUG);
     }
 }

@@ -50,7 +50,11 @@ public class SpongeInstructionHandler implements InstructionHandler {
 	}
 
 	@Override
-	public void execute (long id, String command, long delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
+	public void execute (Long id, String command, Optional<Long> delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
+		if (id == null || id <= -1) {
+			return;
+		}
+
 		for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
 			if (Long.parseLong(c.getId()) == id) {
 				return;
@@ -58,30 +62,36 @@ public class SpongeInstructionHandler implements InstructionHandler {
 		}
 
 		Runnable runnable = () -> {
+			java.util.Optional<Player> player = null;
+			if (uuid.isPresent()) {
+				UUID u = UUID.fromString(uuid.get());
+				player = Sponge.getServer().getPlayer(u);
+			} else if (name.isPresent()) {
+				String n = name.get();
+				player = Sponge.getServer().getPlayer(n);
+			} else {
+				return;
+			}
+
 			if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
-				if (uuid.isPresent() || name.isPresent()) {
-					Player player = (uuid.isPresent() && !uuid.get().isEmpty()) ? Sponge.getServer().getPlayer(UUID.fromString(uuid.get())).get() : Sponge.getServer().getPlayer(name.get()).get();
-					if (player == null || !player.isOnline()) {
-						return;
-					}
-				} else {
+				if (!player.isPresent() || !player.get().isOnline()) {
 					return;
 				}
 			}
 
-			Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
-			if (id > -1) {
+			if (player.isPresent()) {
+				Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
 				EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
 				EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
 			}
 		};
 
-		if (delay <= 0) {
+		if (!delay.isPresent() || delay.get() <= 0) {
 			Sponge.getScheduler().createTaskBuilder().execute(runnable)
 					.submit(Enjin.getPlugin());
 		} else {
 			Sponge.getScheduler().createTaskBuilder().execute(runnable)
-					.delay(delay, TimeUnit.SECONDS)
+					.delay(delay.get(), TimeUnit.SECONDS)
 					.submit(Enjin.getPlugin());
 		}
 	}

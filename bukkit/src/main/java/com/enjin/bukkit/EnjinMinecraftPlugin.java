@@ -119,10 +119,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public void init() {
         if (firstRun) {
-            Enjin.setLogger(new Log(getDataFolder()));
+            Log log = new Log(getDataFolder());
+            Enjin.setLogger(log);
 
             Enjin.getLogger().info("Initializing for the first time.");
             initConfigs();
+            log.configure();
 
             try {
                 MetricsLite metrics = new MetricsLite(this);

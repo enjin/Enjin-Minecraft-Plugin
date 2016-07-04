@@ -119,13 +119,15 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         }
 
         if (firstRun) {
+            Log log = new Log(configDir);
+            Enjin.setLogger(log);
+
 			sync = Sponge.getScheduler().createSyncExecutor(this);
 			async = Sponge.getScheduler().createAsyncExecutor(this);
 
 			firstRun = false;
             initConfigs();
-
-            Enjin.setLogger(new Log(configDir));
+            log.configure();
 			Enjin.getLogger().debug("Init config done.");
 
             initCommands();

@@ -15,55 +15,45 @@ import java.util.logging.Logger;
 public class Log implements EnjinLogger {
     @Getter
     private final static Logger logger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
+    private File logs = null;
+    private File log = null;
 
-    public Log() {
-        Enjin.getLogger().debug("Initializing internal logger");
-        logger.setLevel(Level.FINEST);
+    public Log(File configDir) {
+        logs = new File(configDir, "logs");
+        log = new File(logs, "enjin.log");
 
-        File logs = new File(EnjinMinecraftPlugin.getInstance().getDataFolder(), "logs");
-        File log = new File(logs, "enjin.log");
-        if (log.exists()) {
-            if (log.length() > 1024 * 1024 * 5) {
-                log.delete();
-            }
-        } else {
-            logs.mkdirs();
-
-            try {
-                log.createNewFile();
-            } catch (IOException e) {
-				Enjin.getLogger().catching(e);
-            }
-        }
-
-        EnjinLogFormatter formatter = new EnjinLogFormatter();
-        FileHandler handler = null;
         try {
-            handler = new FileHandler(EnjinMinecraftPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
+            if (log.exists()) {
+                //Max file size of the enjin log should be less than 5MB.
+                if (log.length() > 1024 * 1024 * 5) {
+                    log.delete();
+                    log.createNewFile();
+                }
+            } else {
+                logs.mkdirs();
+                log.createNewFile();
+            }
         } catch (IOException e) {
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
-
-        handler.setFormatter(formatter);
-        logger.addHandler(handler);
-        logger.setUseParentHandlers(false);
-        Enjin.getLogger().debug("Logger initialized.");
     }
 
     public void info(String msg) {
-        logger.info(msg);
+        logger.info(hideSensitiveText(msg));
     }
 
     public void fine(String msg) {
-        logger.fine(msg);
+        logger.fine(hideSensitiveText(msg));
     }
 
     public void warning(String msg) {
-        logger.warning(msg);
+        logger.warning(hideSensitiveText(msg));
     }
 
     public void debug(String msg) {
-        fine("Enjin Debug: " + msg);
+        if (Enjin.getConfiguration() != null && Enjin.getConfiguration().isDebug()) {
+            fine("Enjin Debug: " + hideSensitiveText(msg));
+        }
     }
 
 	public void catching(Throwable e) {
@@ -73,5 +63,33 @@ public class Log implements EnjinLogger {
     @Override
     public String getLastLine() {
         return "";
+    }
+
+    private String hideSensitiveText(String msg) {
+        if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
+            return msg;
+        } else {
+            return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
+                    "**************************************************");
+        }
+    }
+
+    public void configure() {
+        if (Enjin.getConfiguration().isLoggingEnabled()) {
+            EnjinLogFormatter formatter = new EnjinLogFormatter();
+            FileHandler handler = null;
+
+            try {
+                handler = new FileHandler(EnjinMinecraftPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
+            } catch (IOException e) {
+                Enjin.getLogger().catching(e);
+            }
+
+            handler.setFormatter(formatter);
+            logger.addHandler(handler);
+        }
+
+        logger.setUseParentHandlers(false);
+        logger.setLevel(Level.FINEST);
     }
 }

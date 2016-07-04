@@ -37,7 +37,7 @@ public class BungeeInstructionHandler implements InstructionHandler {
     }
 
     @Override
-    public void execute(long id, String command, long delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
+    public void execute(Long id, String command, Optional<Long> delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
     }
 
     @Override

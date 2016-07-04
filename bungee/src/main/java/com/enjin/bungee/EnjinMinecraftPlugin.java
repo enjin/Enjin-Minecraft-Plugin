@@ -66,10 +66,12 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
         }
 
         if (firstRun) {
-            Enjin.setLogger(new Log());
+            Log log = new Log(getDataFolder());
+            Enjin.setLogger(log);
 
             firstRun = false;
             initConfig();
+            log.configure();
 
             Enjin.getLogger().debug("Init config done.");
 

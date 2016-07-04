@@ -81,7 +81,11 @@ public class BukkitInstructionHandler implements InstructionHandler {
     }
 
     @Override
-    public void execute(final long id, final String command, final long delay, final Optional<Boolean> requireOnline, final Optional<String> name, final Optional<String> uuid) {
+    public void execute(final Long id, final String command, final Optional<Long> delay, final Optional<Boolean> requireOnline, final Optional<String> name, final Optional<String> uuid) {
+        if (id == null || id <= -1) {
+            return;
+        }
+
         for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
             if (Long.parseLong(c.getId()) == id) {
                 return;
@@ -91,35 +95,35 @@ public class BukkitInstructionHandler implements InstructionHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                Player player = null;
+                if (uuid.isPresent()) {
+                    UUID u = UUID.fromString(uuid.get());
+                    player = Bukkit.getPlayer(u);
+                } else if (name.isPresent()) {
+                    String n = name.get();
+                    player = Bukkit.getPlayer(n);
+                } else {
+                    return;
+                }
+
                 if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
-                    if (uuid.isPresent() || name.isPresent()) {
-                        Player player = (uuid.isPresent() && !uuid.get().isEmpty()) ? Bukkit.getPlayer(UUID.fromString(uuid.get())) : Bukkit.getPlayer(name.get());
-                        if (player == null || !player.isOnline()) {
-                            return;
-                        }
-                    } else {
+                    if (player == null || !player.isOnline()) {
                         return;
                     }
                 }
 
-                EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-                if (id > -1) {
-                    for (ExecutedCommand executed : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
-                        if (executed.getId().equals(Long.toString(id))) {
-                            return;
-                        }
-                    }
-
+                if (player != null) {
+                    EnjinMinecraftPlugin.dispatchConsoleCommand(command);
                     EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
                     EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
                 }
             }
         };
 
-        if (delay <= 0) {
+        if (!delay.isPresent() || delay.get() <= 0) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
         } else {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay * 20);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
         }
     }
 
