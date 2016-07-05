@@ -72,7 +72,12 @@ public class Log implements EnjinLogger {
         return listener.getLine();
     }
 
-	private String hideSensitiveText(String msg) {
+    @Override
+    public void setDebug(boolean debug) {
+        // TODO
+    }
+
+    private String hideSensitiveText(String msg) {
 		if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
 			return msg;
 		} else {
@@ -102,5 +107,15 @@ public class Log implements EnjinLogger {
 		root.addAppender(listener);
 
         logger.setLevel(Level.DEBUG);
+    }
+
+    @Override
+    public File getLogDirectory() {
+        return logs;
+    }
+
+    @Override
+    public File getLogFile() {
+        return log;
     }
 }

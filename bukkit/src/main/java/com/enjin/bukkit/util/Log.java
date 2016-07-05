@@ -107,7 +107,7 @@ public class Log implements EnjinLogger {
         PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} %p]: %msg%n", config, null, Charsets.UTF_8.name(), null);
 
 		if (Enjin.getConfiguration().isLoggingEnabled()) {
-			logAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "false", null, null, layout, null, null, null, config);
+			logAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "false", null, "false", layout, null, null, null, config);
 			logAppender.start();
 			logger.addAppender(logAppender);
 		}
@@ -128,5 +128,15 @@ public class Log implements EnjinLogger {
 		} else {
 			logger.setLevel(defaultLevel);
 		}
+	}
+
+	@Override
+	public File getLogDirectory() {
+		return logs;
+	}
+
+	@Override
+	public File getLogFile() {
+		return log;
 	}
 }

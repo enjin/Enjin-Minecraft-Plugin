@@ -50,6 +50,7 @@ allprojects {
         sponge = '4.1.0-SNAPSHOT'
         reflections = '0.9.10'
         javassist = '3.12.1.GA'
+        zip4j = '1.3.2'
     }
 
     repositories {
@@ -70,6 +71,7 @@ allprojects {
         provided group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4j
         provided group: 'com.googlecode.json-simple', name: 'json-simple', version: json_simple
         provided group: 'com.google.code.gson', name: 'gson', version: gson
+        provided group: 'net.lingala.zip4j', name: 'zip4j', version: zip4j
     }
 }
 

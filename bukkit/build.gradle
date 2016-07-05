@@ -41,6 +41,7 @@ shadowJar {
         include(dependency('.*:fanciful'))
         include(dependency('.*:reflections'))
         include(dependency('.*:javassist'))
+        include(dependency('.*:zip4j'))
     }
 
     exclude('mkremins/fanciful/shaded/**')
@@ -53,4 +54,5 @@ shadowJar {
     relocate 'net.amoebaman', 'com.enjin.shaded.amoebaman'
     relocate 'com.google.gson', 'com.enjin.shaded.gson'
     relocate 'com.thetransactioncompany.jsonrpc2', 'com.enjin.shaded.jsonrpc2'
+    relocate 'net.lingala.zip4j', 'com.enjin.shaded.zip4j'
 }

@@ -65,6 +65,11 @@ public class Log implements EnjinLogger {
         return "";
     }
 
+    @Override
+    public void setDebug(boolean debug) {
+        // TODO
+    }
+
     private String hideSensitiveText(String msg) {
         if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
             return msg;
@@ -91,5 +96,15 @@ public class Log implements EnjinLogger {
 
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.FINEST);
+    }
+
+    @Override
+    public File getLogDirectory() {
+        return logs;
+    }
+
+    @Override
+    public File getLogFile() {
+        return log;
     }
 }

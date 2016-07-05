@@ -1,13 +1,6 @@
 package com.enjin.bukkit.tasks;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +8,10 @@ import java.util.LinkedList;
 
 import com.enjin.common.utils.ConnectionUtil;
 import com.enjin.core.Enjin;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -179,23 +176,27 @@ public class ReportPublisher implements Runnable {
         String finalReport = builder.toString().replaceAll("authkey=\\w{50}", "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
         Date date = new Date();
-        BufferedWriter outChannel = null;
+        InputStream inChannel = null;
 
         try {
-            File outputFile = new File("enjinreport_" + dateFormat.format(date) + ".txt");
-            outChannel = new BufferedWriter(new FileWriter(outputFile));
-            outChannel.write(finalReport);
-            sender.sendMessage(ChatColor.GOLD + "Enjin debug report created in " + outputFile.getPath() + " successfully!");
-        } catch (IOException e) {
+            inChannel = new ByteArrayInputStream(finalReport.getBytes());
+
+            ZipFile zip = new ZipFile(new File("enjinreport_" + dateFormat.format(date) + ".zip"));
+            ZipParameters reportParameters = new ZipParameters();
+            reportParameters.setFileNameInZip("enjinreport_" + dateFormat.format(date) + ".txt");
+            reportParameters.setSourceExternalStream(true);
+            zip.addStream(inChannel, reportParameters);
+            zip.addFile(Enjin.getLogger().getLogFile(), new ZipParameters());
+
+            sender.sendMessage(ChatColor.GOLD + "Enjin debug report created in " + zip.getFile().getPath() + " successfully!");
+        } catch (ZipException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin debug report!");
 			Enjin.getLogger().catching(e);
         } finally {
-            if (outChannel != null) {
-                try {
-                    outChannel.close();
-                } catch (IOException e) {
-                    Enjin.getLogger().catching(e);
-                }
+            try {
+                inChannel.close();
+            } catch (IOException e) {
+                Enjin.getLogger().catching(e);
             }
         }
     }

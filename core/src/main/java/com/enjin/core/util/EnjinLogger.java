@@ -1,5 +1,7 @@
 package com.enjin.core.util;
 
+import java.io.File;
+
 public interface EnjinLogger {
     void info(String msg);
     void warning(String msg);
@@ -8,4 +10,6 @@ public interface EnjinLogger {
 	void catching(Throwable e);
     String getLastLine();
     void setDebug(boolean debug);
+    File getLogDirectory();
+    File getLogFile();
 }
