@@ -6,18 +6,18 @@ import com.enjin.core.Enjin;
 import com.enjin.core.util.EnjinLogger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.MarkerManager;
+import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.filter.AbstractFilterable;
-import org.apache.logging.log4j.core.filter.ThresholdFilter;
 import org.apache.logging.log4j.core.helpers.Charsets;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 public class Log implements EnjinLogger {
     private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getName());
@@ -62,9 +62,18 @@ public class Log implements EnjinLogger {
 	}
 
 	public void debug(String msg) {
-		if (this.debug) {
-			logger.debug(hideSensitiveText(msg));
-		}
+		logger.debug(hideSensitiveText(msg));
+		logAppender.append(Log4jLogEvent.createEvent(EnjinMinecraftPlugin.class.getName(),
+				MarkerManager.getMarker("debug"),
+				EnjinMinecraftPlugin.class.getName(),
+				Level.DEBUG,
+				logger.getMessageFactory().newMessage(hideSensitiveText(msg)),
+				null,
+				ThreadContext.getImmutableContext(),
+				ThreadContext.getImmutableStack(),
+				Thread.currentThread().getName(),
+				null,
+				System.currentTimeMillis()));
 	}
 
 	public void catching(Throwable e) {
@@ -96,9 +105,9 @@ public class Log implements EnjinLogger {
         PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} %-5p]: %msg%n", config, null, Charsets.UTF_8.name(), null);
 
 		if (Enjin.getConfiguration().isLoggingEnabled()) {
-			FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "false", null, null, layout, null, null, null, config);
-			fileAppender.start();
-			logger.addAppender(fileAppender);
+			logAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "false", null, null, layout, null, null, null, config);
+			logAppender.start();
+			logger.addAppender(logAppender);
 		}
 
 		lineAppender = new LineAppender("EnjinLineIn", layout);
@@ -116,21 +125,6 @@ public class Log implements EnjinLogger {
 			logger.setLevel(Level.DEBUG);
 		} else {
 			logger.setLevel(defaultLevel);
-		}
-
-		for (Map.Entry<String, Appender> entry : this.logger.getAppenders().entrySet()) {
-			if (entry.getValue() instanceof AbstractFilterable && !(entry.getValue() instanceof FileAppender)) {
-				AbstractFilterable appender = (AbstractFilterable) entry.getValue();
-				if (debug) {
-					appender.stopFilter();
-					appender.addFilter(ThresholdFilter.createFilter(Level.ALL.name(), "ACCEPT", "DENY"));
-					appender.startFilter();
-				} else {
-					appender.stopFilter();
-					appender.addFilter(ThresholdFilter.createFilter(Level.INFO.name(), "ACCEPT", "DENY"));
-					appender.startFilter();
-				}
-			}
 		}
 	}
 }
