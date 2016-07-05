@@ -63,17 +63,19 @@ public class Log implements EnjinLogger {
 
 	public void debug(String msg) {
 		logger.debug(hideSensitiveText(msg));
-		logAppender.append(Log4jLogEvent.createEvent(EnjinMinecraftPlugin.class.getName(),
-				MarkerManager.getMarker("debug"),
-				EnjinMinecraftPlugin.class.getName(),
-				Level.DEBUG,
-				logger.getMessageFactory().newMessage(hideSensitiveText(msg)),
-				null,
-				ThreadContext.getImmutableContext(),
-				ThreadContext.getImmutableStack(),
-				Thread.currentThread().getName(),
-				null,
-				System.currentTimeMillis()));
+		if (logger.getLevel().intLevel() < Level.DEBUG.intLevel()) {
+			logAppender.append(Log4jLogEvent.createEvent(EnjinMinecraftPlugin.class.getName(),
+					MarkerManager.getMarker("debug"),
+					EnjinMinecraftPlugin.class.getName(),
+					Level.DEBUG,
+					logger.getMessageFactory().newMessage(hideSensitiveText(msg)),
+					null,
+					ThreadContext.getImmutableContext(),
+					ThreadContext.getImmutableStack(),
+					Thread.currentThread().getName(),
+					null,
+					System.currentTimeMillis()));
+		}
 	}
 
 	public void catching(Throwable e) {
@@ -102,7 +104,7 @@ public class Log implements EnjinLogger {
 
 		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
-        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} p]: %msg%n", config, null, Charsets.UTF_8.name(), null);
+        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} %p]: %msg%n", config, null, Charsets.UTF_8.name(), null);
 
 		if (Enjin.getConfiguration().isLoggingEnabled()) {
 			logAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "false", null, null, layout, null, null, null, config);
