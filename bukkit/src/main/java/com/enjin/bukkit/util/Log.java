@@ -102,7 +102,7 @@ public class Log implements EnjinLogger {
 
 		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
-        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} %-5p]: %msg%n", config, null, Charsets.UTF_8.name(), null);
+        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} p]: %msg%n", config, null, Charsets.UTF_8.name(), null);
 
 		if (Enjin.getConfiguration().isLoggingEnabled()) {
 			logAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "false", null, null, layout, null, null, null, config);
