@@ -7,4 +7,5 @@ public interface EnjinLogger {
     void debug(String msg);
 	void catching(Throwable e);
     String getLastLine();
+    void setDebug(boolean debug);
 }

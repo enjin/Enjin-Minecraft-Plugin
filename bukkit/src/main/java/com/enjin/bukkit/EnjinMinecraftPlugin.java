@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
@@ -125,6 +126,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             Enjin.getLogger().info("Initializing for the first time.");
             initConfigs();
             log.configure();
+            log.setDebug(Enjin.getConfiguration().isDebug());
 
             try {
                 MetricsLite metrics = new MetricsLite(this);

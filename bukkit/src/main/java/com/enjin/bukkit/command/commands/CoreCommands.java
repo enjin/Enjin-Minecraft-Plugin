@@ -155,6 +155,8 @@ public class CoreCommands {
         config.setDebug(!config.isDebug());
         EnjinMinecraftPlugin.saveConfiguration();
 
+        Enjin.getLogger().setDebug(config.isDebug());
+
         sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + config.isDebug());
     }
 

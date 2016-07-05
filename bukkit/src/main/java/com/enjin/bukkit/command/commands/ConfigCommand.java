@@ -3,6 +3,7 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.config.EMPConfig;
+import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -67,6 +68,7 @@ public class ConfigCommand {
         boolean success = true;
         if (key == ConfigKey.DEBUG) {
             Enjin.getConfiguration().setDebug((Boolean) value);
+            Enjin.getLogger().setDebug((Boolean) value);
         } else if (key == ConfigKey.HTTPS) {
             Enjin.getConfiguration().setHttps((Boolean) value);
         } else if (key == ConfigKey.AUTO_UPDATE) {

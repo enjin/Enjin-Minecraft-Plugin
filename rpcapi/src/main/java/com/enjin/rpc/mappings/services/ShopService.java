@@ -35,16 +35,16 @@ public class ShopService implements Service {
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
-            EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
-            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
+            Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
+            Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<Shop>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Shop>>>() {}.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            EnjinRPC.debug(e.getMessage());
-            EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
+            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
     }
@@ -68,16 +68,16 @@ public class ShopService implements Service {
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
-            EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
-            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
+            Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
+            Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<Purchase>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Purchase>>>() {}.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            EnjinRPC.debug(e.getMessage());
-            EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
+            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
     }
@@ -100,16 +100,16 @@ public class ShopService implements Service {
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
-            EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
-            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
+            Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
+            Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<List<FilteredItem>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<FilteredItem>>>() {}.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            EnjinRPC.debug(e.getMessage());
-            EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
+            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
     }
@@ -146,16 +146,16 @@ public class ShopService implements Service {
             request = new JSONRPC2Request(method, parameters, id);
             response = session.send(request);
 
-            EnjinRPC.debug("JSONRPC2 Request: " + request.toJSONString());
-            EnjinRPC.debug("JSONRPC2 Response: " + response.toJSONString());
+            Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
+            Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
             RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {}.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            EnjinRPC.debug(e.getMessage());
-            EnjinRPC.debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
+            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
     }

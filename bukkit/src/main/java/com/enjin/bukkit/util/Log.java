@@ -6,26 +6,28 @@ import com.enjin.core.Enjin;
 import com.enjin.core.util.EnjinLogger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.filter.AbstractFilterable;
 import org.apache.logging.log4j.core.filter.ThresholdFilter;
 import org.apache.logging.log4j.core.helpers.Charsets;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map.Entry;
+import java.util.Map;
 
 public class Log implements EnjinLogger {
-    private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getSimpleName());
-    private LineAppender listener = null;
+    private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getName());
+	private Level defaultLevel = logger.getLevel();
+    private LineAppender lineAppender = null;
+	private FileAppender logAppender = null;
 	private File logs = null;
 	private File log = null;
+	private boolean configured = false;
+	private boolean debug = false;
 
     public Log(File configDir) {
         logs = new File(configDir, "logs");
@@ -60,7 +62,7 @@ public class Log implements EnjinLogger {
 	}
 
 	public void debug(String msg) {
-		if (Enjin.getConfiguration() != null && Enjin.getConfiguration().isDebug()) {
+		if (this.debug) {
 			logger.debug(hideSensitiveText(msg));
 		}
 	}
@@ -70,34 +72,65 @@ public class Log implements EnjinLogger {
 	}
 
 	public String getLastLine() {
-		return listener.getLine();
+		return lineAppender.getLine();
 	}
 
 	private String hideSensitiveText(String msg) {
-		if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
+		if (msg == null || msg.isEmpty() || Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null
+				|| Enjin.getConfiguration().getAuthKey().isEmpty()) {
 			return msg;
 		} else {
-			return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
-					"**************************************************");
+			return msg.replaceAll(Enjin.getConfiguration().getAuthKey(), "**************************************************");
 		}
 	}
 
     public void configure() {
+		if (configured) {
+			return;
+		}
+
+		configured = true;
+
 		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
-        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charsets.UTF_8.name(), null);
+        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} %-5p]: %msg%n", config, null, Charsets.UTF_8.name(), null);
 
-        if (Enjin.getConfiguration().isLoggingEnabled()) {
-            FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinFileOut", "false", null, null, layout, null, null, null, config);
-            fileAppender.start();
-            logger.addAppender(fileAppender);
-        }
+		if (Enjin.getConfiguration().isLoggingEnabled()) {
+			FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "false", null, null, layout, null, null, null, config);
+			fileAppender.start();
+			logger.addAppender(fileAppender);
+		}
 
-		listener = new LineAppender("EnjinLineIn", layout);
-		listener.start();
+		lineAppender = new LineAppender("EnjinLineIn", layout);
+		lineAppender.start();
 		Logger root = (Logger) LogManager.getRootLogger();
-		root.addAppender(listener);
+		root.addAppender(lineAppender);
 
-		logger.setLevel(Level.DEBUG);
+		setDebug(false);
     }
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+
+		if (this.debug) {
+			logger.setLevel(Level.DEBUG);
+		} else {
+			logger.setLevel(defaultLevel);
+		}
+
+		for (Map.Entry<String, Appender> entry : this.logger.getAppenders().entrySet()) {
+			if (entry.getValue() instanceof AbstractFilterable && !(entry.getValue() instanceof FileAppender)) {
+				AbstractFilterable appender = (AbstractFilterable) entry.getValue();
+				if (debug) {
+					appender.stopFilter();
+					appender.addFilter(ThresholdFilter.createFilter(Level.ALL.name(), "ACCEPT", "DENY"));
+					appender.startFilter();
+				} else {
+					appender.stopFilter();
+					appender.addFilter(ThresholdFilter.createFilter(Level.INFO.name(), "ACCEPT", "DENY"));
+					appender.startFilter();
+				}
+			}
+		}
+	}
 }

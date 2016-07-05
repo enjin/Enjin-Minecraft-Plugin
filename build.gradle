@@ -42,7 +42,7 @@ allprojects {
         gson = '2.3.1'
         log4j = '2.0-beta9'
         jsonrpc2 = '1.15'
-        bukkit = '1.9-R0.1-SNAPSHOT'
+        bukkit = '1.10.2-R0.1-SNAPSHOT'
         fanciful = '0.3.5-SNAPSHOT'
         json_simple = '1.1'
         bungeecord = '1.9-SNAPSHOT'
@@ -109,7 +109,7 @@ project(':bukkit') {
         compile group: 'javassist', name: 'javassist', version: javassist
         provided project(':core')
         provided project(':rpcapi')
-        provided group: 'org.bukkit', name: 'bukkit', version: bukkit
+        provided group: 'org.bukkit', name: 'craftbukkit', version: bukkit
         provided fileTree(dir: 'lib', include: '*.jar')
     }
 }

@@ -51,12 +51,6 @@ public class EnjinRPC {
         return null;
     }
 
-    public static void debug(String s) {
-        if (Enjin.getConfiguration().isDebug()) {
-            Enjin.getLogger().debug(s);
-        }
-    }
-
     private static JSONRPC2SessionOptions getOptions() {
         JSONRPC2SessionOptions options = new JSONRPC2SessionOptions();
         options.setReadTimeout(READ_TIMEOUT);
