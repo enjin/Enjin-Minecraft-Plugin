@@ -37,6 +37,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 
 import lombok.Setter;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bukkit.*;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -104,12 +105,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         instance = this;
         Enjin.setPlugin(instance);
         init();
+        Enjin.getLogger().debug("Enabled Enjin Minecraft Plugin w/ Object Reference: " + ObjectUtils.identityToString(this.toString()));
     }
 
     @Override
     public void onDisable() {
         disableTasks();
         disableManagers();
+        Enjin.getLogger().debug("Disabled Enjin Minecraft Plugin w/ Object Reference: " + ObjectUtils.identityToString(this.toString()));
     }
 
     public void initVersion() {

@@ -34,6 +34,15 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
+        try {
+            sync();
+        } catch (Exception e) {
+            Enjin.getLogger().warning("An error occurred while syncing with Enjin services...");
+            Enjin.getLogger().catching(e);
+        }
+    }
+
+    private void sync() {
         String stats = null;
         if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
             stats = getStats();
@@ -53,7 +62,7 @@ public class RPCPacketManager implements Runnable {
                 getPlayerGroups(),
                 TPSMonitor.getInstance().getLastTPSMeasurement(),
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
-				getVotes(),
+                getVotes(),
                 stats);
 
         PluginService service = EnjinServices.getService(PluginService.class);
