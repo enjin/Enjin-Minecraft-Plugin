@@ -35,6 +35,7 @@ public class RPCPacketManager implements Runnable {
     @Override
     public void run() {
         try {
+            Enjin.getLogger().debug("Syncing with Enjin services...");
             sync();
         } catch (Exception e) {
             Enjin.getLogger().warning("An error occurred while syncing with Enjin services...");
@@ -45,10 +46,13 @@ public class RPCPacketManager implements Runnable {
     private void sync() {
         String stats = null;
         if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
+            Enjin.getLogger().debug("Collecting player stats...");
             stats = getStats();
             nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+            Enjin.getLogger().debug("Player stats collected!");
         }
 
+        Enjin.getLogger().debug("Constructing payload...");
         Status status = new Status(System.getProperty("java.version"),
                 plugin.getMcVersion(),
                 getPlugins(),
@@ -65,8 +69,11 @@ public class RPCPacketManager implements Runnable {
                 getVotes(),
                 stats);
 
+        Enjin.getLogger().debug("Fetching plugin service...");
         PluginService service = EnjinServices.getService(PluginService.class);
+        Enjin.getLogger().debug("Syncing...");
         RPCData<SyncResponse> data = service.sync(status);
+        Enjin.getLogger().debug("Sync complete...");
 
         if (data == null) {
             Enjin.getLogger().debug("Data is null while requesting sync update from Plugin.sync.");
