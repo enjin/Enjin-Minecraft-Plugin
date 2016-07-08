@@ -83,11 +83,13 @@ public class BukkitInstructionHandler implements InstructionHandler {
     @Override
     public void execute(final Long id, final String command, final Optional<Long> delay, final Optional<Boolean> requireOnline, final Optional<String> name, final Optional<String> uuid) {
         if (id == null || id <= -1) {
+            Enjin.getLogger().debug("Execute instruction has invalid id: " + id);
             return;
         }
 
         for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
             if (Long.parseLong(c.getId()) == id) {
+                Enjin.getLogger().debug("Enjin has already processed the execution of instruction with id: " + id);
                 return;
             }
         }
@@ -97,32 +99,43 @@ public class BukkitInstructionHandler implements InstructionHandler {
             public void run() {
                 Player player = null;
                 if (uuid.isPresent()) {
+                    Enjin.getLogger().debug("Fetching player from provided uuid...");
                     UUID u = UUID.fromString(uuid.get());
                     player = Bukkit.getPlayer(u);
                 } else if (name.isPresent()) {
+                    Enjin.getLogger().debug("Fetching player from provided name");
                     String n = name.get();
                     player = Bukkit.getPlayer(n);
                 } else {
+                    Enjin.getLogger().debug("No UUID or name was provided for execute instruction with id: " + id);
                     return;
                 }
 
                 if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
+                    Enjin.getLogger().debug("Execute instruction requires that the player be online...");
                     if (player == null || !player.isOnline()) {
+                        Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
                         return;
                     }
                 }
 
                 if (player != null) {
+                    Enjin.getLogger().debug("Dispatching execute instruction with id: " + id + ", and command: " + command);
                     EnjinMinecraftPlugin.dispatchConsoleCommand(command);
+                    Enjin.getLogger().debug("Command dispatched, adding executed command to configuration...");
                     EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                    Enjin.getLogger().debug("Saving executed commands configuration...");
                     EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                    Enjin.getLogger().debug("Executed command saved!");
                 }
             }
         };
 
         if (!delay.isPresent() || delay.get() <= 0) {
+            Enjin.getLogger().debug("Scheduling instant execution instruction with id: " + id);
             Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
         } else {
+            Enjin.getLogger().debug("Scheduling delayed execution instruction with id: " + id + ", and delay: " + delay.get());
             Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
         }
     }
