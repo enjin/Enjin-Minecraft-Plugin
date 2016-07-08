@@ -102,7 +102,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
                     Enjin.getLogger().debug("Fetching player from provided uuid...");
                     UUID u = UUID.fromString(uuid.get());
                     player = Bukkit.getPlayer(u);
-                } else if (name.isPresent()) {
+                } if (name.isPresent()) {
                     Enjin.getLogger().debug("Fetching player from provided name");
                     String n = name.get();
                     player = Bukkit.getPlayer(n);
@@ -112,6 +112,12 @@ public class BukkitInstructionHandler implements InstructionHandler {
                 }
 
                 if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
+                    if (player == null && name.isPresent()) {
+                        Enjin.getLogger().debug("Falling back to player name as the player could not be found by uuid most likely.");
+                        String n = name.get();
+                        player = Bukkit.getPlayer(n);
+                    }
+
                     Enjin.getLogger().debug("Execute instruction requires that the player be online...");
                     if (player == null || !player.isOnline()) {
                         Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
