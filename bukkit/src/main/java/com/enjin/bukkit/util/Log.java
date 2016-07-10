@@ -63,7 +63,7 @@ public class Log implements EnjinLogger {
 
 	public void debug(String msg) {
 		logger.debug(hideSensitiveText(msg));
-		if (logger.getLevel().intLevel() < Level.DEBUG.intLevel()) {
+		if (Enjin.getConfiguration().isLoggingEnabled() && logger.getLevel().intLevel() < Level.DEBUG.intLevel()) {
 			logAppender.append(Log4jLogEvent.createEvent(EnjinMinecraftPlugin.class.getName(),
 					MarkerManager.getMarker("debug"),
 					EnjinMinecraftPlugin.class.getName(),
