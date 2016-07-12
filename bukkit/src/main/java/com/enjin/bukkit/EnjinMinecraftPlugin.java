@@ -248,8 +248,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void initCommands() {
-        CommandBank.setup(this);
-        CommandBank.register(BuyCommand.class, CoreCommands.class, StatCommands.class,
+        CommandBank.register(CoreCommands.class, BuyCommand.class, StatCommands.class,
                 HeadCommands.class, SupportCommands.class, PointCommands.class, ConfigCommand.class);
 
         if (Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
@@ -333,14 +332,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public static void dispatchConsoleCommand(String command) {
-        if (!CommandBank.getNodes().containsKey(command.split(" ")[0].toLowerCase())) {
-            Enjin.getLogger().debug("[D1] Executed Command: " + command);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-            return;
-        }
-
-        Enjin.getLogger().debug("[D2] Executed Command: " + command);
-        Bukkit.getPluginManager().callEvent(new ServerCommandEvent(Bukkit.getConsoleSender(), command));
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
     public boolean isUpdateFromCurseForge() {

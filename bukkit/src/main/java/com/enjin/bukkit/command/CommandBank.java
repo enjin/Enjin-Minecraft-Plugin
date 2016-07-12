@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,6 +17,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -23,24 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor
-public class CommandBank implements Listener {
+public class CommandBank {
     @Getter
-    private static Map<String, CommandNode> nodes = Maps.newHashMap();
-    private static CommandBank instance;
-
-    /**
-     * Prepares the parent bank for operation.
-     * @param plugin The plugin registered to this command bank.
-     */
-    public static void setup(Plugin plugin) {
-        if (instance != null) {
-            Enjin.getLogger().debug("Command bank has already been initialized.");
-            return;
-        }
-
-        Bukkit.getPluginManager().registerEvents((instance = new CommandBank()), plugin);
-        Enjin.getLogger().debug("Command bank initialized.");
-    }
+    protected static Map<String, CommandNode> nodes = Maps.newHashMap();
+    private static DispatchCommand dispatchCommand = new DispatchCommand();
 
     /**
      * Registers the provided handles.
@@ -113,9 +101,36 @@ public class CommandBank implements Listener {
 
             Enjin.getLogger().debug("Registering command: " + node.getData().value());
             CommandBank.nodes.put(key, node);
+            registerCommand(key);
             registerCommandAlias(node.getData().value(), node.getData().aliases());
         }
     }
+
+    public static void registerCommandAlias(String command, String ... alias) {
+        CommandNode node = nodes.get(command.toLowerCase());
+        if (node != null) {
+            for (String a : alias) {
+                String key = a.toLowerCase();
+                if (nodes.containsKey(key)) {
+                    Enjin.getLogger().debug("That alias has already been registered by another command.");
+                    continue;
+                }
+
+                nodes.put(key, node);
+                registerCommand(key);
+            }
+        }
+    }
+
+	public static void replaceCommandWithAlias(String command, String ... alias) {
+		registerCommandAlias(command, alias);
+		nodes.remove(command.toLowerCase());
+        unregisterCommand(command.toLowerCase());
+	}
+
+	public static boolean isCommandRegistered(String command) {
+		return nodes.containsKey(command.toLowerCase());
+	}
 
     /**
      * Registers directives.
@@ -138,30 +153,6 @@ public class CommandBank implements Listener {
         }
     }
 
-    public static void registerCommandAlias(String command, String ... alias) {
-        CommandNode node = nodes.get(command.toLowerCase());
-        if (node != null) {
-            for (String a : alias) {
-                String key = a.toLowerCase();
-                if (nodes.containsKey(key)) {
-                    Enjin.getLogger().debug("That alias has already been registered by another command.");
-                    continue;
-                }
-
-                nodes.put(key, node);
-            }
-        }
-    }
-
-	public static void replaceCommandWithAlias(String command, String ... alias) {
-		registerCommandAlias(command, alias);
-		nodes.remove(command.toLowerCase());
-	}
-
-	public static boolean isCommandRegistered(String command) {
-		return nodes.containsKey(command.toLowerCase());
-	}
-
     public static void registerDirectiveAlias(String command, String directive, String ... alias) {
         CommandNode node = nodes.get(command.toLowerCase());
         if (node != null) {
@@ -180,38 +171,35 @@ public class CommandBank implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (handle(event.getPlayer(), event.getMessage())) {
-            event.setCancelled(true);
+    private static void registerCommand(String command) {
+        try {
+            SimpleCommandMap commandMap = getCommandMap();
+            commandMap.register(command.toLowerCase(), command.equalsIgnoreCase("enjin") ? "" : "enjin", dispatchCommand);
+        } catch (ReflectiveOperationException e) {
+            Enjin.getLogger().catching(e);
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onServerCommand(ServerCommandEvent event) {
-        if (handle(event.getSender(), event.getCommand())) {
-            if (event instanceof Cancellable) {
-                event.setCancelled(true);
-            }
+    private static void unregisterCommand(String command) {
+        try {
+            SimpleCommandMap commandMap = getCommandMap();
+            Map<String, org.bukkit.command.Command> knownCommands = getServerCommands(commandMap);
+
+            knownCommands.remove(command);
+        } catch (ReflectiveOperationException e) {
+            Enjin.getLogger().catching(e);
         }
     }
 
-    private boolean handle(CommandSender sender, String c) {
-        if (nodes.size() == 0) {
-            return false;
-        }
+    private static SimpleCommandMap getCommandMap() throws ReflectiveOperationException {
+        Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+        field.setAccessible(true);
+        return (SimpleCommandMap) field.get(Bukkit.getServer());
+    }
 
-        String[] parts = c.startsWith("/") ? c.replaceFirst("/", "").split(" ") : c.split(" ");
-        String command = parts[0].toLowerCase();
-
-        Optional<CommandNode> w = Optional.fromNullable(nodes.get(command));
-        if (w.isPresent()) {
-            CommandNode wrapper = w.get();
-            String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[]{};
-            wrapper.invoke(sender, args);
-            return true;
-        }
-
-        return false;
+    private static Map<String, org.bukkit.command.Command> getServerCommands(SimpleCommandMap commandMap) throws ReflectiveOperationException {
+        Field field = commandMap.getClass().getDeclaredField("knownCommands");
+        field.setAccessible(true);
+        return (Map<String, org.bukkit.command.Command>) field.get(commandMap);
     }
 }

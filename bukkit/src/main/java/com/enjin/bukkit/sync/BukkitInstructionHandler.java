@@ -99,11 +99,9 @@ public class BukkitInstructionHandler implements InstructionHandler {
             public void run() {
                 Player player = null;
                 if (uuid.isPresent()) {
-                    Enjin.getLogger().debug("Fetching player from provided uuid...");
                     UUID u = UUID.fromString(uuid.get());
                     player = Bukkit.getPlayer(u);
                 } if (name.isPresent()) {
-                    Enjin.getLogger().debug("Fetching player from provided name");
                     String n = name.get();
                     player = Bukkit.getPlayer(n);
                 } else {
@@ -118,7 +116,6 @@ public class BukkitInstructionHandler implements InstructionHandler {
                         player = Bukkit.getPlayer(n);
                     }
 
-                    Enjin.getLogger().debug("Execute instruction requires that the player be online...");
                     if (player == null || !player.isOnline()) {
                         Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
                         return;
@@ -126,22 +123,16 @@ public class BukkitInstructionHandler implements InstructionHandler {
                 }
 
                 if (player != null) {
-                    Enjin.getLogger().debug("Dispatching execute instruction with id: " + id + ", and command: " + command);
                     EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-                    Enjin.getLogger().debug("Command dispatched, adding executed command to configuration...");
                     EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-                    Enjin.getLogger().debug("Saving executed commands configuration...");
                     EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
-                    Enjin.getLogger().debug("Executed command saved!");
                 }
             }
         };
 
         if (!delay.isPresent() || delay.get() <= 0) {
-            Enjin.getLogger().debug("Scheduling instant execution instruction with id: " + id);
             Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
         } else {
-            Enjin.getLogger().debug("Scheduling delayed execution instruction with id: " + id + ", and delay: " + delay.get());
             Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
         }
     }
