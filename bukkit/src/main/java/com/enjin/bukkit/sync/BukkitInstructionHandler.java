@@ -15,6 +15,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -99,14 +100,29 @@ public class BukkitInstructionHandler implements InstructionHandler {
             public void run() {
                 Player player = null;
                 if (uuid.isPresent()) {
-                    UUID u = UUID.fromString(uuid.get());
-                    player = Bukkit.getPlayer(u);
-                } if (name.isPresent()) {
+                    String value = uuid.get();
+                    UUID u = null;
+                    if (value.length() == 32) {
+                        String stripped = uuid.get().replaceAll("-", "");
+                        BigInteger least = new BigInteger(stripped.substring(0, 16), 16);
+                        BigInteger most = new BigInteger(stripped.substring(16, 32), 16);
+                        u = new UUID(least.longValue(), most.longValue());
+                    } else if (value.length() == 36) {
+                        try {
+                            u = UUID.fromString(value);
+                        } catch (IllegalArgumentException e) {
+                            Enjin.getLogger().debug("Received invalid uuid, checking for player by name...");
+                        }
+                    }
+
+                    if (uuid != null) {
+                        player = Bukkit.getPlayer(u);
+                    }
+                }
+
+                if (player == null && name.isPresent()) {
                     String n = name.get();
                     player = Bukkit.getPlayer(n);
-                } else {
-                    Enjin.getLogger().debug("No UUID or name was provided for execute instruction with id: " + id);
-                    return;
                 }
 
                 if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
