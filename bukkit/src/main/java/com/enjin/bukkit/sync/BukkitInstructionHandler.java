@@ -146,10 +146,12 @@ public class BukkitInstructionHandler implements InstructionHandler {
             }
         };
 
-        if (!delay.isPresent() || delay.get() <= 0) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
-        } else {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
+        if (EnjinMinecraftPlugin.getInstance().isEnabled()) {
+            if (!delay.isPresent() || delay.get() <= 0) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
+            } else {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
+            }
         }
     }
 
