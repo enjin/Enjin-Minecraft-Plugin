@@ -139,6 +139,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
 
 			menuAPI = new MenuAPI(this);
+            Enjin.getLogger().debug("Init gui api done.");
 
 			moduleManager = new ModuleManager(this);
 
@@ -174,7 +175,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             return;
         }
 
-        Enjin.getLogger().debug("Init gui api done.");
         moduleManager.init();
         Enjin.getLogger().debug("Init modules done.");
         initPlugins();

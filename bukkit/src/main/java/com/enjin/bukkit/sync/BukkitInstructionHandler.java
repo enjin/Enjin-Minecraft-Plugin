@@ -159,8 +159,8 @@ public class BukkitInstructionHandler implements InstructionHandler {
     public void commandConfirmed(List<Long> executed) {
         for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
             for (long id : executed) {
-                Enjin.getLogger().debug("Confirming Command ID: " + id);
                 if (Long.parseLong(command.getId()) == id) {
+                    Enjin.getLogger().debug("Confirming Command ID: " + id);
                     EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command);
                 }
             }
