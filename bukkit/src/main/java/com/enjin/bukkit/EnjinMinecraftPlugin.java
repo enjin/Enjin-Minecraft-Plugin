@@ -332,6 +332,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public static void dispatchConsoleCommand(String command) {
+        Enjin.getLogger().debug("Dispatching command: " + command);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
