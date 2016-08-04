@@ -48,7 +48,9 @@ public class JsonConfig {
 
     public boolean save(File file) {
         try {
-            file.getParentFile().mkdirs();
+            if (file.getParentFile() != null) {
+                file.getParentFile().mkdirs();
+            }
 
             if (!file.exists()) {
                 file.createNewFile();
