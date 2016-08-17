@@ -60,7 +60,7 @@ public class Log implements EnjinLogger {
 
     public void debug(String msg) {
         if (Enjin.getConfiguration().isDebug()) {
-            logger.debug(hideSensitiveText(msg));
+            logger.info("[Debug] " + hideSensitiveText(msg));
         }
     }
 
@@ -87,9 +87,9 @@ public class Log implements EnjinLogger {
 	}
 
     public void configure() {
-		logger.getAppenders().forEach((string, appender) -> {
-			logger.removeAppender(appender);
-		});
+//		logger.getAppenders().forEach((string, appender) -> {
+//			logger.removeAppender(appender);
+//		});
 
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
