@@ -20,7 +20,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent.Break;
 import org.spongepowered.api.event.block.ChangeBlockEvent.Place;
 import org.spongepowered.api.event.entity.ChangeEntityExperienceEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent.Death;
-import org.spongepowered.api.event.entity.DisplaceEntityEvent.Move;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.KickPlayerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 import org.spongepowered.api.event.world.ExplosionEvent.Detonate;
@@ -124,13 +124,17 @@ public class EnjinStatsListener {
 
     //Listener to add distance traveled to players
 	@Listener(order = Order.LAST)
-    public void onPlayerMove(final Move.TargetPlayer event) {
+    public void onPlayerMove(final MoveEntityEvent event) {
         if (event.isCancelled()) {
             return;
         }
 
+        if (!(event.getTargetEntity() instanceof Player)) {
+        	return;
+		}
+
 		Sponge.getScheduler().createTaskBuilder().execute(() -> {
-			Player p = event.getTargetEntity();
+			Player p = (Player) event.getTargetEntity();
 			StatsPlayer player = StatsManager.getPlayerStats(p);
 
 			Location<World> from = event.getFromTransform().getLocation();
