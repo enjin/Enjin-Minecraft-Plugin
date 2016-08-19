@@ -1,6 +1,5 @@
 package ninja.leaping.permissionsex.sponge;
 
-import com.enjin.core.Enjin;
 import com.enjin.sponge.listeners.ConnectionListener;
 import com.enjin.sponge.permissions.PermissionHandler;
 import ninja.leaping.permissionsex.PermissionsEx;
@@ -19,7 +18,7 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.world.World;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 
 public class PEXHandler implements PermissionHandler {
 	private PermissionsExPlugin service = null;
@@ -43,14 +42,11 @@ public class PEXHandler implements PermissionHandler {
 			final PermissionsExPlugin service = (PermissionsExPlugin) potentialRegistration.get().getProvider();
 			final SubjectCache cache = service.getManager().getSubjects(PermissionsEx.SUBJECTS_USER).persistentData();
 
-			try {
-				SubjectDataReference reference = cache.getReference(player.getUniqueId().toString());
+			CompletableFuture<SubjectDataReference> future = cache.getReference(player.getUniqueId().toString());
+			future.whenComplete((reference, throwable) -> {
 				reference.onUpdate(data -> ConnectionListener.updatePlayerRanks(player));
-
 				references.put(player.getUniqueId(), reference);
-			} catch (ExecutionException e) {
-				Enjin.getLogger().catching(e);
-			}
+			});
 		}
 	}
 
