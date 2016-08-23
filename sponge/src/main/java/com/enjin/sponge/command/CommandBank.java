@@ -190,6 +190,7 @@ public class CommandBank {
         }
 
         String[] parts = c.startsWith("/") ? c.replaceFirst("/", "").split(" ") : c.split(" ");
+        if (parts.length == 0) return false;
         String command = parts[0].toLowerCase();
 
         Optional<CommandNode> w = Optional.fromNullable(nodes.get(command));
