@@ -12,6 +12,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -64,8 +65,15 @@ public class SpongeInstructionHandler implements InstructionHandler {
 		Runnable runnable = () -> {
 			java.util.Optional<Player> player = null;
 			if (uuid.isPresent()) {
-				UUID u = UUID.fromString(uuid.get());
-				player = Sponge.getServer().getPlayer(u);
+				String raw = uuid.get().replaceAll("-", "");
+				if (raw.length() == 32) {
+					try {
+						UUID u = new UUID(new BigInteger(raw.substring(0, 16), 16).longValue(), new BigInteger(raw.substring(16, 32), 16).longValue());
+						player = Sponge.getServer().getPlayer(u);
+					} catch (Exception e) {
+						Enjin.getLogger().warning("Invalid uuid was received when executing a command: " + uuid.get());
+					}
+				}
 			} else if (name.isPresent()) {
 				String n = name.get();
 				player = Sponge.getServer().getPlayer(n);
