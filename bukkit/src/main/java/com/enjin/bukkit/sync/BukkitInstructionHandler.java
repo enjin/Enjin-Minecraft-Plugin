@@ -98,40 +98,43 @@ public class BukkitInstructionHandler implements InstructionHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Player player = null;
+                OfflinePlayer player = null;
                 if (uuid.isPresent()) {
-                    String value = uuid.get();
+                    String value = uuid.get().replaceAll("-", "");
                     UUID u = null;
                     if (value.length() == 32) {
-                        String stripped = uuid.get().replaceAll("-", "");
-                        BigInteger least = new BigInteger(stripped.substring(0, 16), 16);
-                        BigInteger most = new BigInteger(stripped.substring(16, 32), 16);
+                        BigInteger least = new BigInteger(value.substring(0, 16), 16);
+                        BigInteger most = new BigInteger(value.substring(16, 32), 16);
                         u = new UUID(least.longValue(), most.longValue());
-                    } else if (value.length() == 36) {
-                        try {
-                            u = UUID.fromString(value);
-                        } catch (IllegalArgumentException e) {
-                            Enjin.getLogger().debug("Received invalid uuid, checking for player by name...");
-                        }
+                        Enjin.getLogger().debug("Attempting to execute command for player uuid: " + u.toString());
+                    } else {
+                        Enjin.getLogger().debug("Received invalid uuid...");
                     }
 
                     if (uuid != null) {
                         player = Bukkit.getPlayer(u);
+
+                        if (player == null) {
+                            player = Bukkit.getOfflinePlayer(u);
+                            if (player != null && !player.hasPlayedBefore())
+                                player = null;
+                        }
                     }
                 }
 
                 if (player == null && name.isPresent()) {
                     String n = name.get();
-                    player = Bukkit.getPlayer(n);
+                    player = Bukkit.getOfflinePlayer(n);
+                    Enjin.getLogger().debug("Attempting to execute command for player name: " + n);
+
+                    if (player == null) {
+                        player = Bukkit.getOfflinePlayer(n);
+                        if (player != null && !player.hasPlayedBefore())
+                            player = null;
+                    }
                 }
 
                 if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
-                    if (player == null && name.isPresent()) {
-                        Enjin.getLogger().debug("Falling back to player name as the player could not be found by uuid most likely.");
-                        String n = name.get();
-                        player = Bukkit.getPlayer(n);
-                    }
-
                     if (player == null || !player.isOnline()) {
                         Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
                         return;
@@ -140,8 +143,12 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
                 if (player != null) {
                     EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
+                            .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
                     EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                } else {
+                    Enjin.getLogger().debug("A player could not be found in the cache for "
+                            + (uuid.isPresent() ? "uuid: " + uuid.get() : name.isPresent() ? "name: " + name.get() : "n/a"));
                 }
             }
         };
