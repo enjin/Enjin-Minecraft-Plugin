@@ -4,6 +4,9 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.util.io.LineAppender;
 import com.enjin.core.Enjin;
 import com.enjin.core.util.EnjinLogger;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.MarkerManager;
@@ -17,9 +20,14 @@ import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class Log implements EnjinLogger {
+	private static final SimpleDateFormat LOG_ZIP_NAME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
     private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getName());
 	private Level defaultLevel = logger.getLevel();
     private LineAppender lineAppender = null;
@@ -35,11 +43,7 @@ public class Log implements EnjinLogger {
 
         try {
             if (log.exists()) {
-                //Max file size of the enjin log should be less than 5MB.
-                if (log.length() > 1024 * 1024 * 5) {
-                    log.delete();
-                    log.createNewFile();
-                }
+            	zipAndReplaceExistingLog();
             } else {
                 logs.mkdirs();
                 log.createNewFile();
@@ -47,7 +51,38 @@ public class Log implements EnjinLogger {
         } catch (IOException e) {
 			Enjin.getLogger().catching(e);
         }
-    }
+	}
+
+	private void zipAndReplaceExistingLog() {
+		FileInputStream fis = null;
+		try {
+			String date = LOG_ZIP_NAME_FORMAT.format(Calendar.getInstance().getTime());
+			int i = 0;
+			File file = null;
+			while (file == null || file.exists()) {
+				file = new File(logs, date + "-" + ++i + ".log.zip");
+			}
+
+			ZipFile zip = new ZipFile(file);
+			ZipParameters parameters = new ZipParameters();
+			parameters.setFileNameInZip(date + "-" + i + ".log");
+			parameters.setSourceExternalStream(true);
+			zip.addStream((fis = new FileInputStream(log)), parameters);
+
+			log.delete();
+			log.createNewFile();
+		} catch (Exception e) {
+			Enjin.getLogger().catching(e);
+		} finally {
+			try {
+				if (fis != null) {
+					fis.close();
+				}
+			} catch (Exception e) {
+				Enjin.getLogger().catching(e);
+			}
+		}
+	}
 
 	public void info(String msg) {
 		logger.info(hideSensitiveText(msg));
