@@ -108,10 +108,10 @@ public class BukkitInstructionHandler implements InstructionHandler {
                         u = new UUID(least.longValue(), most.longValue());
                         Enjin.getLogger().debug("Attempting to execute command for player uuid: " + u.toString());
                     } else {
-                        Enjin.getLogger().debug("Received invalid uuid...");
+                        Enjin.getLogger().debug("Received invalid uuid:" + value);
                     }
 
-                    if (uuid != null) {
+                    if (u != null) {
                         player = Bukkit.getPlayer(u);
 
                         if (player == null) {
