@@ -99,7 +99,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
             @Override
             public void run() {
                 OfflinePlayer player = null;
-                if (uuid.isPresent()) {
+                if (uuid.isPresent() && !uuid.get().isEmpty()) {
                     String value = uuid.get().replaceAll("-", "");
                     UUID u = null;
                     if (value.length() == 32) {
@@ -122,7 +122,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
                     }
                 }
 
-                if (player == null && name.isPresent()) {
+                if (player == null && name.isPresent() && !name.get().isEmpty()) {
                     String n = name.get();
                     player = Bukkit.getOfflinePlayer(n);
                     Enjin.getLogger().debug("Attempting to execute command for player name: " + n);
