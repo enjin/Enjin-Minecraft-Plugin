@@ -9,7 +9,8 @@ public class ServerStats {
     @Setter
     @SerializedName(value = "creeper-explosions")
     private boolean creeperExplosions = true;
-    @Getter @Setter
+    @Getter
+    @Setter
     @SerializedName(value = "player-kicks")
     private boolean playerKicks = true;
 }

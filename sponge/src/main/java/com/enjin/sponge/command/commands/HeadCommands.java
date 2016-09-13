@@ -37,12 +37,12 @@ public class HeadCommands {
     @Permission("enjin.updateheads")
     @Directive(parent = "enjin", value = "updateheads", requireValidKey = true)
     public static void update(final CommandSource sender, final String[] args) {
-		EnjinMinecraftPlugin.getInstance().getAsync().execute(() -> {
-			sender.sendMessage(Text.of(TextColors.GREEN, "Fetching stat sign updates."));
-			if (StatSignManager.fetchStats()) {
-				StatSignManager.update();
-				sender.sendMessage(Text.of(TextColors.GREEN, "Stat signs have been updated."));
-			}
-		});
+        EnjinMinecraftPlugin.getInstance().getAsync().execute(() -> {
+            sender.sendMessage(Text.of(TextColors.GREEN, "Fetching stat sign updates."));
+            if (StatSignManager.fetchStats()) {
+                StatSignManager.update();
+                sender.sendMessage(Text.of(TextColors.GREEN, "Stat signs have been updated."));
+            }
+        });
     }
 }

@@ -38,7 +38,8 @@ public class MinecraftService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<ServerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<List<ServerInfo>>>() {}.getType());
+            RPCData<List<ServerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<List<ServerInfo>>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -78,7 +79,8 @@ public class MinecraftService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<MinecraftPlayerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<List<MinecraftPlayerInfo>>>() {}.getType());
+            RPCData<List<MinecraftPlayerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<List<MinecraftPlayerInfo>>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;

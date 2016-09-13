@@ -23,7 +23,7 @@ public class VoteServiceTest {
     public void test1Get() {
         VoteService service = EnjinServices.getService(VoteService.class);
         RPCData<String> data = service.get(new HashMap<String, List<Object[]>>() {{
-            put("planetminecraft.com", new ArrayList<Object[]>(){{
+            put("planetminecraft.com", new ArrayList<Object[]>() {{
                 add(new Object[]{"Notch", System.currentTimeMillis() / 1000});
                 add(new Object[]{"Jeb_", System.currentTimeMillis() / 1000});
                 add(new Object[]{"Favorlock|8b7a881c-6ccb-4ada-8f6a-60cc99e6aa20", System.currentTimeMillis() / 1000});
@@ -44,7 +44,8 @@ public class VoteServiceTest {
             }
 
             @Override
-            public void setDebug(boolean debug) {}
+            public void setDebug(boolean debug) {
+            }
 
             @Override
             public String getAuthKey() {
@@ -52,7 +53,8 @@ public class VoteServiceTest {
             }
 
             @Override
-            public void setAuthKey(String key) {}
+            public void setAuthKey(String key) {
+            }
 
             @Override
             public boolean isHttps() {
@@ -60,7 +62,8 @@ public class VoteServiceTest {
             }
 
             @Override
-            public void setHttps(boolean https) {}
+            public void setHttps(boolean https) {
+            }
 
             @Override
             public boolean isAutoUpdate() {
@@ -68,7 +71,8 @@ public class VoteServiceTest {
             }
 
             @Override
-            public void setAutoUpdate(boolean autoUpdate) {}
+            public void setAutoUpdate(boolean autoUpdate) {
+            }
 
             @Override
             public boolean isLoggingEnabled() {
@@ -76,7 +80,8 @@ public class VoteServiceTest {
             }
 
             @Override
-            public void setLoggingEnabled(boolean loggingEnabled) {}
+            public void setLoggingEnabled(boolean loggingEnabled) {
+            }
 
             @Override
             public String getApiUrl() {
@@ -84,7 +89,8 @@ public class VoteServiceTest {
             }
 
             @Override
-            public void setApiUrl(String apiUrl) {}
+            public void setApiUrl(String apiUrl) {
+            }
 
             @Override
             public boolean save(File file) {

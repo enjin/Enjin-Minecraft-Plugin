@@ -19,137 +19,158 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class SpongeInstructionHandler implements InstructionHandler {
-	@Override
-	public void addToWhitelist (String player) {
-		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "whitelist add " + player);
-	}
+    @Override
+    public void addToWhitelist(String player) {
+        Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "whitelist add " + player);
+    }
 
-	@Override
-	public void removeFromWhitelist (String player) {
-		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "whitelist remove " + player);
-	}
+    @Override
+    public void removeFromWhitelist(String player) {
+        Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "whitelist remove " + player);
+    }
 
-	@Override
-	public void ban(String player) {
-		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "ban " + player);
-	}
+    @Override
+    public void ban(String player) {
+        Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "ban " + player);
+    }
 
-	@Override
-	public void pardon(String player) {
-		Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "pardon " + player);
-	}
+    @Override
+    public void pardon(String player) {
+        Sponge.getCommandManager().process(Sponge.getServer().getConsole(), "pardon " + player);
+    }
 
 
-	@Override
-	public void addToGroup (String player, String group, String world) {
-		ConnectionListener.addGroup(player, group, world);
-	}
+    @Override
+    public void addToGroup(String player, String group, String world) {
+        ConnectionListener.addGroup(player, group, world);
+    }
 
-	@Override
-	public void removeFromGroup (String player, String group, String world) {
-		ConnectionListener.removeGroup(player, group, world);
-	}
+    @Override
+    public void removeFromGroup(String player, String group, String world) {
+        ConnectionListener.removeGroup(player, group, world);
+    }
 
-	@Override
-	public void execute (Long id, String command, Optional<Long> delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
-		if (id == null || id <= -1) {
-			return;
-		}
+    @Override
+    public void execute(Long id, String command, Optional<Long> delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
+        if (id == null || id <= -1) {
+            Enjin.getLogger().debug("Execute instruction has invalid id: " + id);
+            return;
+        }
 
-		for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
-			if (Long.parseLong(c.getId()) == id) {
-				return;
-			}
-		}
+        for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
+            if (Long.parseLong(c.getId()) == id) {
+                Enjin.getLogger().debug("Enjin has already processed the execution of instruction with id: " + id);
+                return;
+            }
+        }
 
-		Runnable runnable = () -> {
-			java.util.Optional<Player> player = null;
-			if (uuid.isPresent()) {
-				String raw = uuid.get().replaceAll("-", "");
-				if (raw.length() == 32) {
-					try {
-						UUID u = new UUID(new BigInteger(raw.substring(0, 16), 16).longValue(), new BigInteger(raw.substring(16, 32), 16).longValue());
-						player = Sponge.getServer().getPlayer(u);
-					} catch (Exception e) {
-						Enjin.getLogger().warning("Invalid uuid was received when executing a command: " + uuid.get());
-					}
-				}
-			} else if (name.isPresent()) {
-				String n = name.get();
-				player = Sponge.getServer().getPlayer(n);
-			} else {
-				return;
-			}
+        Runnable runnable = () -> {
+            java.util.Optional<Player> player = null;
+            if (uuid.isPresent() && !uuid.get().isEmpty()) {
+                String value = uuid.get().replaceAll("-", "");
+                UUID u = null;
+                if (value.length() == 32) {
+                    BigInteger least = new BigInteger(value.substring(0, 16), 16);
+                    BigInteger most = new BigInteger(value.substring(16, 32), 16);
+                    u = new UUID(least.longValue(), most.longValue());
+                    Enjin.getLogger().debug("Attempting to execute command for player uuid: " + u.toString());
+                } else {
+                    Enjin.getLogger().debug("Received invalid uuid:" + value);
+                }
 
-			if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
-				if (!player.isPresent() || !player.get().isOnline()) {
-					return;
-				}
-			}
+                if (u != null) {
+                    player = Sponge.getServer().getPlayer(u);
 
-			if (player.isPresent()) {
-				Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
-				EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-				EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
-			}
-		};
+                    if (player.isPresent()) {
+                        Player p = player.get();
+                        if (!p.hasPlayedBefore())
+                            player = null;
+                    }
+                }
+            }
 
-		if (!delay.isPresent() || delay.get() <= 0) {
-			Sponge.getScheduler().createTaskBuilder().execute(runnable)
-					.submit(Enjin.getPlugin());
-		} else {
-			Sponge.getScheduler().createTaskBuilder().execute(runnable)
-					.delay(delay.get(), TimeUnit.SECONDS)
-					.submit(Enjin.getPlugin());
-		}
-	}
+            if ((player == null || !player.isPresent()) && name.isPresent() && !name.get().isEmpty()) {
+                String n = name.get();
+                player = Sponge.getServer().getPlayer(n);
+                Enjin.getLogger().debug("Attempting to execute command for player name: " + n);
 
-	@Override
-	public void commandConfirmed (List<Long> executed) {
-		for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
-			for (long id : executed) {
-				Enjin.getLogger().debug("Confirming Command ID: " + id);
-				if (Long.parseLong(command.getId()) == id) {
-					EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command);
-				}
-			}
-		}
+                if (player.isPresent()) {
+                    Player p = player.get();
+                    if (!p.hasPlayedBefore())
+                        player = null;
+                }
+            }
 
-		EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
-	}
+            if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
+                if (!player.isPresent() || !player.get().isOnline()) {
+                    return;
+                }
+            }
 
-	@Override
-	public void configUpdated (Object update) {
-		EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
-		if (config != null) {
-			config.update(new File(EnjinMinecraftPlugin.getInstance().getConfigDir(), "config.json"), update);
-			EnjinMinecraftPlugin.getInstance().initConfig();
-			EnjinMinecraftPlugin.saveConfiguration();
-		}
-	}
+            if (player.isPresent()) {
+                Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
+                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
+                        .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+            }
+        };
 
-	@Override
-	public void statusReceived (String status) {
-		Enjin.getLogger().debug("Enjin Status: " + status);
-	}
+        if (!delay.isPresent() || delay.get() <= 0) {
+            Sponge.getScheduler().createTaskBuilder().execute(runnable)
+                    .submit(Enjin.getPlugin());
+        } else {
+            Sponge.getScheduler().createTaskBuilder().execute(runnable)
+                    .delay(delay.get(), TimeUnit.SECONDS)
+                    .submit(Enjin.getPlugin());
+        }
+    }
 
-	@Override
-	public void clearInGameCache (String player, int id, String price) {
-		// TODO
-	}
+    @Override
+    public void commandConfirmed(List<Long> executed) {
+        for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
+            for (long id : executed) {
+                Enjin.getLogger().debug("Confirming Command ID: " + id);
+                if (Long.parseLong(command.getId()) == id) {
+                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command);
+                }
+            }
+        }
 
-	@Override
-	public void notify (List<String> players, String message, long time) {
-		for (String player : players) {
-			java.util.Optional<Player> p = Sponge.getServer().getPlayer(player);
-			if (p.isPresent()) {
-				p.get().sendMessage(Text.of(message));
-			}
-		}
-	}
+        EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+    }
 
-	@Override
-	public void version (String version) {
-		// TODO
-	}
+    @Override
+    public void configUpdated(Object update) {
+        EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
+        if (config != null) {
+            config.update(new File(EnjinMinecraftPlugin.getInstance().getConfigDir(), "config.json"), update);
+            EnjinMinecraftPlugin.getInstance().initConfig();
+            EnjinMinecraftPlugin.saveConfiguration();
+        }
+    }
+
+    @Override
+    public void statusReceived(String status) {
+        Enjin.getLogger().debug("Enjin Status: " + status);
+    }
+
+    @Override
+    public void clearInGameCache(String player, int id, String price) {
+        // TODO
+    }
+
+    @Override
+    public void notify(List<String> players, String message, long time) {
+        for (String player : players) {
+            java.util.Optional<Player> p = Sponge.getServer().getPlayer(player);
+            if (p.isPresent()) {
+                p.get().sendMessage(Text.of(message));
+            }
+        }
+    }
+
+    @Override
+    public void version(String version) {
+        // TODO
+    }
 }

@@ -16,8 +16,10 @@ public class RPCData<T> {
     private T result;
     @Getter
     private RPCError error;
-    @Getter @Setter
+    @Getter
+    @Setter
     private transient JSONRPC2Request request;
-    @Getter @Setter
+    @Getter
+    @Setter
     private transient JSONRPC2Response response;
 }

@@ -49,7 +49,8 @@ public class ItemDetail extends Menu {
         String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + item.getName();
         MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(material, item.getIconDamage() != null ? item.getIconDamage().byteValue() : 0)) {
             @Override
-            public void onClick(Player player) {}
+            public void onClick(Player player) {
+            }
         };
         menuItem.setDescriptions(TextUtils.splitToListWithPrefix(item.getInfo(), 30, ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorInfo())));
         addMenuItem(menuItem, 4);
@@ -60,13 +61,13 @@ public class ItemDetail extends Menu {
                 @Override
                 public void onClick(Player player) {
                     closeMenu(player);
-					PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+                    PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
                     if (module != null) {
-						module.processItemPurchase(player, shop, item);
-					}
+                        module.processItemPurchase(player, shop, item);
+                    }
                 }
             };
-            pointOption.setDescriptions(new ArrayList<String>(){{
+            pointOption.setDescriptions(new ArrayList<String>() {{
                 add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "POINTS: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPoints() == 0 ? "FREE" : item.getPoints()));
             }});
         }
@@ -80,7 +81,7 @@ public class ItemDetail extends Menu {
                     TextShopUtil.sendItemInfo(player, shop, item);
                 }
             };
-            priceOption.setDescriptions(new ArrayList<String>(){{
+            priceOption.setDescriptions(new ArrayList<String>() {{
                 add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "PRICE: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPrice() == 0.0 ? "FREE" : priceFormat.format(item.getPrice()) + " " + shop.getCurrency()));
             }});
         }

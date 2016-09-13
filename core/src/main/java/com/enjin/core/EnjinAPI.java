@@ -7,26 +7,26 @@ import java.util.List;
 import java.util.UUID;
 
 public class EnjinAPI {
-	private List<Predicate<UUID>> vanishRegistrations = Lists.newArrayList();
+    private List<Predicate<UUID>> vanishRegistrations = Lists.newArrayList();
 
-	public void registerVanishPredicate(Predicate<UUID> predicate) {
-		if (predicate == null) {
-			return;
-		}
+    public void registerVanishPredicate(Predicate<UUID> predicate) {
+        if (predicate == null) {
+            return;
+        }
 
-		vanishRegistrations.add(predicate);
-	}
+        vanishRegistrations.add(predicate);
+    }
 
-	public Boolean getVanishState(UUID uuid) {
-		boolean state = false;
+    public Boolean getVanishState(UUID uuid) {
+        boolean state = false;
 
-		for (Predicate<UUID> registration : vanishRegistrations) {
-			if (registration.apply(uuid) == true) {
-				state = true;
-				break;
-			}
-		}
+        for (Predicate<UUID> registration : vanishRegistrations) {
+            if (registration.apply(uuid) == true) {
+                state = true;
+                break;
+            }
+        }
 
-		return state;
-	}
+        return state;
+    }
 }

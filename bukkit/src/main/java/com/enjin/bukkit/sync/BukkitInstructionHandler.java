@@ -43,7 +43,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void addToGroup(String player, String group, String world) {
-		VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
+        VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
         if (module == null || !module.isPermissionsAvailable()) {
             return;
         }
@@ -63,7 +63,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void removeFromGroup(String player, String group, String world) {
-		VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
+        VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
         if (module == null || !module.isPermissionsAvailable()) {
             return;
         }
@@ -210,7 +210,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
     public void version(String version) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
-        if (Enjin.getConfiguration().isAutoUpdate() && !plugin.isHasUpdate() && !plugin.isUpdateFromCurseForge() &&!plugin.isUpdateFailed()) {
+        if (Enjin.getConfiguration().isAutoUpdate() && !plugin.isHasUpdate() && !plugin.isUpdateFromCurseForge() && !plugin.isUpdateFailed()) {
             plugin.setHasUpdate(true);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new EnjinUpdater(plugin.getServer().getUpdateFolder(), version, plugin));
         }

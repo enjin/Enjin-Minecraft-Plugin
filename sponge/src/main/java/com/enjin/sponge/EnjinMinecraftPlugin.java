@@ -59,8 +59,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     private static List<CommandSpec> commands = Lists.newArrayList();
     @Getter
     private static List<CommandWrapper> processedCommands = Lists.newArrayList();
-	private static RankUpdatesConfig rankUpdatesConfiguration;
-	private static ExecutedCommandsConfig executedCommandsConfiguration;
+    private static RankUpdatesConfig rankUpdatesConfiguration;
+    private static ExecutedCommandsConfig executedCommandsConfiguration;
 
     @Inject
     @Getter
@@ -78,25 +78,26 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Inject
     @Getter
     private Game game;
-	@Getter
-	private SpongeExecutorService sync;
-	@Getter
-	private SpongeExecutorService async;
+    @Getter
+    private SpongeExecutorService sync;
+    @Getter
+    private SpongeExecutorService async;
 
     @Getter
     private Task syncTask;
 
-	@Getter
-	private InstructionHandler instructionHandler = new SpongeInstructionHandler();
+    @Getter
+    private InstructionHandler instructionHandler = new SpongeInstructionHandler();
     @Getter
     private boolean firstRun = true;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean authKeyInvalid = false;
 
-	@Getter
-	private StatsServer serverStats = new StatsServer();
-	@Getter
-	private Map<String, StatsPlayer> playerStats = new ConcurrentHashMap<>();
+    @Getter
+    private StatsServer serverStats = new StatsServer();
+    @Getter
+    private Map<String, StatsPlayer> playerStats = new ConcurrentHashMap<>();
 
     public EnjinMinecraftPlugin() {
         instance = this;
@@ -108,10 +109,10 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         init();
     }
 
-	@Listener
-	public void stopping(GameStoppingEvent event) {
-		disable();
-	}
+    @Listener
+    public void stopping(GameStoppingEvent event) {
+        disable();
+    }
 
     public void init() {
         if (authKeyInvalid) {
@@ -122,35 +123,35 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
             Log log = new Log(configDir);
             Enjin.setLogger(log);
 
-			sync = Sponge.getScheduler().createSyncExecutor(this);
-			async = Sponge.getScheduler().createAsyncExecutor(this);
+            sync = Sponge.getScheduler().createSyncExecutor(this);
+            async = Sponge.getScheduler().createAsyncExecutor(this);
 
-			firstRun = false;
+            firstRun = false;
             initConfigs();
             log.configure();
-			Enjin.getLogger().debug("Init config done.");
+            Enjin.getLogger().debug("Init config done.");
 
             initCommands();
-			Enjin.getLogger().debug("Init commands done.");
+            Enjin.getLogger().debug("Init commands done.");
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.absent(), getPort(), true);
                 if (data == null) {
                     authKeyInvalid = true;
-					Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
+                    Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
                     return;
                 } else if (data.getError() != null) {
                     authKeyInvalid = true;
-					Enjin.getLogger().debug("Auth key is invalid. " + data.getError().getMessage());
+                    Enjin.getLogger().debug("Auth key is invalid. " + data.getError().getMessage());
                     return;
                 } else if (!data.getResult()) {
                     authKeyInvalid = true;
-					Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
+                    Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
                     return;
                 }
             } else {
                 authKeyInvalid = true;
-				Enjin.getLogger().debug("Auth key is invalid. Must be 50 characters in length.");
+                Enjin.getLogger().debug("Auth key is invalid. Must be 50 characters in length.");
                 return;
             }
         }
@@ -163,62 +164,62 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         Enjin.getLogger().debug("Init tasks done.");
     }
 
-	private void initConfigs() {
-		initConfig();
-		initCommandsConfiguration();
-		initRankUpdatesConfiguration();
-	}
+    private void initConfigs() {
+        initConfig();
+        initCommandsConfiguration();
+        initRankUpdatesConfiguration();
+    }
 
     public void initConfig() {
         EMPConfig config = JsonConfig.load(new File(configDir, "config.json"), EMPConfig.class);
         Enjin.setConfiguration(config);
     }
 
-	private void initCommandsConfiguration() {
-		File configFile = new File(configDir, "commands.json");
-		EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
+    private void initCommandsConfiguration() {
+        File configFile = new File(configDir, "commands.json");
+        EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
 
-		if (!configFile.exists()) {
-			executedCommandsConfiguration.save(configFile);
-		}
-	}
+        if (!configFile.exists()) {
+            executedCommandsConfiguration.save(configFile);
+        }
+    }
 
-	private void initRankUpdatesConfiguration() {
-		File configFile = new File(configDir, "rankUpdates.json");
-		EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
+    private void initRankUpdatesConfiguration() {
+        File configFile = new File(configDir, "rankUpdates.json");
+        EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
 
-		if (!configFile.exists()) {
-			rankUpdatesConfiguration.save(configFile);
-		}
-	}
+        if (!configFile.exists()) {
+            rankUpdatesConfiguration.save(configFile);
+        }
+    }
 
     private void initCommands() {
         Enjin.getLogger().info("Initializing EMP Commands");
         CommandBank.setup(this);
 
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
-				StatCommands.class, SupportCommands.class, ConfigCommand.class, HeadCommands.class,
-				VoteCommands.class);
+                StatCommands.class, SupportCommands.class, ConfigCommand.class, HeadCommands.class,
+                VoteCommands.class);
 
-		String buyCommand = Enjin.getConfiguration(EMPConfig.class).getBuyCommand();
-		if (buyCommand != null && !buyCommand.isEmpty() && !CommandBank.isCommandRegistered(buyCommand)) {
-			CommandBank.replaceCommandWithAlias("buy", buyCommand);
-		}
+        String buyCommand = Enjin.getConfiguration(EMPConfig.class).getBuyCommand();
+        if (buyCommand != null && !buyCommand.isEmpty() && !CommandBank.isCommandRegistered(buyCommand)) {
+            CommandBank.replaceCommandWithAlias("buy", buyCommand);
+        }
     }
 
-	private void initManagers() {
-		Enjin.getLogger().info("Initializing EMP Managers");
-		PurchaseManager.init();
+    private void initManagers() {
+        Enjin.getLogger().info("Initializing EMP Managers");
+        PurchaseManager.init();
 //		StatsManager.init(this);
-		StatSignManager.init(this);
-		VotifierManager.init(this);
-		TicketManager.init(this);
-	}
+        StatSignManager.init(this);
+        VotifierManager.init(this);
+        TicketManager.init(this);
+    }
 
     private void initListeners() {
-		Enjin.getLogger().info("Initializing EMP Listeners");
+        Enjin.getLogger().info("Initializing EMP Listeners");
         game.getEventManager().registerListeners(this, new ShopListener());
-		game.getEventManager().registerListeners(this, new ConnectionListener());
+        game.getEventManager().registerListeners(this, new ConnectionListener());
     }
 
     public void initTasks() {
@@ -233,9 +234,9 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         async.scheduleAtFixedRate(new TPSMonitor(), 0, 2, TimeUnit.SECONDS);
     }
 
-	public void disable() {
-		StatsManager.disable();
-	}
+    public void disable() {
+        StatsManager.disable();
+    }
 
     public void stopTasks() {
         syncTask.cancel();
@@ -255,35 +256,35 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         Enjin.getConfiguration().save(new File(instance.configDir, "config.json"));
     }
 
-	public static void saveExecutedCommandsConfiguration() {
-		if (executedCommandsConfiguration == null) {
-			instance.initCommandsConfiguration();
-		}
+    public static void saveExecutedCommandsConfiguration() {
+        if (executedCommandsConfiguration == null) {
+            instance.initCommandsConfiguration();
+        }
 
-		executedCommandsConfiguration.save(new File(instance.configDir, "commands.json"));
-	}
+        executedCommandsConfiguration.save(new File(instance.configDir, "commands.json"));
+    }
 
-	public static void saveRankUpdatesConfiguration() {
-		if (rankUpdatesConfiguration == null) {
-			instance.initRankUpdatesConfiguration();
-		}
+    public static void saveRankUpdatesConfiguration() {
+        if (rankUpdatesConfiguration == null) {
+            instance.initRankUpdatesConfiguration();
+        }
 
-		rankUpdatesConfiguration.save(new File(instance.configDir, "rankUpdates.json"));
-	}
+        rankUpdatesConfiguration.save(new File(instance.configDir, "rankUpdates.json"));
+    }
 
-	public static ExecutedCommandsConfig getExecutedCommandsConfiguration() {
-		if (executedCommandsConfiguration == null) {
-			instance.initCommandsConfiguration();
-		}
+    public static ExecutedCommandsConfig getExecutedCommandsConfiguration() {
+        if (executedCommandsConfiguration == null) {
+            instance.initCommandsConfiguration();
+        }
 
-		return executedCommandsConfiguration;
-	}
+        return executedCommandsConfiguration;
+    }
 
-	public static RankUpdatesConfig getRankUpdatesConfiguration() {
-		if (rankUpdatesConfiguration == null) {
-			instance.initRankUpdatesConfiguration();
-		}
+    public static RankUpdatesConfig getRankUpdatesConfiguration() {
+        if (rankUpdatesConfiguration == null) {
+            instance.initRankUpdatesConfiguration();
+        }
 
-		return rankUpdatesConfiguration;
-	}
+        return rankUpdatesConfiguration;
+    }
 }

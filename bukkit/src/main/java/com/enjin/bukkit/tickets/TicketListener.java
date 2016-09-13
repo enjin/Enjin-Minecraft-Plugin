@@ -17,29 +17,29 @@ public class TicketListener implements Listener {
         String[] args = event.getMessage().split(" ");
         if (args.length == 1) {
             String command = args[0].replace("/", "");
-			SupportModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(SupportModule.class);
-			if (module != null) {
-				for (final Map.Entry<Integer, TicketModule> entry : module.getModules().entrySet()) {
-					final TicketModule m = entry.getValue();
-					if (m.getCommand() != null && !m.getCommand().isEmpty()) {
-						if (m.getCommand().equalsIgnoreCase(command)) {
-							event.setCancelled(true);
+            SupportModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(SupportModule.class);
+            if (module != null) {
+                for (final Map.Entry<Integer, TicketModule> entry : module.getModules().entrySet()) {
+                    final TicketModule m = entry.getValue();
+                    if (m.getCommand() != null && !m.getCommand().isEmpty()) {
+                        if (m.getCommand().equalsIgnoreCase(command)) {
+                            event.setCancelled(true);
 
-							if (TicketCreationSession.getSessions().containsKey(event.getPlayer().getUniqueId())) {
-								event.getPlayer().sendMessage(ChatColor.RED + "A ticket session is already in progress...");
-								return;
-							}
+                            if (TicketCreationSession.getSessions().containsKey(event.getPlayer().getUniqueId())) {
+                                event.getPlayer().sendMessage(ChatColor.RED + "A ticket session is already in progress...");
+                                return;
+                            }
 
-							Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
-								@Override
-								public void run() {
-									new TicketCreationSession(event.getPlayer(), entry.getKey(), m);
-								}
-							});
-						}
-					}
-				}
-			}
+                            Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    new TicketCreationSession(event.getPlayer(), entry.getKey(), m);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
         }
     }
 }

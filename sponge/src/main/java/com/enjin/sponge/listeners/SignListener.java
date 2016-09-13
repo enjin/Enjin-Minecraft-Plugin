@@ -24,16 +24,16 @@ import java.util.ArrayList;
 public class SignListener {
     @Listener
     public void onSignChange(ChangeSignEvent event) {
-		if (!event.getCause().containsType(Player.class)) {
-			return;
-		}
+        if (!event.getCause().containsType(Player.class)) {
+            return;
+        }
 
-		Player player = event.getCause().first(Player.class).get();
-		ImmutableSignData data = event.getOriginalText();
-		String line = data.get(0).get().toPlain();
+        Player player = event.getCause().first(Player.class).get();
+        ImmutableSignData data = event.getOriginalText();
+        String line = data.get(0).get().toPlain();
         for (EnjinSignType type : EnjinSignType.values()) {
             Optional<Integer> index = type.matches(line);
-			EnjinSignType.SubType subType = null;
+            EnjinSignType.SubType subType = null;
             Optional<Integer> itemId = Optional.absent();
 
             if (index.isPresent()) {
@@ -89,31 +89,31 @@ public class SignListener {
         }
     }
 
-	@Listener(order = Order.POST)
+    @Listener(order = Order.POST)
     public void onBlockBreak(Break event) {
-		if (event.isCancelled() || !event.getCause().containsType(Player.class)) {
-			return;
-		}
+        if (event.isCancelled() || !event.getCause().containsType(Player.class)) {
+            return;
+        }
 
-		Player player = event.getCause().first(Player.class).get();
-		event.getTransactions().forEach(transaction -> {
-			BlockSnapshot original = transaction.getOriginal();
-			BlockState state = original.getState();
-			if (state.getType().equals(BlockTypes.STANDING_SIGN) || state.getType().equals(BlockTypes.WALL_SIGN)) {
-				SerializableLocation location = new SerializableLocation(original.getLocation().get());
-				for (EnjinSignData data : new ArrayList<>(StatSignManager.getConfig().getSigns())) {
-					if (data.getLocation().equals(location)) {
-						if (!player.hasPermission("enjin.sign.remove")) {
-							player.sendMessage(Text.of(TextColors.RED, "You do not have permissions to remove Enjin stat signs."));
-							event.setCancelled(true);
-						} else {
-							StatSignManager.remove(location);
-						}
-					}
+        Player player = event.getCause().first(Player.class).get();
+        event.getTransactions().forEach(transaction -> {
+            BlockSnapshot original = transaction.getOriginal();
+            BlockState state = original.getState();
+            if (state.getType().equals(BlockTypes.STANDING_SIGN) || state.getType().equals(BlockTypes.WALL_SIGN)) {
+                SerializableLocation location = new SerializableLocation(original.getLocation().get());
+                for (EnjinSignData data : new ArrayList<>(StatSignManager.getConfig().getSigns())) {
+                    if (data.getLocation().equals(location)) {
+                        if (!player.hasPermission("enjin.sign.remove")) {
+                            player.sendMessage(Text.of(TextColors.RED, "You do not have permissions to remove Enjin stat signs."));
+                            event.setCancelled(true);
+                        } else {
+                            StatSignManager.remove(location);
+                        }
+                    }
 
-					break;
-				}
-			}
-		});
+                    break;
+                }
+            }
+        });
     }
 }

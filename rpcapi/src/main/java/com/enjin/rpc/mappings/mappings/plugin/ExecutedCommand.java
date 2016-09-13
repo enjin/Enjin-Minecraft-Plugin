@@ -47,9 +47,9 @@ public class ExecutedCommand {
 
             return hash;
         } catch (NoSuchAlgorithmException e) {
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         } catch (UnsupportedEncodingException e) {
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
 
         return null;

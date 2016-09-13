@@ -80,7 +80,7 @@ public class ReportPublisher implements Runnable {
             }
         } catch (Exception e) {
             if (Enjin.getConfiguration().isDebug()) {
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             }
         } finally {
             if (serverReader != null) {
@@ -89,7 +89,7 @@ public class ReportPublisher implements Runnable {
         }
 
         builder.append("\nLast 100 lines of enjin.log: \n");
-        ReverseFileReader enjinReader =  null;
+        ReverseFileReader enjinReader = null;
         try {
             enjinReader = new ReverseFileReader(log.getAbsolutePath());
             LinkedList<String> lines = new LinkedList<String>();
@@ -169,7 +169,7 @@ public class ReportPublisher implements Runnable {
                     builder.append("\nTimings file output not enabled!\n");
                 }
             } catch (Exception e) {
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             }
         }
         //let's make sure to hide the apikey, wherever it may occurr in the file.
@@ -191,7 +191,7 @@ public class ReportPublisher implements Runnable {
             sender.sendMessage(ChatColor.GOLD + "Enjin debug report created in " + zip.getFile().getPath() + " successfully!");
         } catch (ZipException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin debug report!");
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         } finally {
             try {
                 inChannel.close();

@@ -19,10 +19,10 @@ public class StatCommands {
     @Permission("enjin.customstat")
     @Directive(parent = "enjin", value = "customstat")
     public static void customStat(CommandSender sender, String[] args) {
-		StatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
-		if (module == null) {
-			return;
-		}
+        StatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
+        if (module == null) {
+            return;
+        }
 
         if (args.length == 5) {
             String player = args[0].trim();

@@ -44,9 +44,9 @@ public class CoreCommands {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin key <KEY>: ", TextColors.RESET, "Enter the secret key from your ", TextColors.GRAY, "Admin - Games - Minecraft - Enjin Plugin ", TextColors.RESET, "page."));
         }
 
-		if (sender.hasPermission("enjin.inform")) {
-			sender.sendMessage(Text.of(TextColors.GOLD, "/enjin inform <player> <MESSAGE>: ", TextColors.RESET, "Send a private message to a player."));
-		}
+        if (sender.hasPermission("enjin.inform")) {
+            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin inform <player> <MESSAGE>: ", TextColors.RESET, "Send a private message to a player."));
+        }
 
         if (sender.hasPermission("enjin.broadcast")) {
             sender.sendMessage(Text.of(TextColors.GOLD, "/enjin broadcast <MESSAGE>: ", TextColors.RESET, "Broadcast a message to all players."));
@@ -121,28 +121,28 @@ public class CoreCommands {
         sender.sendMessage(Text.of(TextColors.GOLD, "/buy: ", TextColors.RESET, "Display items available for purchase."));
         sender.sendMessage(Text.of(TextColors.GOLD, "/buy page <#>: ", TextColors.RESET, "View the next page of results."));
         sender.sendMessage(Text.of(TextColors.GOLD, "/buy <ID>: ", TextColors.RESET, "Purchase the specified item ID in the server shop."));
-		sender.sendMessage(Text.of(TextColors.GOLD, "/buy shop [ID] ", TextColors.RESET, "Shows the shop menu or opens the shop with the specified ID."));
+        sender.sendMessage(Text.of(TextColors.GOLD, "/buy shop [ID] ", TextColors.RESET, "Shows the shop menu or opens the shop with the specified ID."));
     }
 
-	@Permission(value = "enjin.broadcast")
-	@Directive(parent = "enjin", value = "broadcast", requireValidKey = false)
-	public static void broadcast(CommandSource sender, String[] args) {
-		if (args.length < 1) {
-			sender.sendMessage(Text.of(TextColors.RED, "To broadcast a message do: /enjin broadcast <message>"));
-			return;
-		}
+    @Permission(value = "enjin.broadcast")
+    @Directive(parent = "enjin", value = "broadcast", requireValidKey = false)
+    public static void broadcast(CommandSource sender, String[] args) {
+        if (args.length < 1) {
+            sender.sendMessage(Text.of(TextColors.RED, "To broadcast a message do: /enjin broadcast <message>"));
+            return;
+        }
 
-		StringBuilder message = new StringBuilder();
-		for (int i = 0; i < args.length; i++) {
-			if (i > 0) {
-				message.append(" ");
-			}
+        StringBuilder message = new StringBuilder();
+        for (int i = 0; i < args.length; i++) {
+            if (i > 0) {
+                message.append(" ");
+            }
 
-			message.append(args[i]);
-		}
+            message.append(args[i]);
+        }
 
-		MessageChannel.TO_ALL.send(Text.of(TextUtils.translateText(message.toString())));
-	}
+        MessageChannel.TO_ALL.send(Text.of(TextUtils.translateText(message.toString())));
+    }
 
     @Permission(value = "enjin.debug")
     @Directive(parent = "enjin", value = "debug", requireValidKey = false)
@@ -154,38 +154,38 @@ public class CoreCommands {
         sender.sendMessage(Text.of(TextColors.GREEN, "Debugging has been set to ", config.isDebug()));
     }
 
-	@Permission(value = "enjin.inform")
-	@Directive(parent = "enjin", value = "inform", requireValidKey = false)
-	public static void inform(CommandSource sender, String[] args) {
-		if (args.length < 2) {
-			sender.sendMessage(Text.of(TextColors.RED, "To send a message do: /enjin inform <player> <message>"));
-			return;
-		}
+    @Permission(value = "enjin.inform")
+    @Directive(parent = "enjin", value = "inform", requireValidKey = false)
+    public static void inform(CommandSource sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(Text.of(TextColors.RED, "To send a message do: /enjin inform <player> <message>"));
+            return;
+        }
 
-		Player player = Sponge.getServer().getPlayer(args[0]).get();
-		for (Player p : Sponge.getServer().getOnlinePlayers()) {
-			if (p.getName().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().replace("-", "").equals(args[0])) {
-				player = p;
-			}
-		}
+        Player player = Sponge.getServer().getPlayer(args[0]).get();
+        for (Player p : Sponge.getServer().getOnlinePlayers()) {
+            if (p.getName().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().replace("-", "").equals(args[0])) {
+                player = p;
+            }
+        }
 
-		if (player == null || !player.isOnline()) {
-			sender.sendMessage(Text.of(TextColors.RED, args[0] + " isn't online at the moment."));
-			return;
-		}
+        if (player == null || !player.isOnline()) {
+            sender.sendMessage(Text.of(TextColors.RED, args[0] + " isn't online at the moment."));
+            return;
+        }
 
-		StringBuilder message = new StringBuilder();
-		for (int i = 1; i < args.length; i++) {
-			if (i > 1) {
-				message.append(' ');
-			}
+        StringBuilder message = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+            if (i > 1) {
+                message.append(' ');
+            }
 
-			message.append(args[i]);
-		}
+            message.append(args[i]);
+        }
 
-		player.sendMessage(Text.of(TextUtils.translateText(message.toString())));
-		sender.sendMessage(Text.of(TextColors.GREEN, "Your have successfully informed ", player.getName()));
-	}
+        player.sendMessage(Text.of(TextUtils.translateText(message.toString())));
+        sender.sendMessage(Text.of(TextColors.GREEN, "Your have successfully informed ", player.getName()));
+    }
 
     @Permission(value = "enjin.setkey")
     @Command(value = "enjinkey", aliases = "ek", requireValidKey = false)
@@ -204,10 +204,10 @@ public class CoreCommands {
                 return;
             }
 
-			if (args[0].length() != 50) {
-				sender.sendMessage(Text.of(TextColors.RED, "That authentication key is not 50 characters in length."));
-				return;
-			}
+            if (args[0].length() != 50) {
+                sender.sendMessage(Text.of(TextColors.RED, "That authentication key is not 50 characters in length."));
+                return;
+            }
 
             PluginService service = EnjinServices.getService(PluginService.class);
             RPCData<Boolean> data = service.auth(Optional.of(args[0]), EnjinMinecraftPlugin.getInstance().getPort(), true);
@@ -239,155 +239,155 @@ public class CoreCommands {
                 .submit(Enjin.getPlugin());
     }
 
-	@Permission(value = "enjin.lag")
-	@Directive(parent = "enjin", value = "lag", requireValidKey = false)
-	public static void lag(CommandSource sender, String[] args) {
-		TPSMonitor monitor = TPSMonitor.getInstance();
+    @Permission(value = "enjin.lag")
+    @Directive(parent = "enjin", value = "lag", requireValidKey = false)
+    public static void lag(CommandSource sender, String[] args) {
+        TPSMonitor monitor = TPSMonitor.getInstance();
 
-		sender.sendMessage(Text.of(TextColors.GOLD,
-				"Average TPS: ",
-				TextColors.GREEN,
-				TPSMonitor.getDecimalFormat().format(monitor.getTPSAverage())));
-		sender.sendMessage(Text.of(TextColors.GOLD,
-				"Last TPS Measurement: ",
-				TextColors.GREEN,
-				TPSMonitor.getDecimalFormat().format(monitor.getLastTPSMeasurement())));
+        sender.sendMessage(Text.of(TextColors.GOLD,
+                "Average TPS: ",
+                TextColors.GREEN,
+                TPSMonitor.getDecimalFormat().format(monitor.getTPSAverage())));
+        sender.sendMessage(Text.of(TextColors.GOLD,
+                "Last TPS Measurement: ",
+                TextColors.GREEN,
+                TPSMonitor.getDecimalFormat().format(monitor.getLastTPSMeasurement())));
 
-		Runtime runtime = Runtime.getRuntime();
-		long memused = (runtime.maxMemory() - runtime.freeMemory()) / (1024 * 1024);
-		long maxmemory = runtime.maxMemory() / (1024 * 1024);
+        Runtime runtime = Runtime.getRuntime();
+        long memused = (runtime.maxMemory() - runtime.freeMemory()) / (1024 * 1024);
+        long maxmemory = runtime.maxMemory() / (1024 * 1024);
 
-		sender.sendMessage(Text.of(TextColors.GOLD,
-				"Memory Used: ",
-				TextColors.GREEN,
-				memused, "MB/", maxmemory, "MB"));
-	}
+        sender.sendMessage(Text.of(TextColors.GOLD,
+                "Memory Used: ",
+                TextColors.GREEN,
+                memused, "MB/", maxmemory, "MB"));
+    }
 
-	@Permission(value = "enjin.push")
-	@Directive(parent = "enjin", value = "push")
-	public static void push(CommandSource sender, String[] args) {
-		RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
-		java.util.Optional<UserStorageService> service = Sponge.getServiceManager().provide(UserStorageService.class);
-		if (service.isPresent()) {
-			ConnectionListener.updatePlayersRanks(service.get().getAll().toArray(new GameProfile[]{}));
+    @Permission(value = "enjin.push")
+    @Directive(parent = "enjin", value = "push")
+    public static void push(CommandSource sender, String[] args) {
+        RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
+        java.util.Optional<UserStorageService> service = Sponge.getServiceManager().provide(UserStorageService.class);
+        if (service.isPresent()) {
+            ConnectionListener.updatePlayersRanks(service.get().getAll().toArray(new GameProfile[]{}));
 
-			int minutes = Double.valueOf(Math.ceil(((double) config.getPlayerPerms().size()) / 500.0D)).intValue();
-			sender.sendMessage(Text.of(TextColors.GREEN, Integer.toString(config.getPlayerPerms().size()), " players have been queued for synchronization. This should take approximately ", minutes, " minutes", (minutes > 1 ? "s." : ".")));
-		}
-	}
+            int minutes = Double.valueOf(Math.ceil(((double) config.getPlayerPerms().size()) / 500.0D)).intValue();
+            sender.sendMessage(Text.of(TextColors.GREEN, Integer.toString(config.getPlayerPerms().size()), " players have been queued for synchronization. This should take approximately ", minutes, " minutes", (minutes > 1 ? "s." : ".")));
+        }
+    }
 
-	@Permission(value = "enjin.report")
-	@Directive(parent = "enjin", value = "report", requireValidKey = false)
-	public static void report(CommandSource sender, String[] args) {
-		EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-		Date date = new Date();
-		DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+    @Permission(value = "enjin.report")
+    @Directive(parent = "enjin", value = "report", requireValidKey = false)
+    public static void report(CommandSource sender, String[] args) {
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+        Date date = new Date();
+        DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
-		sender.sendMessage(Text.of(TextColors.GREEN, "Please wait while we generate the report"));
+        sender.sendMessage(Text.of(TextColors.GREEN, "Please wait while we generate the report"));
 
-		StringBuilder report = new StringBuilder();
-		report.append("Enjin Debug Report generated on ")
-				.append(format.format(date))
-				.append('\n')
-				.append("Enjin Minecraft Plugin Version: ")
-				.append(plugin.getContainer().getVersion().get())
-				.append('\n');
+        StringBuilder report = new StringBuilder();
+        report.append("Enjin Debug Report generated on ")
+                .append(format.format(date))
+                .append('\n')
+                .append("Enjin Minecraft Plugin Version: ")
+                .append(plugin.getContainer().getVersion().get())
+                .append('\n');
 
-		Platform platform = Sponge.getPlatform();
-		report.append("Minecraft Version: ")
-				.append(platform.getMinecraftVersion().getName())
-				.append('\n')
-				.append("Sponge API Version: ")
-				.append(platform.getApi().getVersion().get())
-				.append('\n')
-				.append("Sponge Implementation Version: ")
-				.append(platform.getImplementation().getVersion().get())
-				.append('\n')
-				.append("Java Version: ")
-				.append(System.getProperty("java.version"))
-				.append(' ')
-				.append(System.getProperty("java.vendor"))
-				.append('\n')
-				.append("Operating System: ")
-				.append(System.getProperty("os.name"))
-				.append(' ')
-				.append(System.getProperty("os.version"))
-				.append(' ')
-				.append(System.getProperty("os.arch"))
-				.append('\n');
+        Platform platform = Sponge.getPlatform();
+        report.append("Minecraft Version: ")
+                .append(platform.getMinecraftVersion().getName())
+                .append('\n')
+                .append("Sponge API Version: ")
+                .append(platform.getApi().getVersion().get())
+                .append('\n')
+                .append("Sponge Implementation Version: ")
+                .append(platform.getImplementation().getVersion().get())
+                .append('\n')
+                .append("Java Version: ")
+                .append(System.getProperty("java.version"))
+                .append(' ')
+                .append(System.getProperty("java.vendor"))
+                .append('\n')
+                .append("Operating System: ")
+                .append(System.getProperty("os.name"))
+                .append(' ')
+                .append(System.getProperty("os.version"))
+                .append(' ')
+                .append(System.getProperty("os.arch"))
+                .append('\n');
 
-		if (plugin.isAuthKeyInvalid()) {
-			report.append("ERROR: The authentication key is invalid.")
-					.append('\n');
-		}
+        if (plugin.isAuthKeyInvalid()) {
+            report.append("ERROR: The authentication key is invalid.")
+                    .append('\n');
+        }
 
-		report.append('\n')
-				.append("Plugins:")
-				.append('\n');
-		for (PluginContainer container : Sponge.getPluginManager().getPlugins()) {
-			report.append(container.getName())
-					.append(" Version: ")
-					.append(container.getVersion().get())
-					.append('\n');
-		}
+        report.append('\n')
+                .append("Plugins:")
+                .append('\n');
+        for (PluginContainer container : Sponge.getPluginManager().getPlugins()) {
+            report.append(container.getName())
+                    .append(" Version: ")
+                    .append(container.getVersion().get())
+                    .append('\n');
+        }
 
-		report.append('\n')
-				.append("Worlds:")
-				.append('\n');
-		for (World world : Sponge.getServer().getWorlds()) {
-			report.append(world.getName())
-					.append('\n');
-		}
+        report.append('\n')
+                .append("Worlds:")
+                .append('\n');
+        for (World world : Sponge.getServer().getWorlds()) {
+            report.append(world.getName())
+                    .append('\n');
+        }
 
-		Sponge.getGame().getScheduler().createTaskBuilder()
-				.execute(new ReportPublisher(sender, report))
-				.async()
-				.submit(plugin);
-	}
+        Sponge.getGame().getScheduler().createTaskBuilder()
+                .execute(new ReportPublisher(sender, report))
+                .async()
+                .submit(plugin);
+    }
 
-	@Permission(value = "enjin.tags")
-	@Directive(parent = "enjin", value = "tags", requireValidKey = true)
-	public static void tags(CommandSource sender, String[] args) {
-		if (args.length == 0) {
-			sender.sendMessage(Text.of(TextColors.RED, "/enjin tags <player>"));
-			return;
-		}
+    @Permission(value = "enjin.tags")
+    @Directive(parent = "enjin", value = "tags", requireValidKey = true)
+    public static void tags(CommandSource sender, String[] args) {
+        if (args.length == 0) {
+            sender.sendMessage(Text.of(TextColors.RED, "/enjin tags <player>"));
+            return;
+        }
 
-		String name = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
-		PluginService service = EnjinServices.getService(PluginService.class);
-		RPCData<List<TagData>> data = service.getTags(name);
+        String name = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
+        PluginService service = EnjinServices.getService(PluginService.class);
+        RPCData<List<TagData>> data = service.getTags(name);
 
-		if (data == null) {
-			sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
-			return;
-		}
+        if (data == null) {
+            sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+            return;
+        }
 
-		if (data.getError() != null) {
-			sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
-			return;
-		}
+        if (data.getError() != null) {
+            sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
+            return;
+        }
 
-		List<TagData> tags = data.getResult();
+        List<TagData> tags = data.getResult();
 
-		if (tags.size() == 0) {
-			sender.sendMessage(Text.of(TextColors.RED, "The user ", name," currently doesn't have any tags."));
-			return;
-		}
+        if (tags.size() == 0) {
+            sender.sendMessage(Text.of(TextColors.RED, "The user ", name, " currently doesn't have any tags."));
+            return;
+        }
 
-		Text.Builder builder = Text.builder();
-		if (tags != null) {
-			Iterator<TagData> iterator = tags.iterator();
-			while (iterator.hasNext()) {
-				if (!builder.toText().isEmpty()) {
-					builder.append(Text.of(TextColors.GOLD, ", "));
-				}
+        Text.Builder builder = Text.builder();
+        if (tags != null) {
+            Iterator<TagData> iterator = tags.iterator();
+            while (iterator.hasNext()) {
+                if (!builder.toText().isEmpty()) {
+                    builder.append(Text.of(TextColors.GOLD, ", "));
+                }
 
-				TagData tag = iterator.next();
-				builder.append(Text.of(TextColors.GREEN, tag.getName()));
-			}
-		}
+                TagData tag = iterator.next();
+                builder.append(Text.of(TextColors.GREEN, tag.getName()));
+            }
+        }
 
-		builder.insert(0, Text.of(TextColors.GOLD, name, "'s Tags: "));
-		sender.sendMessage(builder.build());
-	}
+        builder.insert(0, Text.of(TextColors.GOLD, name, "'s Tags: "));
+        sender.sendMessage(builder.build());
+    }
 }

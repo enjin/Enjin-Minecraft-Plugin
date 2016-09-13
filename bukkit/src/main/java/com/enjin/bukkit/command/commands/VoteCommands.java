@@ -16,11 +16,11 @@ public class VoteCommands {
     @Directive(parent = "enjin", value = "vote")
     public static void vote(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-		VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+        VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
 
-		if (module == null) {
-			return;
-		}
+        if (module == null) {
+            return;
+        }
 
         if (args.length != 2) {
             sender.sendMessage("Usage: /enjin vote <username> <list>");
@@ -39,7 +39,7 @@ public class VoteCommands {
             module.getPlayerVotes().put(listname, new ArrayList<Object[]>());
         }
 
-		module.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});
+        module.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});
         sender.sendMessage(ChatColor.GREEN + "You just added a vote for player " + username + " on list " + listname);
     }
 }

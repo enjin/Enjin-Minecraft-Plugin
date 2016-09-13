@@ -29,8 +29,8 @@ public class TicketDeserializer implements JsonDeserializer<Ticket> {
                         }.getType());
                         object.add("extra_questions", EnjinRPC.gson.toJsonTree(questions));
                     } catch (Exception e) {
-						Enjin.getLogger().warning(e.getMessage());
-						return null;
+                        Enjin.getLogger().warning(e.getMessage());
+                        return null;
                     }
                 }
             } else {

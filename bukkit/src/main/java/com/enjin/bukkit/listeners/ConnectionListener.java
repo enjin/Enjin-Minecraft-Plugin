@@ -52,7 +52,7 @@ public class ConnectionListener implements Listener {
             p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");
         }
 
-		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
         if (module != null && module.isEconomyAvailable() && !module.isEconomyUpToDate() && PermissionsUtil.hasPermission(p, "enjin.notify.econoutdated")) {
             p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + module.getEconomy().getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
         }
@@ -70,10 +70,10 @@ public class ConnectionListener implements Listener {
     }
 
     public static void updatePlayerRanks1(OfflinePlayer player) {
-		VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
-		if (module == null || !module.isPermissionsAvailable()) {
-			return;
-		}
+        VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
+        if (module == null || !module.isPermissionsAvailable()) {
+            return;
+        }
 
         if (player == null || player.getName() == null) {
             Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");

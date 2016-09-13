@@ -13,7 +13,7 @@ public class MapFont {
     /**
      * Set the sprite for a given character.
      *
-     * @param ch The character to set the sprite for.
+     * @param ch     The character to set the sprite for.
      * @param sprite The CharacterSprite to set.
      * @throws IllegalStateException if this font is static.
      */
@@ -33,7 +33,7 @@ public class MapFont {
      *
      * @param ch The character to get the sprite for.
      * @return The CharacterSprite associated with the character, or null if
-     *     there is none.
+     * there is none.
      */
     public CharacterSprite getChar(char ch) {
         return chars.get(ch);
@@ -51,7 +51,7 @@ public class MapFont {
             throw new IllegalArgumentException("text contains invalid characters");
         }
 
-        if (text.length() == 0){
+        if (text.length() == 0) {
             return 0;
         }
 
@@ -78,7 +78,7 @@ public class MapFont {
      *
      * @param text The text.
      * @return True if the string contains only defined characters, false
-     *     otherwise.
+     * otherwise.
      */
     public boolean isValid(String text) {
         for (int i = 0; i < text.length(); ++i) {

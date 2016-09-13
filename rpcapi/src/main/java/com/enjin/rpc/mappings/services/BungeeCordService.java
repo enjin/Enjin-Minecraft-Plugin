@@ -23,7 +23,8 @@ public class BungeeCordService implements Service {
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
             put("status", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(status), Object.class));
-            put("servers", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(servers, new TypeToken<HashMap<String, NodeState>>(){}.getType()), Object.class));
+            put("servers", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(servers, new TypeToken<HashMap<String, NodeState>>() {
+            }.getType()), Object.class));
         }};
 
         Integer id = EnjinRPC.getNextRequestId();
@@ -40,7 +41,8 @@ public class BungeeCordService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<SyncResponse> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<SyncResponse>>() {}.getType());
+            RPCData<SyncResponse> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<SyncResponse>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;

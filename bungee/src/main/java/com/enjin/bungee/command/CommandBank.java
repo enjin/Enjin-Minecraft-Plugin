@@ -26,6 +26,7 @@ public class CommandBank implements Listener {
 
     /**
      * Prepares the parent bank for operation.
+     *
      * @param plugin The plugin registered to this command bank.
      */
     public static void setup(Plugin plugin) {
@@ -40,9 +41,10 @@ public class CommandBank implements Listener {
 
     /**
      * Registers the provided handles.
+     *
      * @param handles the parent handles to be processed
      */
-    public static void register(Class<?> ... handles) {
+    public static void register(Class<?>... handles) {
         for (Class<?> clazz : handles) {
             Enjin.getLogger().debug("Registering commands and directives for " + clazz.getSimpleName());
             List<Method> methods = Lists.newArrayList();
@@ -98,9 +100,10 @@ public class CommandBank implements Listener {
 
     /**
      * Registers value nodes.
+     *
      * @param nodes The command nodes to be registered.
      */
-    private static void registerCommandNodes(CommandNode ... nodes) {
+    private static void registerCommandNodes(CommandNode... nodes) {
         for (CommandNode node : nodes) {
             if (CommandBank.nodes.containsKey(node.getData().value())) {
                 continue;
@@ -115,9 +118,10 @@ public class CommandBank implements Listener {
 
     /**
      * Registers directives.
+     *
      * @param nodes The directive nodes to be registered.
      */
-    private static void registerDirectiveNodes(DirectiveNode ... nodes) {
+    private static void registerDirectiveNodes(DirectiveNode... nodes) {
         for (DirectiveNode node : nodes) {
             CommandNode command = CommandBank.getNodes().get(node.getData().parent());
 
@@ -133,7 +137,7 @@ public class CommandBank implements Listener {
         }
     }
 
-    public static void registerCommandAlias(String command, String ... alias) {
+    public static void registerCommandAlias(String command, String... alias) {
         if (nodes.containsKey(alias)) {
             Enjin.getLogger().debug("That alias has already been registered by another command.");
             return;
@@ -147,7 +151,7 @@ public class CommandBank implements Listener {
         }
     }
 
-    public static void registerDirectiveAlias(String command, String directive, String ... alias) {
+    public static void registerDirectiveAlias(String command, String directive, String... alias) {
         CommandNode node = nodes.get(command);
         if (node != null) {
             if (node.getDirectives().containsKey(alias)) {

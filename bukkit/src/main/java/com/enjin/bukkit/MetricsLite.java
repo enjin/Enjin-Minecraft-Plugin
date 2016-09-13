@@ -339,8 +339,8 @@ public class MetricsLite {
         connection.setDoOutput(true);
 
         if (debug) {
-			Enjin.getLogger().debug("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
-		}
+            Enjin.getLogger().debug("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
+        }
 
         OutputStream os = connection.getOutputStream();
         os.write(compressed);
@@ -377,7 +377,7 @@ public class MetricsLite {
             gzos = new GZIPOutputStream(baos);
             gzos.write(input.getBytes("UTF-8"));
         } catch (IOException e) {
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         } finally {
             if (gzos != null) try {
                 gzos.close();
@@ -391,8 +391,8 @@ public class MetricsLite {
     /**
      * Appends a json encoded key/value pair to the given string builder.
      *
-     * @param json The string builder to append to.
-     * @param key The key to append.
+     * @param json  The string builder to append to.
+     * @param key   The key to append.
      * @param value The value to append.
      * @throws UnsupportedEncodingException
      */

@@ -27,7 +27,7 @@ public enum EnjinSignType {
     @Getter
     private List<SubType> supportedSubTypes = Lists.newArrayList();
 
-    EnjinSignType (SubType defaultSubType, SubType... supportedSubTypes) {
+    EnjinSignType(SubType defaultSubType, SubType... supportedSubTypes) {
         this.pattern = Pattern.compile("\\[" + name().toLowerCase() + "([1-9]|10)\\]");
         this.defaultSubType = defaultSubType;
         this.supportedSubTypes.addAll(Arrays.asList(supportedSubTypes));

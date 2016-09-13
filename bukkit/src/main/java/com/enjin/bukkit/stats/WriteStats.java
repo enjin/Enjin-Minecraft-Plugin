@@ -27,7 +27,7 @@ public class WriteStats {
             try {
                 f.createNewFile();
             } catch (IOException e) {
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             }
         }
 
@@ -38,10 +38,11 @@ public class WriteStats {
             outChannel.close();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
-			Enjin.getLogger().catching(e);;
+            Enjin.getLogger().catching(e);
+            ;
         } catch (IOException e) {
             // TODO Auto-generated catch block
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
 
         return true;

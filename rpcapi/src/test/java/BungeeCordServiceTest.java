@@ -35,7 +35,7 @@ public class BungeeCordServiceTest {
                 null,
                 75,
                 2,
-                new ArrayList<PlayerInfo>(){{
+                new ArrayList<PlayerInfo>() {{
                     add(new PlayerInfo("Favorlock", UUID.fromString("8b7a881c-6ccb-4ada-8f6a-60cc99e6aa20")));
                     add(new PlayerInfo("AlmightyToaster", UUID.fromString("5b6cf5cd-d1c8-4f54-a06e-9c4462095706")));
                 }},
@@ -43,10 +43,14 @@ public class BungeeCordServiceTest {
                 null,
                 null,
                 null,
-				null);
-        Map<String, NodeState> servers = new HashMap<String, NodeState>(){{
-            put("lobby", new NodeState(new ArrayList<String>(){{add("Favorlock");}}, 50));
-            put("game", new NodeState(new ArrayList<String>(){{add("AlmightyToaster");}}, 25));
+                null);
+        Map<String, NodeState> servers = new HashMap<String, NodeState>() {{
+            put("lobby", new NodeState(new ArrayList<String>() {{
+                add("Favorlock");
+            }}, 50));
+            put("game", new NodeState(new ArrayList<String>() {{
+                add("AlmightyToaster");
+            }}, 25));
         }};
         BungeeCordService service = EnjinServices.getService(BungeeCordService.class);
         RPCData<SyncResponse> data = service.get(status, servers);
@@ -64,7 +68,8 @@ public class BungeeCordServiceTest {
             }
 
             @Override
-            public void setDebug(boolean debug) {}
+            public void setDebug(boolean debug) {
+            }
 
             @Override
             public String getAuthKey() {
@@ -72,7 +77,8 @@ public class BungeeCordServiceTest {
             }
 
             @Override
-            public void setAuthKey(String key) {}
+            public void setAuthKey(String key) {
+            }
 
             @Override
             public boolean isHttps() {
@@ -80,7 +86,8 @@ public class BungeeCordServiceTest {
             }
 
             @Override
-            public void setHttps(boolean https) {}
+            public void setHttps(boolean https) {
+            }
 
             @Override
             public boolean isAutoUpdate() {
@@ -88,7 +95,8 @@ public class BungeeCordServiceTest {
             }
 
             @Override
-            public void setAutoUpdate(boolean autoUpdate) {}
+            public void setAutoUpdate(boolean autoUpdate) {
+            }
 
             @Override
             public boolean isLoggingEnabled() {
@@ -96,7 +104,8 @@ public class BungeeCordServiceTest {
             }
 
             @Override
-            public void setLoggingEnabled(boolean loggingEnabled) {}
+            public void setLoggingEnabled(boolean loggingEnabled) {
+            }
 
             @Override
             public String getApiUrl() {
@@ -104,7 +113,8 @@ public class BungeeCordServiceTest {
             }
 
             @Override
-            public void setApiUrl(String apiUrl) {}
+            public void setApiUrl(String apiUrl) {
+            }
 
             @Override
             public boolean save(File file) {

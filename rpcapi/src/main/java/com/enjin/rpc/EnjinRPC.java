@@ -41,11 +41,11 @@ public class EnjinRPC {
 
             builder.append(clazz);
 
-            URL url =  new URL(builder.toString());
+            URL url = new URL(builder.toString());
             Enjin.getLogger().debug("Enjin API URL: " + url.toString());
             return url;
         } catch (MalformedURLException e) {
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
 
         return null;

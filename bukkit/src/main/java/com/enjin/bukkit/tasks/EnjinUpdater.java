@@ -42,7 +42,7 @@ public class EnjinUpdater implements Runnable {
             if (destination.exists()) {
                 destination.delete();
             }
-            
+
             if (part.renameTo(destination)) {
                 plugin.setHasUpdate(true);
                 plugin.setNewVersion(versionnumber);

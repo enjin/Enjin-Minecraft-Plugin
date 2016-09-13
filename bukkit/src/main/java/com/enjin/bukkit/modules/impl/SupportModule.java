@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Module(name = "Support")
 public class SupportModule {
-	private EnjinMinecraftPlugin plugin;
+    private EnjinMinecraftPlugin plugin;
     @Getter
     private Map<Integer, com.enjin.rpc.mappings.mappings.tickets.TicketModule> modules = new HashMap<>();
     @Getter
@@ -24,10 +24,10 @@ public class SupportModule {
     @Getter
     private TicketListener ticketListener;
 
-	public SupportModule () {
-		this.plugin = EnjinMinecraftPlugin.getInstance();
-		init();
-	}
+    public SupportModule() {
+        this.plugin = EnjinMinecraftPlugin.getInstance();
+        init();
+    }
 
     public void init() {
         clean();

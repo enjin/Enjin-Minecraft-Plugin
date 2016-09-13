@@ -170,7 +170,7 @@ public class TextShopUtil {
                 .append(Text.NEW_LINE);
         builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
-                .append('&').append(shop.getColorText()).append(" Prices are in ") .append(shop.getCurrency())
+                .append('&').append(shop.getColorText()).append(" Prices are in ").append(shop.getCurrency())
                 .append(". Choose ").append(items ? "an item" : "a category").append(" with ")
                 .append('&').append(shop.getColorBottom()).append("/buy #");
         text.append(TextUtils.translateText(builder.toString()))

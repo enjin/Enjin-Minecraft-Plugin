@@ -14,7 +14,8 @@ public class CommandWrapper {
     private String command;
     @Getter
     private String id;
-    @Getter @Setter
+    @Getter
+    @Setter
     private String hash;
 
     public CommandWrapper(UUID uuid, String command, String id) {

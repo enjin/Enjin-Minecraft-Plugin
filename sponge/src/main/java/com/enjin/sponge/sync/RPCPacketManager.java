@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
     private EnjinMinecraftPlugin plugin;
-	private long nextStatUpdate = System.currentTimeMillis();
+    private long nextStatUpdate = System.currentTimeMillis();
 
     public RPCPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -35,8 +35,8 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
-		Enjin.getLogger().debug("Syncing...");
-		String stats = null;
+        Enjin.getLogger().debug("Syncing...");
+        String stats = null;
 //		if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
 //			Enjin.getLogger().debug("Collecting stats...");
 //			stats = getStats();
@@ -44,7 +44,7 @@ public class RPCPacketManager implements Runnable {
 //			Enjin.getLogger().debug("Stats collected...");
 //		}
 
-		Enjin.getLogger().debug("Constructing status...");
+        Enjin.getLogger().debug("Constructing status...");
         Status status = new Status(System.getProperty("java.version"),
                 Sponge.getPlatform().getMinecraftVersion().getName(),
                 getPlugins(),
@@ -56,72 +56,72 @@ public class RPCPacketManager implements Runnable {
                 getOnlineCount(),
                 getOnlinePlayers(),
                 getPlayerGroups(),
-				TPSMonitor.getInstance().getLastTPSMeasurement(),
+                TPSMonitor.getInstance().getLastTPSMeasurement(),
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
-				getVotes(),
+                getVotes(),
                 stats);
 
-		Enjin.getLogger().debug("Fetching service...");
+        Enjin.getLogger().debug("Fetching service...");
         PluginService service = EnjinServices.getService(PluginService.class);
-		Enjin.getLogger().debug("Sending sync request...");
+        Enjin.getLogger().debug("Sending sync request...");
         RPCData<SyncResponse> data = service.sync(status);
 
         if (data == null) {
-			Enjin.getLogger().debug("Sync data is null");
+            Enjin.getLogger().debug("Sync data is null");
             return;
         }
 
-		Enjin.getLogger().debug("Sync data received...");
+        Enjin.getLogger().debug("Sync data received...");
         if (data.getError() != null) {
             Enjin.getLogger().warning(data.getError().getMessage());
         } else {
             SyncResponse result = data.getResult();
             if (result != null && result.getStatus().equalsIgnoreCase("ok")) {
-				for (Instruction instruction : result.getInstructions()) {
-					switch (instruction.getCode()) {
-						case ADD_PLAYER_GROUP:
-							AddPlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
-							break;
-						case REMOVE_PLAYER_GROUP:
-							RemovePlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
-							break;
-						case EXECUTE:
-							ExecuteCommandInstruction.handle((ExecuteData) instruction.getData());
-							break;
-						case EXECUTE_AS:
-							break;
-						case CONFIRMED_COMMANDS:
-							CommandsReceivedInstruction.handle((ArrayList<Long>) instruction.getData());
-							break;
-						case CONFIG:
-							RemoteConfigUpdateInstruction.handle((Map<String, Object>) instruction.getData());
-							break;
-						case ADD_PLAYER_WHITELIST:
-							AddWhitelistPlayerInstruction.handle((String) instruction.getData());
-							break;
-						case REMOVE_PLAYER_WHITELIST:
-							RemoveWhitelistPlayerInstruction.handle((String) instruction.getData());
-							break;
-						case RESPONSE_STATUS:
-							Enjin.getPlugin().getInstructionHandler().statusReceived((String) instruction.getData());
-							break;
-						case BAN_PLAYER:
-							BanPlayersInstruction.handle((String) instruction.getData());
-							break;
-						case UNBAN_PLAYER:
-							PardonPlayersInstruction.handle((String) instruction.getData());
-							break;
-						case CLEAR_INGAME_CACHE:
-							break;
-						case NOTIFICATIONS:
-							NotificationsInstruction.handle((NotificationData) instruction.getData());
-							break;
-						case PLUGIN_VERSION:
-							NewerVersionInstruction.handle((String) instruction.getData());
-							break;
-						default:
-					}
-				}
+                for (Instruction instruction : result.getInstructions()) {
+                    switch (instruction.getCode()) {
+                        case ADD_PLAYER_GROUP:
+                            AddPlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
+                            break;
+                        case REMOVE_PLAYER_GROUP:
+                            RemovePlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
+                            break;
+                        case EXECUTE:
+                            ExecuteCommandInstruction.handle((ExecuteData) instruction.getData());
+                            break;
+                        case EXECUTE_AS:
+                            break;
+                        case CONFIRMED_COMMANDS:
+                            CommandsReceivedInstruction.handle((ArrayList<Long>) instruction.getData());
+                            break;
+                        case CONFIG:
+                            RemoteConfigUpdateInstruction.handle((Map<String, Object>) instruction.getData());
+                            break;
+                        case ADD_PLAYER_WHITELIST:
+                            AddWhitelistPlayerInstruction.handle((String) instruction.getData());
+                            break;
+                        case REMOVE_PLAYER_WHITELIST:
+                            RemoveWhitelistPlayerInstruction.handle((String) instruction.getData());
+                            break;
+                        case RESPONSE_STATUS:
+                            Enjin.getPlugin().getInstructionHandler().statusReceived((String) instruction.getData());
+                            break;
+                        case BAN_PLAYER:
+                            BanPlayersInstruction.handle((String) instruction.getData());
+                            break;
+                        case UNBAN_PLAYER:
+                            PardonPlayersInstruction.handle((String) instruction.getData());
+                            break;
+                        case CLEAR_INGAME_CACHE:
+                            break;
+                        case NOTIFICATIONS:
+                            NotificationsInstruction.handle((NotificationData) instruction.getData());
+                            break;
+                        case PLUGIN_VERSION:
+                            NewerVersionInstruction.handle((String) instruction.getData());
+                            break;
+                        default:
+                    }
+                }
             }
         }
     }
@@ -148,49 +148,49 @@ public class RPCPacketManager implements Runnable {
 
     private List<PlayerInfo> getOnlinePlayers() {
         return plugin.getGame().getServer().getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(),
-				Enjin.getApi().getVanishState(player.getUniqueId()),
-				player.getUniqueId())).collect(Collectors.toList());
+                Enjin.getApi().getVanishState(player.getUniqueId()),
+                player.getUniqueId())).collect(Collectors.toList());
     }
 
-	private Map<String, PlayerGroupInfo> getPlayerGroups() {
-		RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
+    private Map<String, PlayerGroupInfo> getPlayerGroups() {
+        RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
 
-		if (config == null) {
-			Enjin.getLogger().warning("Rank updates configuration did not load properly.");
-			return null;
-		}
+        if (config == null) {
+            Enjin.getLogger().warning("Rank updates configuration did not load properly.");
+            return null;
+        }
 
-		Map<String, PlayerGroupInfo> groups = config.getPlayerPerms();
-		Map<String, PlayerGroupInfo> update = new HashMap<>();
+        Map<String, PlayerGroupInfo> groups = config.getPlayerPerms();
+        Map<String, PlayerGroupInfo> update = new HashMap<>();
 
-		int index = 0;
-		for (String player : new HashSet<>(groups.keySet())) {
-			if (index >= 500) {
-				break;
-			}
+        int index = 0;
+        for (String player : new HashSet<>(groups.keySet())) {
+            if (index >= 500) {
+                break;
+            }
 
-			update.put(player, groups.get(player));
-		}
+            update.put(player, groups.get(player));
+        }
 
-		for (Map.Entry<String, PlayerGroupInfo> entry : update.entrySet()) {
-			groups.remove(entry.getKey());
-		}
+        for (Map.Entry<String, PlayerGroupInfo> entry : update.entrySet()) {
+            groups.remove(entry.getKey());
+        }
 
-		EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
-		return update;
-	}
+        EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
+        return update;
+    }
 
-	private Map<String, List<Object[]>> getVotes() {
-		Map<String, List<Object[]>> votes = null;
-		Enjin.getLogger().debug("Votifier Enabled: " + VotifierManager.isEnabled() + ", Pending Votes: " + !VotifierManager.getPlayerVotes().isEmpty());
-		if (VotifierManager.isEnabled() && !VotifierManager.getPlayerVotes().isEmpty()) {
-			votes = new HashMap<>(VotifierManager.getPlayerVotes());
-			VotifierManager.getPlayerVotes().clear();
-		}
-		return votes;
-	}
+    private Map<String, List<Object[]>> getVotes() {
+        Map<String, List<Object[]>> votes = null;
+        Enjin.getLogger().debug("Votifier Enabled: " + VotifierManager.isEnabled() + ", Pending Votes: " + !VotifierManager.getPlayerVotes().isEmpty());
+        if (VotifierManager.isEnabled() && !VotifierManager.getPlayerVotes().isEmpty()) {
+            votes = new HashMap<>(VotifierManager.getPlayerVotes());
+            VotifierManager.getPlayerVotes().clear();
+        }
+        return votes;
+    }
 
-	private String getStats() {
-		return new WriteStats().getStatsJSON();
-	}
+    private String getStats() {
+        return new WriteStats().getStatsJSON();
+    }
 }

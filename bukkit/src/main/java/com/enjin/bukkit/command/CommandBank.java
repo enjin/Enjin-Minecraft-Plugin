@@ -32,9 +32,10 @@ public class CommandBank {
 
     /**
      * Registers the provided handles.
+     *
      * @param handles the parent handles to be processed
      */
-    public static void register(Class<?> ... handles) {
+    public static void register(Class<?>... handles) {
         for (Class<?> clazz : handles) {
             Enjin.getLogger().debug("Registering commands and directives for " + clazz.getSimpleName());
             List<Method> methods = Lists.newArrayList();
@@ -90,9 +91,10 @@ public class CommandBank {
 
     /**
      * Registers value nodes.
+     *
      * @param nodes The command nodes to be registered.
      */
-    private static void registerCommandNodes(CommandNode ... nodes) {
+    private static void registerCommandNodes(CommandNode... nodes) {
         for (CommandNode node : nodes) {
             String key = node.getData().value().toLowerCase();
             if (CommandBank.nodes.containsKey(key)) {
@@ -106,7 +108,7 @@ public class CommandBank {
         }
     }
 
-    public static void registerCommandAlias(String command, String ... alias) {
+    public static void registerCommandAlias(String command, String... alias) {
         CommandNode node = nodes.get(command.toLowerCase());
         if (node != null) {
             for (String a : alias) {
@@ -122,21 +124,22 @@ public class CommandBank {
         }
     }
 
-	public static void replaceCommandWithAlias(String command, String ... alias) {
-		registerCommandAlias(command, alias);
-		nodes.remove(command.toLowerCase());
+    public static void replaceCommandWithAlias(String command, String... alias) {
+        registerCommandAlias(command, alias);
+        nodes.remove(command.toLowerCase());
         unregisterCommand(command.toLowerCase());
-	}
+    }
 
-	public static boolean isCommandRegistered(String command) {
-		return nodes.containsKey(command.toLowerCase());
-	}
+    public static boolean isCommandRegistered(String command) {
+        return nodes.containsKey(command.toLowerCase());
+    }
 
     /**
      * Registers directives.
+     *
      * @param nodes The directive nodes to be registered.
      */
-    private static void registerDirectiveNodes(DirectiveNode ... nodes) {
+    private static void registerDirectiveNodes(DirectiveNode... nodes) {
         for (DirectiveNode node : nodes) {
             CommandNode command = CommandBank.getNodes().get(node.getData().parent().toLowerCase());
 
@@ -153,7 +156,7 @@ public class CommandBank {
         }
     }
 
-    public static void registerDirectiveAlias(String command, String directive, String ... alias) {
+    public static void registerDirectiveAlias(String command, String directive, String... alias) {
         CommandNode node = nodes.get(command.toLowerCase());
         if (node != null) {
             DirectiveNode n = node.getDirectives().get(directive.toLowerCase());

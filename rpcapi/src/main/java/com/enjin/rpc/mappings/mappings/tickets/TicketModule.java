@@ -28,11 +28,11 @@ public class TicketModule {
         Map<Integer, Question> map = new HashMap<>();
 
         if (questions != null) {
-			int i = -1;
+            int i = -1;
             for (Question question : questions) {
-				if (question == null) {
-					continue;
-				}
+                if (question == null) {
+                    continue;
+                }
 
                 map.put(question.getId(), question);
             }

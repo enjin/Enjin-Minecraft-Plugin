@@ -30,11 +30,11 @@ public class StatCommands {
             boolean existing = cumulative.equalsIgnoreCase("true");
             Player offlinePlayer = Sponge.getServer().getPlayer(player).get();
 
-			if (offlinePlayer == null) {
-				return;
-			}
+            if (offlinePlayer == null) {
+                return;
+            }
 
-			StatsPlayer statsPlayer = StatsManager.getPlayerStats(offlinePlayer);
+            StatsPlayer statsPlayer = StatsManager.getPlayerStats(offlinePlayer);
 
             try {
                 statsPlayer.addCustomStat(plugin, statName, statValue.indexOf(".") > -1 ? Double.parseDouble(statValue) : Integer.parseInt(statValue), existing);
@@ -55,11 +55,11 @@ public class StatCommands {
         if (args.length == 1) {
             StatsPlayer player = null;
             String index = args[0].toLowerCase();
-			Player offlinePlayer = Sponge.getServer().getPlayer(index).get();
+            Player offlinePlayer = Sponge.getServer().getPlayer(index).get();
 
-			if (offlinePlayer == null) {
-				return;
-			}
+            if (offlinePlayer == null) {
+                return;
+            }
 
             if (plugin.getPlayerStats().containsKey(offlinePlayer.getUniqueId().toString().toLowerCase())) {
                 player = plugin.getPlayerStats().get(offlinePlayer.getUniqueId().toString());

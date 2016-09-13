@@ -153,7 +153,7 @@ public class RPCPacketManager implements Runnable {
     private List<String> getGroups() {
         List<String> groups = new ArrayList<>();
 
-		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
         if (module != null && module.isPermissionsAvailable()) {
             groups.addAll(Arrays.asList(module.getPermission().getGroups()));
         }
@@ -205,22 +205,22 @@ public class RPCPacketManager implements Runnable {
         return update;
     }
 
-	private Map<String, List<Object[]>> getVotes() {
-		Map<String, List<Object[]>> votes = null;
-		VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
-		if (module != null && !module.getPlayerVotes().isEmpty()) {
-			votes = new HashMap<>(module.getPlayerVotes());
-			module.getPlayerVotes().clear();
-		}
-		return votes;
-	}
+    private Map<String, List<Object[]>> getVotes() {
+        Map<String, List<Object[]>> votes = null;
+        VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+        if (module != null && !module.getPlayerVotes().isEmpty()) {
+            votes = new HashMap<>(module.getPlayerVotes());
+            module.getPlayerVotes().clear();
+        }
+        return votes;
+    }
 
     private String getStats() {
         return new WriteStats(plugin).getStatsJSON();
     }
 
-	private boolean isPermissionsAvailable() {
-		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
-		return module == null ? null : module.isPermissionsAvailable();
-	}
+    private boolean isPermissionsAvailable() {
+        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        return module == null ? null : module.isPermissionsAvailable();
+    }
 }

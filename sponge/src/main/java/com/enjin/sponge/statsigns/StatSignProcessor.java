@@ -38,7 +38,7 @@ public class StatSignProcessor {
                 lines[3] = "ID: " + data.getItemId();
             }
 
-			updateSign(sign, lines);
+            updateSign(sign, lines);
         } else {
             List<RecentPurchase> purchases = stats.getRecentPurchases();
             String[] lines = new String[4];
@@ -51,7 +51,7 @@ public class StatSignProcessor {
                 lines[3] = decimalFormat.format(purchase.getPrice());
             }
 
-			updateSign(sign, lines);
+            updateSign(sign, lines);
         }
 
         return name;
@@ -88,7 +88,7 @@ public class StatSignProcessor {
             lines[3] = voter.getCount() + " Votes";
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
@@ -113,7 +113,7 @@ public class StatSignProcessor {
             lines[3] = timeFormat.format(date);
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
@@ -136,7 +136,7 @@ public class StatSignProcessor {
             lines[3] = decimalFormat.format(player.getHours()) + " Hours";
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
@@ -159,7 +159,7 @@ public class StatSignProcessor {
             lines[3] = player.getPosts() + " Posts";
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
@@ -182,7 +182,7 @@ public class StatSignProcessor {
             lines[3] = player.getLikes() + " Likes";
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
@@ -207,7 +207,7 @@ public class StatSignProcessor {
             lines[3] = timeFormat.format(date);
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
@@ -230,7 +230,7 @@ public class StatSignProcessor {
             lines[3] = player.getPoints() + " Points";
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
@@ -269,7 +269,7 @@ public class StatSignProcessor {
             lines[3] = donor.getPoints() + " Points";
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
@@ -308,21 +308,21 @@ public class StatSignProcessor {
             lines[3] = decimalFormat.format(donor.getPrice());
         }
 
-		updateSign(sign, lines);
+        updateSign(sign, lines);
 
         return name;
     }
 
-	private static void updateSign(Sign sign, String[] updates) {
-		SignData data = sign.getSignData();
-		ListValue<Text> lines = data.lines();
-		for (int i = 0; i < 4; i++) {
-			if (updates[i] == null)
-				continue;
+    private static void updateSign(Sign sign, String[] updates) {
+        SignData data = sign.getSignData();
+        ListValue<Text> lines = data.lines();
+        for (int i = 0; i < 4; i++) {
+            if (updates[i] == null)
+                continue;
 
-			lines.set(i, Text.of(updates[i]));
-		}
-		data.set(lines);
-		sign.offer(data);
-	}
+            lines.set(i, Text.of(updates[i]));
+        }
+        data.set(lines);
+        sign.offer(data);
+    }
 }

@@ -50,7 +50,7 @@ public class StatSignManager {
             config.save(file);
         }
 
-		Sponge.getEventManager().registerListeners(Enjin.getPlugin(), new SignListener());
+        Sponge.getEventManager().registerListeners(Enjin.getPlugin(), new SignListener());
         schedule(plugin, false);
     }
 
@@ -62,23 +62,23 @@ public class StatSignManager {
 
     public static void schedule(final EnjinMinecraftPlugin plugin, boolean delayed) {
         Runnable runnable = () -> {
-			updateItems();
-			if (fetchStats()) {
-				update();
-				schedule(plugin, true);
-			}
-		};
+            updateItems();
+            if (fetchStats()) {
+                update();
+                schedule(plugin, true);
+            }
+        };
 
-		if (delayed) {
-			Sponge.getScheduler().createTaskBuilder().async()
-					.delay(60, TimeUnit.SECONDS)
-					.execute(runnable)
-					.submit(Enjin.getPlugin());
-		} else {
-			Sponge.getScheduler().createTaskBuilder().async()
-					.execute(runnable)
-					.submit(Enjin.getPlugin());
-		}
+        if (delayed) {
+            Sponge.getScheduler().createTaskBuilder().async()
+                    .delay(60, TimeUnit.SECONDS)
+                    .execute(runnable)
+                    .submit(Enjin.getPlugin());
+        } else {
+            Sponge.getScheduler().createTaskBuilder().async()
+                    .execute(runnable)
+                    .submit(Enjin.getPlugin());
+        }
     }
 
     public static boolean fetchStats() {
@@ -90,10 +90,10 @@ public class StatSignManager {
             Enjin.getLogger().debug(data.getError().getMessage());
         } else {
             stats = data.getResult();
-			return true;
+            return true;
         }
 
-		return false;
+        return false;
     }
 
     public static void add(final EnjinSignData data) {
@@ -102,14 +102,14 @@ public class StatSignManager {
             config.save(file);
 
             if (data.getSubType() != null && data.getSubType() == EnjinSignType.SubType.ITEMID && data.getItemId() != null) {
-				Runnable runnable = () -> {
-					if (fetchStats()) {
-						update(data);
-					}
-				};
+                Runnable runnable = () -> {
+                    if (fetchStats()) {
+                        update(data);
+                    }
+                };
 
                 updateItems();
-				Sponge.getScheduler().createTaskBuilder().async().execute(runnable).submit(Enjin.getPlugin());
+                Sponge.getScheduler().createTaskBuilder().async().execute(runnable).submit(Enjin.getPlugin());
             } else {
                 update(data);
             }
@@ -137,57 +137,57 @@ public class StatSignManager {
     }
 
     public static void update(final EnjinSignData data) {
-		Runnable runnable = () -> {
-			Location<World> location = data.getLocation().toLocation();
+        Runnable runnable = () -> {
+            Location<World> location = data.getLocation().toLocation();
 
-			if (location == null || !location.hasTileEntity() || !(location.getTileEntity().get() instanceof Sign)) {
-				config.getSigns().remove(data);
-				return;
-			}
+            if (location == null || !location.hasTileEntity() || !(location.getTileEntity().get() instanceof Sign)) {
+                config.getSigns().remove(data);
+                return;
+            }
 
-			Sign sign = (Sign) location.getTileEntity().get();
-			String name = null;
-			switch (data.getType()) {
-				case DONATION:
-					name = StatSignProcessor.setPurchaseSign(sign, data, stats);
-					break;
-				case TOPVOTER:
-					name = StatSignProcessor.setTopVoterSign(sign, data, stats);
-					break;
-				case VOTER:
-					name = StatSignProcessor.setVoterSign(sign, data, stats);
-					break;
-				case TOPPLAYER:
-					name = StatSignProcessor.setTopPlayerSign(sign, data, stats);
-					break;
-				case TOPPOSTER:
-					name = StatSignProcessor.setTopPosterSign(sign, data, stats);
-					break;
-				case TOPLIKES:
-					name = StatSignProcessor.setTopLikesSign(sign, data, stats);
-					break;
-				case NEWMEMBER:
-					name = StatSignProcessor.setNewMemberSign(sign, data, stats);
-					break;
-				case TOPPOINTS:
-					name = StatSignProcessor.setTopPointsSign(sign, data, stats);
-					break;
-				case POINTSSPENT:
-					name = StatSignProcessor.setPointsSpentSign(sign, data, stats);
-					break;
-				case MONEYSPENT:
-					name = StatSignProcessor.setMoneySpentSign(sign, data, stats);
-					break;
-				default:
-					break;
-			}
+            Sign sign = (Sign) location.getTileEntity().get();
+            String name = null;
+            switch (data.getType()) {
+                case DONATION:
+                    name = StatSignProcessor.setPurchaseSign(sign, data, stats);
+                    break;
+                case TOPVOTER:
+                    name = StatSignProcessor.setTopVoterSign(sign, data, stats);
+                    break;
+                case VOTER:
+                    name = StatSignProcessor.setVoterSign(sign, data, stats);
+                    break;
+                case TOPPLAYER:
+                    name = StatSignProcessor.setTopPlayerSign(sign, data, stats);
+                    break;
+                case TOPPOSTER:
+                    name = StatSignProcessor.setTopPosterSign(sign, data, stats);
+                    break;
+                case TOPLIKES:
+                    name = StatSignProcessor.setTopLikesSign(sign, data, stats);
+                    break;
+                case NEWMEMBER:
+                    name = StatSignProcessor.setNewMemberSign(sign, data, stats);
+                    break;
+                case TOPPOINTS:
+                    name = StatSignProcessor.setTopPointsSign(sign, data, stats);
+                    break;
+                case POINTSSPENT:
+                    name = StatSignProcessor.setPointsSpentSign(sign, data, stats);
+                    break;
+                case MONEYSPENT:
+                    name = StatSignProcessor.setMoneySpentSign(sign, data, stats);
+                    break;
+                default:
+                    break;
+            }
 
-			if (name != null) {
-				updateHead(sign, data, name);
-			}
-		};
+            if (name != null) {
+                updateHead(sign, data, name);
+            }
+        };
 
-		Sponge.getScheduler().createTaskBuilder().execute(runnable).submit(Enjin.getPlugin());
+        Sponge.getScheduler().createTaskBuilder().execute(runnable).submit(Enjin.getPlugin());
     }
 
     public static void updateItems() {
@@ -201,8 +201,8 @@ public class StatSignManager {
     }
 
     public static void updateHead(Sign sign, EnjinSignData data, String name) {
-		if (data.getHeadLocation() != null) {
-			Location<World> loc = data.getHeadLocation().toLocation();
+        if (data.getHeadLocation() != null) {
+            Location<World> loc = data.getHeadLocation().toLocation();
 
             if (loc.getBlock().getType() != BlockTypes.SKULL) {
                 data.setHeadLocation(null);
@@ -212,21 +212,21 @@ public class StatSignManager {
             }
         }
 
-		BlockState state = sign.getBlock();
-		if (state.supports(ImmutableDirectionalData.class)) {
-			ImmutableDirectionalData directional = state.get(ImmutableDirectionalData.class).get();
-			if (directional != null) {
-				Direction direction = directional.direction().get();
-				Location<World> loc = sign.getLocation().getRelative(direction.getOpposite()).getRelative(Direction.UP);
+        BlockState state = sign.getBlock();
+        if (state.supports(ImmutableDirectionalData.class)) {
+            ImmutableDirectionalData directional = state.get(ImmutableDirectionalData.class).get();
+            if (directional != null) {
+                Direction direction = directional.direction().get();
+                Location<World> loc = sign.getLocation().getRelative(direction.getOpposite()).getRelative(Direction.UP);
 
-				if (loc != null && loc.getBlockType().equals(BlockTypes.SKULL)) {
-					updateHead(loc.getBlock(), loc, data, name);
-					return;
-				}
-			}
-		}
+                if (loc != null && loc.getBlockType().equals(BlockTypes.SKULL)) {
+                    updateHead(loc.getBlock(), loc, data, name);
+                    return;
+                }
+            }
+        }
 
-		Location<World> loc = sign.getLocation().getRelative(Direction.UP);
+        Location<World> loc = sign.getLocation().getRelative(Direction.UP);
         if (loc.getBlock().getType() == BlockTypes.SKULL) {
             updateHead(loc.getBlock(), loc, data, name);
             return;
@@ -235,7 +235,7 @@ public class StatSignManager {
         loc = sign.getLocation().add(0, 2, 0);
         if (loc.getBlock().getType() == BlockTypes.SKULL) {
             updateHead(loc.getBlock(), loc, data, name);
-			return;
+            return;
         }
     }
 
@@ -251,7 +251,7 @@ public class StatSignManager {
             return;
         }
 
-		SkullUtil.updateSkullOwner(location, (name == null || name.isEmpty()) ? "MHF_Steve" : name);
+        SkullUtil.updateSkullOwner(location, (name == null || name.isEmpty()) ? "MHF_Steve" : name);
         data.setHeadLocation(loc);
     }
 }

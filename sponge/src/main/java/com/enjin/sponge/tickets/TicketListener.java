@@ -23,15 +23,15 @@ public class TicketListener {
                 final TicketModule module = entry.getValue();
                 if (module.getCommand() != null && !module.getCommand().isEmpty()) {
                     if (module.getCommand().equalsIgnoreCase(command)) {
-						Enjin.getLogger().debug("Running support command: " + command);
-						event.setCancelled(true);
+                        Enjin.getLogger().debug("Running support command: " + command);
+                        event.setCancelled(true);
 
                         if (TicketCreationSession.getSessions().containsKey(player.getUniqueId())) {
                             player.sendMessage(Text.of(TextColors.RED, "A ticket session is already in progress..."));
                             return;
                         }
 
-						EnjinMinecraftPlugin.getInstance().getAsync().execute(() -> new TicketCreationSession(player, entry.getKey(), module));
+                        EnjinMinecraftPlugin.getInstance().getAsync().execute(() -> new TicketCreationSession(player, entry.getKey(), module));
                     }
                 }
             }

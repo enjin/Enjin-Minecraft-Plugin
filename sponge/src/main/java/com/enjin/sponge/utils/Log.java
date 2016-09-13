@@ -42,7 +42,7 @@ public class Log implements EnjinLogger {
                 log.createNewFile();
             }
         } catch (IOException e) {
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
     }
 
@@ -64,9 +64,9 @@ public class Log implements EnjinLogger {
         }
     }
 
-	public void catching(Throwable e) {
-		logger.catching(e);
-	}
+    public void catching(Throwable e) {
+        logger.catching(e);
+    }
 
     public String getLastLine() {
         return listener.getLine();
@@ -78,13 +78,13 @@ public class Log implements EnjinLogger {
     }
 
     private String hideSensitiveText(String msg) {
-		if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
-			return msg;
-		} else {
-			return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
-					"**************************************************");
-		}
-	}
+        if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
+            return msg;
+        } else {
+            return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
+                    "**************************************************");
+        }
+    }
 
     public void configure() {
 //		logger.getAppenders().forEach((string, appender) -> {
@@ -101,10 +101,10 @@ public class Log implements EnjinLogger {
             logger.addAppender(fileAppender);
         }
 
-		listener = new LineAppender("EnjinLineIn", layout);
-		listener.start();
-		Logger root = (Logger) LogManager.getRootLogger();
-		root.addAppender(listener);
+        listener = new LineAppender("EnjinLineIn", layout);
+        listener.start();
+        Logger root = (Logger) LogManager.getRootLogger();
+        root.addAppender(listener);
 
         logger.setLevel(Level.DEBUG);
     }

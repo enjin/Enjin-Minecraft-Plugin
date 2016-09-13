@@ -37,10 +37,10 @@ public class HeadCommands {
     @Permission("enjin.updateheads")
     @Directive(parent = "enjin", value = "updateheads", requireValidKey = true)
     public static void update(final CommandSender sender, final String[] args) {
-		final SignStatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(SignStatsModule.class);
-		if (module == null) {
-			return;
-		}
+        final SignStatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(SignStatsModule.class);
+        if (module == null) {
+            return;
+        }
 
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override

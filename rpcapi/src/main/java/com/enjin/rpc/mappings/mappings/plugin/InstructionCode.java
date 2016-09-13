@@ -15,7 +15,8 @@ public enum InstructionCode {
     REMOVE_PLAYER_GROUP(PlayerGroupUpdateData.class),
     EXECUTE(ExecuteData.class),
     EXECUTE_AS(null),
-    CONFIRMED_COMMANDS(new TypeToken<ArrayList<Long>>(){}.getType()),
+    CONFIRMED_COMMANDS(new TypeToken<ArrayList<Long>>() {
+    }.getType()),
     CONFIG(Object.class),
     ADD_PLAYER_WHITELIST(String.class),
     REMOVE_PLAYER_WHITELIST(String.class),

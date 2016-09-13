@@ -21,14 +21,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Module(name = "Purchase")
 public class PurchaseModule {
-	private EnjinMinecraftPlugin plugin;
+    private EnjinMinecraftPlugin plugin;
     @Getter
     private Map<String, Integer> pendingPurchases = new ConcurrentHashMap<>();
 
-	public PurchaseModule() {
-		this.plugin = EnjinMinecraftPlugin.getInstance();
+    public PurchaseModule() {
+        this.plugin = EnjinMinecraftPlugin.getInstance();
         init();
-	}
+    }
 
     public void init() {
         PlayerShopInstance.getInstances().clear();

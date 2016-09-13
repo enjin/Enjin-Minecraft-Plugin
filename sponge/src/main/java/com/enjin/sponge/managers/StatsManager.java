@@ -19,8 +19,8 @@ import java.nio.charset.Charset;
 
 public class StatsManager {
     private static EnjinStatsListener listener;
-	@Getter
-	private static File statFile;
+    @Getter
+    private static File statFile;
 
     public static void init(EnjinMinecraftPlugin plugin) {
         int i = 1;
@@ -32,7 +32,7 @@ public class StatsManager {
                     StatsUtils.parseStats(content);
                 }
             } else {
-				statFile.createNewFile();
+                statFile.createNewFile();
             }
         } catch (IOException e) {
             Enjin.getLogger().debug(e.getMessage());
@@ -41,8 +41,8 @@ public class StatsManager {
         EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
         if (configuration.isCollectPlayerStats()) {
             if (listener == null) {
-				Sponge.getEventManager().registerListeners(Enjin.getPlugin(), listener = new EnjinStatsListener(plugin));
-				Sponge.getEventManager().registerListeners(Enjin.getPlugin(), new ChatListener());
+                Sponge.getEventManager().registerListeners(Enjin.getPlugin(), listener = new EnjinStatsListener(plugin));
+                Sponge.getEventManager().registerListeners(Enjin.getPlugin(), new ChatListener());
             }
         }
     }

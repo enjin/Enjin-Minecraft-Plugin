@@ -37,11 +37,11 @@ public class VotifierListener implements Listener {
         String userid = username + "|" + Bukkit.getOfflinePlayer(username).getUniqueId().toString();
         String listname = event.getVote().getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 
-		VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+        VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
         if (!module.getPlayerVotes().containsKey(listname)) {
-			module.getPlayerVotes().put(listname, new ArrayList<Object[]>());
+            module.getPlayerVotes().put(listname, new ArrayList<Object[]>());
         }
 
-		module.getPlayerVotes().get(listname).add(new Object[]{userid, System.currentTimeMillis() / 1000});
+        module.getPlayerVotes().get(listname).add(new Object[]{userid, System.currentTimeMillis() / 1000});
     }
 }

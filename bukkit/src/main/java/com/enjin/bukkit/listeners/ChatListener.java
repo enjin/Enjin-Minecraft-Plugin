@@ -14,9 +14,9 @@ public class ChatListener implements Listener {
             return;
         }
 
-		StatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
+        StatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
         if (module != null) {
-			module.getPlayerStats(event.getPlayer()).addChatLine();
-		}
+            module.getPlayerStats(event.getPlayer()).addChatLine();
+        }
     }
 }

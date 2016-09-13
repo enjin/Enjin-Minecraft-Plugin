@@ -24,7 +24,7 @@ public class TPSMonitor implements Runnable {
     private int interval = 40;
     private int max = 25;
 
-    public TPSMonitor () {
+    public TPSMonitor() {
         TPSMonitor.instance = this;
     }
 

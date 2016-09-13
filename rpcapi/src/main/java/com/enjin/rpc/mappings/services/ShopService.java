@@ -38,7 +38,8 @@ public class ShopService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<Shop>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Shop>>>() {}.getType());
+            RPCData<List<Shop>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Shop>>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -71,7 +72,8 @@ public class ShopService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<Purchase>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Purchase>>>() {}.getType());
+            RPCData<List<Purchase>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Purchase>>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -103,7 +105,8 @@ public class ShopService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<FilteredItem>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<FilteredItem>>>() {}.getType());
+            RPCData<List<FilteredItem>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<FilteredItem>>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -149,7 +152,8 @@ public class ShopService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {}.getType());
+            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;

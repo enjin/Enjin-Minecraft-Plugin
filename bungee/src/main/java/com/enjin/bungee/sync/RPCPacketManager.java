@@ -52,7 +52,7 @@ public class RPCPacketManager implements Runnable {
                 null,
                 null,
                 null,
-				null);
+                null);
 
         final Map<String, NodeState> servers = getServers();
         ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {

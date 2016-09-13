@@ -36,7 +36,8 @@ public class PointService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {}.getType());
+            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -71,7 +72,8 @@ public class PointService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Map<Long, Integer>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Map<Long, Integer>>>() {}.getType());
+            RPCData<Map<Long, Integer>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Map<Long, Integer>>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -104,7 +106,8 @@ public class PointService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {}.getType());
+            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -137,7 +140,8 @@ public class PointService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {}.getType());
+            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -170,7 +174,8 @@ public class PointService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {}.getType());
+            RPCData<Integer> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Integer>>() {
+            }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;

@@ -66,7 +66,8 @@ public class ShopServiceTest {
             }
 
             @Override
-            public void setDebug(boolean debug) {}
+            public void setDebug(boolean debug) {
+            }
 
             @Override
             public String getAuthKey() {
@@ -74,7 +75,8 @@ public class ShopServiceTest {
             }
 
             @Override
-            public void setAuthKey(String key) {}
+            public void setAuthKey(String key) {
+            }
 
             @Override
             public boolean isHttps() {
@@ -82,7 +84,8 @@ public class ShopServiceTest {
             }
 
             @Override
-            public void setHttps(boolean https) {}
+            public void setHttps(boolean https) {
+            }
 
             @Override
             public boolean isAutoUpdate() {
@@ -90,7 +93,8 @@ public class ShopServiceTest {
             }
 
             @Override
-            public void setAutoUpdate(boolean autoUpdate) {}
+            public void setAutoUpdate(boolean autoUpdate) {
+            }
 
             @Override
             public boolean isLoggingEnabled() {
@@ -98,7 +102,8 @@ public class ShopServiceTest {
             }
 
             @Override
-            public void setLoggingEnabled(boolean loggingEnabled) {}
+            public void setLoggingEnabled(boolean loggingEnabled) {
+            }
 
             @Override
             public String getApiUrl() {
@@ -106,7 +111,8 @@ public class ShopServiceTest {
             }
 
             @Override
-            public void setApiUrl(String apiUrl) {}
+            public void setApiUrl(String apiUrl) {
+            }
 
             @Override
             public boolean save(File file) {

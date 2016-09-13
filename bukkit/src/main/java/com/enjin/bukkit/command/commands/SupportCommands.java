@@ -27,11 +27,11 @@ public class SupportCommands {
     @Directive(parent = "enjin", value = "support", requireValidKey = true)
     public static void support(final Player sender, final String[] args) {
         final EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-		final SupportModule module = plugin.getModuleManager().getModule(SupportModule.class);
+        final SupportModule module = plugin.getModuleManager().getModule(SupportModule.class);
 
-		if (module == null) {
-			return;
-		}
+        if (module == null) {
+            return;
+        }
 
         final Map<Integer, TicketModule> modules = module.getModules();
 

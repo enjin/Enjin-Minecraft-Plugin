@@ -26,7 +26,7 @@ public class TicketManager {
         clean();
 
         ticketListener = new TicketListener();
-		Sponge.getEventManager().registerListeners(plugin, ticketListener);
+        Sponge.getEventManager().registerListeners(plugin, ticketListener);
 
         pollModules();
     }

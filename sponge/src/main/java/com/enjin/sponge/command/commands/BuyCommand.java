@@ -172,7 +172,7 @@ public class BuyCommand {
     }
 
     @Directive(parent = "buy", value = "shop")
-    public static void shop(Player player, String[] args){
+    public static void shop(Player player, String[] args) {
         Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
         if (!instances.containsKey(player.getUniqueId())) {
             fetchShop(player);

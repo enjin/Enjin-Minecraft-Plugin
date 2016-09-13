@@ -21,7 +21,7 @@ public class SerializableLocation {
     @Getter
     private double z;
 
-    public SerializableLocation (Location<World> location) {
+    public SerializableLocation(Location<World> location) {
         this.world = location.getExtent().getName();
         this.x = location.getX();
         this.y = location.getY();
@@ -30,6 +30,6 @@ public class SerializableLocation {
 
     public Location<World> toLocation() {
         World world = Sponge.getServer().getWorld(this.world).get();
-		return world == null ? null : world.getLocation(x, y, z);
+        return world == null ? null : world.getLocation(x, y, z);
     }
 }

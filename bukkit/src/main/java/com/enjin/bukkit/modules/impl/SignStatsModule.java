@@ -28,7 +28,7 @@ import java.util.List;
 
 @Module(name = "SignStats")
 public class SignStatsModule {
-	private EnjinMinecraftPlugin plugin;
+    private EnjinMinecraftPlugin plugin;
     @Getter
     private File file;
     @Getter
@@ -38,10 +38,10 @@ public class SignStatsModule {
     @Getter
     private List<Integer> items = Lists.newArrayList();
 
-	public SignStatsModule() {
-		this.plugin = EnjinMinecraftPlugin.getInstance();
+    public SignStatsModule() {
+        this.plugin = EnjinMinecraftPlugin.getInstance();
         init();
-	}
+    }
 
     public void init() {
         file = new File(plugin.getDataFolder(), "stat-signs.json");
@@ -111,39 +111,39 @@ public class SignStatsModule {
                 update(data);
             }
         } else {
-			Enjin.getLogger().debug("Heads configuration file is null!");
-		}
+            Enjin.getLogger().debug("Heads configuration file is null!");
+        }
     }
 
     public void remove(SerializableLocation location) {
         if (config != null) {
-			boolean removed = false;
-			for (SignData data : new ArrayList<>(config.getSigns())) {
-				if (data.getLocation().equals(location)) {
-					removed = config.getSigns().remove(data);
-				}
-			}
+            boolean removed = false;
+            for (SignData data : new ArrayList<>(config.getSigns())) {
+                if (data.getLocation().equals(location)) {
+                    removed = config.getSigns().remove(data);
+                }
+            }
 
-			if (removed) {
-				config.save(file);
-				updateItems();
-			}
-		} else {
-			Enjin.getLogger().debug("Heads configuration file is null!");
-		}
+            if (removed) {
+                config.save(file);
+                updateItems();
+            }
+        } else {
+            Enjin.getLogger().debug("Heads configuration file is null!");
+        }
     }
 
     public void update() {
-		if (config != null) {
-			SignStatsModule module = plugin.getModuleManager().getModule(SignStatsModule.class);
-			if (module != null) {
-				for (SignData data : new ArrayList<>(config.getSigns())) {
-					module.update(data);
-				}
-			}
-		} else {
-			Enjin.getLogger().debug("Heads configuration file is null!");
-		}
+        if (config != null) {
+            SignStatsModule module = plugin.getModuleManager().getModule(SignStatsModule.class);
+            if (module != null) {
+                for (SignData data : new ArrayList<>(config.getSigns())) {
+                    module.update(data);
+                }
+            }
+        } else {
+            Enjin.getLogger().debug("Heads configuration file is null!");
+        }
     }
 
     public void update(final SignData data) {

@@ -27,7 +27,7 @@ allprojects {
 
     idea {
         module {
-            scopes.PROVIDED.plus += [ configurations.provided ]
+            scopes.PROVIDED.plus += [configurations.provided]
         }
     }
 

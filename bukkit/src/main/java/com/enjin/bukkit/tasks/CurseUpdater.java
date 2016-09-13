@@ -192,7 +192,7 @@ public class CurseUpdater extends BukkitRunnable {
             try {
                 this.thread.join();
             } catch (final InterruptedException e) {
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             }
         }
     }
@@ -335,7 +335,7 @@ public class CurseUpdater extends BukkitRunnable {
         } catch (final IOException e) {
             this.plugin.getLogger().warning("The auto-updater tried to unzip a new update file, but was unsuccessful.");
             this.result = CurseUpdater.UpdateResult.FAIL_DOWNLOAD;
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
         new File(file).delete();
     }
@@ -466,7 +466,7 @@ public class CurseUpdater extends BukkitRunnable {
                 updaterConfigFile.createNewFile();
             } catch (final IOException e) {
                 plugin.getLogger().severe("The updater could not create a configuration in " + updaterFile.getAbsolutePath());
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             }
         }
         this.config = YamlConfiguration.loadConfiguration(updaterConfigFile);
@@ -483,7 +483,7 @@ public class CurseUpdater extends BukkitRunnable {
                 this.config.save(updaterConfigFile);
             } catch (final IOException e) {
                 plugin.getLogger().severe("The updater could not save the configuration in " + updaterFile.getAbsolutePath());
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             }
         }
 
@@ -504,7 +504,7 @@ public class CurseUpdater extends BukkitRunnable {
         } catch (final MalformedURLException e) {
             plugin.getLogger().severe("The project ID provided for updating, " + id + " is invalid.");
             this.result = UpdateResult.FAIL_BADID;
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
 
         this.thread = new Thread(new UpdateRunnable());

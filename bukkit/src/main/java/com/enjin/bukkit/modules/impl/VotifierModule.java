@@ -13,17 +13,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Module(name = "Votifier", hardPluginDependencies = "Votifier")
 public class VotifierModule {
-	private EnjinMinecraftPlugin plugin;
-	@Getter
-	private Map<String, List<Object[]>> playerVotes = new ConcurrentHashMap<>();
+    private EnjinMinecraftPlugin plugin;
+    @Getter
+    private Map<String, List<Object[]>> playerVotes = new ConcurrentHashMap<>();
 
-	public VotifierModule() {
-		this.plugin = EnjinMinecraftPlugin.getInstance();
+    public VotifierModule() {
+        this.plugin = EnjinMinecraftPlugin.getInstance();
         init();
-	}
+    }
 
     public void init() {
-		Enjin.getLogger().debug("Registering vote listener!");
-		Bukkit.getPluginManager().registerEvents(new VotifierListener(plugin), plugin);
+        Enjin.getLogger().debug("Registering vote listener!");
+        Bukkit.getPluginManager().registerEvents(new VotifierListener(plugin), plugin);
     }
 }

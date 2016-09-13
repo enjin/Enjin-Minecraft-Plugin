@@ -20,7 +20,8 @@ public class SignData {
     private Integer itemId;
     @Getter
     private int index;
-    @Getter @Setter
+    @Getter
+    @Setter
     private transient SerializableLocation headLocation;
 
     public SignData(Block block, SignType type, SignType.SubType subType, int index) {

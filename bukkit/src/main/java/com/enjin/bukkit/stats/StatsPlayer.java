@@ -294,9 +294,9 @@ public class StatsPlayer {
 
         player.put("distance", jdistance);
 
-		VaultModule vaultModule = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
+        VaultModule vaultModule = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
         if (vaultModule != null && vaultModule.isEconomyAvailable()) {
-			vaultModule.setEconomyStats(getUuid(), getName(), player);
+            vaultModule.setEconomyStats(getUuid(), getName(), player);
         }
 
         JSONObject pveentitykills = new JSONObject();
@@ -310,7 +310,7 @@ public class StatsPlayer {
 
         player.put("pveentitykills", pveentitykills);
 
-		StatsModule statsModule = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
+        StatsModule statsModule = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
         if (statsModule != null && statsModule.isMcMmoEnabled()) {
             Player bplayer = Bukkit.getPlayerExact(name);
             JSONObject mcmmoskills = new JSONObject();

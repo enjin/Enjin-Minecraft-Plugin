@@ -30,15 +30,15 @@ import java.util.List;
 
 @Module(name = "Stats")
 public class StatsModule {
-	private EnjinMinecraftPlugin plugin;
+    private EnjinMinecraftPlugin plugin;
     @Getter
     private boolean mcMmoEnabled = false;
     private EnjinStatsListener listener;
 
-	public StatsModule() {
-		plugin = EnjinMinecraftPlugin.getInstance();
+    public StatsModule() {
+        plugin = EnjinMinecraftPlugin.getInstance();
         init();
-	}
+    }
 
     public void init() {
         File stats = new File("enjin-stats.json");

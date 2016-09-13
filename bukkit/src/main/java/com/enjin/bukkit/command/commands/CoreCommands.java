@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CoreCommands {
-    private static LinkedList<String> keywords = new LinkedList<String>(){{
+    private static LinkedList<String> keywords = new LinkedList<String>() {{
         add("-name");
         add("-color");
         add("-repairxp");
@@ -413,6 +413,7 @@ public class CoreCommands {
             }
         });
     }
+
     @Permission(value = "enjin.lag")
     @Directive(parent = "enjin", value = "lag", requireValidKey = false)
     public static void lag(CommandSender sender, String[] args) {
@@ -443,10 +444,10 @@ public class CoreCommands {
     public static void report(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
-		VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
-		if (module == null) {
-			return;
-		}
+        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        if (module == null) {
+            return;
+        }
 
         Date date = new Date();
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");

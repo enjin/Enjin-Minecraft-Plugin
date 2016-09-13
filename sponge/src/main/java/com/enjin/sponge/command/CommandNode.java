@@ -71,9 +71,9 @@ public class CommandNode {
             Enjin.getLogger().debug("Executing command: " + data.value());
             method.invoke(null, sender, args);
         } catch (IllegalAccessException e) {
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         } catch (InvocationTargetException e) {
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
     }
 }

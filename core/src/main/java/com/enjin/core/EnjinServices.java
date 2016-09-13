@@ -9,15 +9,15 @@ public class EnjinServices {
     private static final Map<Class<? extends Service>, Service> services = new HashMap<Class<? extends Service>, Service>();
 
     @SafeVarargs
-    public static void registerServices(Class<? extends Service> ... clazzes) {
+    public static void registerServices(Class<? extends Service>... clazzes) {
         for (Class<? extends Service> clazz : clazzes) {
             try {
-				Enjin.getLogger().debug("Registering service: " + clazz.getSimpleName());
+                Enjin.getLogger().debug("Registering service: " + clazz.getSimpleName());
                 services.put(clazz, clazz.newInstance());
             } catch (InstantiationException e) {
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             } catch (IllegalAccessException e) {
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             }
         }
     }

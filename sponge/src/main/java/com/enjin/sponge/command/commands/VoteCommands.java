@@ -25,15 +25,15 @@ public class VoteCommands {
         String listname = args[1].replaceAll("[^0-9A-Za-z.\\-]", "");
 
         Optional<Player> player = Sponge.getServer().getPlayer(username);
-		if (player.isPresent()) {
+        if (player.isPresent()) {
             username = username.concat("|" + player.get().getUniqueId().toString());
         }
 
         if (!VotifierManager.getPlayerVotes().containsKey(listname)) {
-			VotifierManager.getPlayerVotes().put(listname, new ArrayList<>());
+            VotifierManager.getPlayerVotes().put(listname, new ArrayList<>());
         }
 
-		VotifierManager.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});
+        VotifierManager.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});
         sender.sendMessage(Text.of(TextColors.GREEN, "You just added a vote for player ", username, " on list ", listname));
     }
 }

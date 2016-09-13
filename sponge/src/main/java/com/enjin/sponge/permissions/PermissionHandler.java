@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 public interface PermissionHandler {
-	void onJoin(Join event);
+    void onJoin(Join event);
 
-	void onDisconnect(Disconnect event);
+    void onDisconnect(Disconnect event);
 
-	Map<String, List<String>> fetchPlayerGroups(GameProfile player);
+    Map<String, List<String>> fetchPlayerGroups(GameProfile player);
 
-	List<String> fetchGroups();
+    List<String> fetchGroups();
 
-	void addGroup(String player, String group, String world);
+    void addGroup(String player, String group, String world);
 
-	void removeGroup(String player, String group, String world);
+    void removeGroup(String player, String group, String world);
 }

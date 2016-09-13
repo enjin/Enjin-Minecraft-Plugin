@@ -11,9 +11,9 @@ import java.util.Map;
 
 public class WriteStats {
     public boolean write(File file) {
-		if (file == null) {
-			return false;
-		}
+        if (file == null) {
+            return false;
+        }
 
         if (!file.exists()) {
             if (!file.getParentFile().exists()) {
@@ -23,7 +23,7 @@ public class WriteStats {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-				Enjin.getLogger().catching(e);
+                Enjin.getLogger().catching(e);
             }
         }
 
@@ -34,10 +34,10 @@ public class WriteStats {
             outChannel.close();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         } catch (IOException e) {
             // TODO Auto-generated catch block
-			Enjin.getLogger().catching(e);
+            Enjin.getLogger().catching(e);
         }
 
         return true;
@@ -45,7 +45,7 @@ public class WriteStats {
 
     @SuppressWarnings("unchecked")
     public String getStatsJSON() {
-		EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         Enjin.getLogger().debug("Getting serialized server stats");
         JSONObject stats = plugin.getServerStats().getSerialized();

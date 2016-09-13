@@ -51,7 +51,7 @@ public class PluginServiceTest {
                 }},
                 50,
                 2,
-                new ArrayList<PlayerInfo>(){{
+                new ArrayList<PlayerInfo>() {{
                     add(new PlayerInfo("Favorlock", UUID.fromString("8b7a881c-6ccb-4ada-8f6a-60cc99e6aa20")));
                     add(new PlayerInfo("AlmightyToaster", UUID.fromString("5b6cf5cd-d1c8-4f54-a06e-9c4462095706")));
                 }},
@@ -59,7 +59,7 @@ public class PluginServiceTest {
                 null,
                 null,
                 null,
-				null);
+                null);
         PluginService service = EnjinServices.getService(PluginService.class);
         RPCData<SyncResponse> data = service.sync(status);
 
@@ -79,7 +79,7 @@ public class PluginServiceTest {
     @Test
     public void test4GetStats() {
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<Stats> data = service.getStats(Optional.<List<Integer>>fromNullable(new ArrayList<Integer>(){{
+        RPCData<Stats> data = service.getStats(Optional.<List<Integer>>fromNullable(new ArrayList<Integer>() {{
             add(1584937);
             add(1604379);
         }}));
@@ -97,7 +97,8 @@ public class PluginServiceTest {
             }
 
             @Override
-            public void setDebug(boolean debug) {}
+            public void setDebug(boolean debug) {
+            }
 
             @Override
             public String getAuthKey() {
@@ -105,7 +106,8 @@ public class PluginServiceTest {
             }
 
             @Override
-            public void setAuthKey(String key) {}
+            public void setAuthKey(String key) {
+            }
 
             @Override
             public boolean isHttps() {
@@ -113,7 +115,8 @@ public class PluginServiceTest {
             }
 
             @Override
-            public void setHttps(boolean https) {}
+            public void setHttps(boolean https) {
+            }
 
             @Override
             public boolean isAutoUpdate() {
@@ -121,7 +124,8 @@ public class PluginServiceTest {
             }
 
             @Override
-            public void setAutoUpdate(boolean autoUpdate) {}
+            public void setAutoUpdate(boolean autoUpdate) {
+            }
 
             @Override
             public boolean isLoggingEnabled() {
@@ -129,7 +133,8 @@ public class PluginServiceTest {
             }
 
             @Override
-            public void setLoggingEnabled(boolean loggingEnabled) {}
+            public void setLoggingEnabled(boolean loggingEnabled) {
+            }
 
             @Override
             public String getApiUrl() {
@@ -137,7 +142,8 @@ public class PluginServiceTest {
             }
 
             @Override
-            public void setApiUrl(String apiUrl) {}
+            public void setApiUrl(String apiUrl) {
+            }
 
             @Override
             public boolean save(File file) {

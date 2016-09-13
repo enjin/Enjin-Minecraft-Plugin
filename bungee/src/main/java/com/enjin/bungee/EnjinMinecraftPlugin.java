@@ -34,18 +34,24 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
     @Getter
     private boolean firstRun = true;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean unableToContactEnjin = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean authKeyInvalid = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private EnjinErrorReport lastError = null;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String newVersion = "";
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean hasUpdate = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean updateFailed = false;
 
     @Override

@@ -21,14 +21,15 @@ public class EnjinSignData {
     private Integer itemId;
     @Getter
     private int index;
-    @Getter @Setter
+    @Getter
+    @Setter
     private transient SerializableLocation headLocation;
 
-    public EnjinSignData (Location<World> location, EnjinSignType type, EnjinSignType.SubType subType, int index) {
+    public EnjinSignData(Location<World> location, EnjinSignType type, EnjinSignType.SubType subType, int index) {
         this(location, type, subType, null, index);
     }
 
-    public EnjinSignData (Location<World> location, EnjinSignType type, EnjinSignType.SubType subType, Integer itemId, int index) {
+    public EnjinSignData(Location<World> location, EnjinSignType type, EnjinSignType.SubType subType, Integer itemId, int index) {
         this.location = new SerializableLocation(location);
         this.type = type;
         this.subType = subType;

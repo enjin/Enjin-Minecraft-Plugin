@@ -55,22 +55,22 @@ public class PointCommands {
             return;
         }
 
-		Sponge.getScheduler().createTaskBuilder().execute(() -> {
-			PointService service = EnjinServices.getService(PointService.class);
-			RPCData<Integer> data = service.add(name, points);
+        Sponge.getScheduler().createTaskBuilder().execute(() -> {
+            PointService service = EnjinServices.getService(PointService.class);
+            RPCData<Integer> data = service.add(name, points);
 
-			if (data == null) {
-				sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
-				return;
-			}
+            if (data == null) {
+                sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+                return;
+            }
 
-			if (data.getError() != null) {
-				sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
-				return;
-			}
+            if (data.getError() != null) {
+                sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
+                return;
+            }
 
-			sender.sendMessage(Text.of(TextColors.GREEN, args.length == 1 ? "Your" : (name + "'s"), " new point balance is ", TextColors.GOLD, data.getResult().intValue()));
-		}).async().submit(Enjin.getPlugin());
+            sender.sendMessage(Text.of(TextColors.GREEN, args.length == 1 ? "Your" : (name + "'s"), " new point balance is ", TextColors.GOLD, data.getResult().intValue()));
+        }).async().submit(Enjin.getPlugin());
     }
 
     @Permission(value = "enjin.points.remove")
@@ -110,22 +110,22 @@ public class PointCommands {
             return;
         }
 
-		Sponge.getScheduler().createTaskBuilder().execute(() -> {
-			PointService service = EnjinServices.getService(PointService.class);
-			RPCData<Integer> data = service.remove(name, points);
+        Sponge.getScheduler().createTaskBuilder().execute(() -> {
+            PointService service = EnjinServices.getService(PointService.class);
+            RPCData<Integer> data = service.remove(name, points);
 
-			if (data == null) {
-				sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
-				return;
-			}
+            if (data == null) {
+                sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+                return;
+            }
 
-			if (data.getError() != null) {
-				sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
-				return;
-			}
+            if (data.getError() != null) {
+                sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
+                return;
+            }
 
-			sender.sendMessage(Text.of(TextColors.GREEN, args.length == 1 ? "Your" : (name + "'s"), " new point balance is ", TextColors.GOLD, data.getResult().intValue()));
-		}).async().submit(Enjin.getPlugin());
+            sender.sendMessage(Text.of(TextColors.GREEN, args.length == 1 ? "Your" : (name + "'s"), " new point balance is ", TextColors.GOLD, data.getResult().intValue()));
+        }).async().submit(Enjin.getPlugin());
     }
 
     @Permission(value = "enjin.points.getself")
@@ -149,21 +149,21 @@ public class PointCommands {
         }
 
         Sponge.getScheduler().createTaskBuilder().execute(() -> {
-			PointService service = EnjinServices.getService(PointService.class);
-			RPCData<Integer> data = service.get(name);
+            PointService service = EnjinServices.getService(PointService.class);
+            RPCData<Integer> data = service.get(name);
 
-			if (data == null) {
-				sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
-				return;
-			}
+            if (data == null) {
+                sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+                return;
+            }
 
-			if (data.getError() != null) {
-				sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
-				return;
-			}
+            if (data.getError() != null) {
+                sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
+                return;
+            }
 
-			sender.sendMessage(Text.of(TextColors.GREEN, args.length == 0 ? "Your" : (name + "'s"), " point balance is ", TextColors.GOLD, data.getResult().intValue()));
-		}).async().submit(Enjin.getPlugin());
+            sender.sendMessage(Text.of(TextColors.GREEN, args.length == 0 ? "Your" : (name + "'s"), " point balance is ", TextColors.GOLD, data.getResult().intValue()));
+        }).async().submit(Enjin.getPlugin());
     }
 
     @Permission(value = "enjin.points.set")
@@ -204,23 +204,23 @@ public class PointCommands {
         }
 
         Sponge.getScheduler().createTaskBuilder().execute(new Runnable() {
-			@Override
-			public void run() {
-				PointService service = EnjinServices.getService(PointService.class);
-				RPCData<Integer> data = service.set(name, points);
+            @Override
+            public void run() {
+                PointService service = EnjinServices.getService(PointService.class);
+                RPCData<Integer> data = service.set(name, points);
 
-				if (data == null) {
-					sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
-					return;
-				}
+                if (data == null) {
+                    sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+                    return;
+                }
 
-				if (data.getError() != null) {
-					sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
-					return;
-				}
+                if (data.getError() != null) {
+                    sender.sendMessage(Text.of(TextColors.RED, data.getError().getMessage()));
+                    return;
+                }
 
-				sender.sendMessage(Text.of(TextColors.GREEN, args.length == 0 ? "Your" : (name + "'s"), " new point balance is ", TextColors.GOLD, data.getResult().intValue()));
-			}
-		}).async().submit(Enjin.getPlugin());
+                sender.sendMessage(Text.of(TextColors.GREEN, args.length == 0 ? "Your" : (name + "'s"), " new point balance is ", TextColors.GOLD, data.getResult().intValue()));
+            }
+        }).async().submit(Enjin.getPlugin());
     }
 }

@@ -19,11 +19,11 @@ public class ShopListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-		PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+        PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
 
-		if (module != null) {
-			module.getPendingPurchases().remove(event.getPlayer().getName());
-		}
+        if (module != null) {
+            module.getPendingPurchases().remove(event.getPlayer().getName());
+        }
 
         PlayerShopInstance.getInstances().remove(event.getPlayer().getUniqueId());
         Menu menu = guiInstances.remove(event.getPlayer().getUniqueId());

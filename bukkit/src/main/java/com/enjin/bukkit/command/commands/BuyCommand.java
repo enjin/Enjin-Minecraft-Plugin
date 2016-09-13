@@ -123,10 +123,10 @@ public class BuyCommand {
 
     @Directive(parent = "buy", value = "item")
     public static void item(Player player, String[] args) {
-		PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
-		if (module == null) {
-			return;
-		}
+        PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+        if (module == null) {
+            return;
+        }
 
         if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
             player.sendMessage(ChatColor.RED + "The text shop has been disabled. Please use the gui to make point purchases.");
@@ -175,16 +175,16 @@ public class BuyCommand {
 
     @Directive(parent = "buy", value = "confirm")
     public static void confirm(Player player, String[] args) {
-		PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
-		if (module == null) {
-			return;
-		}
+        PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+        if (module == null) {
+            return;
+        }
 
         module.confirmPurchase(player);
     }
 
     @Directive(parent = "buy", value = "shop")
-    public static void shop(Player player, String[] args){
+    public static void shop(Player player, String[] args) {
         Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
         if (!instances.containsKey(player.getUniqueId())) {
             fetchShop(player);

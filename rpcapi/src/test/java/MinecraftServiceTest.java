@@ -39,7 +39,7 @@ public class MinecraftServiceTest {
         MinecraftService service = EnjinServices.getService(MinecraftService.class);
 
         RPCData<List<MinecraftPlayerInfo>> data = service.getPlayers(SERVER,
-                Optional.<List<String>>of(new ArrayList<String>(){{
+                Optional.<List<String>>of(new ArrayList<String>() {{
                     add("Favorlock");
                     add("AlmightyToaster");
                 }}),
@@ -61,7 +61,8 @@ public class MinecraftServiceTest {
             }
 
             @Override
-            public void setDebug(boolean debug) {}
+            public void setDebug(boolean debug) {
+            }
 
             @Override
             public String getAuthKey() {
@@ -69,7 +70,8 @@ public class MinecraftServiceTest {
             }
 
             @Override
-            public void setAuthKey(String key) {}
+            public void setAuthKey(String key) {
+            }
 
             @Override
             public boolean isHttps() {
@@ -77,7 +79,8 @@ public class MinecraftServiceTest {
             }
 
             @Override
-            public void setHttps(boolean https) {}
+            public void setHttps(boolean https) {
+            }
 
             @Override
             public boolean isAutoUpdate() {
@@ -85,7 +88,8 @@ public class MinecraftServiceTest {
             }
 
             @Override
-            public void setAutoUpdate(boolean autoUpdate) {}
+            public void setAutoUpdate(boolean autoUpdate) {
+            }
 
             @Override
             public boolean isLoggingEnabled() {
@@ -93,7 +97,8 @@ public class MinecraftServiceTest {
             }
 
             @Override
-            public void setLoggingEnabled(boolean loggingEnabled) {}
+            public void setLoggingEnabled(boolean loggingEnabled) {
+            }
 
             @Override
             public String getApiUrl() {
@@ -101,7 +106,8 @@ public class MinecraftServiceTest {
             }
 
             @Override
-            public void setApiUrl(String apiUrl) {}
+            public void setApiUrl(String apiUrl) {
+            }
 
             @Override
             public boolean save(File file) {

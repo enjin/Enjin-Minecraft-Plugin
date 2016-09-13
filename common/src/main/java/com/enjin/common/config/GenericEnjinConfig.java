@@ -10,18 +10,23 @@ public class GenericEnjinConfig extends JsonConfig implements EnjinConfig {
     @Getter
     @Setter
     private boolean debug = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     @SerializedName(value = "auth-key")
     private String authKey = "";
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean https = true;
-    @Getter @Setter
+    @Getter
+    @Setter
     @SerializedName(value = "auto-update")
     private boolean autoUpdate = true;
-    @Getter @Setter
+    @Getter
+    @Setter
     @SerializedName(value = "logging-enabled")
     private boolean loggingEnabled = true;
-    @Getter @Setter
+    @Getter
+    @Setter
     @SerializedName(value = "api-url")
     private String apiUrl = "://api.enjin.com/api/v1";
 }

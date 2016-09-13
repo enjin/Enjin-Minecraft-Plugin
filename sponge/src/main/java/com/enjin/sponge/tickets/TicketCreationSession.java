@@ -42,12 +42,12 @@ public class TicketCreationSession {
         this.idMap = module.getIdMappedQuestions();
         this.questions = new ArrayList<>(module.getQuestions());
         Collections.sort(this.questions, (q1, q2) -> {
-			if (q1.getOrder() == q2.getOrder()) {
-				return Integer.compare(q1.getId(), q2.getId());
-			} else {
-				return Integer.compare(q1.getOrder(), q2.getOrder());
-			}
-		});
+            if (q1.getOrder() == q2.getOrder()) {
+                return Integer.compare(q1.getId(), q2.getId());
+            } else {
+                return Integer.compare(q1.getOrder(), q2.getOrder());
+            }
+        });
 
         for (Question question : new ArrayList<>(questions)) {
             Enjin.getLogger().debug("Processing question: " + question.getId() + " of type " + question.getType());
@@ -73,17 +73,17 @@ public class TicketCreationSession {
         if (factory == null) {
             factory = new InteractiveFactory(Enjin.getPlugin());
             factory.withAbandonListeners(event -> {
-				if (event.getContext().getReceiver() instanceof Player) {
-					Player p = (Player) event.getContext().getReceiver();
-					sessions.remove(p.getUniqueId());
-				}
-			});
-			factory.withCompletedListeners(event -> {
-				if (event.getContext().getReceiver() instanceof Player) {
-					Player p = (Player) event.getContext().getReceiver();
-					sessions.remove(p.getUniqueId());
-				}
-			});
+                if (event.getContext().getReceiver() instanceof Player) {
+                    Player p = (Player) event.getContext().getReceiver();
+                    sessions.remove(p.getUniqueId());
+                }
+            });
+            factory.withCompletedListeners(event -> {
+                if (event.getContext().getReceiver() instanceof Player) {
+                    Player p = (Player) event.getContext().getReceiver();
+                    sessions.remove(p.getUniqueId());
+                }
+            });
             factory.withCancellers((InteractiveCanceller) (context, input) -> input.toPlain().equalsIgnoreCase("abandon-ticket"));
             factory.withFirstPrompt(new StartPrompt());
         }
@@ -92,13 +92,14 @@ public class TicketCreationSession {
             return;
         }
 
-        this.conversation = factory.buildConversation(player);;
+        this.conversation = factory.buildConversation(player);
+        ;
         sessions.put(player.getUniqueId(), this);
         conversation.begin();
     }
 
     public InteractivePrompt getNextPrompt() {
-		InteractivePrompt prompt = null;
+        InteractivePrompt prompt = null;
 
         Enjin.getLogger().debug("Getting next prompt.");
         if (questions != null) {
@@ -161,9 +162,9 @@ public class TicketCreationSession {
             final Optional<Player> player = Sponge.getServer().getPlayer(uuid);
 
             if (player.isPresent()) {
-				plugin.getAsync().execute(() -> {
-					TicketSubmission.submit(player.get(), moduleId, new ArrayList<>(responses.values()));
-				});
+                plugin.getAsync().execute(() -> {
+                    TicketSubmission.submit(player.get(), moduleId, new ArrayList<>(responses.values()));
+                });
             }
 
             return null;
@@ -270,13 +271,13 @@ public class TicketCreationSession {
             return Text.NEW_LINE.concat(text);
         }
 
-		@Override
-		public InteractivePrompt acceptInput (InteractiveContext context, Text input) {
-			responses.put(question.getId(), new QuestionResponse(question, input.toPlain()));
-			TicketCreationSession session = sessions.get(((Player) context.getReceiver()).getUniqueId());
-			return session != null ? session.getNextPrompt() : null;
-		}
-	}
+        @Override
+        public InteractivePrompt acceptInput(InteractiveContext context, Text input) {
+            responses.put(question.getId(), new QuestionResponse(question, input.toPlain()));
+            TicketCreationSession session = sessions.get(((Player) context.getReceiver()).getUniqueId());
+            return session != null ? session.getNextPrompt() : null;
+        }
+    }
 
     public class NumberPrompt extends InteractiveNumericPrompt {
         private Question question;
@@ -285,14 +286,14 @@ public class TicketCreationSession {
             this.question = question;
         }
 
-		@Override
-		protected InteractivePrompt acceptValidatedInput (InteractiveContext context, Number number) {
-			responses.put(question.getId(), new QuestionResponse(question, number.toString()));
-			TicketCreationSession session = sessions.get(((Player) context.getReceiver()).getUniqueId());
-			return session != null ? session.getNextPrompt() : null;
-		}
+        @Override
+        protected InteractivePrompt acceptValidatedInput(InteractiveContext context, Number number) {
+            responses.put(question.getId(), new QuestionResponse(question, number.toString()));
+            TicketCreationSession session = sessions.get(((Player) context.getReceiver()).getUniqueId());
+            return session != null ? session.getNextPrompt() : null;
+        }
 
-		@Override
+        @Override
         public Text getPromptText(InteractiveContext context) {
             Text text = Text.of(TextColors.GOLD, question.getLabel());
 
@@ -302,7 +303,7 @@ public class TicketCreationSession {
 
             return Text.NEW_LINE.concat(text);
         }
-	}
+    }
 
     public class DatePrompt extends InteractiveTextPrompt {
         private Question question;
@@ -325,7 +326,7 @@ public class TicketCreationSession {
         }
 
         @Override
-		public InteractivePrompt acceptInput (InteractiveContext context, Text input) {
+        public InteractivePrompt acceptInput(InteractiveContext context, Text input) {
             String text = input.toPlain().replace("/", "-");
             Date answer;
 
@@ -369,7 +370,7 @@ public class TicketCreationSession {
         }
 
         @Override
-		public InteractivePrompt acceptInput (InteractiveContext context, Text input) {
+        public InteractivePrompt acceptInput(InteractiveContext context, Text input) {
             String answer;
             try {
                 int index = Integer.parseInt(input.toPlain()) - 1;
@@ -418,7 +419,7 @@ public class TicketCreationSession {
         }
 
         @Override
-		public InteractivePrompt acceptInput (InteractiveContext context, Text input) {
+        public InteractivePrompt acceptInput(InteractiveContext context, Text input) {
             String[] selections = input.toPlain().replace(" ", "").split(",");
 
             List<String> answers = new ArrayList<>();

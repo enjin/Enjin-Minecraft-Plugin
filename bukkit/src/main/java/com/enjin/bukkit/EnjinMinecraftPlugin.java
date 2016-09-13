@@ -78,27 +78,34 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
      */
     @Getter
     private Map<String, String> pardonedPlayers = new ConcurrentHashMap<>();
-    @Getter @Setter
+    @Getter
+    @Setter
     private String newVersion = "";
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean hasUpdate = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean updateFailed = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean authKeyInvalid = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean unableToContactEnjin = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean permissionsNotWorking = false;
 
     @Getter
     private PermissionListener permissionListener;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private EnjinErrorReport lastError = null;
 
-	@Getter
-	private ModuleManager moduleManager = null;
+    @Getter
+    private ModuleManager moduleManager = null;
 
     @Override
     public void onEnable() {
@@ -138,10 +145,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 Enjin.getLogger().debug("Failed to start metrics.");
             }
 
-			menuAPI = new MenuAPI(this);
+            menuAPI = new MenuAPI(this);
             Enjin.getLogger().debug("Init gui api done.");
 
-			moduleManager = new ModuleManager(this);
+            moduleManager = new ModuleManager(this);
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true);
@@ -180,10 +187,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         initPlugins();
         Enjin.getLogger().debug("Init plugins done.");
 
-		if (Plugins.isEnabled("Vault")) {
-			initPermissions();
+        if (Plugins.isEnabled("Vault")) {
+            initPermissions();
             Enjin.getLogger().debug("Init permissions done.");
-		}
+        }
 
         initTasks();
         Enjin.getLogger().debug("Init tasks done.");
@@ -255,29 +262,29 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             CommandBank.register(VoteCommands.class);
         }
 
-		String buyCommand = Enjin.getConfiguration(EMPConfig.class).getBuyCommand();
-		if (buyCommand != null && !buyCommand.isEmpty() && !CommandBank.isCommandRegistered(buyCommand)) {
-			CommandBank.replaceCommandWithAlias("buy", buyCommand);
-		}
+        String buyCommand = Enjin.getConfiguration(EMPConfig.class).getBuyCommand();
+        if (buyCommand != null && !buyCommand.isEmpty() && !CommandBank.isCommandRegistered(buyCommand)) {
+            CommandBank.replaceCommandWithAlias("buy", buyCommand);
+        }
     }
 
     private void disableManagers() {
-		StatsModule stats = moduleManager.getModule(StatsModule.class);
-		SignStatsModule signStats = moduleManager.getModule(SignStatsModule.class);
+        StatsModule stats = moduleManager.getModule(StatsModule.class);
+        SignStatsModule signStats = moduleManager.getModule(SignStatsModule.class);
 
         if (stats != null) {
-			stats.disable();
-		}
+            stats.disable();
+        }
 
-		if (signStats != null) {
-			signStats.disable();
-		}
+        if (signStats != null) {
+            signStats.disable();
+        }
     }
 
     public void initTasks() {
         Enjin.getLogger().debug("Starting tasks.");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
-		Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 2L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 2L);
 
         if (Enjin.getConfiguration(EMPConfig.class).isListenForBans()) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L);

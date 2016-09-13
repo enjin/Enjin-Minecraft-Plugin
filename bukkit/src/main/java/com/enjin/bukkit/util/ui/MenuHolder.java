@@ -26,7 +26,7 @@ public abstract class MenuHolder extends MenuBase implements InventoryHolder {
         } else {
             return;
         }
-        
+
         if (getInventory().getViewers().contains(player)) {
             Enjin.getLogger().debug(player.getName() + " is already viewing " + getInventory().getTitle());
             return;
