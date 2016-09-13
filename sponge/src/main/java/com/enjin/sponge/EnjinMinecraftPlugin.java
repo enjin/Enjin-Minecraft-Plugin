@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "com.enjin.sponge", dependencies = {@Dependency(id = "ninja.leaping.permissionsex", optional = true),
+@Plugin(id = "enjin-minecraft-plugin", dependencies = {@Dependency(id = "ninja.leaping.permissionsex", optional = true),
         @Dependency(id = "permissionmanager", optional = true),
         @Dependency(id = "com.vexsoftware", optional = true),
         @Dependency(id = "nuvotifier", optional = true)})

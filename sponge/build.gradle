@@ -14,7 +14,7 @@ version = '3.0.14-sponge'
 
 sponge {
     plugin {
-        id = group
+        id = 'enjin-minecraft-plugin'
         meta {
             name = 'Enjin Minecraft Plugin'
             version = version
