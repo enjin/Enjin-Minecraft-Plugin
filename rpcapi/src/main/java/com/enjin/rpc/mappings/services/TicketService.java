@@ -3,6 +3,12 @@ package com.enjin.rpc.mappings.services;
 import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.mappings.adapters.BooleanAdapter;
+import com.enjin.rpc.mappings.adapters.ByteAdapter;
+import com.enjin.rpc.mappings.adapters.DoubleAdapter;
+import com.enjin.rpc.mappings.adapters.FloatAdapter;
+import com.enjin.rpc.mappings.adapters.IntegerAdapter;
+import com.enjin.rpc.mappings.adapters.LongAdapter;
+import com.enjin.rpc.mappings.adapters.ShortAdapter;
 import com.enjin.rpc.mappings.deserializers.*;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
@@ -20,14 +26,32 @@ import java.util.*;
 public class TicketService implements Service {
     public static final Gson GSON_TICKET = new GsonBuilder()
             .registerTypeAdapter(Boolean.class, new BooleanAdapter())
+            .registerTypeAdapter(Byte.class, new ByteAdapter())
+            .registerTypeAdapter(Short.class, new ShortAdapter())
+            .registerTypeAdapter(Integer.class, new IntegerAdapter())
+            .registerTypeAdapter(Long.class, new LongAdapter())
+            .registerTypeAdapter(Float.class, new FloatAdapter())
+            .registerTypeAdapter(Double.class, new DoubleAdapter())
             .registerTypeAdapter(Ticket.class, new TicketDeserializer())
             .create();
     public static final Gson GSON_EXTRA_QUESTION = new GsonBuilder()
             .registerTypeAdapter(Boolean.class, new BooleanAdapter())
+            .registerTypeAdapter(Byte.class, new ByteAdapter())
+            .registerTypeAdapter(Short.class, new ShortAdapter())
+            .registerTypeAdapter(Integer.class, new IntegerAdapter())
+            .registerTypeAdapter(Long.class, new LongAdapter())
+            .registerTypeAdapter(Float.class, new FloatAdapter())
+            .registerTypeAdapter(Double.class, new DoubleAdapter())
             .registerTypeAdapter(ExtraQuestion.class, new ExtraQuestionDeserializer())
             .create();
     public static final Gson GSON_QUESTION = new GsonBuilder()
             .registerTypeAdapter(Boolean.class, new BooleanAdapter())
+            .registerTypeAdapter(Byte.class, new ByteAdapter())
+            .registerTypeAdapter(Short.class, new ShortAdapter())
+            .registerTypeAdapter(Integer.class, new IntegerAdapter())
+            .registerTypeAdapter(Long.class, new LongAdapter())
+            .registerTypeAdapter(Float.class, new FloatAdapter())
+            .registerTypeAdapter(Double.class, new DoubleAdapter())
             .registerTypeAdapter(Question.class, new QuestionDeserializer())
             .create();
 

@@ -4,6 +4,12 @@ import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.adapters.BooleanAdapter;
+import com.enjin.rpc.mappings.adapters.ByteAdapter;
+import com.enjin.rpc.mappings.adapters.DoubleAdapter;
+import com.enjin.rpc.mappings.adapters.FloatAdapter;
+import com.enjin.rpc.mappings.adapters.IntegerAdapter;
+import com.enjin.rpc.mappings.adapters.LongAdapter;
+import com.enjin.rpc.mappings.adapters.ShortAdapter;
 import com.enjin.rpc.mappings.deserializers.InstructionDeserializer;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.*;
@@ -25,6 +31,12 @@ import java.util.Map;
 public class PluginService implements Service {
     private static Gson gson = new GsonBuilder()
             .registerTypeAdapter(Boolean.class, new BooleanAdapter())
+            .registerTypeAdapter(Byte.class, new ByteAdapter())
+            .registerTypeAdapter(Short.class, new ShortAdapter())
+            .registerTypeAdapter(Integer.class, new IntegerAdapter())
+            .registerTypeAdapter(Long.class, new LongAdapter())
+            .registerTypeAdapter(Float.class, new FloatAdapter())
+            .registerTypeAdapter(Double.class, new DoubleAdapter())
             .registerTypeAdapter(Instruction.class, new InstructionDeserializer())
             .create();
 
