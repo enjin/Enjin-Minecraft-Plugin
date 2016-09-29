@@ -66,13 +66,13 @@ public class VersionUtil {
                 JSONObject obj = (JSONObject) new JSONParser().parse(reader);
                 return ((Number) obj.get("totalCount")).intValue();
             } catch (ParseException e) {
-                Enjin.getLogger().catching(e);
+                e.printStackTrace();
                 return -1;
             } finally {
                 reader.close();
             }
         } catch (IOException e) {
-            Enjin.getLogger().catching(e);
+            e.printStackTrace();
             return -1;
         }
     }

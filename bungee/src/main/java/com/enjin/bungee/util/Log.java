@@ -34,7 +34,7 @@ public class Log implements EnjinLogger {
                 log.createNewFile();
             }
         } catch (IOException e) {
-            Enjin.getLogger().catching(e);
+            e.printStackTrace();
         }
     }
 
@@ -87,7 +87,7 @@ public class Log implements EnjinLogger {
             try {
                 handler = new FileHandler(EnjinMinecraftPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
             } catch (IOException e) {
-                Enjin.getLogger().catching(e);
+                e.printStackTrace();
             }
 
             handler.setFormatter(formatter);

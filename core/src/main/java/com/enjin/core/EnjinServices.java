@@ -14,10 +14,8 @@ public class EnjinServices {
             try {
                 Enjin.getLogger().debug("Registering service: " + clazz.getSimpleName());
                 services.put(clazz, clazz.newInstance());
-            } catch (InstantiationException e) {
-                Enjin.getLogger().catching(e);
-            } catch (IllegalAccessException e) {
-                Enjin.getLogger().catching(e);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

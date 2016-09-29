@@ -64,7 +64,7 @@ public class ReportPublisher implements Runnable {
                 try {
                     out.close();
                 } catch (IOException e) {
-                    Enjin.getLogger().catching(e);
+                    e.printStackTrace();
                 }
             }
         }

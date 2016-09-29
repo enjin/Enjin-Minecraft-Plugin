@@ -40,7 +40,7 @@ public class RPCPacketManager implements Runnable {
             sync();
         } catch (Exception e) {
             Enjin.getLogger().warning("An error occurred while syncing with Enjin services...");
-            Enjin.getLogger().catching(e);
+            e.printStackTrace();
         }
     }
 

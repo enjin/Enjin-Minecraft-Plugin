@@ -179,7 +179,7 @@ public class CommandBank {
             SimpleCommandMap commandMap = getCommandMap();
             commandMap.register(command.toLowerCase(), command.equalsIgnoreCase("enjin") ? "" : "enjin", dispatchCommand);
         } catch (ReflectiveOperationException e) {
-            Enjin.getLogger().catching(e);
+            e.printStackTrace();
         }
     }
 
@@ -190,7 +190,7 @@ public class CommandBank {
 
             knownCommands.remove(command);
         } catch (ReflectiveOperationException e) {
-            Enjin.getLogger().catching(e);
+            e.printStackTrace();
         }
     }
 

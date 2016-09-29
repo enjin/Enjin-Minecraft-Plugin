@@ -49,7 +49,7 @@ public class Log implements EnjinLogger {
                 log.createNewFile();
             }
         } catch (IOException e) {
-            Enjin.getLogger().catching(e);
+            e.printStackTrace();
         }
     }
 
@@ -72,14 +72,14 @@ public class Log implements EnjinLogger {
             log.delete();
             log.createNewFile();
         } catch (Exception e) {
-            Enjin.getLogger().catching(e);
+            e.printStackTrace();
         } finally {
             try {
                 if (fis != null) {
                     fis.close();
                 }
             } catch (Exception e) {
-                Enjin.getLogger().catching(e);
+                e.printStackTrace();
             }
         }
     }

@@ -23,7 +23,7 @@ public class WriteStats {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                Enjin.getLogger().catching(e);
+                e.printStackTrace();
             }
         }
 
@@ -32,12 +32,8 @@ public class WriteStats {
             String jsonString = getStatsJSON();
             outChannel.write(jsonString);
             outChannel.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            Enjin.getLogger().catching(e);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            Enjin.getLogger().catching(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return true;

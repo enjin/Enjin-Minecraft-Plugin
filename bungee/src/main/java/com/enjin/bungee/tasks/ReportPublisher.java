@@ -66,7 +66,7 @@ public class ReportPublisher implements Runnable {
             rfr.close();
         } catch (Exception e) {
             if (config.isDebug()) {
-                Enjin.getLogger().catching(e);
+                e.printStackTrace();
             }
         }
         try {
@@ -109,7 +109,7 @@ public class ReportPublisher implements Runnable {
                 }
             }
             sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin debug report!");
-            Enjin.getLogger().catching(e);
+            e.printStackTrace();
         }
     }
 

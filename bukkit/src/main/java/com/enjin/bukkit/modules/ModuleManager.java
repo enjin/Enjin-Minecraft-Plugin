@@ -42,7 +42,7 @@ public class ModuleManager {
                             this.modules.put(clazz, instance);
                             Enjin.getLogger().debug("Module Initialized: " + module.name());
                         } catch (Exception e) {
-                            Enjin.getLogger().catching(e);
+                            e.printStackTrace();
                         }
                     }
                 }
