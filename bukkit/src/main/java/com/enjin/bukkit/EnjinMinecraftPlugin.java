@@ -1,10 +1,11 @@
 package com.enjin.bukkit;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
@@ -39,6 +40,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -106,6 +108,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     @Getter
     private ModuleManager moduleManager = null;
+
+    @Getter
+    private List<Long> pendingCommands = Lists.newArrayList();
 
     @Override
     public void onEnable() {

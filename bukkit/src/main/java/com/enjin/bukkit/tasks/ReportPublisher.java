@@ -162,7 +162,9 @@ public class ReportPublisher implements Runnable {
                                 }
                             }
                         } finally {
-                            dataInputStream.close();
+                            if (dataInputStream != null) {
+                                dataInputStream.close();
+                            }
                         }
                     }
                 } else {

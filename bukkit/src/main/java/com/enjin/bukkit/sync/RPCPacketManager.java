@@ -16,6 +16,7 @@ import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import com.enjin.rpc.mappings.services.PluginService;
+import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -130,6 +131,8 @@ public class RPCPacketManager implements Runnable {
                         default:
                     }
                 }
+            } else {
+                Enjin.getLogger().debug("Did not receive \"ok\" status. Status: " + (result == null ? "n/a" : result.getStatus()));
             }
         }
     }

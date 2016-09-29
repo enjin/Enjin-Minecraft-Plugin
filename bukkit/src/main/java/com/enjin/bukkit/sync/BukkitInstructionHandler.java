@@ -1,24 +1,22 @@
 package com.enjin.bukkit.sync;
 
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.tasks.EnjinUpdater;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
-import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 public class BukkitInstructionHandler implements InstructionHandler {
     @Override
@@ -95,70 +93,85 @@ public class BukkitInstructionHandler implements InstructionHandler {
             }
         }
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                OfflinePlayer player = null;
-                if (uuid.isPresent() && !uuid.get().isEmpty()) {
-                    String value = uuid.get().replaceAll("-", "");
-                    UUID u = null;
-                    if (value.length() == 32) {
-                        BigInteger least = new BigInteger(value.substring(0, 16), 16);
-                        BigInteger most = new BigInteger(value.substring(16, 32), 16);
-                        u = new UUID(least.longValue(), most.longValue());
-                        Enjin.getLogger().debug("Attempting to execute command for player uuid: " + u.toString());
-                    } else {
-                        Enjin.getLogger().debug("Received invalid uuid:" + value);
-                    }
+        OfflinePlayer player = null;
+        if (uuid.isPresent() && !uuid.get().isEmpty()) {
+            String value = uuid.get().replaceAll("-", "");
+            UUID u = null;
+            if (value.length() == 32) {
+                BigInteger least = new BigInteger(value.substring(0, 16), 16);
+                BigInteger most = new BigInteger(value.substring(16, 32), 16);
+                u = new UUID(least.longValue(), most.longValue());
+                Enjin.getLogger().debug("Attempting to execute command for player uuid: " + u.toString());
+            } else {
+                Enjin.getLogger().debug("Received invalid uuid:" + value);
+            }
 
-                    if (u != null) {
-                        player = Bukkit.getPlayer(u);
+            if (u != null) {
+                player = Bukkit.getPlayer(u);
 
-                        if (player == null) {
-                            player = Bukkit.getOfflinePlayer(u);
-                            if (player != null && !player.hasPlayedBefore())
-                                player = null;
+                if (player == null) {
+                    player = Bukkit.getOfflinePlayer(u);
+                    if (player != null && !player.hasPlayedBefore())
+                        player = null;
+                }
+            }
+        }
+
+        if (player == null && name.isPresent() && !name.get().isEmpty()) {
+            String n = name.get();
+            player = Bukkit.getOfflinePlayer(n);
+            Enjin.getLogger().debug("Attempting to execute command for player name: " + n);
+
+            if (player == null) {
+                player = Bukkit.getOfflinePlayer(n);
+                if (player != null && !player.hasPlayedBefore())
+                    player = null;
+            }
+        }
+
+        if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
+            if (player == null || !player.isOnline()) {
+                Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
+                return;
+            }
+        }
+
+        if (player != null) {
+            if (EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
+                return;
+            }
+
+            final UUID playerId = player.getUniqueId();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    EnjinMinecraftPlugin.getInstance().getPendingCommands().remove(id);
+
+                    if (requireOnline.isPresent() && requireOnline.get()) {
+                        Player pl = Bukkit.getPlayer(playerId);
+                        if (pl == null || !pl.hasPlayedBefore() || !pl.isOnline()) {
+                            return;
                         }
                     }
-                }
 
-                if (player == null && name.isPresent() && !name.get().isEmpty()) {
-                    String n = name.get();
-                    player = Bukkit.getOfflinePlayer(n);
-                    Enjin.getLogger().debug("Attempting to execute command for player name: " + n);
-
-                    if (player == null) {
-                        player = Bukkit.getOfflinePlayer(n);
-                        if (player != null && !player.hasPlayedBefore())
-                            player = null;
-                    }
-                }
-
-                if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
-                    if (player == null || !player.isOnline()) {
-                        Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
-                        return;
-                    }
-                }
-
-                if (player != null) {
                     EnjinMinecraftPlugin.dispatchConsoleCommand(command);
                     EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
                             .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
                     EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                }
+            };
+
+            if (EnjinMinecraftPlugin.getInstance().isEnabled()) {
+                if (!delay.isPresent() || delay.get() <= 0) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
                 } else {
-                    Enjin.getLogger().debug("A player could not be found in the cache for "
-                            + (uuid.isPresent() ? "uuid: " + uuid.get() : name.isPresent() ? "name: " + name.get() : "n/a"));
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
+                    EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
                 }
             }
-        };
-
-        if (EnjinMinecraftPlugin.getInstance().isEnabled()) {
-            if (!delay.isPresent() || delay.get() <= 0) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
-            } else {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
-            }
+        } else {
+            Enjin.getLogger().debug("A player could not be found in the cache for "
+                    + (uuid.isPresent() ? "uuid: " + uuid.get() : name.isPresent() ? "name: " + name.get() : "n/a"));
         }
     }
 
