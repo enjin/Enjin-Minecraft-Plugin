@@ -4,28 +4,23 @@ import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.permissions.PermissionHandler;
-import com.enjin.sponge.permissions.handlers.PermissionManagerHandler;
+import com.enjin.sponge.permissions.handlers.SpongePermissionHandler;
 import lombok.Getter;
-import ninja.leaping.permissionsex.data.SubjectDataReference;
-import ninja.leaping.permissionsex.sponge.PEXHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.permission.PermissionService;
-import org.spongepowered.api.service.permission.Subject;
 
 import java.util.*;
 
 public class ConnectionListener {
     @Getter
     private static ConnectionListener instance;
-    private ProviderRegistration permissionProviderRegistration = null;
     private PermissionHandler permissionHandler = null;
 
     public ConnectionListener() {
@@ -44,14 +39,7 @@ public class ConnectionListener {
     }
 
     private void initPermissions(ProviderRegistration<PermissionService> registration) {
-        permissionProviderRegistration = registration;
-
-        final PluginContainer container = registration.getPlugin();
-        if (container.getId().equals("ninja.leaping.permissionsex")) {
-            permissionHandler = new PEXHandler(registration.getProvider());
-        } else if (container.getId().equalsIgnoreCase("permissionmanager")) {
-            permissionHandler = new PermissionManagerHandler(registration.getProvider());
-        }
+        permissionHandler = new SpongePermissionHandler(registration.getProvider());
     }
 
     @Listener
