@@ -224,6 +224,6 @@ public class RPCPacketManager implements Runnable {
 
     private boolean isPermissionsAvailable() {
         VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
-        return module == null ? null : module.isPermissionsAvailable();
+        return module == null ? false : module.isPermissionsAvailable();
     }
 }
