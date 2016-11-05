@@ -42,22 +42,14 @@ public class Log implements EnjinLogger {
         logger.info(hideSensitiveText(msg));
     }
 
-    public void fine(String msg) {
-        logger.fine(hideSensitiveText(msg));
-    }
-
     public void warning(String msg) {
         logger.warning(hideSensitiveText(msg));
     }
 
     public void debug(String msg) {
         if (Enjin.getConfiguration() != null && Enjin.getConfiguration().isDebug()) {
-            fine("Enjin Debug: " + hideSensitiveText(msg));
+            logger.info("[Debug] " + hideSensitiveText(msg));
         }
-    }
-
-    public void catching(Throwable e) {
-        logger.log(Level.SEVERE, "EMP Error: ", e);
     }
 
     @Override

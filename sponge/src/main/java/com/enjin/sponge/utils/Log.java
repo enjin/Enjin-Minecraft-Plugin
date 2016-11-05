@@ -50,10 +50,6 @@ public class Log implements EnjinLogger {
         logger.info(hideSensitiveText(msg));
     }
 
-    public void fine(String msg) {
-        debug(hideSensitiveText(msg));
-    }
-
     public void warning(String msg) {
         logger.warn(hideSensitiveText(msg));
     }
@@ -62,10 +58,6 @@ public class Log implements EnjinLogger {
         if (Enjin.getConfiguration().isDebug()) {
             logger.info("[Debug] " + hideSensitiveText(msg));
         }
-    }
-
-    public void catching(Throwable e) {
-        logger.catching(e);
     }
 
     public String getLastLine() {
@@ -87,10 +79,6 @@ public class Log implements EnjinLogger {
     }
 
     public void configure() {
-//		logger.getAppenders().forEach((string, appender) -> {
-//			logger.removeAppender(appender);
-//		});
-
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
         PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charsets.UTF_8.name(), null);

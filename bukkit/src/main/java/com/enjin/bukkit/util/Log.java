@@ -88,17 +88,14 @@ public class Log implements EnjinLogger {
         logger.info(hideSensitiveText(msg));
     }
 
-    public void fine(String msg) {
-        debug(hideSensitiveText(msg));
-    }
-
     public void warning(String msg) {
         logger.warn(hideSensitiveText(msg));
     }
 
     public void debug(String msg) {
-        logger.debug(hideSensitiveText(msg));
-        if (Enjin.getConfiguration().isLoggingEnabled() && logger.getLevel().intLevel() < Level.DEBUG.intLevel()) {
+        if (Enjin.getConfiguration().isDebug()) {
+            logger.info("[DEBUG] " + hideSensitiveText(msg));
+        } else if (Enjin.getConfiguration().isLoggingEnabled() && logAppender != null) {
             logAppender.append(Log4jLogEvent.createEvent(EnjinMinecraftPlugin.class.getName(),
                     MarkerManager.getMarker("debug"),
                     EnjinMinecraftPlugin.class.getName(),
@@ -111,10 +108,6 @@ public class Log implements EnjinLogger {
                     null,
                     System.currentTimeMillis()));
         }
-    }
-
-    public void catching(Throwable e) {
-        logger.catching(e);
     }
 
     public String getLastLine() {
