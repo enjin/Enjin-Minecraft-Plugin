@@ -17,8 +17,11 @@ import com.enjin.sponge.managers.VotifierManager;
 import com.enjin.sponge.stats.WriteStats;
 import com.enjin.sponge.sync.data.*;
 import com.enjin.sponge.tasks.TPSMonitor;
+import com.google.common.collect.Maps;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.world.World;
 
 import java.util.*;
@@ -159,6 +162,10 @@ public class RPCPacketManager implements Runnable {
             Enjin.getLogger().warning("Rank updates configuration did not load properly.");
             return null;
         }
+
+        ConnectionListener.updatePlayersRanks(Sponge.getServer().getOnlinePlayers().stream()
+                .map(Player::getProfile)
+                .collect(Collectors.toList()).toArray(new GameProfile[]{}));
 
         Map<String, PlayerGroupInfo> groups = config.getPlayerPerms();
         Map<String, PlayerGroupInfo> update = new HashMap<>();
