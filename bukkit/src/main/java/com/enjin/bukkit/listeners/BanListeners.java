@@ -1,8 +1,10 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.tasks.BanLister;
 import com.enjin.bukkit.util.PermissionsUtil;
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -40,6 +42,10 @@ public class BanListeners implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerCommandPreProcess(PlayerCommandPreprocessEvent event) {
+        if (!Enjin.getConfiguration(EMPConfig.class).isListenForBans()) {
+            return;
+        }
+
         if (event.isCancelled()) {
             return;
         }
