@@ -71,7 +71,7 @@ public class CommandNode {
             Enjin.getLogger().debug("Executing command: " + data.value());
             method.invoke(null, sender, args);
         } catch (Exception e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
     }
 }

@@ -34,7 +34,7 @@ public class Log implements EnjinLogger {
                 log.createNewFile();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
     }
 
@@ -50,6 +50,16 @@ public class Log implements EnjinLogger {
         if (Enjin.getConfiguration() != null && Enjin.getConfiguration().isDebug()) {
             logger.info("[Debug] " + hideSensitiveText(msg));
         }
+    }
+
+    @Override
+    public void log(String msg, Throwable t) {
+        logger.log(Level.SEVERE, msg, t);
+    }
+
+    @Override
+    public void log(Throwable t) {
+        log("An error occurred...", t);
     }
 
     @Override
@@ -79,7 +89,7 @@ public class Log implements EnjinLogger {
             try {
                 handler = new FileHandler(EnjinMinecraftPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
             } catch (IOException e) {
-                e.printStackTrace();
+                Enjin.getLogger().log(e);
             }
 
             handler.setFormatter(formatter);

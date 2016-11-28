@@ -1,5 +1,6 @@
 package com.enjin.sponge.stats;
 
+import com.enjin.core.Enjin;
 import com.enjin.sponge.utils.PrimitiveUtils;
 import org.json.simple.JSONObject;
 import org.spongepowered.api.Sponge;
@@ -86,7 +87,7 @@ public class StatsServer {
                 totalentities += world.getEntities().size();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
         serverbuilder.put("totalentities", new Integer(totalentities));
         Runtime runtime = Runtime.getRuntime();

@@ -56,7 +56,7 @@ public class SkullUtil {
                     }
                 });
             } catch (Exception e) {
-                e.printStackTrace();
+                Enjin.getLogger().log(e);
             }
         }
     }

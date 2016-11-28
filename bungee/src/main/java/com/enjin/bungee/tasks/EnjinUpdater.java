@@ -48,7 +48,7 @@ public class EnjinUpdater implements Runnable {
                 Enjin.getLogger().warning("Unable to update to new version. Please update manually!");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
 
         plugin.setHasUpdate(false);

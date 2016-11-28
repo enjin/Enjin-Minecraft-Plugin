@@ -47,7 +47,7 @@ public class ExecutedCommand {
 
             return hash;
         } catch (Exception e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
 
         return null;

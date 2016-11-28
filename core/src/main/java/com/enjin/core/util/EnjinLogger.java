@@ -9,6 +9,10 @@ public interface EnjinLogger {
 
     void debug(String msg);
 
+    void log(String msg, Throwable t);
+
+    void log(Throwable t);
+
     String getLastLine();
 
     void setDebug(boolean debug);

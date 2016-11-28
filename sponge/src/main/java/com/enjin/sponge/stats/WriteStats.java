@@ -23,7 +23,7 @@ public class WriteStats {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                Enjin.getLogger().log(e);
             }
         }
 
@@ -33,7 +33,7 @@ public class WriteStats {
             outChannel.write(jsonString);
             outChannel.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
 
         return true;

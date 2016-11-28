@@ -21,7 +21,7 @@ public class StatsUtils {
             }
         } catch (ParseException e) {
             //No more stacktraces please!
-            //e.printStackTrace();
+            //Enjin.getLogger().log(e);
         }
     }
 }

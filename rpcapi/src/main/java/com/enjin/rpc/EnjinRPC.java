@@ -57,7 +57,7 @@ public class EnjinRPC {
             Enjin.getLogger().debug("Enjin API URL: " + url.toString());
             return url;
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
 
         return null;

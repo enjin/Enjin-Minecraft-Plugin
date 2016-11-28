@@ -15,7 +15,7 @@ public class EnjinServices {
                 Enjin.getLogger().debug("Registering service: " + clazz.getSimpleName());
                 services.put(clazz, clazz.newInstance());
             } catch (Exception e) {
-                e.printStackTrace();
+                Enjin.getLogger().log(e);
             }
         }
     }

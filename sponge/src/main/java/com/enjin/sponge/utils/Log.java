@@ -42,7 +42,7 @@ public class Log implements EnjinLogger {
                 log.createNewFile();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
     }
 
@@ -58,6 +58,16 @@ public class Log implements EnjinLogger {
         if (Enjin.getConfiguration().isDebug()) {
             logger.info("[Debug] " + hideSensitiveText(msg));
         }
+    }
+
+    @Override
+    public void log(String msg, Throwable t) {
+        logger.log(Level.ERROR, msg, t);
+    }
+
+    @Override
+    public void log(Throwable t) {
+        logger.log(Level.ERROR, t);
     }
 
     public String getLastLine() {

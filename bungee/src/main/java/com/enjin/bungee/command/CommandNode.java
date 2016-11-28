@@ -71,7 +71,7 @@ public class CommandNode extends net.md_5.bungee.api.plugin.Command {
             Enjin.getLogger().debug("Executing command: " + data.value());
             method.invoke(null, sender, args);
         } catch (Exception e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
     }
 

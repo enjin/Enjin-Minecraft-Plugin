@@ -49,7 +49,7 @@ public class Log implements EnjinLogger {
                 log.createNewFile();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         }
     }
 
@@ -72,14 +72,14 @@ public class Log implements EnjinLogger {
             log.delete();
             log.createNewFile();
         } catch (Exception e) {
-            e.printStackTrace();
+            Enjin.getLogger().log(e);
         } finally {
             try {
                 if (fis != null) {
                     fis.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Enjin.getLogger().log(e);
             }
         }
     }
@@ -108,6 +108,16 @@ public class Log implements EnjinLogger {
                     null,
                     System.currentTimeMillis()));
         }
+    }
+
+    @Override
+    public void log(String msg, Throwable t) {
+        logger.log(Level.ERROR, msg, t);
+    }
+
+    @Override
+    public void log(Throwable t) {
+        logger.log(Level.ERROR, t);
     }
 
     public String getLastLine() {
