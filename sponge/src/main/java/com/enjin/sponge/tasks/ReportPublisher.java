@@ -1,6 +1,6 @@
 package com.enjin.sponge.tasks;
 
-import com.enjin.common.utils.ConnectionUtil;
+import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import org.spongepowered.api.command.CommandSource;

@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 import com.enjin.bungee.EnjinMinecraftPlugin;
 import com.enjin.bungee.util.io.ReverseFileReader;
-import com.enjin.common.utils.ConnectionUtil;
+import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
 import com.enjin.core.config.EnjinConfig;
 import net.md_5.bungee.api.ChatColor;

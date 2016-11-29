@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
-import com.enjin.common.utils.ConnectionUtil;
+import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;

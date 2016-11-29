@@ -1,4 +1,4 @@
-package com.enjin.common.utils;
+package com.enjin.rpc.util;
 
 import com.enjin.core.Enjin;
 import com.enjin.rpc.EnjinRPC;

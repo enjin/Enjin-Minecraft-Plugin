@@ -9,12 +9,14 @@ import com.enjin.rpc.mappings.adapters.FloatAdapter;
 import com.enjin.rpc.mappings.adapters.IntegerAdapter;
 import com.enjin.rpc.mappings.adapters.LongAdapter;
 import com.enjin.rpc.mappings.adapters.ShortAdapter;
+import com.enjin.rpc.util.ConnectionUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionOptions;
 
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 
 public class EnjinRPC {
@@ -68,6 +70,7 @@ public class EnjinRPC {
         options.setReadTimeout(READ_TIMEOUT);
         options.setConnectTimeout(CONNECT_TIMEOUT);
         options.ignoreVersion(true);
+        if (ConnectionUtil.isMineshafterPresent()) options.setProxy(Proxy.NO_PROXY);
         return options;
     }
 

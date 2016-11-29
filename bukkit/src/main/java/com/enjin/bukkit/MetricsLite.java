@@ -28,7 +28,7 @@
 
 package com.enjin.bukkit;
 
-import com.enjin.common.utils.ConnectionUtil;
+import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
