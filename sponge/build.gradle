@@ -2,15 +2,26 @@ plugins {
     id 'org.spongepowered.plugin' version '0.5.2'
 }
 
-apply plugin: 'java'
-apply plugin: 'maven'
-
 sourceCompatibility = 1.8
-targetCompatibility = 1.8
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 group = 'com.enjin.sponge'
 version = '3.0.16-sponge'
+
+ext {
+    sponge = '5.0.0'
+}
+
+repositories {
+    maven { url 'http://repo.spongepowered.org/maven' }
+}
+
+dependencies {
+    compile project(path: ':common', configuration: 'shadow')
+    provided project(':core')
+    provided project(':rpcapi')
+    provided group: 'org.spongepowered', name: "spongeapi", version: sponge
+    provided fileTree(dir: 'lib', include: '*.jar')
+}
 
 sponge {
     plugin {

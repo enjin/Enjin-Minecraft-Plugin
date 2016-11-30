@@ -1,22 +1,8 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'com.github.johnrengelman.shadow'
-
 sourceCompatibility = 1.7
-targetCompatibility = 1.7
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name 'com.enjin'
-                artifactId 'rpcapi'
-                packaging 'jar'
-                description 'EMP rpcapi library'
-            }
-        }
-    }
+dependencies {
+    compile project(path: ':core', configuration: 'shadow')
+    compile group: 'com.thetransactioncompany', name: 'jsonrpc2-client', version: jsonrpc2
 }
 
 shadowJar {

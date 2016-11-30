@@ -11,13 +11,14 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
-allprojects {
+subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'java'
+    apply plugin: 'maven'
     apply plugin: 'com.github.johnrengelman.shadow'
 
     configurations {
@@ -42,12 +43,7 @@ allprojects {
         gson = '2.3.1'
         log4j = '2.0-beta9'
         jsonrpc2 = '1.15'
-        bukkit = '1.11-R0.1-SNAPSHOT'
-        fanciful = '0.3.5-SNAPSHOT'
         json_simple = '1.1'
-        bungeecord = '1.9-SNAPSHOT'
-        redis_bungee = '0.3.9-SNAPSHOT'
-        sponge = '5.0.0'
         reflections = '0.9.10'
         javassist = '3.12.1.GA'
         zip4j = '1.3.2'
@@ -58,10 +54,6 @@ allprojects {
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
         maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
-        maven { url 'https://oss.sonatype.org/content/groups/public/' }
-        maven { url 'https://hub.spigotmc.org/nexus/content/groups/public/' }
-        maven { url 'http://repo.stealthyone.com/content/groups/public' }
-        maven { url 'http://repo.spongepowered.org/maven' }
     }
 
     dependencies {
@@ -72,70 +64,5 @@ allprojects {
         provided group: 'com.googlecode.json-simple', name: 'json-simple', version: json_simple
         provided group: 'com.google.code.gson', name: 'gson', version: gson
         provided group: 'net.lingala.zip4j', name: 'zip4j', version: zip4j
-    }
-}
-
-project(':core') {
-    apply plugin: 'java'
-
-    dependencies {
-        compile group: 'com.google.code.gson', name: 'gson', version: gson
-    }
-}
-
-project(':rpcapi') {
-    apply plugin: 'java'
-
-    dependencies {
-        compile project(path: ':core', configuration: 'shadow')
-        compile group: 'com.thetransactioncompany', name: 'jsonrpc2-client', version: jsonrpc2
-    }
-}
-
-project(':common') {
-    apply plugin: 'java'
-
-    dependencies {
-        compile project(path: ':rpcapi', configuration: 'shadow')
-        provided project(':core')
-    }
-}
-
-project(':bukkit') {
-    apply plugin: 'java'
-
-    dependencies {
-        compile project(path: ':common', configuration: 'shadow')
-        compile group: 'mkremins', name: 'fanciful', version: fanciful
-        compile group: 'org.reflections', name: 'reflections', version: reflections
-        compile group: 'javassist', name: 'javassist', version: javassist
-        provided project(':core')
-        provided project(':rpcapi')
-        provided group: 'org.spigotmc', name: 'spigot-api', version: bukkit
-        provided fileTree(dir: 'lib', include: '*.jar')
-    }
-}
-
-project(':bungee') {
-    apply plugin: 'java'
-
-    dependencies {
-        compile project(path: ':common', configuration: 'shadow')
-        provided project(':core')
-        provided project(':rpcapi')
-        provided group: 'net.md-5', name: 'bungeecord-bootstrap', version: bungeecord
-        provided group: 'com.imaginarycode.minecraft', name: 'RedisBungee', version: redis_bungee
-    }
-}
-
-project(':sponge') {
-    apply plugin: 'java'
-
-    dependencies {
-        compile project(path: ':common', configuration: 'shadow')
-        provided project(':core')
-        provided project(':rpcapi')
-        provided group: 'org.spongepowered', name: "spongeapi", version: sponge
-        provided fileTree(dir: 'lib', include: '*.jar')
     }
 }
