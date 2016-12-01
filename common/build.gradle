@@ -2,7 +2,6 @@ sourceCompatibility = 1.7
 
 dependencies {
     compile project(path: ':rpcapi', configuration: 'shadow')
-    provided project(':core')
 }
 
 shadowJar {

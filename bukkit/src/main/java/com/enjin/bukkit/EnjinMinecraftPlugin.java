@@ -1,7 +1,6 @@
 package com.enjin.bukkit;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.io.*;
 import java.util.List;
 import java.util.Map;

@@ -6,7 +6,7 @@ dependencies {
 
 shadowJar {
     dependencies {
-        include(dependency('.*:json-simple'))
+        include(dependency('.*:json-smart'))
         include(dependency('.*:gson'))
     }
 }

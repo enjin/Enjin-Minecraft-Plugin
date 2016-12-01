@@ -11,10 +11,6 @@ ext {
     sponge = '5.0.0'
 }
 
-repositories {
-    maven { url 'http://repo.spongepowered.org/maven' }
-}
-
 dependencies {
     compile project(path: ':common', configuration: 'shadow')
     provided project(':core')

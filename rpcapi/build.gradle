@@ -9,6 +9,5 @@ shadowJar {
     dependencies {
         include(project(':core'))
         include(dependency('com.thetransactioncompany:.*'))
-        include(dependency('net.minidev:.*'))
     }
 }
