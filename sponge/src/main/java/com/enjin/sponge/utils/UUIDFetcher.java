@@ -1,9 +1,6 @@
 package com.enjin.sponge.utils;
 
 import com.google.common.collect.ImmutableList;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -13,11 +10,14 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 
 public class UUIDFetcher implements Callable<Map<String, UUID>> {
     private static final double PROFILES_PER_REQUEST = 100;
     private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
-    private final JSONParser jsonParser = new JSONParser();
+    private final JSONParser jsonParser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
     private final List<String> names;
     private final boolean rateLimiting;
 

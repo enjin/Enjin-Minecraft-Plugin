@@ -1,13 +1,13 @@
 package com.enjin.sponge.stats;
 
-import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 import java.io.*;
 import java.util.Map;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import com.enjin.core.Enjin;
 
 public class WriteStats {
     public boolean write(File file) {

@@ -2,8 +2,8 @@ package com.enjin.sponge.stats;
 
 import com.enjin.sponge.utils.PrimitiveUtils;
 import lombok.Getter;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;

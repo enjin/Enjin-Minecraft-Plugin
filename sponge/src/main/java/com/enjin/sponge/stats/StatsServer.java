@@ -2,7 +2,7 @@ package com.enjin.sponge.stats;
 
 import com.enjin.core.Enjin;
 import com.enjin.sponge.utils.PrimitiveUtils;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.World;
 

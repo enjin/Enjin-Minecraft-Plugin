@@ -13,7 +13,6 @@ import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.config.ExecutedCommandsConfig;
 import com.enjin.sponge.config.RankUpdatesConfig;
 import com.enjin.sponge.listeners.ConnectionListener;
-import com.enjin.sponge.listeners.SignListener;
 import com.enjin.sponge.managers.*;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.stats.StatsPlayer;
