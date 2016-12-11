@@ -1,7 +1,11 @@
 sourceCompatibility = 1.7
 
 dependencies {
+    // Project dependencies.
     compile project(path: ':rpcapi', configuration: 'shadow')
+    // IntelliJ fails to resolve classes with shadow configuration from project dependencies.
+    shadow project(':rpcapi')
+    shadow project(':core')
 }
 
 shadowJar {

@@ -12,8 +12,15 @@ ext {
 }
 
 dependencies {
+    // Project dependencies.
     compile project(path: ':common', configuration: 'shadow')
+    // IntelliJ fails to resolve classes with shadow configuration from project dependencies.
+    shadow project(':common')
+    shadow project(':rpcapi')
+    shadow project(':core')
+    // Project specific dependencies.
     provided group: 'org.spongepowered', name: "spongeapi", version: sponge
+    // File dependencies.
     provided fileTree(dir: 'lib', include: '*.jar')
 }
 

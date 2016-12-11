@@ -1,7 +1,11 @@
 sourceCompatibility = 1.7
 
 dependencies {
+    // Project dependencies.
     compile project(path: ':core', configuration: 'shadow')
+    // IntelliJ fails to resolve classes with shadow configuration from project dependencies.
+    shadow project(':core')
+    // Project specific dependencies.
     compile group: 'com.thetransactioncompany', name: 'jsonrpc2-client', version: jsonrpc2
 }
 

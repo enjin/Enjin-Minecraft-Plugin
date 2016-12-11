@@ -10,9 +10,13 @@ ext {
 }
 
 dependencies {
+    // Project dependencies.
     compile project(path: ':common', configuration: 'shadow')
-    provided project(':core')
-    provided project(':rpcapi')
+    // IntelliJ fails to resolve classes with shadow configuration from project dependencies.
+    shadow project(':common')
+    shadow project(':rpcapi')
+    shadow project(':core')
+    // Project specific dependencies.
     provided group: 'net.md-5', name: 'bungeecord-bootstrap', version: bungeecord
     provided group: 'com.imaginarycode.minecraft', name: 'RedisBungee', version: redis_bungee
 }
