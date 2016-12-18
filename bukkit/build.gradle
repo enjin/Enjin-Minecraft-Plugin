@@ -8,6 +8,14 @@ ext {
     bukkit = '1.11-R0.1-SNAPSHOT'
     fanciful = '0.3.5-SNAPSHOT'
     vault = '1.5.6'
+    votifier = '1.9'
+    zPermissions = '1.3beta1'
+    bPermissions = '2.12.1'
+    vanishNoPacket = '3.20'
+    tuxTwoLib = '1.11-b7'
+    permissionsEx = '1.23.4'
+    bukkitPermissions = '2.5'
+    mcMMO = '1.5.07-SNAPSHOT'
 }
 
 dependencies {
@@ -23,6 +31,14 @@ dependencies {
     compile group: 'javassist', name: 'javassist', version: javassist
     provided group: 'org.spigotmc', name: 'spigot-api', version: bukkit
     provided group: 'net.milkbowl.vault', name: 'Vault', version: vault
+    provided group: 'com.vexsoftware', name: 'votifier', version: votifier
+    provided group: 'org.tyrannyofheaven.bukkit', name: 'zPermissions', version: zPermissions
+    provided group: 'de.banaco', name: 'bPermissions-Bukkit', version: bPermissions
+    provided group: 'org.kitteh', name: 'VanishNoPacket', version: vanishNoPacket
+    provided group: 'Tux2', name: 'TuxTwoLib', version: tuxTwoLib
+    provided group: 'ru.tehkode', name: 'PermissionsEx', version: permissionsEx
+    provided group: 'com.platymuus', name: 'bukkit-permissions', version: bukkitPermissions
+    provided group: 'com.gmail.nossr50.mcMMO', name: 'mcMMO', version: mcMMO
     // File dependencies.
     shadow fileTree(dir: 'lib', include: '*.jar')
 }
