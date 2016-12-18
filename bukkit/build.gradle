@@ -7,6 +7,7 @@ version = '3.0.25'
 ext {
     bukkit = '1.11-R0.1-SNAPSHOT'
     fanciful = '0.3.5-SNAPSHOT'
+    vault = '1.5.6'
 }
 
 dependencies {
@@ -21,6 +22,7 @@ dependencies {
     compile group: 'org.reflections', name: 'reflections', version: reflections
     compile group: 'javassist', name: 'javassist', version: javassist
     provided group: 'org.spigotmc', name: 'spigot-api', version: bukkit
+    provided group: 'net.milkbowl.vault', name: 'Vault', version: vault
     // File dependencies.
     shadow fileTree(dir: 'lib', include: '*.jar')
 }
