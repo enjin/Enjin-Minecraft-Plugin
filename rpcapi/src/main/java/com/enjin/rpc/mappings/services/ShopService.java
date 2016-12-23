@@ -31,8 +31,11 @@ public class ShopService implements Service {
         JSONRPC2Response response = null;
 
         try {
+            Enjin.getLogger().debug("Creating shop session.");
             session = EnjinRPC.getSession("minecraft.php");
+            Enjin.getLogger().debug("Creating shop request.");
             request = new JSONRPC2Request(method, parameters, id);
+            Enjin.getLogger().debug("Sending shop request.");
             response = session.send(request);
 
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());

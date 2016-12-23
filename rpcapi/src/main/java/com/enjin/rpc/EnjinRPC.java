@@ -42,18 +42,21 @@ public class EnjinRPC {
             StringBuilder builder = new StringBuilder(config.isHttps() ? "https" : "http");
 
             if (apiUrl.startsWith("https")) {
-                builder.append(apiUrl.replaceFirst("https", ""));
+                apiUrl = apiUrl.replaceFirst("https", "");
             } else if (apiUrl.startsWith("http")) {
-                builder.append(apiUrl.replaceFirst("http", ""));
-            } else {
+                apiUrl = apiUrl.replaceFirst("http", "");
+            }
+
+            if (apiUrl.contains("%s")) {
+                apiUrl = apiUrl.replace("%s", clazz);
                 builder.append(apiUrl);
-            }
+            } else {
+                if (!apiUrl.endsWith("/")) {
+                    builder.append("/");
+                }
 
-            if (!apiUrl.endsWith("/")) {
-                builder.append("/");
+                builder.append(apiUrl).append(clazz);
             }
-
-            builder.append(clazz);
 
             URL url = new URL(builder.toString());
             Enjin.getLogger().debug("Enjin API URL: " + url.toString());
