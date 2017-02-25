@@ -7,6 +7,7 @@ import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.Stats;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.sponge.EnjinMinecraftPlugin;
+import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.config.StatSignConfig;
 import com.enjin.sponge.listeners.SignListener;
 import com.enjin.sponge.statsigns.EnjinSignData;
@@ -70,8 +71,10 @@ public class StatSignManager {
         };
 
         if (delayed) {
+            EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
+            int delay = config == null ? 5 : config.getSendStatsInterval();
             Sponge.getScheduler().createTaskBuilder().async()
-                    .delay(60, TimeUnit.SECONDS)
+                    .delay(delay, TimeUnit.MINUTES)
                     .execute(runnable)
                     .submit(Enjin.getPlugin());
         } else {

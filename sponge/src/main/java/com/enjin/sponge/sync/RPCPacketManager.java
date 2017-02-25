@@ -29,8 +29,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
+    private static final int ZERO_PLAYERS_THRESHOLD = 10;
+
     private EnjinMinecraftPlugin plugin;
     private long nextStatUpdate = System.currentTimeMillis();
+
+    private boolean firstRun = true;
+    private int elapsed = 0;
 
     public RPCPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -38,6 +43,17 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
+        if (!this.firstRun) {
+            if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
+                if (++this.elapsed < ZERO_PLAYERS_THRESHOLD) {
+                    Enjin.getLogger().debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
+                            + (ZERO_PLAYERS_THRESHOLD - this.elapsed));
+                    return;
+                }
+            }
+        }
+
+
         Enjin.getLogger().debug("Syncing...");
         String stats = null;
 //		if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
@@ -127,6 +143,9 @@ public class RPCPacketManager implements Runnable {
                 }
             }
         }
+
+        this.firstRun = false;
+        this.elapsed = 0;
     }
 
     private List<String> getPlugins() {

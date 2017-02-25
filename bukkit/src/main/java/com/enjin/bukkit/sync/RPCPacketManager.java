@@ -50,7 +50,7 @@ public class RPCPacketManager implements Runnable {
     private void sync() {
         if (!this.firstRun) {
             if (Bukkit.getOnlinePlayers().isEmpty()) {
-                if (this.elapsed++ < ZERO_PLAYERS_THRESHOLD) {
+                if (++this.elapsed < ZERO_PLAYERS_THRESHOLD) {
                     Enjin.getLogger().debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
                             + (ZERO_PLAYERS_THRESHOLD - this.elapsed));
                     return;

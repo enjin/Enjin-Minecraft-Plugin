@@ -1,6 +1,7 @@
 package com.enjin.bukkit.modules.impl;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.StatSignConfig;
 import com.enjin.bukkit.modules.Module;
 import com.enjin.bukkit.statsigns.SignData;
@@ -73,8 +74,10 @@ public class SignStatsModule {
         };
 
         if (plugin.isEnabled()) {
+            EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
             if (delayed) {
-                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, 20 * 60);
+                int delay = config == null ? 5 : config.getSendStatsInterval();
+                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, 20 * 60 * delay);
             } else {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
             }
@@ -82,6 +85,9 @@ public class SignStatsModule {
     }
 
     public void fetchStats() {
+        /**
+         * TODO Optimize
+         */
         RPCData<Stats> data = EnjinServices.getService(PluginService.class).getStats(Optional.fromNullable(items));
 
         if (data == null) {
