@@ -51,11 +51,13 @@ public class EnjinRPC {
                 apiUrl = apiUrl.replace("%s", clazz);
                 builder.append(apiUrl);
             } else {
+                builder.append(apiUrl);
+
                 if (!apiUrl.endsWith("/")) {
                     builder.append("/");
                 }
 
-                builder.append(apiUrl).append(clazz);
+                builder.append(clazz);
             }
 
             URL url = new URL(builder.toString());

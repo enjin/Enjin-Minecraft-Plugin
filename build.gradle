@@ -25,6 +25,9 @@ subprojects {
         }
     }
 
+    tasks.build.dependsOn(shadowJar)
+    tasks.install.dependsOn(shadowJar)
+
     tasks.withType(AbstractCompile) {
         classpath += configurations.shadow
     }

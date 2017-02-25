@@ -16,7 +16,6 @@ import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import com.enjin.rpc.mappings.services.PluginService;
-import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -26,8 +25,13 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class RPCPacketManager implements Runnable {
+    private static final int ZERO_PLAYERS_THRESHOLD = 10;
+
     private EnjinMinecraftPlugin plugin;
     private long nextStatUpdate = System.currentTimeMillis();
+
+    private boolean firstRun = true;
+    private int elapsed = 0;
 
     public RPCPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -44,20 +48,30 @@ public class RPCPacketManager implements Runnable {
     }
 
     private void sync() {
+        if (!this.firstRun) {
+            if (Bukkit.getOnlinePlayers().isEmpty()) {
+                if (this.elapsed++ < ZERO_PLAYERS_THRESHOLD) {
+                    Enjin.getLogger().debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
+                            + (ZERO_PLAYERS_THRESHOLD - this.elapsed));
+                    return;
+                }
+            }
+        }
+
         String stats = null;
         if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
             Enjin.getLogger().debug("Collecting player stats...");
             stats = getStats();
-            nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+            this.nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
             Enjin.getLogger().debug("Player stats collected!");
         }
 
         Enjin.getLogger().debug("Constructing payload...");
         Status status = new Status(System.getProperty("java.version"),
-                plugin.getMcVersion(),
+                this.plugin.getMcVersion(),
                 getPlugins(),
                 isPermissionsAvailable(),
-                plugin.getDescription().getVersion(),
+                this.plugin.getDescription().getVersion(),
                 getWorlds(),
                 getGroups(),
                 getMaxPlayers(),
@@ -81,7 +95,7 @@ public class RPCPacketManager implements Runnable {
         }
 
         if (data.getError() != null) {
-            plugin.getLogger().warning(data.getError().getMessage());
+            this.plugin.getLogger().warning(data.getError().getMessage());
         } else {
             SyncResponse result = data.getResult();
             if (result != null && result.getStatus().equalsIgnoreCase("ok")) {
@@ -134,6 +148,9 @@ public class RPCPacketManager implements Runnable {
                 Enjin.getLogger().debug("Did not receive \"ok\" status. Status: " + (result == null ? "n/a" : result.getStatus()));
             }
         }
+
+        this.firstRun = false;
+        this.elapsed = 0;
     }
 
     private List<String> getPlugins() {
@@ -209,7 +226,7 @@ public class RPCPacketManager implements Runnable {
 
     private Map<String, List<Object[]>> getVotes() {
         Map<String, List<Object[]>> votes = null;
-        VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+        VotifierModule module = this.plugin.getModuleManager().getModule(VotifierModule.class);
         if (module != null && !module.getPlayerVotes().isEmpty()) {
             votes = new HashMap<>(module.getPlayerVotes());
             module.getPlayerVotes().clear();
@@ -222,7 +239,7 @@ public class RPCPacketManager implements Runnable {
     }
 
     private boolean isPermissionsAvailable() {
-        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        VaultModule module = this.plugin.getModuleManager().getModule(VaultModule.class);
         return module == null ? false : module.isPermissionsAvailable();
     }
 }
