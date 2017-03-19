@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.*
 
 sourceCompatibility = 1.7
 
-version = '3.1.0'
+version = '3.1.1'
 
 ext {
     bukkit = '1.11-R0.1-SNAPSHOT'

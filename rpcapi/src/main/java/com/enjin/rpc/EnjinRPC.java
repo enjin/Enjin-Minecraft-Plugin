@@ -75,6 +75,7 @@ public class EnjinRPC {
         options.setReadTimeout(READ_TIMEOUT);
         options.setConnectTimeout(CONNECT_TIMEOUT);
         options.ignoreVersion(true);
+        options.trustAllCerts(true);
         if (ConnectionUtil.isMineshafterPresent()) options.setProxy(Proxy.NO_PROXY);
         return options;
     }
