@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class RPCPacketManager implements Runnable {
-    private static final int ZERO_PLAYERS_THRESHOLD = 10;
+    private static final int ZERO_PLAYERS_THRESHOLD = 5;
 
     private EnjinMinecraftPlugin plugin;
     private long nextStatUpdate = System.currentTimeMillis();
