@@ -3,12 +3,14 @@ package com.enjin.sponge.command.commands;
 import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.command.Directive;
+import com.enjin.sponge.command.Permission;
 import com.enjin.sponge.config.EMPConfig;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 public class ConfigCommand {
+    @Permission("enjin.config")
     @Directive(parent = "enjin", value = "config", aliases = "conf", requireValidKey = false)
     public static void config(CommandSource sender, String[] args) {
         if (args.length == 0) {

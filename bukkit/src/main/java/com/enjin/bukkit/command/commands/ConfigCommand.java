@@ -2,6 +2,7 @@ package com.enjin.bukkit.command.commands;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
+import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
@@ -9,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class ConfigCommand {
+    @Permission("enjin.config")
     @Directive(parent = "enjin", value = "config", aliases = "conf", requireValidKey = false)
     public static void config(CommandSender sender, String[] args) {
         if (args.length == 0) {
