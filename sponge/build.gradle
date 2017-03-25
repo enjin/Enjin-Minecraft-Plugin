@@ -19,9 +19,9 @@ dependencies {
     shadow project(':rpcapi')
     shadow project(':core')
     // Project specific dependencies.
-    provided group: 'org.spongepowered', name: "spongeapi", version: sponge
+    shadow group: 'org.spongepowered', name: "spongeapi", version: sponge
     // File dependencies.
-    provided fileTree(dir: 'lib', include: '*.jar')
+    shadow fileTree(dir: 'lib', include: '*.jar')
 }
 
 sponge {
@@ -29,14 +29,14 @@ sponge {
         id = 'enjin-minecraft-plugin'
         meta {
             name = 'Enjin Minecraft Plugin'
-            version = version
+            version = "${version}-sponge"
             description = 'Enjin Minecraft Plugin for Sponge!'
         }
     }
 }
 
 jar {
-    archiveName = 'EMPSponge.jar'
+    archiveName = 'EMPSponge-slim.jar'
 }
 
 shadowJar {
