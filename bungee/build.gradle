@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 sourceCompatibility = 1.7
 
-version = '3.1.1'
+version = '3.1.3'
 
 ext {
     bungeecord = '1.11-SNAPSHOT'
