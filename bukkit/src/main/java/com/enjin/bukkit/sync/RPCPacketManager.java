@@ -59,12 +59,12 @@ public class RPCPacketManager implements Runnable {
         }
 
         String stats = null;
-        if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
-            Enjin.getLogger().debug("Collecting player stats...");
-            stats = getStats();
-            this.nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
-            Enjin.getLogger().debug("Player stats collected!");
-        }
+//        if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
+//            Enjin.getLogger().debug("Collecting player stats...");
+//            stats = getStats();
+//            this.nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+//            Enjin.getLogger().debug("Player stats collected!");
+//        }
 
         Enjin.getLogger().debug("Constructing payload...");
         Status status = new Status(System.getProperty("java.version"),
@@ -234,9 +234,9 @@ public class RPCPacketManager implements Runnable {
         return votes;
     }
 
-    private String getStats() {
-        return new WriteStats(plugin).getStatsJSON();
-    }
+//    private String getStats() {
+//        return new WriteStats(plugin).getStatsJSON();
+//    }
 
     private boolean isPermissionsAvailable() {
         VaultModule module = this.plugin.getModuleManager().getModule(VaultModule.class);

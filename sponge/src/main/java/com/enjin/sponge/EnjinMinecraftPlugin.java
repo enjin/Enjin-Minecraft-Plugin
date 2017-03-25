@@ -197,7 +197,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
         CommandBank.setup(this);
 
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
-                StatCommands.class, SupportCommands.class, ConfigCommand.class, HeadCommands.class,
+                /* StatCommands.class, */ SupportCommands.class, ConfigCommand.class, HeadCommands.class,
                 VoteCommands.class);
 
         String buyCommand = Enjin.getConfiguration(EMPConfig.class).getBuyCommand();
@@ -234,7 +234,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     }
 
     public void disable() {
-        StatsManager.disable();
+//        StatsManager.disable();
     }
 
     public void stopTasks() {

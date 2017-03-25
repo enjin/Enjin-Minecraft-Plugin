@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-@Module(name = "Stats")
+//@Module(name = "Stats")
 public class StatsModule {
     private EnjinMinecraftPlugin plugin;
     @Getter
@@ -107,11 +107,11 @@ public class StatsModule {
     }
 
     public void disable() {
-        EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
-        if (configuration.isCollectPlayerStats()) {
-            new WriteStats(plugin).write("enjin-stats.json");
-            Enjin.getLogger().debug("Stats saved to enjin-stats.json.");
-        }
+//        EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
+//        if (configuration.isCollectPlayerStats()) {
+//            new WriteStats(plugin).write("enjin-stats.json");
+//            Enjin.getLogger().debug("Stats saved to enjin-stats.json.");
+//        }
     }
 
     public StatsPlayer getPlayerStats(OfflinePlayer player) {

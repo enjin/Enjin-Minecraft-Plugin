@@ -254,7 +254,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void initCommands() {
-        CommandBank.register(CoreCommands.class, BuyCommand.class, StatCommands.class,
+        CommandBank.register(CoreCommands.class, BuyCommand.class, // StatCommands.class,
                 HeadCommands.class, SupportCommands.class, PointCommands.class, ConfigCommand.class);
 
         if (Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
@@ -268,12 +268,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void disableManagers() {
-        StatsModule stats = moduleManager.getModule(StatsModule.class);
+//        StatsModule stats = moduleManager.getModule(StatsModule.class);
         SignStatsModule signStats = moduleManager.getModule(SignStatsModule.class);
 
-        if (stats != null) {
-            stats.disable();
-        }
+//        if (stats != null) {
+//            stats.disable();
+//        }
 
         if (signStats != null) {
             signStats.disable();
