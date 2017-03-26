@@ -127,6 +127,10 @@ public class RPCPacketManager implements Runnable {
             }
 
             final ServerInfo info = server.getValue();
+            if (info == null) {
+                continue;
+            }
+
             info.ping(new Callback<ServerPing>() {
                 @Override
                 public void done(ServerPing ping, Throwable throwable) {
