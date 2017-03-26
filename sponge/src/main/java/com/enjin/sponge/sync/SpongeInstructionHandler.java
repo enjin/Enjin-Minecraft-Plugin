@@ -66,7 +66,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
 
         Runnable runnable = () -> {
             java.util.Optional<Player> player = null;
-            if (uuid.isPresent() && !uuid.get().isEmpty()) {
+            if (Sponge.getServer().getOnlineMode() && uuid.isPresent() && !uuid.get().isEmpty()) {
                 String value = uuid.get().replaceAll("-", "");
                 UUID u = null;
                 if (value.length() == 32) {
@@ -103,6 +103,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
 
             if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
                 if (!player.isPresent() || !player.get().isOnline()) {
+                    Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
                     return;
                 }
             }

@@ -94,7 +94,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
         }
 
         OfflinePlayer player = null;
-        if (uuid.isPresent() && !uuid.get().isEmpty()) {
+        if (Bukkit.getOnlineMode() && uuid.isPresent() && !uuid.get().isEmpty()) {
             String value = uuid.get().replaceAll("-", "");
             UUID u = null;
             if (value.length() == 32) {
