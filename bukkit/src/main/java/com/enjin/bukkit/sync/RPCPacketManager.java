@@ -1,28 +1,27 @@
 package com.enjin.bukkit.sync;
 
-import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.modules.impl.VotifierModule;
-import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.sync.data.*;
 import com.enjin.bukkit.tasks.TPSMonitor;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.core.util.StringUtils;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.*;
 import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import com.enjin.rpc.mappings.services.PluginService;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class RPCPacketManager implements Runnable {
     private static final int ZERO_PLAYERS_THRESHOLD = 5;
@@ -174,7 +173,16 @@ public class RPCPacketManager implements Runnable {
 
         VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
         if (module != null && module.isPermissionsAvailable()) {
-            groups.addAll(Arrays.asList(module.getPermission().getGroups()));
+            try {
+                groups.addAll(Arrays.asList(module.getPermission().getGroups()));
+            } catch (Exception e) {
+                Enjin.getLogger().warning(new StringBuilder("Exception thrown by Vault permissions implementation. ")
+                        .append("Please ensure Vault and your permissions plugin are up-to-date.")
+                        .toString());
+                Enjin.getLogger().debug(new StringBuilder("Vault Exception: \n")
+                        .append(StringUtils.throwableToString(e))
+                        .toString());
+            }
         }
 
         return groups;
