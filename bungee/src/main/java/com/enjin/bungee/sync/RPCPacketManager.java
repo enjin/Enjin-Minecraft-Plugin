@@ -122,7 +122,7 @@ public class RPCPacketManager implements Runnable {
         final Map<String, NodeState> servers = new ConcurrentHashMap<>();
 
         for (final Map.Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-            if (servers == null || server == null) {
+            if (server == null) {
                 continue;
             }
 
@@ -140,7 +140,9 @@ public class RPCPacketManager implements Runnable {
                     }
 
                     List<String> players = isRedisBungeeEnabled() ? getPlayersFromRedisBungee(info) : getPlayersFromProxy(info);
-                    servers.put(server.getKey(), new NodeState(players, ping.getPlayers().getMax()));
+                    servers.put(server.getKey(), new NodeState(players,
+                            ping.getPlayers()
+                                    .getMax()));
                 }
             });
         }
