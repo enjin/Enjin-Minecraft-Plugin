@@ -2,10 +2,12 @@ plugins {
     id 'org.spongepowered.plugin' version '0.5.2'
 }
 
-sourceCompatibility = 1.8
-
-group = 'com.enjin.sponge'
-version = '3.1.5-sponge'
+/*
+Enforces compiling with the specified compiler if environment variable JAVA#_HOME is set.
+For example, projects that build with Java 7 should have environment variable JAVA7_HOME set.
+ */
+apply from: scriptFile('env.gradle')
+configureJavaCompilers(8)
 
 ext {
     sponge = '5.0.0'

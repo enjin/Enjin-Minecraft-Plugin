@@ -11,6 +11,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
+apply from: 'gradle/util.gradle'
+
 subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
@@ -18,6 +20,9 @@ subprojects {
     apply plugin: 'nebula.provided-base'
     apply plugin: 'maven'
     apply plugin: 'com.github.johnrengelman.shadow'
+
+    group = 'com.enjin'
+    version = '3.1.5'
 
     idea {
         module {
@@ -27,6 +32,7 @@ subprojects {
 
     tasks.build.dependsOn(shadowJar)
     tasks.install.dependsOn(shadowJar)
+    artifacts.archives shadowJar
 
     tasks.withType(AbstractCompile) {
         classpath += configurations.shadow
