@@ -8,9 +8,12 @@ import com.enjin.sponge.permissions.handlers.SpongePermissionHandler;
 import lombok.Getter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+import org.spongepowered.api.event.network.ClientConnectionEvent.Login;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.service.ServiceManager;
@@ -43,11 +46,16 @@ public class ConnectionListener {
     }
 
     @Listener
+    public void onLogin(Login event) {
+        if (permissionsEnabled()) {
+            updatePlayerRanks(event.getTargetUser());
+        }
+    }
+
+    @Listener
     public void onJoin(Join event) {
         if (permissionsEnabled()) {
             permissionHandler.onJoin(event);
-
-            updatePlayerRanks(event.getTargetEntity());
         }
     }
 
@@ -62,33 +70,33 @@ public class ConnectionListener {
         return instance.permissionHandler != null;
     }
 
-    public static void updatePlayerRanks(Player player) {
+    public static void updatePlayerRanks(User user) {
         if (permissionsEnabled()) {
-            updatePlayerRanks1(player.getProfile());
+            updatePlayerRanks1(user.getProfile());
             EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
         }
     }
 
-    public static void updatePlayersRanks(GameProfile[] players) {
+    public static void updatePlayersRanks(GameProfile[] profiles) {
         if (permissionsEnabled()) {
-            for (GameProfile player : players) {
-                updatePlayerRanks1(player);
+            for (GameProfile profile : profiles) {
+                updatePlayerRanks1(profile);
             }
 
             EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
         }
     }
 
-    private static void updatePlayerRanks1(GameProfile player) {
-        if (player == null || !player.getName().isPresent()) {
+    private static void updatePlayerRanks1(GameProfile profile) {
+        if (profile == null || !profile.getName().isPresent()) {
             Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
             return;
         }
 
-        PlayerGroupInfo info = new PlayerGroupInfo(player.getUniqueId());
+        PlayerGroupInfo info = new PlayerGroupInfo(profile.getUniqueId());
 
         if (info == null) {
-            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] PlayerGroupInfo is null. Unable to update " + player.getName() + "'s ranks.");
+            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] PlayerGroupInfo is null. Unable to update " + profile.getName() + "'s ranks.");
             return;
         }
 
@@ -102,15 +110,15 @@ public class ConnectionListener {
             return;
         }
 
-        info.getWorlds().putAll(getPlayerGroups(player));
-        EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName().get(), info);
+        info.getWorlds().putAll(getPlayerGroups(profile));
+        EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(profile.getName().get(), info);
     }
 
-    public static Map<String, List<String>> getPlayerGroups(GameProfile player) {
+    public static Map<String, List<String>> getPlayerGroups(GameProfile profile) {
         Map<String, List<String>> worlds = null;
 
         if (permissionsEnabled()) {
-            worlds = instance.permissionHandler.fetchPlayerGroups(player);
+            worlds = instance.permissionHandler.fetchPlayerGroups(profile);
         }
 
         return worlds;

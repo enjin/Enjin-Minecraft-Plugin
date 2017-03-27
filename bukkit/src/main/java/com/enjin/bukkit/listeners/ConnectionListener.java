@@ -7,6 +7,7 @@ import com.enjin.bukkit.util.Plugins;
 import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 public class ConnectionListener implements Listener {
     @Getter
@@ -27,9 +29,19 @@ public class ConnectionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
+    public void onAsyncPlayerPreJoin(PlayerJoinEvent e) {
+        final Player p = e.getPlayer();
+        Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) Enjin.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                updatePlayerRanks(p);
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        updatePlayerRanks(p);
 
         if (!plugin.getNewVersion().equals("") && PermissionsUtil.hasPermission(p, "enjin.notify.update")) {
             p.sendMessage(ChatColor.GREEN + "EnjinMinecraftplugin was updated to version " + plugin.getNewVersion() + ". Please restart your server.");
