@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
@@ -28,15 +29,10 @@ public class ConnectionListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onAsyncPlayerPreJoin(PlayerJoinEvent e) {
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerJoinLowest(PlayerJoinEvent e) {
         final Player p = e.getPlayer();
-        Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) Enjin.getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                updatePlayerRanks(p);
-            }
-        });
+        updatePlayerRanks(p);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
