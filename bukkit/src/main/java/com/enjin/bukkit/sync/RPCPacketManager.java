@@ -24,7 +24,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.*;
 
 public class RPCPacketManager implements Runnable {
-    private static final int ZERO_PLAYERS_THRESHOLD = 5;
+    private static final int ZERO_PLAYERS_THRESHOLD = 10;
 
     private EnjinMinecraftPlugin plugin;
     private long nextStatUpdate = System.currentTimeMillis();

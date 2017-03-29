@@ -140,9 +140,9 @@ public class RPCPacketManager implements Runnable {
                     }
 
                     List<String> players = isRedisBungeeEnabled() ? getPlayersFromRedisBungee(info) : getPlayersFromProxy(info);
-                    servers.put(server.getKey(), new NodeState(players,
-                            ping.getPlayers()
-                                    .getMax()));
+//                    server.getKey();
+//                    ping.getPlayers().getMax();
+                    servers.put(server.getKey(), new NodeState(players, ping.getPlayers().getMax()));
                 }
             });
         }
