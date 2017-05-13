@@ -333,7 +333,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             Bukkit.getPluginManager().registerEvents(permissionListener = new GroupManagerListener(), this);
         } else {
             Enjin.getLogger().debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
-            Enjin.getLogger().debug("You might want to switch to PermissionsEx, bPermissions, or Essentials GroupManager.");
+            Enjin.getLogger().debug("You might want to switch to PermissionsEx or bPermissions.");
         }
     }
 
