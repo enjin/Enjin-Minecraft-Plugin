@@ -59,6 +59,7 @@ public class ReportPublisher implements Runnable {
             sender.sendMessage(Text.of(TextColors.GOLD, "Enjin debug report created in " + outFile.getPath()));
         } catch (IOException e) {
             sender.sendMessage(Text.of(TextColors.RED, "Unable to write Enjin debug report."));
+            Enjin.getLogger().log(e);
         } finally {
             if (out != null) {
                 try {
