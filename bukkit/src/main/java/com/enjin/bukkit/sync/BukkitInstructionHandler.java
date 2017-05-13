@@ -5,6 +5,7 @@ import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.tasks.EnjinUpdater;
+import com.enjin.bukkit.util.PlayerUtil;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
 import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
@@ -101,9 +102,9 @@ public class BukkitInstructionHandler implements InstructionHandler {
                 BigInteger least = new BigInteger(value.substring(0, 16), 16);
                 BigInteger most = new BigInteger(value.substring(16, 32), 16);
                 u = new UUID(least.longValue(), most.longValue());
-                Enjin.getLogger().debug("Attempting to execute command for player uuid: " + u.toString());
+                Enjin.getLogger().debug("UUID Detected: " + u.toString());
             } else {
-                Enjin.getLogger().debug("Received invalid uuid:" + value);
+                Enjin.getLogger().debug("Invalid UUID: " + value);
             }
 
             if (u != null) {
@@ -119,11 +120,15 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
         if (player == null && name.isPresent() && !name.get().isEmpty()) {
             String n = name.get();
-            player = Bukkit.getOfflinePlayer(n);
-            Enjin.getLogger().debug("Attempting to execute command for player name: " + n);
+            if (n.length() < 16) {
+                player = Bukkit.getPlayer(n);
+                Enjin.getLogger().debug("Name Detected: " + n);
+            } else {
+                Enjin.getLogger().debug("Invalid Name: " + n);
+            }
 
             if (player == null) {
-                player = Bukkit.getOfflinePlayer(n);
+                player = PlayerUtil.getOfflinePlayer(n, true);
                 if (player != null && !player.hasPlayedBefore())
                     player = null;
             }
