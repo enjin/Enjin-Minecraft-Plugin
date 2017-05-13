@@ -327,7 +327,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         } else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
             Enjin.getLogger().debug("PermissionsBukkit found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new PermissionsBukkitListener(), this);
-        } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager")) {
+        } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager") || Bukkit.getPluginManager().isPluginEnabled("GroupManagerX")) {
             Enjin.getLogger().debug("GroupManager found, hooking custom events.");
             globalGroupsSupported = false;
             Bukkit.getPluginManager().registerEvents(permissionListener = new GroupManagerListener(), this);
