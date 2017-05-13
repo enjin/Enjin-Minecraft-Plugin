@@ -1,9 +1,11 @@
 package com.enjin.bukkit;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.enjin.bukkit.command.CommandBank;
@@ -38,10 +40,14 @@ import lombok.Getter;
 
 import lombok.Setter;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.enjin.bukkit.tasks.BanLister;
 import com.enjin.bukkit.tasks.CurseUpdater;
+
+import javax.annotation.Nullable;
 
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
@@ -146,6 +152,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
             menuAPI = new MenuAPI(this);
             Enjin.getLogger().debug("Init gui api done.");
+
+            initVanishPredicate();
 
             moduleManager = new ModuleManager(this);
 
@@ -335,6 +343,32 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             Enjin.getLogger().debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
             Enjin.getLogger().debug("You might want to switch to PermissionsEx or bPermissions.");
         }
+    }
+
+    private void initVanishPredicate() {
+        Enjin.getApi().registerVanishPredicate(new Predicate<UUID>() {
+            @Override
+            public boolean apply(@Nullable UUID input) {
+                boolean vanished = false;
+                if (input != null) {
+                    Player player = Bukkit.getPlayer(input);
+                    if (player != null) {
+                        List<MetadataValue> values = player.getMetadata("vanished");
+                        for (MetadataValue value : values) {
+                            try {
+                                if (value.asBoolean()) {
+                                    vanished = true;
+                                    break;
+                                }
+                            } catch (Exception e) {
+                                Enjin.getLogger().debug("Vanished metadata from " + value.getOwningPlugin().getName() + " is not of type boolean.");
+                            }
+                        }
+                    }
+                }
+                return vanished;
+            }
+        });
     }
 
     public static void dispatchConsoleCommand(String command) {

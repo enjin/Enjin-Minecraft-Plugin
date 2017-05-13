@@ -9,6 +9,7 @@ import java.util.UUID;
 public class EnjinAPI {
     private List<Predicate<UUID>> vanishRegistrations = Lists.newArrayList();
 
+    @Deprecated
     public void registerVanishPredicate(Predicate<UUID> predicate) {
         if (predicate == null) {
             return;
@@ -17,6 +18,7 @@ public class EnjinAPI {
         vanishRegistrations.add(predicate);
     }
 
+    @Deprecated
     public Boolean getVanishState(UUID uuid) {
         boolean state = false;
 
