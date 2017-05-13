@@ -29,7 +29,7 @@ public class SerializableLocation {
     }
 
     public Location<World> toLocation() {
-        World world = Sponge.getServer().getWorld(this.world).get();
+        World world = Sponge.getServer().getWorld(this.world).orElseGet(null);
         return world == null ? null : world.getLocation(x, y, z);
     }
 }
