@@ -327,7 +327,7 @@ public class CoreCommands {
         for (PluginContainer container : Sponge.getPluginManager().getPlugins()) {
             report.append(container.getName())
                     .append(" Version: ")
-                    .append(container.getVersion().get())
+                    .append(container.getVersion().orElse("N/A"))
                     .append('\n');
         }
 
