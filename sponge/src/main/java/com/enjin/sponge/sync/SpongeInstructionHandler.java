@@ -73,9 +73,9 @@ public class SpongeInstructionHandler implements InstructionHandler {
                     BigInteger least = new BigInteger(value.substring(0, 16), 16);
                     BigInteger most = new BigInteger(value.substring(16, 32), 16);
                     u = new UUID(least.longValue(), most.longValue());
-                    Enjin.getLogger().debug("Attempting to execute command for player uuid: " + u.toString());
+                    Enjin.getLogger().debug("UUID Detected: " + u.toString());
                 } else {
-                    Enjin.getLogger().debug("Received invalid uuid:" + value);
+                    Enjin.getLogger().debug("Invalid UUID: " + value);
                 }
 
                 if (u != null) {
@@ -91,8 +91,12 @@ public class SpongeInstructionHandler implements InstructionHandler {
 
             if ((player == null || !player.isPresent()) && name.isPresent() && !name.get().isEmpty()) {
                 String n = name.get();
-                player = Sponge.getServer().getPlayer(n);
-                Enjin.getLogger().debug("Attempting to execute command for player name: " + n);
+                if (n.length() < 16) {
+                    player = Sponge.getServer().getPlayer(n);
+                    Enjin.getLogger().debug("Name Detected: " + n);
+                } else {
+                    Enjin.getLogger().debug("Invalid Name: " + n);
+                }
 
                 if (player.isPresent()) {
                     Player p = player.get();
@@ -109,6 +113,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
             }
 
             if (player.isPresent()) {
+                Enjin.getLogger().debug("Executing command \"" + command + "\" for " + player.get().getName());
                 Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
                         .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
