@@ -3,14 +3,15 @@ package com.enjin.sponge.tasks;
 import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,28 +47,25 @@ public class ReportPublisher implements Runnable {
 
         Date date = new Date();
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
-        File outFile = new File(plugin.getConfigDir(),
-                "reports/" + format.format(date) + ".txt");
-        BufferedWriter out = null;
-        try {
-            if (!outFile.getParentFile().exists()) {
-                outFile.mkdirs();
-            }
-
-            out = new BufferedWriter(new FileWriter(outFile));
-            out.write(report);
-            sender.sendMessage(Text.of(TextColors.GOLD, "Enjin debug report created in " + outFile.getPath()));
-        } catch (IOException e) {
-            sender.sendMessage(Text.of(TextColors.RED, "Unable to write Enjin debug report."));
+        try (InputStream in = new ByteArrayInputStream(report.getBytes())) {
+            ZipFile zip = new ZipFile(new File("enjinreport_" + format.format(date) + ".zip"));
+            ZipParameters parameters = new ZipParameters();
+            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
+            zip.addFile(Enjin.getLogger().getLogFile(), parameters);
+            parameters.setFileNameInZip("enjinreport_" + format.format(date) + ".txt");
+            parameters.setSourceExternalStream(true);
+            zip.addStream(in, parameters);
+            sender.sendMessage(Text.builder()
+                    .color(TextColors.GOLD)
+                    .append(Text.of("Enjin report created in " + zip.getFile().getPath() + " successfully!"))
+                    .build());
+        } catch (Exception e) {
+            sender.sendMessage(Text.builder()
+                    .color(TextColors.DARK_RED)
+                    .append(Text.of("Unable to write Enjin report!"))
+                    .build());
             Enjin.getLogger().log(e);
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    Enjin.getLogger().log(e);
-                }
-            }
         }
     }
+
 }

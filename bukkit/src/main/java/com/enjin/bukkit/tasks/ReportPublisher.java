@@ -11,6 +11,7 @@ import com.enjin.core.Enjin;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -174,28 +175,29 @@ public class ReportPublisher implements Runnable {
             }
         }
         //let's make sure to hide the apikey, wherever it may occurr in the file.
-        String finalReport = builder.toString().replaceAll("authkey=\\w{50}", "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+        String report = builder.toString().replaceAll("authkey=\\w{50}", "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
         Date date = new Date();
-        InputStream inChannel = null;
+        InputStream in = null;
 
         try {
-            inChannel = new ByteArrayInputStream(finalReport.getBytes());
+            in = new ByteArrayInputStream(report.getBytes());
 
-            ZipFile zip = new ZipFile(new File("enjinreport_" + dateFormat.format(date) + ".zip"));
-            ZipParameters reportParameters = new ZipParameters();
-            reportParameters.setFileNameInZip("enjinreport_" + dateFormat.format(date) + ".txt");
-            reportParameters.setSourceExternalStream(true);
-            zip.addStream(inChannel, reportParameters);
-            zip.addFile(Enjin.getLogger().getLogFile(), new ZipParameters());
+            ZipFile zip = new ZipFile(new File("enjinreport_" + format.format(date) + ".zip"));
+            ZipParameters parameters = new ZipParameters();
+            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
+            zip.addFile(Enjin.getLogger().getLogFile(), parameters);
+            parameters.setFileNameInZip("enjinreport_" + format.format(date) + ".txt");
+            parameters.setSourceExternalStream(true);
+            zip.addStream(in, parameters);
 
-            sender.sendMessage(ChatColor.GOLD + "Enjin debug report created in " + zip.getFile().getPath() + " successfully!");
+            sender.sendMessage(ChatColor.GOLD + "Enjin report created in " + zip.getFile().getPath() + " successfully!");
         } catch (ZipException e) {
-            sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin debug report!");
+            sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin report!");
             Enjin.getLogger().log(e);
         } finally {
             try {
-                inChannel.close();
+                in.close();
             } catch (IOException e) {
                 Enjin.getLogger().log(e);
             }

@@ -1,9 +1,6 @@
 package com.enjin.bungee.tasks;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,6 +11,9 @@ import com.enjin.bungee.util.io.ReverseFileReader;
 import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
 import com.enjin.core.config.EnjinConfig;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
@@ -92,23 +92,23 @@ public class ReportPublisher implements Runnable {
         builder.append("Enjin web connectivity test: ").append(ConnectionUtil.testWebConnection() ? "passed" : "FAILED!").append("\n");
         builder.append("Is mineshafter present: ").append(ConnectionUtil.isMineshafterPresent() ? "yes" : "no").append("\n=========================================\n");
         //let's make sure to hide the apikey, wherever it may occurr in the file.
-        String fullreport = builder.toString().replaceAll(config.getApiUrl(), "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+        String report = builder.toString().replaceAll(config.getApiUrl(), "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
         Date date = new Date();
-        BufferedWriter outChannel = null;
-        try {
-            outChannel = new BufferedWriter(new FileWriter(serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt"));
-            outChannel.write(fullreport);
-            outChannel.close();
-            sender.sendMessage(ChatColor.GOLD + "Enjin debug report created in " + serverloglocation + File.separator + "enjinreport_" + dateFormat.format(date) + ".txt successfully!");
-        } catch (IOException e) {
-            if (outChannel != null) {
-                try {
-                    outChannel.close();
-                } catch (Exception ignored) {
-                }
-            }
-            sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin debug report!");
+
+        InputStream in = null;
+        try () {
+            in = new ByteArrayInputStream(report.getBytes())
+            ZipFile zip = new ZipFile(new File("enjinreport_" + format.format(date) + ".zip"));
+            ZipParameters parameters = new ZipParameters();
+            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
+            zip.addFile(Enjin.getLogger().getLogFile(), parameters);
+            parameters.setFileNameInZip("enjinreport_" + format.format(date) + ".txt");
+            parameters.setSourceExternalStream(true);
+            zip.addStream(in, parameters);
+            sender.sendMessage(ChatColor.GOLD + "Enjin report created in " + zip.getFile().getPath() + " successfully!");
+        } catch (Exception e) {
+            sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin report!");
             Enjin.getLogger().log(e);
         }
     }

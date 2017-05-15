@@ -47,9 +47,11 @@ shadowJar {
     dependencies {
         include(project(':common'))
         include(dependency('.*:fanciful'))
+        include(dependency('.*:zip4j'))
     }
 
     relocate 'net.minidev.json', 'com.enjin.shaded.json'
     relocate 'com.google.gson', 'com.enjin.shaded.gson'
     relocate 'com.thetransactioncompany.jsonrpc2', 'com.enjin.shaded.jsonrpc2'
+    relocate 'net.lingala.zip4j', 'com.enjin.shaded.zip4j'
 }

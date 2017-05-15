@@ -7,6 +7,7 @@ import com.enjin.core.util.EnjinLogger;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.MarkerManager;
@@ -67,10 +68,8 @@ public class Log implements EnjinLogger {
             ZipParameters parameters = new ZipParameters();
             parameters.setFileNameInZip(date + "-" + i + ".log");
             parameters.setSourceExternalStream(true);
+            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
             zip.addStream((fis = new FileInputStream(log)), parameters);
-
-            log.delete();
-            log.createNewFile();
         } catch (Exception e) {
             Enjin.getLogger().log(e);
         } finally {
@@ -81,6 +80,13 @@ public class Log implements EnjinLogger {
             } catch (Exception e) {
                 Enjin.getLogger().log(e);
             }
+        }
+
+        try {
+            log.delete();
+            log.createNewFile();
+        } catch (Exception e) {
+            Enjin.getLogger().log(e);
         }
     }
 
