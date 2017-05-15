@@ -9,6 +9,9 @@ import com.enjin.sponge.listeners.ConnectionListener;
 import com.google.common.base.Optional;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 
 import java.io.File;
@@ -65,7 +68,10 @@ public class SpongeInstructionHandler implements InstructionHandler {
         }
 
         Runnable runnable = () -> {
-            java.util.Optional<Player> player = null;
+            UserStorageService storage = Sponge.getServiceManager().provide(UserStorageService.class).get();
+
+            java.util.Optional<User> optional = null;
+            User user = null;
             if (Sponge.getServer().getOnlineMode() && uuid.isPresent() && !uuid.get().isEmpty()) {
                 Enjin.getLogger().debug("Searching for player by uuid...");
                 String value = uuid.get().replaceAll("-", "");
@@ -79,40 +85,32 @@ public class SpongeInstructionHandler implements InstructionHandler {
                 }
 
                 if (u != null) {
-                    player = Sponge.getServer().getPlayer(u);
+                    optional = storage.get(u);
 
-                    if (player.isPresent()) {
+                    if (optional.isPresent()) {
                         Enjin.getLogger().debug("Player with uuid " + uuid.toString() + " has been found.");
-                        Player p = player.get();
-                        if (!p.hasPlayedBefore()) {
-                            Enjin.getLogger().debug(p.getName() + " has not played before, skipping execute instruction...");
-                            player = null;
-                        }
+                        user = optional.get();
                     }
                 }
             }
 
-            if ((player == null || !player.isPresent()) && name.isPresent() && !name.get().isEmpty()) {
+            if (user == null && name.isPresent() && !name.get().isEmpty()) {
                 Enjin.getLogger().debug("Searching for player by name...");
                 String n = name.get();
                 if (n.length() < 16) {
-                    player = Sponge.getServer().getPlayer(n);
+                    optional = storage.get(n);
                 } else {
                     Enjin.getLogger().debug("Player name " + n + " is invalid.");
                 }
 
-                if (player.isPresent()) {
+                if (optional.isPresent()) {
                     Enjin.getLogger().debug("Player with name " + n + " has been found.");
-                    Player p = player.get();
-                    if (!p.hasPlayedBefore()) {
-                        Enjin.getLogger().debug(n + " has not played before, skipping execute instruction...");
-                        player = null;
-                    }
+                    user = optional.get();
                 } else {
                     Enjin.getLogger().debug("Player with name " + n + " could not be found.");
                 }
             } else {
-                if (player != null && player.isPresent()) {
+                if (user != null) {
                     Enjin.getLogger().debug("Player detected, skipping name check...");
                 } else {
                     Enjin.getLogger().debug("Name is not present or empty.");
@@ -121,7 +119,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
 
             if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
                 Enjin.getLogger().debug("Player is required to be online, checking for player...");
-                if (!player.isPresent() || !player.get().isOnline()) {
+                if (user == null || !user.isOnline()) {
                     Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
                     return;
                 } else {
@@ -131,8 +129,8 @@ public class SpongeInstructionHandler implements InstructionHandler {
                 Enjin.getLogger().debug("Player is not required to be online.");
             }
 
-            if (player.isPresent()) {
-                Enjin.getLogger().debug("Executing command \"" + command + "\" for " + player.get().getName());
+            if (user != null) {
+                Enjin.getLogger().debug("Executing command \"" + command + "\" for " + user.getName());
                 Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
                 EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
                         .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
