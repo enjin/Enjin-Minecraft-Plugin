@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class Log implements EnjinLogger {
+
     private static final SimpleDateFormat LOG_ZIP_NAME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getName());
