@@ -98,7 +98,7 @@ public class ReportPublisher implements Runnable {
 
         InputStream in = null;
         try {
-            in = new ByteArrayInputStream(report.getBytes())
+            in = new ByteArrayInputStream(report.getBytes());
             ZipFile zip = new ZipFile(new File("enjinreport_" + format.format(date) + ".zip"));
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
