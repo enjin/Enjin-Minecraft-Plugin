@@ -94,7 +94,7 @@ public class Log implements EnjinLogger {
         PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charsets.UTF_8.name(), null);
 
         if (Enjin.getConfiguration().isLoggingEnabled()) {
-            FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinFileOut", "false", null, null, layout, null, null, null, config);
+            FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinFileOut", "true", null, null, layout, null, null, null, config);
             fileAppender.start();
             logger.addAppender(fileAppender);
         }
