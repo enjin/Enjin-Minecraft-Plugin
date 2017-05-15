@@ -97,7 +97,7 @@ public class ReportPublisher implements Runnable {
         Date date = new Date();
 
         InputStream in = null;
-        try () {
+        try {
             in = new ByteArrayInputStream(report.getBytes())
             ZipFile zip = new ZipFile(new File("enjinreport_" + format.format(date) + ".zip"));
             ZipParameters parameters = new ZipParameters();
@@ -110,6 +110,12 @@ public class ReportPublisher implements Runnable {
         } catch (Exception e) {
             sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin report!");
             Enjin.getLogger().log(e);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                Enjin.getLogger().log(e);
+            }
         }
     }
 
