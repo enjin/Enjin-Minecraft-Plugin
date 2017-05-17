@@ -11,7 +11,7 @@ import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.managers.PurchaseManager;
 import com.enjin.sponge.shop.RPCShopFetcher;
 import com.enjin.sponge.shop.TextShopUtil;
-import com.enjin.sponge.sync.RPCPacketManager;
+import com.enjin.sponge.shop.gui.ShopSelector;
 import com.google.common.base.Optional;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -40,10 +40,8 @@ public class BuyCommand {
             fetchShop(player);
         } else {
             if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
-//                Menu menu = ShopListener.getGuiInstances().containsKey(player.getUniqueId()) ? ShopListener.getGuiInstances().get(player.getUniqueId()) : new ShopList(player);
-//                menu.openMenu(player);
-//
-//                return;
+                new ShopSelector(instances.get(player.getUniqueId())).open(player);
+                return;
             }
 
             PlayerShopInstance instance = instances.get(player.getUniqueId());

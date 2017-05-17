@@ -7,6 +7,9 @@ import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
+import com.enjin.sponge.command.commands.BuyCommand;
+import com.enjin.sponge.config.EMPConfig;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -14,6 +17,7 @@ import org.spongepowered.api.text.format.TextColors;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class RPCShopFetcher implements Runnable {
     private EnjinMinecraftPlugin plugin;
@@ -60,6 +64,13 @@ public class RPCShopFetcher implements Runnable {
         }
 
         PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
-        TextShopUtil.sendTextShop(player, instance, -1);
+
+        if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
+            EnjinMinecraftPlugin.getInstance().getSync().schedule(() -> {
+                BuyCommand.buy(player, new String[]{});
+            }, 0, TimeUnit.SECONDS);
+        } else {
+            TextShopUtil.sendTextShop(player, instance, -1);
+        }
     }
 }
