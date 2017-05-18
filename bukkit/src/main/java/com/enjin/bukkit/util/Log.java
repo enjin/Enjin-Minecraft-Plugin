@@ -5,7 +5,6 @@ import com.enjin.bukkit.util.io.LineAppender;
 import com.enjin.core.Enjin;
 import com.enjin.core.util.EnjinLogger;
 import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.logging.log4j.Level;
@@ -16,13 +15,13 @@ import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.helpers.Charsets;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -149,7 +148,7 @@ public class Log implements EnjinLogger {
 
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
-        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} %p]: %msg%n", config, null, Charsets.UTF_8.name(), null);
+        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} %p]: %msg%n", config, null, Charset.forName("UTF-8").name(), null);
 
         if (Enjin.getConfiguration().isLoggingEnabled()) {
             logAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "true", null, "false", layout, null, null, null, config);

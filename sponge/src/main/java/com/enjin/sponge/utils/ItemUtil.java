@@ -1,12 +1,16 @@
 package com.enjin.sponge.utils;
 
 import lombok.NonNull;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.DyeColors;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ItemUtil {
@@ -38,6 +42,10 @@ public class ItemUtil {
                 data = 15;
             stack.offer(Keys.DYE_COLOR, DYES.get(data));
         }
+    }
+
+    public static List<ItemType> getMinecraftItemTypes() {
+        return new ArrayList<>(Sponge.getRegistry().getAllForMinecraft(ItemType.class));
     }
 
 }
