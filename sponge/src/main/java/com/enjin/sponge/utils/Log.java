@@ -1,5 +1,8 @@
 package com.enjin.sponge.utils;
 
+import com.enjin.common.Log4j2Handlers;
+import com.enjin.common.compatibility.Log4j2Handler;
+import com.enjin.common.compatibility.LegacyLog4j2Handler;
 import com.enjin.core.Enjin;
 import com.enjin.core.util.EnjinLogger;
 import com.enjin.sponge.EnjinMinecraftPlugin;
@@ -12,13 +15,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -127,20 +127,31 @@ public class Log implements EnjinLogger {
     }
 
     public void configure() {
+        Log4j2Handler log4j2Handler = Log4j2Handlers.findHandler();
+        logger.info("Log4j 2 handler detected: " + (log4j2Handler != null ? log4j2Handler.getClass().getName() : "N/A"));
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration config = ctx.getConfiguration();
-        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss}]: %msg%n", config, null, Charset.forName("UTF-8").name(), null);
 
-        if (Enjin.getConfiguration().isLoggingEnabled()) {
-            FileAppender fileAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinFileOut", null, null, null, layout, null, null, null, config);
-            fileAppender.start();
-            logger.addAppender(fileAppender);
+        if (log4j2Handler != null) {
+            if (Enjin.getConfiguration().isLoggingEnabled()) {
+                FileAppender fileAppender;
+                try {
+                    fileAppender = LegacyLog4j2Handler.detected ? log4j2Handler.createFileAppender(ctx,"EnjinFileOut", log.getPath()) : null;
+                    fileAppender.start();
+                    logger.addAppender(fileAppender);
+                } catch (Throwable t) {
+                    warning("Could not initialize file appender...");
+                }
+            }
+
+            try {
+                listener = new LineAppender("EnjinLineIn", LegacyLog4j2Handler.detected ? log4j2Handler.createPatternLayout(ctx) : null);
+                listener.start();
+                Logger root = (Logger) LogManager.getRootLogger();
+                root.addAppender(listener);
+            } catch (Throwable t) {
+                warning("Could not initialize line appender...");
+            }
         }
-
-        listener = new LineAppender("EnjinLineIn", layout);
-        listener.start();
-        Logger root = (Logger) LogManager.getRootLogger();
-        root.addAppender(listener);
 
         logger.setLevel(Level.DEBUG);
     }

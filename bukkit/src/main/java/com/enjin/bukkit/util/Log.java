@@ -2,6 +2,8 @@ package com.enjin.bukkit.util;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.util.io.LineAppender;
+import com.enjin.common.Log4j2Handlers;
+import com.enjin.common.compatibility.Log4j2Handler;
 import com.enjin.core.Enjin;
 import com.enjin.core.util.EnjinLogger;
 import net.lingala.zip4j.core.ZipFile;
@@ -9,19 +11,13 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.MarkerManager;
-import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.FileAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.impl.Log4jLogEvent;
-import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -101,18 +97,6 @@ public class Log implements EnjinLogger {
     public void debug(String msg) {
         if (Enjin.getConfiguration().isDebug()) {
             logger.info("[DEBUG] " + hideSensitiveText(msg));
-        } else if (Enjin.getConfiguration().isLoggingEnabled() && logAppender != null) {
-            logAppender.append(Log4jLogEvent.createEvent(EnjinMinecraftPlugin.class.getName(),
-                    MarkerManager.getMarker("debug"),
-                    EnjinMinecraftPlugin.class.getName(),
-                    Level.DEBUG,
-                    logger.getMessageFactory().newMessage(hideSensitiveText(msg)),
-                    null,
-                    ThreadContext.getImmutableContext(),
-                    ThreadContext.getImmutableStack(),
-                    Thread.currentThread().getName(),
-                    null,
-                    System.currentTimeMillis()));
         }
     }
 
@@ -144,24 +128,33 @@ public class Log implements EnjinLogger {
             return;
         }
 
-        configured = true;
-
+        Log4j2Handler log4j2Handler = Log4j2Handlers.findHandler();
+        logger.info("Log4j 2 handler detected: " + (log4j2Handler != null ? log4j2Handler.getClass().getName() : "N/A"));
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration config = ctx.getConfiguration();
-        PatternLayout layout = PatternLayout.createLayout("[%d{yyyy-MM-dd HH:mm:ss} %p]: %msg%n", config, null, Charset.forName("UTF-8").name(), null);
 
-        if (Enjin.getConfiguration().isLoggingEnabled()) {
-            logAppender = FileAppender.createAppender(log.getPath(), null, "true", "EnjinLog", "true", null, "false", layout, null, null, null, config);
-            logAppender.start();
-            logger.addAppender(logAppender);
+        if (log4j2Handler != null) {
+            if (Enjin.getConfiguration().isLoggingEnabled()) {
+                try {
+                    logAppender = log4j2Handler.createFileAppender(ctx, "EnjinFileOut", log.getPath());
+                    logAppender.start();
+                    logger.addAppender(logAppender);
+                } catch (Throwable t) {
+                    warning("Could not initialize file appender...");
+                }
+            }
+
+            try {
+                lineAppender = new LineAppender("EnjinLineIn", log4j2Handler.createPatternLayout(ctx));
+                lineAppender.start();
+                Logger root = (Logger) LogManager.getRootLogger();
+                root.addAppender(lineAppender);
+            } catch (Throwable t) {
+                warning("Could not initialize line appender...");
+            }
         }
 
-        lineAppender = new LineAppender("EnjinLineIn", layout);
-        lineAppender.start();
-        Logger root = (Logger) LogManager.getRootLogger();
-        root.addAppender(lineAppender);
-
         setDebug(false);
+        configured = true;
     }
 
     public void setDebug(boolean debug) {
