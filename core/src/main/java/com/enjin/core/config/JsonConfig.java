@@ -25,9 +25,11 @@ public class JsonConfig {
                 }
             } catch (IOException e) {
                 Enjin.getLogger().warning("IOException occurred while loading the " + clazz.getSimpleName() + " config: " + e.getMessage());
+                Enjin.getLogger().log(e);
                 return clazz.newInstance();
             } catch (JsonSyntaxException e) {
                 Enjin.getLogger().warning("JsonSyntaxException occurred while loading the " + clazz.getSimpleName() + " config: " + e.getMessage());
+                Enjin.getLogger().log(e);
                 int i = 0;
                 while (true) {
                     File f = new File(file.getParent(), file.getName() + "-old" + i);
@@ -43,6 +45,7 @@ public class JsonConfig {
             }
         } catch (Exception e) {
             Enjin.getLogger().warning("There was an error while loading the " + clazz.getSimpleName() + " config: " + e.getMessage());
+            Enjin.getLogger().log(e);
         }
 
         return config == null ? null : clazz.cast(config);
