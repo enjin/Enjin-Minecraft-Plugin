@@ -132,6 +132,7 @@ public class TextShopUtil {
                     .append(buildItemContent(player, shop, item))
                     .append(buildFooterInfo(shop))
                     .append(buildFooter("", null, shop, -1));
+            player.sendMessage(builder.build());
         }
     }
 

@@ -34,7 +34,7 @@ public class ItemUtil {
         put(15, DyeColors.WHITE);
     }};
 
-    public static void setLegacyData(@NonNull ItemStack stack, byte data) {
+    public static void setLegacyData(@NonNull ItemStack stack, int data) {
         if (stack.supports(Keys.DYE_COLOR)) {
             if (data < 0)
                 data = 0;

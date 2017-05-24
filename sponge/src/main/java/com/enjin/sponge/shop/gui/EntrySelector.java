@@ -8,6 +8,7 @@ import com.enjin.sponge.gui.VirtualInventory;
 import com.enjin.sponge.gui.VirtualItem;
 import com.enjin.sponge.gui.impl.VirtualChestInventory;
 import com.enjin.sponge.utils.ItemUtil;
+import com.enjin.sponge.utils.text.TextUtils;
 import lombok.NonNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
@@ -21,13 +22,13 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.List;
 
-public class CategorySelector extends VirtualChestInventory {
+public class EntrySelector extends VirtualChestInventory {
 
     private VirtualInventory parent;
     private Shop shop;
     private Category category;
 
-    public CategorySelector(@NonNull VirtualInventory parent, @NonNull Shop shop, Category category) {
+    public EntrySelector(@NonNull VirtualInventory parent, @NonNull Shop shop, Category category) {
         super(Text.of(TextColors.RED, category == null ? shop.getName() : category.getName()), 9, 6);
         this.parent = parent;
         this.shop = shop;
@@ -52,12 +53,12 @@ public class CategorySelector extends VirtualChestInventory {
         register(SlotPos.of(0, 0), item);
 
         int index = 0;
-        if (!categories.isEmpty()) {
-            for (Category category : categories) {
+        if (categories != null && !categories.isEmpty()) {
+            for (Category entry : categories) {
                 stack = ItemStack.builder()
-                        .itemType(category.getIconItem() == null
+                        .itemType(entry.getIconItem() == null
                                 ? ItemTypes.CHEST
-                                : Sponge.getRegistry().getType(ItemType.class, category.getIconItem()).orElse(ItemTypes.CHEST))
+                                : Sponge.getRegistry().getType(ItemType.class, entry.getIconItem()).orElse(ItemTypes.CHEST))
                         .add(Keys.DISPLAY_NAME, TextSerializers.FORMATTING_CODE.deserialize(new StringBuilder()
                                 .append('&')
                                 .append(shop.getColorId())
@@ -65,13 +66,43 @@ public class CategorySelector extends VirtualChestInventory {
                                 .append(". ")
                                 .append('&')
                                 .append(shop.getColorName())
-                                .append(category.getName())
+                                .append(entry.getName())
                                 .toString()))
+                        .add(Keys.ITEM_LORE, TextUtils.splitToListWithPrefix(entry.getInfo(), 30, "&" + shop.getColorInfo()))
                         .build();
-                if (category.getIconDamage() != null) {
-                    ItemUtil.setLegacyData(stack, category.getIconDamage());
+                if (entry.getIconDamage() != null) {
+                    ItemUtil.setLegacyData(stack, entry.getIconDamage());
                 }
-                register(SlotPos.of((index + 9) % getWidth(), (index + 9) / getWidth()), new VirtualBaseItem(stack));
+                item = new VirtualBaseItem(stack);
+                item.setPrimaryActionConsumer(snapshot -> new EntrySelector(this, this.shop, entry).open(snapshot.getPlayer()));
+                register(SlotPos.of((index + 9) % getWidth(), (index + 9) / getWidth()), item);
+                index++;
+            }
+        }
+
+        if (items != null && !items.isEmpty()) {
+            for (Item entry : items) {
+                stack = ItemStack.builder()
+                        .itemType(entry.getIconItem() == null
+                                ? ItemTypes.FILLED_MAP
+                                : Sponge.getRegistry().getType(ItemType.class, entry.getIconItem()).orElse(ItemTypes.FILLED_MAP))
+                        .add(Keys.DISPLAY_NAME, TextSerializers.FORMATTING_CODE.deserialize(new StringBuilder()
+                                .append('&')
+                                .append(shop.getColorId())
+                                .append(index + 1)
+                                .append(". ")
+                                .append('&')
+                                .append(shop.getColorName())
+                                .append(entry.getName())
+                                .toString()))
+                        .add(Keys.ITEM_LORE, TextUtils.splitToListWithPrefix(entry.getInfo(), 30, "&" + shop.getColorInfo()))
+                        .build();
+                if (entry.getIconDamage() != null) {
+                    ItemUtil.setLegacyData(stack, entry.getIconDamage());
+                }
+                item = new VirtualBaseItem(stack);
+                item.setPrimaryActionConsumer(snapshot -> new ItemTransaction(this, this.shop, entry).open(snapshot.getPlayer()));
+                register(SlotPos.of((index + 9) % getWidth(), (index + 9) / getWidth()), item);
                 index++;
             }
         }

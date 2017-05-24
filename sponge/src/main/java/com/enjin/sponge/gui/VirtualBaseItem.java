@@ -26,6 +26,7 @@ public class VirtualBaseItem implements VirtualItem {
     @Getter @Setter
     private int quantity;
 
+    @Getter
     private List<Text> lore;
 
     private Optional<Consumer<VirtualInventoryEventSnapshot.Click>> primaryActionConsumer = Optional.empty();
@@ -50,6 +51,7 @@ public class VirtualBaseItem implements VirtualItem {
         return ItemStack.builder()
                 .itemType(getType())
                 .add(Keys.DISPLAY_NAME, getTitle())
+                .add(Keys.ITEM_LORE, getLore())
                 .quantity(getQuantity())
                 .build();
     }
