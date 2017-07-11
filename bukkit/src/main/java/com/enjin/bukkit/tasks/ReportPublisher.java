@@ -114,10 +114,16 @@ public class ReportPublisher implements Runnable {
             builder.append(plugin.getLastError().toString());
         }
 
-        builder.append("\n=========================================\nEnjin HTTPS test: ").append(ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!").append("\n");
+        builder.append("\n=========================================\n");
+        builder.append("Enjin HTTPS test: ").append(ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!").append("\n");
         builder.append("Enjin HTTP test: ").append(ConnectionUtil.testHTTPconnection() ? "passed" : "FAILED!").append("\n");
         builder.append("Enjin web connectivity test: ").append(ConnectionUtil.testWebConnection() ? "passed" : "FAILED!").append("\n");
-        builder.append("Is mineshafter present: ").append(ConnectionUtil.isMineshafterPresent() ? "yes" : "no").append("\n=========================================\n");
+        builder.append("Is mineshafter present: ").append(ConnectionUtil.isMineshafterPresent() ? "yes" : "no");
+        builder.append("\n=========================================\n");
+
+        builder.append("\n=========================================\n");
+        builder.append("Java System Time: ").append(System.currentTimeMillis() / 1000);
+        builder.append("\n=========================================\n");
 
         File bukkitYmlFile = new File("bukkit.yml");
         YamlConfiguration bukkitYml = new YamlConfiguration();
