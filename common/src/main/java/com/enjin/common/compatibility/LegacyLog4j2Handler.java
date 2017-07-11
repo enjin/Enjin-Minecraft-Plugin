@@ -54,7 +54,7 @@ public class LegacyLog4j2Handler implements Log4j2Handler {
     public PatternLayout createPatternLayout(LoggerContext ctx) throws Throwable {
         Configuration configuration = ctx.getConfiguration();
         PatternLayout layout = (PatternLayout) patternLayoutCreateLayout.invoke(
-                "[%d[yyyy-MM-dd HH:mm:ss}]",
+                "[%d[yyyy-MM-dd HH:mm:ss} %p] %msg%n",
                 configuration,
                 null,
                 Charset.forName("UTF-8").name(),

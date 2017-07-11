@@ -32,7 +32,7 @@ public class CurrentLog4j2Handler implements Log4j2Handler {
     @Override
     public PatternLayout createPatternLayout(LoggerContext ctx) throws Throwable {
         return PatternLayout.newBuilder()
-                .withPattern("[%d{yyyy-MM-dd HH:mm:ss} %p]")
+                .withPattern("[%d{yyyy-MM-dd HH:mm:ss} %p] %msg%n")
                 .withConfiguration(ctx.getConfiguration())
                 .withCharset(Charset.forName("UTF-8"))
                 .build();
