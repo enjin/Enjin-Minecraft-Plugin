@@ -103,7 +103,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
                     Enjin.getLogger().debug("Player name " + n + " is invalid.");
                 }
 
-                if (optional.isPresent()) {
+                if (optional != null && optional.isPresent()) {
                     Enjin.getLogger().debug("Player with name " + n + " has been found.");
                     user = optional.get();
                 } else {
