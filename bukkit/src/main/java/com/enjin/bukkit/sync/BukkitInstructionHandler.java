@@ -150,8 +150,6 @@ public class BukkitInstructionHandler implements InstructionHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    EnjinMinecraftPlugin.getInstance().getPendingCommands().remove(id);
-
                     if (requireOnline.isPresent() && requireOnline.get()) {
                         Player pl = Bukkit.getPlayer(playerId);
                         if (pl == null || !pl.hasPlayedBefore() || !pl.isOnline()) {
@@ -159,19 +157,26 @@ public class BukkitInstructionHandler implements InstructionHandler {
                         }
                     }
 
-                    EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
-                            .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-                    EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                    EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+                    if (!plugin.getExecutedCommands().contains(id)) {
+                        plugin.getExecutedCommands().add(id);
+                        plugin.getPendingCommands().remove(id);
+                        EnjinMinecraftPlugin.dispatchConsoleCommand(command);
+                        EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
+                                .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                        EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                    }
                 }
             };
 
             if (EnjinMinecraftPlugin.getInstance().isEnabled()) {
-                if (!delay.isPresent() || delay.get() <= 0) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
-                } else {
+                if (!EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
                     EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
+                    if (!delay.isPresent() || delay.get() <= 0) {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
+                    } else {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
+                    }
                 }
             }
         } else {

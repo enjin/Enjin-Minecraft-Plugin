@@ -98,6 +98,11 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private Map<String, StatsPlayer> playerStats = new ConcurrentHashMap<>();
 
+    @Getter
+    private List<Long> pendingCommands = Lists.newCopyOnWriteArrayList();
+    @Getter
+    private List<Long> executedCommands = Lists.newCopyOnWriteArrayList();
+
     public EnjinMinecraftPlugin() {
         instance = this;
         Enjin.setPlugin(this);

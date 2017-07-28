@@ -131,22 +131,29 @@ public class SpongeInstructionHandler implements InstructionHandler {
 
             if (user != null) {
                 Enjin.getLogger().debug("Executing command \"" + command + "\" for " + user.getName());
-                Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
-                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
-                        .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-                EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+                if (!plugin.getExecutedCommands().contains(id)) {
+                    plugin.getExecutedCommands().add(id);
+                    plugin.getPendingCommands().remove(id);
+                    Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
+                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                    EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                }
             } else {
                 Enjin.getLogger().debug("No matching player could be found.");
             }
         };
 
-        if (!delay.isPresent() || delay.get() <= 0) {
-            Sponge.getScheduler().createTaskBuilder().execute(runnable)
-                    .submit(Enjin.getPlugin());
-        } else {
-            Sponge.getScheduler().createTaskBuilder().execute(runnable)
-                    .delay(delay.get(), TimeUnit.SECONDS)
-                    .submit(Enjin.getPlugin());
+        if (!EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
+            EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
+            if (!delay.isPresent() || delay.get() <= 0) {
+                Sponge.getScheduler().createTaskBuilder().execute(runnable)
+                        .submit(Enjin.getPlugin());
+            } else {
+                Sponge.getScheduler().createTaskBuilder().execute(runnable)
+                        .delay(delay.get(), TimeUnit.SECONDS)
+                        .submit(Enjin.getPlugin());
+            }
         }
     }
 

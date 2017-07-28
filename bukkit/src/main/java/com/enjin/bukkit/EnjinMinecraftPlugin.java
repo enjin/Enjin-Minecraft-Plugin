@@ -113,6 +113,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     @Getter
     private List<Long> pendingCommands = Lists.newArrayList();
+    @Getter
+    private List<Long> executedCommands = Lists.newCopyOnWriteArrayList();
 
     @Override
     public void onEnable() {
