@@ -12,43 +12,21 @@ import java.util.Map;
 public class JsonConfig {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public static <T extends JsonConfig> T load(File file, Class<T> clazz) {
+    public static <T extends JsonConfig> T load(File file, Class<T> clazz) throws Exception {
         JsonConfig config = null;
 
-        try {
-            try {
-                if (!file.exists()) {
-                    config = clazz.newInstance();
-                    config.save(file);
-                } else {
-                    config = gson.fromJson(new FileReader(file), clazz);
-                }
-            } catch (IOException e) {
-                Enjin.getLogger().warning("IOException occurred while loading the " + clazz.getSimpleName() + " config: " + e.getMessage());
-                Enjin.getLogger().log(e);
-                return clazz.newInstance();
-            } catch (JsonSyntaxException e) {
-                Enjin.getLogger().warning("JsonSyntaxException occurred while loading the " + clazz.getSimpleName() + " config: " + e.getMessage());
-                Enjin.getLogger().log(e);
-                int i = 0;
-                while (true) {
-                    File f = new File(file.getParent(), file.getName() + "-old" + i);
-                    if (!f.exists()) {
-                        file.renameTo(f);
-                        file.delete();
-                        break;
-                    }
-                }
-
-                config = clazz.newInstance();
-                config.save(file);
-            }
-        } catch (Exception e) {
-            Enjin.getLogger().warning("There was an error while loading the " + clazz.getSimpleName() + " config: " + e.getMessage());
-            Enjin.getLogger().log(e);
+        if (!file.exists()) {
+            config = clazz.newInstance();
+            config.save(file);
+        } else {
+            config = gson.fromJson(new FileReader(file), clazz);
         }
 
-        return config == null ? null : clazz.cast(config);
+        if (config == null) {
+            throw new Exception("Could not load config of type " + clazz.getName() + " at " + file.getPath());
+        }
+
+        return clazz.cast(config);
     }
 
     public boolean save(File file) {

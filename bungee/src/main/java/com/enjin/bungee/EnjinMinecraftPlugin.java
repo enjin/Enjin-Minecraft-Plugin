@@ -112,16 +112,21 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
     }
 
     public void initConfig() {
-        File configFile = new File(getDataFolder(), "config.json");
-        GenericEnjinConfig configuration = JsonConfig.load(configFile, GenericEnjinConfig.class);
-        Enjin.setConfiguration(configuration);
+        try {
+            File configFile = new File(getDataFolder(), "config.json");
+            GenericEnjinConfig configuration = JsonConfig.load(configFile, GenericEnjinConfig.class);
+            Enjin.setConfiguration(configuration);
 
-        if (!configFile.exists()) {
-            configuration.save(configFile);
-        }
+            if (!configFile.exists()) {
+                configuration.save(configFile);
+            }
 
-        if (!configuration.getApiUrl().endsWith("/")) {
-            configuration.setApiUrl(configuration.getApiUrl().concat("/"));
+            if (!configuration.getApiUrl().endsWith("/")) {
+                configuration.setApiUrl(configuration.getApiUrl().concat("/"));
+            }
+        } catch (Exception e) {
+            Enjin.getLogger().warning("Error occurred while initializing enjin configuration.");
+            Enjin.getLogger().log(e);
         }
     }
 

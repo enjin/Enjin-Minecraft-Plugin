@@ -212,30 +212,45 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void initConfig() {
-        File configFile = new File(getDataFolder(), "config.json");
-        EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
-        Enjin.setConfiguration(configuration);
+        try {
+            File configFile = new File(getDataFolder(), "config.json");
+            EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
+            Enjin.setConfiguration(configuration);
 
-        if (!configFile.exists()) {
-            configuration.save(configFile);
+            if (!configFile.exists()) {
+                configuration.save(configFile);
+            }
+        } catch (Exception e) {
+            Enjin.getLogger().warning("Error occurred while initializing enjin configuration.");
+            Enjin.getLogger().log(e);
         }
     }
 
     private void initCommandsConfiguration() {
-        File configFile = new File(getDataFolder(), "commands.json");
-        EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
+        try {
+            File configFile = new File(getDataFolder(), "commands.json");
+            EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
 
-        if (!configFile.exists()) {
-            executedCommandsConfiguration.save(configFile);
+            if (!configFile.exists()) {
+                executedCommandsConfiguration.save(configFile);
+            }
+        } catch (Exception e) {
+            Enjin.getLogger().warning("Error occurred while initializing executed commands configuration.");
+            Enjin.getLogger().log(e);
         }
     }
 
     private void initRankUpdatesConfiguration() {
-        File configFile = new File(getDataFolder(), "rankUpdates.json");
-        EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
+        try {
+            File configFile = new File(getDataFolder(), "rankUpdates.json");
+            EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
 
-        if (!configFile.exists()) {
-            rankUpdatesConfiguration.save(configFile);
+            if (!configFile.exists()) {
+                rankUpdatesConfiguration.save(configFile);
+            }
+        } catch (Exception e) {
+            Enjin.getLogger().warning("Error occurred while initializing rank updates configuration.");
+            Enjin.getLogger().log(e);
         }
     }
 
@@ -257,10 +272,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public static void saveRankUpdatesConfiguration() {
         if (rankUpdatesConfiguration == null) {
-            instance.initRankUpdatesConfiguration();
+            if (instance != null) {
+                instance.initRankUpdatesConfiguration();
+            }
         }
 
-        rankUpdatesConfiguration.save(new File(instance.getDataFolder(), "rankUpdates.json"));
+        if (rankUpdatesConfiguration != null) {
+            rankUpdatesConfiguration.save(new File(instance.getDataFolder(), "rankUpdates.json"));
+        } else {
+            Enjin.getLogger().warning("Unable to load rank updates configuration. Please contact Enjin support.");
+        }
     }
 
     private void initCommands() {

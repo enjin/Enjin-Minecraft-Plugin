@@ -175,25 +175,39 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     }
 
     public void initConfig() {
-        EMPConfig config = JsonConfig.load(new File(configDir, "config.json"), EMPConfig.class);
-        Enjin.setConfiguration(config);
+        try {
+            EMPConfig config = JsonConfig.load(new File(configDir, "config.json"), EMPConfig.class);
+            Enjin.setConfiguration(config);
+        } catch (Exception e) {
+            Enjin.getLogger().warning("Error occurred while initializing enjin configuration");
+        }
     }
 
     private void initCommandsConfiguration() {
-        File configFile = new File(configDir, "commands.json");
-        EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
+        try {
+            File configFile = new File(configDir, "commands.json");
+            EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
 
-        if (!configFile.exists()) {
-            executedCommandsConfiguration.save(configFile);
+            if (!configFile.exists()) {
+                executedCommandsConfiguration.save(configFile);
+            }
+        } catch (Exception e) {
+            Enjin.getLogger().warning("Error occurred while initializing executed commands configuration.");
+            Enjin.getLogger().log(e);
         }
     }
 
     private void initRankUpdatesConfiguration() {
-        File configFile = new File(configDir, "rankUpdates.json");
-        EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
+        try {
+            File configFile = new File(configDir, "rankUpdates.json");
+            EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
 
-        if (!configFile.exists()) {
-            rankUpdatesConfiguration.save(configFile);
+            if (!configFile.exists()) {
+                rankUpdatesConfiguration.save(configFile);
+            }
+        } catch (Exception e) {
+            Enjin.getLogger().warning("Error occurred while initializing rank updates configuration.");
+            Enjin.getLogger().log(e);
         }
     }
 
