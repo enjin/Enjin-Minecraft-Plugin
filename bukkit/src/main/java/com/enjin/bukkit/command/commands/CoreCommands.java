@@ -392,7 +392,7 @@ public class CoreCommands {
                 RPCData<Boolean> data = service.auth(Optional.of(args[0]), Bukkit.getPort(), true);
 
                 if (data == null) {
-                    sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+                    sender.sendMessage(ChatColor.RED + "Unable to connect with Enjin web servers or an unexpected error occurred. Contact Enjin support if issues persist.");
                     return;
                 }
 
@@ -444,11 +444,6 @@ public class CoreCommands {
     public static void report(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
-        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
-        if (module == null) {
-            return;
-        }
-
         Date date = new Date();
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
@@ -458,7 +453,9 @@ public class CoreCommands {
         report.append("Enjin Debug Report generated on ").append(format.format(date)).append("\n");
         report.append("Enjin plugin version: ").append(plugin.getDescription().getVersion()).append("\n");
 
-        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+
+        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        if (module != null && Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             Plugin permissions = null;
             if (module.getPermission() != null) {
                 permissions = Bukkit.getPluginManager().getPlugin(module.getPermission().getName());
