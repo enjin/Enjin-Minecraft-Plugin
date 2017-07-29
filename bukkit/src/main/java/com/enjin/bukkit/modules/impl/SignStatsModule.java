@@ -45,15 +45,19 @@ public class SignStatsModule {
     }
 
     public void init() {
-        file = new File(plugin.getDataFolder(), "stat-signs.json");
-        config = JsonConfig.load(file, StatSignConfig.class);
+        try {
+            file = new File(plugin.getDataFolder(), "stat-signs.json");
+            config = JsonConfig.load(file, StatSignConfig.class);
 
-        if (!file.exists()) {
-            config.save(file);
+            if (!file.exists()) {
+                config.save(file);
+            }
+
+            Bukkit.getPluginManager().registerEvents(new SignListener(), plugin);
+            schedule(plugin, false);
+        } catch (Exception e) {
+            Enjin.getLogger().log(e);
         }
-
-        Bukkit.getPluginManager().registerEvents(new SignListener(), plugin);
-        schedule(plugin, false);
     }
 
     public void disable() {

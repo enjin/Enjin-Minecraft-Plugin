@@ -44,15 +44,19 @@ public class StatSignManager {
     private static List<Integer> items = Lists.newArrayList();
 
     public static void init(EnjinMinecraftPlugin plugin) {
-        file = new File(plugin.getConfigDir(), "stat-signs.json");
-        config = JsonConfig.load(file, StatSignConfig.class);
+        try {
+            file = new File(plugin.getConfigDir(), "stat-signs.json");
+            config = JsonConfig.load(file, StatSignConfig.class);
 
-        if (!file.exists()) {
-            config.save(file);
+            if (!file.exists()) {
+                config.save(file);
+            }
+
+            Sponge.getEventManager().registerListeners(Enjin.getPlugin(), new SignListener());
+            schedule(plugin, false);
+        } catch (Exception e) {
+            Enjin.getLogger().log(e);
         }
-
-        Sponge.getEventManager().registerListeners(Enjin.getPlugin(), new SignListener());
-        schedule(plugin, false);
     }
 
     public static void disable() {
