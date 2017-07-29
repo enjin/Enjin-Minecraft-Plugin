@@ -145,12 +145,11 @@ public class BukkitInstructionHandler implements InstructionHandler {
             return;
         }
 
-        final UUID playerId = player == null ? null : player.getUniqueId();
+        final OfflinePlayer pl = player;
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 if (requireOnline.isPresent() && requireOnline.get()) {
-                    Player pl = playerId == null ? null : Bukkit.getPlayer(playerId);
                     if (pl == null || !pl.hasPlayedBefore() || !pl.isOnline()) {
                         return;
                     }
