@@ -141,47 +141,42 @@ public class BukkitInstructionHandler implements InstructionHandler {
             }
         }
 
-        if (player != null) {
-            if (EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
-                return;
-            }
+        if (EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
+            return;
+        }
 
-            final UUID playerId = player.getUniqueId();
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (requireOnline.isPresent() && requireOnline.get()) {
-                        Player pl = Bukkit.getPlayer(playerId);
-                        if (pl == null || !pl.hasPlayedBefore() || !pl.isOnline()) {
-                            return;
-                        }
-                    }
-
-                    EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-                    if (!plugin.getExecutedCommands().contains(id)) {
-                        plugin.getExecutedCommands().add(id);
-                        plugin.getPendingCommands().remove(id);
-                        EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-                        EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
-                                .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-                        EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+        final UUID playerId = player == null ? null : player.getUniqueId();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (requireOnline.isPresent() && requireOnline.get()) {
+                    Player pl = playerId == null ? null : Bukkit.getPlayer(playerId);
+                    if (pl == null || !pl.hasPlayedBefore() || !pl.isOnline()) {
+                        return;
                     }
                 }
-            };
 
-            if (EnjinMinecraftPlugin.getInstance().isEnabled()) {
-                if (!EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
-                    EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
-                    if (!delay.isPresent() || delay.get() <= 0) {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
-                    } else {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
-                    }
+                EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+                if (!plugin.getExecutedCommands().contains(id)) {
+                    plugin.getExecutedCommands().add(id);
+                    plugin.getPendingCommands().remove(id);
+                    EnjinMinecraftPlugin.dispatchConsoleCommand(command);
+                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
+                            .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                    EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
                 }
             }
-        } else {
-            Enjin.getLogger().debug("A player could not be found in the cache for "
-                    + (uuid.isPresent() ? "uuid: " + uuid.get() : name.isPresent() ? "name: " + name.get() : "n/a"));
+        };
+
+        if (EnjinMinecraftPlugin.getInstance().isEnabled()) {
+            if (!EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
+                EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
+                if (!delay.isPresent() || delay.get() <= 0) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
+                } else {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
+                }
+            }
         }
     }
 
