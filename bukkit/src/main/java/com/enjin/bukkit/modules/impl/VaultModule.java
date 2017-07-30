@@ -124,25 +124,30 @@ public class VaultModule {
 
         if (isPermissionsAvailable()) {
             if (permission.hasGroupSupport()) {
-                String[] g = permission.getPlayerGroups(null, player);
+                try {
+                    String[] g = permission.getPlayerGroups(null, player);
 
-                if (g == null || g.length == 0) {
-                    if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
-                        g = PermissionsBukkitListener.getGroups(player);
+                    if (g == null || g.length == 0) {
+                        if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
+                            g = PermissionsBukkitListener.getGroups(player);
+                        }
                     }
-                }
 
-                if (g != null) {
-                    if (g.length > 0) {
-                        groups.put("*", Arrays.asList(g));
+                    if (g != null) {
+                        if (g.length > 0) {
+                            groups.put("*", Arrays.asList(g));
+                        }
                     }
-                }
 
-                for (World world : Bukkit.getWorlds()) {
-                    g = permission.getPlayerGroups(world.getName(), player);
-                    if (g != null && g.length > 0) {
-                        groups.put(world.getName(), Arrays.asList(g));
+                    for (World world : Bukkit.getWorlds()) {
+                        g = permission.getPlayerGroups(world.getName(), player);
+                        if (g != null && g.length > 0) {
+                            groups.put(world.getName(), Arrays.asList(g));
+                        }
                     }
+                } catch (Exception e) {
+                    Enjin.getLogger().warning("Error occurred while fetching a player's groups from Vault.");
+                    Enjin.getLogger().log(e);
                 }
             }
         }
