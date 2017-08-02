@@ -73,7 +73,7 @@ public class LegacyLog4j2Handler implements Log4j2Handler {
                 name,
                 "true",
                 null,
-                "false",
+                null,
                 createPatternLayout(ctx),
                 null,
                 null,

@@ -1,7 +1,5 @@
 package com.enjin.common.compatibility;
 
-import com.enjin.core.Enjin;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.layout.PatternLayout;
@@ -43,7 +41,7 @@ public class CurrentLog4j2Handler implements Log4j2Handler {
         return FileAppender.newBuilder()
                 .withName(name)
                 .withLayout(createPatternLayout(ctx))
-                .withBufferedIo(false)
+                .withBufferedIo(true)
                 .withImmediateFlush(true)
                 .withFileName(path)
                 .withLocking(true).build();
