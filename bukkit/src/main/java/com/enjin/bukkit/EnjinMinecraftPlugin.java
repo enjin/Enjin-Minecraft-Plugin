@@ -146,12 +146,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             log.setDebug(Enjin.getConfiguration().isDebug());
 
             try {
-                exception();
-            } catch (Exception e) {
-                Enjin.getLogger().log(e);
-            }
-
-            try {
                 MetricsLite metrics = new MetricsLite(this);
                 metrics.start();
             } catch (IOException e) {
@@ -425,7 +419,4 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         return rankUpdatesConfiguration;
     }
 
-    public static void exception() throws Exception {
-        throw new IOException("Something happened!");
-    }
 }
