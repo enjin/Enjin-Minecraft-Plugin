@@ -99,13 +99,12 @@ public class Log implements EnjinLogger {
 
     @Override
     public void log(String msg, Throwable t) {
-        logger.error(msg);
-        logger.catching(t);
+        logger.log(Level.ERROR, msg, t);
     }
 
     @Override
     public void log(Throwable t) {
-        logger.catching(t);
+        log("Exception Caught: ", t);
     }
 
     public String getLastLine() {

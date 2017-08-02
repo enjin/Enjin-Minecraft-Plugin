@@ -1,7 +1,5 @@
 package com.enjin.common.compatibility;
 
-import com.enjin.core.Enjin;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LoggerContext;

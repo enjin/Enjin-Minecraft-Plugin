@@ -107,7 +107,7 @@ public class Log implements EnjinLogger {
 
     @Override
     public void log(Throwable t) {
-        logger.log(Level.ERROR, t);
+        log("Exception Caught: ", t);
     }
 
     public String getLastLine() {
