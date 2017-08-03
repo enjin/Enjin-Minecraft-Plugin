@@ -19,8 +19,8 @@ public class GenericEnjinConfig extends JsonConfig implements EnjinConfig {
     private boolean https = true;
     @Getter
     @Setter
-    @SerializedName(value = "auto-update")
-    private boolean autoUpdate = true;
+    @SerializedName(value = "sync-delay")
+    private int syncDelay = 10;
     @Getter
     @Setter
     @SerializedName(value = "logging-enabled")

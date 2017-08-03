@@ -24,7 +24,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.*;
 
 public class RPCPacketManager implements Runnable {
-    private static final int ZERO_PLAYERS_THRESHOLD = 10;
 
     private EnjinMinecraftPlugin plugin;
     private long nextStatUpdate = System.currentTimeMillis();
@@ -47,11 +46,12 @@ public class RPCPacketManager implements Runnable {
     }
 
     private void sync() {
-        if (!this.firstRun) {
+        int syncDelay = Enjin.getConfiguration().getSyncDelay();
+        if (!this.firstRun && syncDelay > 0) {
             if (Bukkit.getOnlinePlayers().isEmpty()) {
-                if (++this.elapsed < ZERO_PLAYERS_THRESHOLD) {
+                if (++this.elapsed < syncDelay) {
                     Enjin.getLogger().debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
-                            + (ZERO_PLAYERS_THRESHOLD - this.elapsed));
+                            + (syncDelay - this.elapsed));
                     return;
                 }
             }

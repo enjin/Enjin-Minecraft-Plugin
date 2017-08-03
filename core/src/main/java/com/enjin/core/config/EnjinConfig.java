@@ -15,9 +15,9 @@ public interface EnjinConfig {
 
     void setHttps(boolean https);
 
-    boolean isAutoUpdate();
+    int getSyncDelay();
 
-    void setAutoUpdate(boolean autoUpdate);
+    void setSyncDelay(int delay);
 
     boolean isLoggingEnabled();
 

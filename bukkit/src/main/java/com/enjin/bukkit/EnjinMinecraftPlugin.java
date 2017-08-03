@@ -217,9 +217,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
             Enjin.setConfiguration(configuration);
 
-            if (!configFile.exists()) {
-                configuration.save(configFile);
+            if (configuration.getSyncDelay() < 0) {
+                configuration.setSyncDelay(0);
+            } else if (configuration.getSyncDelay() > 10) {
+                configuration.setSyncDelay(10);
             }
+
+            configuration.save(configFile);
         } catch (Exception e) {
             Enjin.getLogger().warning("Error occurred while initializing enjin configuration.");
             Enjin.getLogger().log(e);
@@ -318,10 +322,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
         if (Enjin.getConfiguration(EMPConfig.class).isListenForBans()) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L);
-        }
-
-        if (Enjin.getConfiguration().isAutoUpdate() && isUpdateFromCurseForge()) {
-            Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CurseUpdater(this, 44560, this.getFile(), CurseUpdater.UpdateType.DEFAULT, true), 0, 20L * 60L * 30L);
         }
     }
 

@@ -117,13 +117,13 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
             GenericEnjinConfig configuration = JsonConfig.load(configFile, GenericEnjinConfig.class);
             Enjin.setConfiguration(configuration);
 
-            if (!configFile.exists()) {
-                configuration.save(configFile);
+            if (configuration.getSyncDelay() < 0) {
+                configuration.setSyncDelay(0);
+            } else if (configuration.getSyncDelay() > 10) {
+                configuration.setSyncDelay(10);
             }
 
-            if (!configuration.getApiUrl().endsWith("/")) {
-                configuration.setApiUrl(configuration.getApiUrl().concat("/"));
-            }
+            configuration.save(configFile);
         } catch (Exception e) {
             Enjin.getLogger().warning("Error occurred while initializing enjin configuration.");
             Enjin.getLogger().log(e);

@@ -176,8 +176,18 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
     public void initConfig() {
         try {
-            EMPConfig config = JsonConfig.load(new File(configDir, "config.json"), EMPConfig.class);
-            Enjin.setConfiguration(config);
+            File configFile = new File(configDir, "config.json");
+            EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
+            Enjin.setConfiguration(configuration);
+
+
+            if (configuration.getSyncDelay() < 0) {
+                configuration.setSyncDelay(0);
+            } else if (configuration.getSyncDelay() > 10) {
+                configuration.setSyncDelay(10);
+            }
+
+            configuration.save(configFile);
         } catch (Exception e) {
             Enjin.getLogger().warning("Error occurred while initializing enjin configuration");
         }

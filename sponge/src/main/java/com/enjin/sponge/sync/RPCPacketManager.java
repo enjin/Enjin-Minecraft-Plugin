@@ -43,11 +43,12 @@ public class RPCPacketManager implements Runnable {
 
     @Override
     public void run() {
-        if (!this.firstRun) {
+        int syncDelay = Enjin.getConfiguration().getSyncDelay();
+        if (!this.firstRun && syncDelay > 0) {
             if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
-                if (++this.elapsed < ZERO_PLAYERS_THRESHOLD) {
+                if (++this.elapsed < syncDelay) {
                     Enjin.getLogger().debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
-                            + (ZERO_PLAYERS_THRESHOLD - this.elapsed));
+                            + (syncDelay - this.elapsed));
                     return;
                 }
             }
