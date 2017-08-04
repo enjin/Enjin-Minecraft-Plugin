@@ -72,8 +72,6 @@ public class ConfigCommand {
             Enjin.getConfiguration().setDebug((Boolean) value);
         } else if (key == ConfigKey.HTTPS) {
             Enjin.getConfiguration().setHttps((Boolean) value);
-        } else if (key == ConfigKey.AUTO_UPDATE) {
-            Enjin.getConfiguration().setAutoUpdate((Boolean) value);
         } else if (key == ConfigKey.LOGGING_ENABLED) {
             Enjin.getConfiguration().setLoggingEnabled((Boolean) value);
         } else if (key == ConfigKey.COLLECT_PLAYER_STATS) {
