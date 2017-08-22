@@ -10,7 +10,7 @@ apply from: scriptFile('env.gradle')
 configureJavaCompilers(8)
 
 ext {
-    sponge = '5.0.0'
+    sponge = '5.1.0'
 }
 
 dependencies {
