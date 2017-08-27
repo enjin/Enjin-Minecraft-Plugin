@@ -26,11 +26,11 @@ public class PluginServiceTest {
     @Test
     public void test1Auth() {
         PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<Boolean> data = service.auth(Optional.<String>absent(), PORT, true);
+        RPCData<Auth> data = service.auth(Optional.<String>absent(), PORT, true, true);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());
-        Assert.assertTrue("result is not true", data.getResult());
+        Assert.assertTrue("result is not true", data.getResult().isAuthed());
     }
 
     @Test
@@ -119,12 +119,12 @@ public class PluginServiceTest {
             }
 
             @Override
-            public boolean isAutoUpdate() {
-                return false;
+            public int getSyncDelay() {
+                return 10;
             }
 
             @Override
-            public void setAutoUpdate(boolean autoUpdate) {
+            public void setSyncDelay(int delay) {
             }
 
             @Override

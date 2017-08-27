@@ -16,6 +16,7 @@ import com.enjin.bukkit.tasks.ReportPublisher;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.google.common.base.Optional;
@@ -389,7 +390,7 @@ public class CoreCommands {
                 }
 
                 PluginService service = EnjinServices.getService(PluginService.class);
-                RPCData<Boolean> data = service.auth(Optional.of(args[0]), Bukkit.getPort(), true);
+                RPCData<Auth> data = service.auth(Optional.of(args[0]), Bukkit.getPort(), true, true);
 
                 if (data == null) {
                     sender.sendMessage(ChatColor.RED + "Unable to connect with Enjin web servers or an unexpected error occurred. Contact Enjin support if issues persist.");
@@ -401,7 +402,7 @@ public class CoreCommands {
                     return;
                 }
 
-                if (data.getResult().booleanValue()) {
+                if (data.getResult() != null && data.getResult().isAuthed()) {
                     sender.sendMessage(ChatColor.GREEN + "The key has been successfully validated.");
                     Enjin.getConfiguration().setAuthKey(args[0]);
                     EnjinMinecraftPlugin.saveConfiguration();

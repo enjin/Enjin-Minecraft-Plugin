@@ -10,6 +10,7 @@ import com.enjin.rpc.mappings.adapters.FloatAdapter;
 import com.enjin.rpc.mappings.adapters.IntegerAdapter;
 import com.enjin.rpc.mappings.adapters.LongAdapter;
 import com.enjin.rpc.mappings.adapters.ShortAdapter;
+import com.enjin.rpc.mappings.deserializers.AuthDeserializer;
 import com.enjin.rpc.mappings.deserializers.InstructionDeserializer;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.*;
@@ -38,14 +39,16 @@ public class PluginService implements Service {
             .registerTypeAdapter(Float.class, new FloatAdapter())
             .registerTypeAdapter(Double.class, new DoubleAdapter())
             .registerTypeAdapter(Instruction.class, new InstructionDeserializer())
+            .registerTypeAdapter(Auth.class, new AuthDeserializer())
             .create();
 
-    public RPCData<Boolean> auth(final Optional<String> authKey, final Integer port, final boolean save) {
+    public RPCData<Auth> auth(final Optional<String> authKey, final Integer port, final boolean save, final boolean fetchServerId) {
         String method = "Plugin.auth";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authKey.isPresent() ? authKey.get() : Enjin.getConfiguration().getAuthKey());
             put("port", port);
             put("save", save);
+            put("fetch_server_id", fetchServerId);
         }};
 
         Integer id = EnjinRPC.getNextRequestId();
@@ -62,7 +65,7 @@ public class PluginService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Boolean> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>() {
+            RPCData<Auth> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Auth>>() {
             }.getType());
             data.setRequest(request);
             data.setResponse(response);

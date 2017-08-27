@@ -1,5 +1,6 @@
 package com.enjin.bukkit;
 
+import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import java.io.*;
@@ -160,14 +161,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             moduleManager = new ModuleManager(this);
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
-                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true);
+                RPCData<Auth> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true, true);
                 if (data == null) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
                 } else if (data.getError() != null) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. " + data.getError().getMessage());
-                } else if (!data.getResult()) {
+                } else if (data.getResult() == null || !data.getResult().isAuthed()) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
                 }

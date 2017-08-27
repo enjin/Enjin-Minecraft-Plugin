@@ -17,6 +17,7 @@ import com.enjin.core.EnjinServices;
 import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.enjin.rpc.mappings.services.PluginService;
 
 import com.google.common.base.Optional;
@@ -86,7 +87,7 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 Optional<Integer> port = getPort();
-                RPCData<Boolean> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), port.isPresent() ? port.get() : null, true);
+                RPCData<Auth> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), port.isPresent() ? port.get() : null, true, true);
                 if (data == null) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
@@ -95,7 +96,7 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. " + data.getError().getMessage());
                     return;
-                } else if (!data.getResult()) {
+                } else if (data.getResult() == null || !data.getResult().isAuthed()) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
                     return;

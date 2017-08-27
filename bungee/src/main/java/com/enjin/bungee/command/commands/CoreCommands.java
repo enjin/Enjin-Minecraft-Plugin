@@ -10,6 +10,7 @@ import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.core.config.EnjinConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.google.common.base.Optional;
@@ -98,7 +99,7 @@ public class CoreCommands {
 
                 Optional<Integer> port = EnjinMinecraftPlugin.getPort();
                 PluginService service = EnjinServices.getService(PluginService.class);
-                RPCData<Boolean> data = service.auth(Optional.of(args[0]), port.isPresent() ? port.get() : null, true);
+                RPCData<Auth> data = service.auth(Optional.of(args[0]), port.isPresent() ? port.get() : null, true, true);
 
                 if (data == null) {
                     sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
@@ -110,7 +111,7 @@ public class CoreCommands {
                     return;
                 }
 
-                if (data.getResult().booleanValue()) {
+                if (data.getResult() != null && data.getResult().isAuthed()) {
                     sender.sendMessage(ChatColor.GREEN + "The key has been successfully validated.");
                     Enjin.getConfiguration().setAuthKey(args[0]);
                     EnjinMinecraftPlugin.saveConfiguration();
