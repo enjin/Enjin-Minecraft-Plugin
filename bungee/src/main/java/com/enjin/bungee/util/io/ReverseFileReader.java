@@ -13,6 +13,10 @@ public class ReverseFileReader {
         //Move our pointer to the first valid position at the end of the file.
         String thisLine = this.randomfile.readLine();
         while (thisLine == null) {
+            if (this.position < 0) {
+                break;
+            }
+
             this.position--;
             this.randomfile.seek(this.position);
             thisLine = this.randomfile.readLine();
