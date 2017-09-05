@@ -18,6 +18,7 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.service.permission.SubjectReference;
 
 public class SpongePermissionHandler implements PermissionHandler {
     private PermissionService service;
@@ -38,16 +39,19 @@ public class SpongePermissionHandler implements PermissionHandler {
     public Map<String, List<String>> fetchPlayerGroups(GameProfile player) {
         Map<String, List<String>> worlds = Maps.newHashMap();
         if (player != null) {
-            Subject subject = service.getUserSubjects().get(player.getUniqueId().toString());
-            for (Map.Entry<Set<Context>, List<Subject>> entry : subject.getSubjectData().getAllParents().entrySet()) {
-                String world = "*";
-                for (Context ctx : entry.getKey()) {
-                    if (ctx.getKey().equalsIgnoreCase("world")) {
-                        world = ctx.getValue();
-                        break;
+            Optional<Subject> subjectOptional = service.getUserSubjects().getSubject(player.getUniqueId().toString());
+            if (subjectOptional.isPresent()) {
+                Subject subject = subjectOptional.get();
+                for (Map.Entry<Set<Context>, List<SubjectReference>> entry : subject.getSubjectData().getAllParents().entrySet()) {
+                    String world = "*";
+                    for (Context ctx : entry.getKey()) {
+                        if (ctx.getKey().equalsIgnoreCase("world")) {
+                            world = ctx.getValue();
+                            break;
+                        }
                     }
+                    worlds.put(world, entry.getValue().stream().map(SubjectReference::getSubjectIdentifier).collect(Collectors.toList()));
                 }
-                worlds.put(world, entry.getValue().stream().map(Subject::getIdentifier).collect(Collectors.toList()));
             }
         }
         return worlds;
@@ -56,7 +60,7 @@ public class SpongePermissionHandler implements PermissionHandler {
     @Override
     public List<String> fetchGroups() {
         List<String> groups = Lists.newArrayList();
-        for (Subject subject : service.getGroupSubjects().getAllSubjects()) {
+        for (Subject subject : service.getGroupSubjects().getLoadedSubjects()) {
             groups.add(subject.getIdentifier());
         }
         return groups;
@@ -69,16 +73,14 @@ public class SpongePermissionHandler implements PermissionHandler {
         final Optional<Player> optional = Sponge.getServer().getPlayer(player);
         if (optional.isPresent()) {
             Player p = optional.get();
-            if (world != null && !world.equals("*")) {
-                p.getSubjectData().addParent(
-                        Collections.singleton(new Context("world", world)),
-                        service.getGroupSubjects().get(group)
-                );
-            } else {
-                p.getSubjectData().addParent(
-                        SubjectData.GLOBAL_CONTEXT,
-                        service.getGroupSubjects().get(group)
-                );
+            Optional<Subject> subjectOptional = service.getGroupSubjects().getSubject(group);
+            if (subjectOptional.isPresent()) {
+                Subject subject = subjectOptional.get();
+                if (world != null && !world.equals("*")) {
+                    p.getSubjectData().addParent(Collections.singleton(new Context("world", world)), subject.asSubjectReference());
+                } else {
+                    p.getSubjectData().addParent(SubjectData.GLOBAL_CONTEXT, subject.asSubjectReference());
+                }
             }
         }
     }
@@ -88,18 +90,15 @@ public class SpongePermissionHandler implements PermissionHandler {
         final Optional<Player> optional = Sponge.getServer().getPlayer(player);
         if (optional.isPresent()) {
             Player p = optional.get();
-            if (world != null && !world.equals("*")) {
-                p.getSubjectData().removeParent(
-                        Collections.singleton(new Context("world", world)),
-                        service.getGroupSubjects().get(group)
-                );
-            } else {
-                p.getSubjectData().removeParent(
-                        SubjectData.GLOBAL_CONTEXT,
-                        service.getGroupSubjects().get(group)
-                );
+            Optional<Subject> subjectOptional = service.getGroupSubjects().getSubject(group);
+            if (subjectOptional.isPresent()) {
+                Subject subject = subjectOptional.get();
+                if (world != null && !world.equals("*")) {
+                    p.getSubjectData().removeParent(Collections.singleton(new Context("world", world)), subject.asSubjectReference());
+                } else {
+                    p.getSubjectData().removeParent(SubjectData.GLOBAL_CONTEXT, subject.asSubjectReference());
+                }
             }
-
         }
     }
 }

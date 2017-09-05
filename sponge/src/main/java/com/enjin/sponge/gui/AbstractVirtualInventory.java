@@ -69,7 +69,7 @@ public abstract class AbstractVirtualInventory implements VirtualInventory, Inve
         return Inventory.builder()
                 .of(getInventoryArchetype())
                 .property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(this.title))
-                .property(InventoryDimension.PROPERTY_NAM, InventoryDimension.of(this.width, this.height))
+                .property(InventoryDimension.PROPERTY_NAME, InventoryDimension.of(this.width, this.height))
                 .withCarrier(player)
                 .listener(InteractInventoryEvent.Open.class, listener::onOpen)
                 .listener(InteractInventoryEvent.Close.class, listener::onClose)
