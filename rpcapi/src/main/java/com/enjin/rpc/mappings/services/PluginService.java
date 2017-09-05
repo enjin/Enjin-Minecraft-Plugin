@@ -65,7 +65,7 @@ public class PluginService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Auth> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Auth>>() {
+            RPCData<Auth> data = gson.fromJson(response.toJSONString(), new TypeToken<RPCData<Auth>>() {
             }.getType());
             data.setRequest(request);
             data.setResponse(response);
