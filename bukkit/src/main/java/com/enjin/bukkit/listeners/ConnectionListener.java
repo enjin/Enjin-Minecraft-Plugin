@@ -84,8 +84,16 @@ public class ConnectionListener implements Listener {
             return;
         }
 
-        if (player == null || player.getName() == null) {
-            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
+        if (player == null) {
+            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] OfflinePlayer instance is null. Unable to update their ranks.");
+        }
+
+        if (player.getName() == null) {
+            if (player.getUniqueId() == null) {
+                Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] OfflinePlayer instance's name is null. Unable to update their ranks.");
+            } else {
+                Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Name not found for " + player.getUniqueId().toString() + ". Unable to update their ranks.");
+            }
             return;
         }
 
