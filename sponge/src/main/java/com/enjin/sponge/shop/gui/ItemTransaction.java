@@ -109,7 +109,7 @@ public class ItemTransaction extends VirtualChestInventory {
                                 .append("PRICE: ")
                                 .append('&')
                                 .append(shop.getColorPrice())
-                                .append(price == 0.0 ? "FREE" : PRICE_FORMAT.format(price + " " + shop.getCurrency()))
+                                .append(price == 0.0 ? "FREE" : PRICE_FORMAT.format(price) + " " + shop.getCurrency())
                                 .toString()));
                     }})
                     .build();
