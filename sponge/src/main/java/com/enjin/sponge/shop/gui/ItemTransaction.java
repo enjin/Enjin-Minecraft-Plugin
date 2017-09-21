@@ -11,9 +11,6 @@ import com.enjin.sponge.shop.TextShopUtil;
 import com.enjin.sponge.utils.text.TextUtils;
 import lombok.NonNull;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.SlotPos;
@@ -90,7 +87,7 @@ public class ItemTransaction extends VirtualChestInventory {
                     .build();
             item = new VirtualBaseItem(stack);
             item.setPrimaryActionConsumer(snapshot -> {
-                snapshot.getPlayer().closeInventory(Cause.of(NamedCause.owner(Enjin.getPlugin())));
+                snapshot.getPlayer().closeInventory();
                 TextShopUtil.sendItemInfo(snapshot.getPlayer(), shop, this.item);
             });
             register(SlotPos.of(7, 0), item);
@@ -118,7 +115,7 @@ public class ItemTransaction extends VirtualChestInventory {
                     .build();
             item = new VirtualBaseItem(stack);
             item.setPrimaryActionConsumer(snapshot -> {
-                snapshot.getPlayer().closeInventory(Cause.of(NamedCause.owner(Enjin.getPlugin())));
+                snapshot.getPlayer().closeInventory();
                 TextShopUtil.sendItemInfo(snapshot.getPlayer(), shop, this.item);
             });
             register(SlotPos.of(8, 0), item);

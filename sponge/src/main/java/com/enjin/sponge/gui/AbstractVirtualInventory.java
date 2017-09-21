@@ -4,8 +4,6 @@ import com.enjin.core.Enjin;
 import lombok.Getter;
 import lombok.NonNull;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -48,10 +46,10 @@ public abstract class AbstractVirtualInventory implements VirtualInventory, Inve
     @Override
     public void open(@NonNull Player player) {
         if (player.isViewingInventory()) {
-            player.closeInventory(Cause.of(NamedCause.owner(Enjin.getPlugin())));
+            player.closeInventory();
         }
         Inventory inventory = createInventory(player);
-        player.openInventory(inventory, Cause.of(NamedCause.owner(Enjin.getPlugin())));
+        player.openInventory(inventory);
     }
 
     @Override
