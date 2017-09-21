@@ -496,6 +496,10 @@ public class CoreCommands {
             report.append("ERROR: Authkey reported by plugin as invalid!\n");
         }
 
+        report.append("Enjin Server ID: ")
+                .append(plugin.getServerId())
+                .append('\n');
+
         if (plugin.isUnableToContactEnjin()) {
             report.append("WARNING: Plugin has been unable to contact Enjin for the past 5 minutes\n");
         }

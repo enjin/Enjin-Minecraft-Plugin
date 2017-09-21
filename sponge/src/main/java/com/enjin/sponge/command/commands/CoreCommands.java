@@ -322,6 +322,10 @@ public class CoreCommands {
                     .append('\n');
         }
 
+        report.append("Enjin Server ID: ")
+                .append(plugin.getServerId())
+                .append('\n');
+
         report.append('\n')
                 .append("Plugins:")
                 .append('\n');

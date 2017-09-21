@@ -55,6 +55,9 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
     @Setter
     private boolean updateFailed = false;
 
+    @Getter
+    private long serverId = -1;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -100,6 +103,11 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
                     return;
+                }
+
+                Auth auth = data.getResult();
+                if (auth.getServerId() > 0) {
+                    serverId = auth.getServerId();
                 }
             } else {
                 authKeyInvalid = true;

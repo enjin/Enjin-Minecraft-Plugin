@@ -117,6 +117,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
     private List<Long> executedCommands = Lists.newCopyOnWriteArrayList();
 
+    @Getter
+    private long serverId = -1;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -171,6 +174,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 } else if (data.getResult() == null || !data.getResult().isAuthed()) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
+                }
+
+                Auth auth = data.getResult();
+                if (auth.getServerId() > 0) {
+                    serverId = auth.getServerId();
                 }
             } else {
                 authKeyInvalid = true;

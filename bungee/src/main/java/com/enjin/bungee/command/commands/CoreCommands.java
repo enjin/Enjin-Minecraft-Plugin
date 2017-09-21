@@ -152,6 +152,10 @@ public class CoreCommands {
             report.append("WARNING: Plugin has been unable to contact Enjin for the past 5 minutes\n");
         }
 
+        report.append("Enjin Server ID: ")
+                .append(plugin.getServerId())
+                .append('\n');
+
         report.append("\nPlugins: \n");
         for (Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
             report.append(p.getDescription().getName()).append(" version ").append(p.getDescription().getVersion()).append("\n");

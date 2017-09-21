@@ -103,6 +103,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     private List<Long> pendingCommands = Lists.newCopyOnWriteArrayList();
     @Getter
     private List<Long> executedCommands = Lists.newCopyOnWriteArrayList();
+    @Getter
+    private long serverId = -1;
 
     public EnjinMinecraftPlugin() {
         instance = this;
@@ -153,6 +155,11 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Failed to authenticate.");
                     return;
+                }
+
+                Auth auth = data.getResult();
+                if (auth.getServerId() > 0) {
+                    serverId = auth.getServerId();
                 }
             } else {
                 authKeyInvalid = true;
