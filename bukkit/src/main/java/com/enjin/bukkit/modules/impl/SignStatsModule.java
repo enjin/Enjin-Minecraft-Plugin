@@ -229,7 +229,6 @@ public class SignStatsModule {
             block = data.getHeadLocation().toLocation().getBlock();
 
             if (block.getType() != Material.SKULL) {
-                block = null;
                 data.setHeadLocation(null);
             } else {
                 updateHead(block, data, name);
@@ -244,6 +243,12 @@ public class SignStatsModule {
         }
 
         block = sign.getBlock().getRelative(0, 1, 0);
+        if (block.getType() == Material.SKULL) {
+            updateHead(block, data, name);
+            return;
+        }
+
+        block = sign.getBlock().getRelative(0, -1, 0);
         if (block.getType() == Material.SKULL) {
             updateHead(block, data, name);
             return;
