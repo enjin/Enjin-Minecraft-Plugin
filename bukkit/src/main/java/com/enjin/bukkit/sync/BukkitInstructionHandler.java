@@ -157,19 +157,25 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
                 EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
                 if (!plugin.getExecutedCommands().contains(id)) {
-                    plugin.getExecutedCommands().add(id);
-                    plugin.getPendingCommands().remove(id);
+                    if (id > 0) {
+                        plugin.getExecutedCommands().add(id);
+                        plugin.getPendingCommands().remove(id);
+                        EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
+                                .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                        EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                    }
+
                     EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
-                            .add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-                    EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
                 }
             }
         };
 
         if (EnjinMinecraftPlugin.getInstance().isEnabled()) {
             if (!EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
-                EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
+                if (id > 0) {
+                    EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
+                }
+
                 if (!delay.isPresent() || delay.get() <= 0) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
                 } else {

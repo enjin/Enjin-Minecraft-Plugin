@@ -133,11 +133,14 @@ public class SpongeInstructionHandler implements InstructionHandler {
                 Enjin.getLogger().debug("Executing command \"" + command + "\" for " + user.getName());
                 EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
                 if (!plugin.getExecutedCommands().contains(id)) {
-                    plugin.getExecutedCommands().add(id);
-                    plugin.getPendingCommands().remove(id);
+                    if (id > 0) {
+                        plugin.getExecutedCommands().add(id);
+                        plugin.getPendingCommands().remove(id);
+                        EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                        EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
+                    }
+
                     Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
-                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
-                    EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
                 }
             } else {
                 Enjin.getLogger().debug("No matching player could be found.");
@@ -145,7 +148,10 @@ public class SpongeInstructionHandler implements InstructionHandler {
         };
 
         if (!EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
-            EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
+            if (id > 0) {
+                EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
+            }
+
             if (!delay.isPresent() || delay.get() <= 0) {
                 Sponge.getScheduler().createTaskBuilder().execute(runnable)
                         .submit(Enjin.getPlugin());
