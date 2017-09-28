@@ -38,13 +38,11 @@ public class CurrentLog4j2Handler implements Log4j2Handler {
 
     @Override
     public FileAppender createFileAppender(LoggerContext ctx, String name, String path) throws Throwable {
-        return FileAppender.newBuilder()
-                .withName(name)
-                .withLayout(createPatternLayout(ctx))
-                .withBufferedIo(true)
-                .withImmediateFlush(true)
+        FileAppender.Builder builder = (FileAppender.Builder) FileAppender.newBuilder()
                 .withFileName(path)
-                .withLocking(true).build();
+                .withName(name)
+                .withLayout(createPatternLayout(ctx));
+        return builder.build();
     }
 
 }

@@ -65,18 +65,18 @@ public class LegacyLog4j2Handler implements Log4j2Handler {
     public FileAppender createFileAppender(LoggerContext ctx, String name, String path) throws Throwable {
         Configuration configuration = ctx.getConfiguration();
         FileAppender appender = (FileAppender) fileAppenderCreateAppender.invoke(
-                path,
-                null,
-                "true",
-                name,
-                "true",
-                null,
-                null,
-                createPatternLayout(ctx),
-                null,
-                null,
-                null,
-                configuration
+                path, // fileName
+                null, // append
+                null, // locking
+                name, // name
+                null, // immediateFlush
+                null, // ignore
+                null, // bufferedIO
+                createPatternLayout(ctx), // layout
+                null, // filter
+                null, // advertise
+                null, // advertiseUri
+                configuration // config
         );
         return appender;
     }
