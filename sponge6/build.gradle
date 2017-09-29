@@ -31,7 +31,7 @@ sponge {
         id = 'enjin-minecraft-plugin'
         meta {
             name = 'Enjin Minecraft Plugin'
-            version = "${version}-sponge"
+            version = "${version}-sponge6"
             description = 'Enjin Minecraft Plugin for Sponge!'
         }
     }
