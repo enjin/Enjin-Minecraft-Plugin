@@ -120,7 +120,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
         if (player == null && name.isPresent() && !name.get().isEmpty()) {
             String n = name.get();
-            if (n.length() < 16) {
+            if (n.length() <= 16) {
                 player = Bukkit.getPlayer(n);
                 Enjin.getLogger().debug("Name Detected: " + n);
             } else {

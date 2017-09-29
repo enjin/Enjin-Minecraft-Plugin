@@ -97,7 +97,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
             if (user == null && name.isPresent() && !name.get().isEmpty()) {
                 Enjin.getLogger().debug("Searching for player by name...");
                 String n = name.get();
-                if (n.length() < 16) {
+                if (n.length() <= 16) {
                     optional = storage.get(n);
                 } else {
                     Enjin.getLogger().debug("Player name " + n + " is invalid.");
