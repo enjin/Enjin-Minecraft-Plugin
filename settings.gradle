@@ -1,1 +1,1 @@
-include 'core', 'rpcapi', 'common', 'bukkit', 'bungee', 'sponge'
+include 'core', 'rpcapi', 'common', 'bukkit', 'bungee', 'sponge6', 'sponge7'

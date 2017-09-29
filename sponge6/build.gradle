@@ -1,0 +1,57 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.5.2'
+}
+
+/*
+Enforces compiling with the specified compiler if environment variable JAVA#_HOME is set.
+For example, projects that build with Java 7 should have environment variable JAVA7_HOME set.
+ */
+apply from: scriptFile('env.gradle')
+configureJavaCompilers(8)
+
+ext {
+    sponge = '6.0.0'
+}
+
+dependencies {
+    // Project dependencies.
+    compile project(path: ':common', configuration: 'shadow')
+    // IntelliJ fails to resolve classes with shadow configuration from project dependencies.
+    shadow project(':common')
+    shadow project(':rpcapi')
+    shadow project(':core')
+    // Project specific dependencies.
+    shadow group: 'org.spongepowered', name: "spongeapi", version: sponge
+    // File dependencies.
+    shadow fileTree(dir: 'lib', include: '*.jar')
+}
+
+sponge {
+    plugin {
+        id = 'enjin-minecraft-plugin'
+        meta {
+            name = 'Enjin Minecraft Plugin'
+            version = "${version}-sponge"
+            description = 'Enjin Minecraft Plugin for Sponge!'
+        }
+    }
+}
+
+jar {
+    archiveName = 'EMPSponge-slim.jar'
+}
+
+shadowJar {
+    archiveName = 'EMPSponge.jar'
+
+    dependencies {
+        include(project(':common'))
+        include(dependency('.*:fanciful'))
+        include(dependency('.*:zip4j'))
+    }
+
+    relocate 'net.minidev.json', 'com.enjin.shaded.json'
+    relocate 'com.google.gson', 'com.enjin.shaded.gson'
+    relocate 'com.thetransactioncompany.jsonrpc2', 'com.enjin.shaded.jsonrpc2'
+    relocate 'net.lingala.zip4j', 'com.enjin.shaded.zip4j'
+}
