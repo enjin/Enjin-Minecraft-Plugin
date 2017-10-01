@@ -119,10 +119,30 @@ public class CoreCommands {
         }
 
         // Shop buy commands
-        sender.sendMessage(Text.of(TextColors.GOLD, "/buy: ", TextColors.RESET, "Display items available for purchase."));
-        sender.sendMessage(Text.of(TextColors.GOLD, "/buy page <#>: ", TextColors.RESET, "View the next page of results."));
-        sender.sendMessage(Text.of(TextColors.GOLD, "/buy <ID>: ", TextColors.RESET, "Purchase the specified item ID in the server shop."));
-        sender.sendMessage(Text.of(TextColors.GOLD, "/buy shop [ID] ", TextColors.RESET, "Shows the shop menu or opens the shop with the specified ID."));
+        sender.sendMessage(Text.of(TextColors.GOLD,
+                '/',
+                Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                ": ",
+                TextColors.RESET,
+                "Display items available for purchase."));
+        sender.sendMessage(Text.of(TextColors.GOLD,
+                '/',
+                Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                " page <#>: ",
+                TextColors.RESET,
+                "View the next page of results."));
+        sender.sendMessage(Text.of(TextColors.GOLD,
+                '/',
+                Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                " <ID>: ",
+                TextColors.RESET,
+                "Purchase the specified item ID in the server shop."));
+        sender.sendMessage(Text.of(TextColors.GOLD,
+                '/',
+                Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                " shop <ID>: ",
+                TextColors.RESET,
+                "Shows the shop menu or opens the shop with the specified ID."));
     }
 
     @Permission(value = "enjin.broadcast")

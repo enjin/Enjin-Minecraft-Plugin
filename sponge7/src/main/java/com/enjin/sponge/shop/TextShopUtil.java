@@ -3,6 +3,7 @@ package com.enjin.sponge.shop;
 import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
+import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.utils.text.TextUtils;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Item;
@@ -51,7 +52,9 @@ public class TextShopUtil {
 
         Text.Builder builder = Text.builder("=== Choose Shop ===\n")
                 .append(Text.of("Please type "))
-                .append(Text.builder("/buy shop <#>\n\n").color(TextColors.YELLOW).build());
+                .append(Text.builder(new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                        .append(" shop #\n\n")
+                        .toString()).color(TextColors.YELLOW).build());
 
         int index = 1;
         Iterator<Shop> iterator = available.iterator();
@@ -75,14 +78,18 @@ public class TextShopUtil {
                     .append(buildShopInfo(shop, false))
                     .append(buildCategoryListContent(shop, shop.getCategories(), page))
                     .append(buildFooterInfo(shop))
-                    .append(buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page));
+                    .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                            .append(" page #")
+                            .toString(), instance, shop, page < 1 ? 1 : page));
         } else {
             Category category = instance.getActiveCategory();
             builder.append(buildHeader(category.getName(), shop))
                     .append(buildShopInfo(shop, false))
                     .append(buildCategoryListContent(shop, category.getCategories(), page))
                     .append(buildFooterInfo(shop))
-                    .append(buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page));
+                    .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                            .append(" page #")
+                            .toString(), instance, shop, page < 1 ? 1 : page));
         }
 
         player.sendMessage(builder.build());
@@ -100,7 +107,9 @@ public class TextShopUtil {
                     .append(buildShopInfo(shop, true))
                     .append(buildItemListContent(player, shop, category.getItems(), page))
                     .append(buildFooterInfo(shop))
-                    .append(buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page));
+                    .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                            .append(" page #")
+                            .toString(), instance, shop, page < 1 ? 1 : page));
         }
 
         player.sendMessage(builder.build());
@@ -173,7 +182,8 @@ public class TextShopUtil {
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
                 .append('&').append(shop.getColorText()).append(" Prices are in ").append(shop.getCurrency())
                 .append(". Choose ").append(items ? "an item" : "a category").append(" with ")
-                .append('&').append(shop.getColorBottom()).append("/buy #");
+                .append('&').append(shop.getColorBottom()).append('/')
+                .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand()).append(" #");
         text.append(TextUtils.translateText(builder.toString()))
                 .append(Text.NEW_LINE);
 
@@ -387,7 +397,8 @@ public class TextShopUtil {
     private static Text buildFooterInfo(Shop shop) {
         StringBuilder builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
-                .append('&').append(shop.getColorText()).append(" Type /buy to go back");
+                .append('&').append(shop.getColorText()).append(" Type /")
+                .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand()).append(" to go back");
 
         return Text.builder().append(TextUtils.translateText(builder.toString())).append(Text.NEW_LINE).build();
     }

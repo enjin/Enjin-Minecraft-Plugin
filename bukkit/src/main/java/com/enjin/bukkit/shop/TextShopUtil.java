@@ -1,5 +1,6 @@
 package com.enjin.bukkit.shop;
 
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.util.text.TextUtils;
 import com.enjin.core.Enjin;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
@@ -51,7 +52,9 @@ public class TextShopUtil {
         FancyMessage message = new FancyMessage("=== Choose Shop ===");
         messages.add(message);
         message = new FancyMessage("Please type ")
-                .then("/buy shop <#>")
+                .then(new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                        .append(" shop #")
+                        .toString())
                 .color(ChatColor.YELLOW);
         messages.add(message);
 
@@ -81,7 +84,9 @@ public class TextShopUtil {
                 message.send(player);
             }
             buildFooterInfo(shop).send(player);
-            buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page).send(player);
+            buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                    .append(" page #")
+                    .toString(), instance, shop, page < 1 ? 1 : page).send(player);
         } else {
             Category category = instance.getActiveCategory();
 
@@ -93,7 +98,9 @@ public class TextShopUtil {
                 message.send(player);
             }
             buildFooterInfo(shop).send(player);
-            buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page).send(player);
+            buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                    .append(" page #")
+                    .toString(), instance, shop, page < 1 ? 1 : page).send(player);
         }
     }
 
@@ -113,7 +120,9 @@ public class TextShopUtil {
                 message.send(player);
             }
             buildFooterInfo(shop).send(player);
-            buildFooter("Type /buy page #", instance, shop, page < 1 ? 1 : page).send(player);
+            buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                    .append(" page #")
+                    .toString(), instance, shop, page < 1 ? 1 : page).send(player);
         }
     }
 
@@ -182,7 +191,9 @@ public class TextShopUtil {
                 .color(ChatColor.getByChar(shop.getColorBorder()))
                 .then(" " + "Prices are in " + shop.getCurrency() + ". Choose " + (items ? "an item" : "a category") + " with ")
                 .color(ChatColor.getByChar(shop.getColorText()))
-                .then("/buy #")
+                .then(new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                        .append(" #")
+                        .toString())
                 .color(ChatColor.getByChar(shop.getColorBottom()));
         messages.add(message);
 
@@ -435,7 +446,9 @@ public class TextShopUtil {
                 .append(ChatColor.getByChar(shop.getColorBorder()))
                 .append(shop.getBorderV())
                 .append(ChatColor.getByChar(shop.getColorText()))
-                .append(" Type /buy to go back");
+                .append(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                        .append(" to go back")
+                        .toString());
 
         return new FancyMessage(builder.toString());
     }

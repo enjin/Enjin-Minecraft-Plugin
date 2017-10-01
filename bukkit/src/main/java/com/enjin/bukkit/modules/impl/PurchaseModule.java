@@ -1,10 +1,12 @@
 package com.enjin.bukkit.modules.impl;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.modules.Module;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
 import com.enjin.common.shop.PlayerShopInstance;
+import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Item;
@@ -42,7 +44,11 @@ public class PurchaseModule {
             TextShopUtil.sendItemInfo(player, shop, item);
         } else {
             pendingPurchases.put(player.getName(), item.getId());
-            player.sendMessage(ChatColor.GREEN + "Type \"/buy confirm\" to complete your pending purchase.");
+            player.sendMessage(new StringBuilder(ChatColor.GREEN.toString())
+                    .append("Type \"/")
+                    .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                    .append(" confirm\" to complete your pending purchase.")
+                    .toString());
         }
     }
 

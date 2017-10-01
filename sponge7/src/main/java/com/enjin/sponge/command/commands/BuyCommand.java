@@ -31,7 +31,7 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(Text.of(TextColors.RED, "USAGE: /buy #"));
+            player.sendMessage(Text.of(TextColors.RED, "USAGE: /", Enjin.getConfiguration(EMPConfig.class).getBuyCommand(), " #"));
             return;
         }
 
@@ -105,7 +105,7 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(Text.of(TextColors.RED, "USAGE: /buy #"));
+            player.sendMessage(Text.of(TextColors.RED, "USAGE: /", Enjin.getConfiguration(EMPConfig.class).getBuyCommand(), " #"));
             return;
         }
 
@@ -139,7 +139,7 @@ public class BuyCommand {
             try {
                 index = Integer.valueOf(args[0]);
             } catch (NumberFormatException e) {
-                player.sendMessage(Text.of(TextColors.RED, "USAGE: /buy item #"));
+                player.sendMessage(Text.of(TextColors.RED, "USAGE: /", Enjin.getConfiguration(EMPConfig.class).getBuyCommand(), " item #"));
                 return;
             }
 
@@ -181,7 +181,7 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(Text.of(TextColors.RED, "USAGE: /buy shop #"));
+            player.sendMessage(Text.of(TextColors.RED, "USAGE: /", Enjin.getConfiguration(EMPConfig.class).getBuyCommand(), " shop #"));
             return;
         }
 

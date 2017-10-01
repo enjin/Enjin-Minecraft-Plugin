@@ -8,6 +8,7 @@ import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
 import com.enjin.sponge.EnjinMinecraftPlugin;
+import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.shop.TextShopUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -35,7 +36,10 @@ public class PurchaseManager {
             TextShopUtil.sendItemInfo(player, shop, item);
         } else {
             PurchaseManager.getPendingPurchases().put(player.getName(), item.getId());
-            player.sendMessage(Text.of(TextColors.GREEN, "Type \"/buy confirm\" to complete your pending purchase."));
+            player.sendMessage(Text.of(TextColors.GREEN,
+                    "Type \"/",
+                    Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                    " confirm\" to complete your pending purchase."));
         }
     }
 

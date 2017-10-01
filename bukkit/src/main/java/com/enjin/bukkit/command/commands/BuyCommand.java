@@ -27,13 +27,14 @@ import java.util.concurrent.TimeUnit;
 public class BuyCommand {
     @Command(value = "buy")
     public static void buy(Player player, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-
         Optional<Integer> selection;
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "USAGE: /buy #");
+            player.sendMessage(ChatColor.RED + new StringBuilder("USAGE: /")
+                    .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                    .append(" #")
+                    .toString());
             return;
         }
 
@@ -109,7 +110,10 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "USAGE: /buy #");
+            player.sendMessage(ChatColor.RED + new StringBuilder("USAGE: /")
+                    .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                    .append(" #")
+                    .toString());
             return;
         }
 
@@ -148,7 +152,10 @@ public class BuyCommand {
             try {
                 index = Integer.valueOf(args[0]);
             } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "USAGE: /buy item #");
+                player.sendMessage(ChatColor.RED + new StringBuilder("USAGE: /")
+                        .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                        .append(" item #")
+                        .toString());
                 return;
             }
 
@@ -195,7 +202,10 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "USAGE: /buy shop #");
+            player.sendMessage(ChatColor.RED + new StringBuilder("USAGE: /")
+                    .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                    .append(" shop #")
+                    .toString());
             return;
         }
 

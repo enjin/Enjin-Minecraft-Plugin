@@ -124,9 +124,27 @@ public class CoreCommands {
         }
 
         // Shop buy commands
-        sender.sendMessage(ChatColor.GOLD + "/buy: " + ChatColor.RESET + "Display items available for purchase.");
-        sender.sendMessage(ChatColor.GOLD + "/buy page <#>: " + ChatColor.RESET + "View the next page of results.");
-        sender.sendMessage(ChatColor.GOLD + "/buy <ID>: " + ChatColor.RESET + "Purchase the specified item ID in the server shop.");
+        sender.sendMessage(new StringBuilder(ChatColor.GOLD.toString())
+                .append("/")
+                .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                .append(':')
+                .append(ChatColor.RESET)
+                .append(" Display items available for purchase.")
+                .toString());
+        sender.sendMessage(new StringBuilder(ChatColor.GOLD.toString())
+                .append("/")
+                .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                .append(" page <#>:")
+                .append(ChatColor.RESET)
+                .append(" View the next page of results.")
+                .toString());
+        sender.sendMessage(new StringBuilder(ChatColor.GOLD.toString())
+                .append("/")
+                .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                .append(" <ID>:")
+                .append(ChatColor.RESET)
+                .append(" Purchase the specified item ID in the server shop.")
+                .toString());
     }
 
     @Permission(value = "enjin.broadcast")
