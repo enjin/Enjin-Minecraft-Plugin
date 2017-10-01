@@ -38,11 +38,11 @@ sponge {
 }
 
 jar {
-    archiveName = 'EMPSponge-slim.jar'
+    archiveName = 'EMPSponge7-slim.jar'
 }
 
 shadowJar {
-    archiveName = 'EMPSponge.jar'
+    archiveName = 'EMPSponge7.jar'
 
     dependencies {
         include(project(':common'))
