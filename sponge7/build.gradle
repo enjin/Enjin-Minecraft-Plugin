@@ -46,7 +46,6 @@ shadowJar {
 
     dependencies {
         include(project(':common'))
-        include(dependency('.*:fanciful'))
         include(dependency('.*:zip4j'))
     }
 
