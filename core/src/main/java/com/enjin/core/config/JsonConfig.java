@@ -3,10 +3,7 @@ package com.enjin.core.config;
 import com.enjin.core.Enjin;
 import com.google.gson.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Map;
 
 public class JsonConfig {
@@ -15,11 +12,11 @@ public class JsonConfig {
     public static <T extends JsonConfig> T load(File file, Class<T> clazz) throws Exception {
         JsonConfig config = null;
 
-        if (!file.exists()) {
-            config = clazz.newInstance();
+        if (!file.exists() || file.length() == 0) {
+            config = loadNew(clazz);
             config.save(file);
         } else {
-            config = gson.fromJson(new FileReader(file), clazz);
+            config = loadExisting(file, clazz);
         }
 
         if (config == null) {
@@ -27,6 +24,14 @@ public class JsonConfig {
         }
 
         return clazz.cast(config);
+    }
+
+    private static  <T extends JsonConfig> T loadNew(Class<T> clazz) throws Exception {
+        return clazz.newInstance();
+    }
+
+    private static <T extends JsonConfig> T loadExisting(File file, Class<T> clazz) throws Exception {
+        return gson.fromJson(new FileReader(file), clazz);
     }
 
     public boolean save(File file) {
