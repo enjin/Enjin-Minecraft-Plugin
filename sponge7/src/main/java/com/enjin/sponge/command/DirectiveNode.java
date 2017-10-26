@@ -57,6 +57,8 @@ public class DirectiveNode {
 
             Enjin.getLogger().debug("Executing directive: " + data.parent() + "-" + data.value());
             method.invoke(null, sender, args);
+        } catch (InvocationTargetException e) {
+            Enjin.getLogger().log(e.getCause());
         } catch (Exception e) {
             Enjin.getLogger().log(e);
         }

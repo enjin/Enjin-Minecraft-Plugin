@@ -70,6 +70,8 @@ public class CommandNode {
 
             Enjin.getLogger().debug("Executing command: " + data.value());
             method.invoke(null, sender, args);
+        } catch (InvocationTargetException e) {
+            Enjin.getLogger().log(e.getCause());
         } catch (Exception e) {
             Enjin.getLogger().log(e);
         }
