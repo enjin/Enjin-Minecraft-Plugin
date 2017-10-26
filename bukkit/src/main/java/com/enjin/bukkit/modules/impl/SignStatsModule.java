@@ -160,22 +160,15 @@ public class SignStatsModule {
         Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
-                long time = System.currentTimeMillis();
                 Location location = data.getLocation().toLocation();
                 Block block = location.getBlock();
-                Enjin.getLogger().debug("SignsStatsModule$3-1: " + (System.currentTimeMillis() - time) + "ms");
-                time = System.currentTimeMillis();
 
                 if (block.getState() == null || !(block.getState() instanceof Sign)) {
                     config.getSigns().remove(data);
                     return;
                 }
-                Enjin.getLogger().debug("SignsStatsModule$3-2: " + (System.currentTimeMillis() - time) + "ms");
-                time = System.currentTimeMillis();
 
                 Sign sign = (Sign) block.getState();
-                Enjin.getLogger().debug("SignsStatsModule$3-3: " + (System.currentTimeMillis() - time) + "ms");
-                time = System.currentTimeMillis();
                 String name = null;
                 switch (data.getType()) {
                     case DONATION:
@@ -211,15 +204,10 @@ public class SignStatsModule {
                     default:
                         break;
                 }
-                Enjin.getLogger().debug("SignsStatsModule$3-4: " + (System.currentTimeMillis() - time) + "ms");
-                time = System.currentTimeMillis();
                 sign.update();
-                Enjin.getLogger().debug("SignsStatsModule$3-5: " + (System.currentTimeMillis() - time) + "ms");
-                time = System.currentTimeMillis();
 
                 if (name != null) {
                     updateHead(sign, data, name);
-                    Enjin.getLogger().debug("SignsStatsModule$3-6: " + (System.currentTimeMillis() - time) + "ms");
                 }
             }
         });
