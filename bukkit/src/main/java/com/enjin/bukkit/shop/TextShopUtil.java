@@ -1,14 +1,18 @@
 package com.enjin.bukkit.shop;
 
-import com.enjin.bukkit.config.EMPConfig;
-import com.enjin.bukkit.util.text.TextUtils;
-import com.enjin.core.Enjin;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.config.EMPConfig;
+import com.enjin.bukkit.util.text.LegacyTextUtil;
+import com.enjin.bukkit.util.text.MessageUtil;
+import com.enjin.bukkit.util.text.TextUtils;
 import com.enjin.common.shop.PlayerShopInstance;
+import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
-import mkremins.fanciful.FancyMessage;
+import net.kyori.text.TextComponent;
+import net.kyori.text.event.ClickEvent;
+import net.kyori.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -20,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class TextShopUtil {
+
     private static DecimalFormat priceFormat = new DecimalFormat("#.00");
 
     public static void sendTextShop(Player player, PlayerShopInstance instance, int page) {
@@ -48,60 +53,47 @@ public class TextShopUtil {
     private static void sendAvailableShops(Player player, PlayerShopInstance instance) {
         List<Shop> available = instance.getShops();
 
-        List<FancyMessage> messages = new ArrayList<>();
-        FancyMessage message = new FancyMessage("=== Choose Shop ===");
+        List<TextComponent> messages = new ArrayList<>();
+        TextComponent message = TextComponent.of("=== Choose Shop ===");
         messages.add(message);
-        message = new FancyMessage("Please type ")
-                .then(new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+        message = TextComponent.of("Please type ")
+                .append(TextComponent.of(new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
                         .append(" shop #")
-                        .toString())
-                .color(ChatColor.YELLOW);
+                        .toString()).color(TextColor.YELLOW));
         messages.add(message);
 
         int index = 1;
         Iterator<Shop> iterator = available.iterator();
         while (iterator.hasNext()) {
             Shop shop = iterator.next();
-            message = new FancyMessage(index++ + ". " + shop.getName())
-                    .color(ChatColor.YELLOW);
+            message = TextComponent.of(index++ + ". " + shop.getName())
+                    .color(TextColor.YELLOW);
             messages.add(message);
         }
 
-        for (FancyMessage m : messages) {
-            m.send(player);
-        }
+        MessageUtil.sendMessages(player, messages);
     }
 
     private static void sendAvailableCategories(Player player, PlayerShopInstance instance, int page) {
         Shop shop = instance.getActiveShop();
 
         if (instance.getActiveCategory() == null) {
-            buildHeader(shop.getName(), shop).send(player);
-            for (FancyMessage message : buildShopInfo(shop, false)) {
-                message.send(player);
-            }
-            for (FancyMessage message : buildCategoryListContent(shop, shop.getCategories(), page)) {
-                message.send(player);
-            }
-            buildFooterInfo(shop).send(player);
-            buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
-                    .append(" page #")
-                    .toString(), instance, shop, page < 1 ? 1 : page).send(player);
+            MessageUtil.sendMessage(player, buildHeader(shop.getName(), shop));
+            MessageUtil.sendMessages(player, buildShopInfo(shop, false));
+            MessageUtil.sendMessages(player, buildCategoryListContent(shop, shop.getCategories(), page));
         } else {
             Category category = instance.getActiveCategory();
 
-            buildHeader(category.getName(), shop).send(player);
-            for (FancyMessage message : buildShopInfo(shop, false)) {
-                message.send(player);
-            }
-            for (FancyMessage message : buildCategoryListContent(shop, category.getCategories(), page)) {
-                message.send(player);
-            }
-            buildFooterInfo(shop).send(player);
-            buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
-                    .append(" page #")
-                    .toString(), instance, shop, page < 1 ? 1 : page).send(player);
+            MessageUtil.sendMessage(player, buildHeader(category.getName(), shop));
+            MessageUtil.sendMessages(player, buildShopInfo(shop, false));
+            MessageUtil.sendMessages(player, buildCategoryListContent(shop, category.getCategories(), page));
         }
+
+        MessageUtil.sendMessage(player, buildFooterInfo(shop));
+        MessageUtil.sendMessage(player, buildFooter(new StringBuilder("Type /")
+                .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                .append(" page #")
+                .toString(), instance, shop, page < 1 ? 1 : page));
     }
 
     private static void sendAvailableItems(Player player, PlayerShopInstance instance, int page) {
@@ -112,17 +104,14 @@ public class TextShopUtil {
         } else {
             Category category = instance.getActiveCategory();
 
-            buildHeader(category.getName(), shop).send(player);
-            for (FancyMessage message : buildShopInfo(shop, true)) {
-                message.send(player);
-            }
-            for (FancyMessage message : buildItemListContent(player, shop, category.getItems(), page)) {
-                message.send(player);
-            }
-            buildFooterInfo(shop).send(player);
-            buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+            MessageUtil.sendMessage(player, buildHeader(category.getName(), shop));
+            MessageUtil.sendMessages(player, buildShopInfo(shop, true));
+            MessageUtil.sendMessages(player, buildItemListContent(player, shop, category.getItems(), page));
+            MessageUtil.sendMessage(player, buildFooterInfo(shop));
+            MessageUtil.sendMessage(player, buildFooter(new StringBuilder("Type /")
+                    .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
                     .append(" page #")
-                    .toString(), instance, shop, page < 1 ? 1 : page).send(player);
+                    .toString(), instance, shop, page < 1 ? 1 : page));
         }
     }
 
@@ -135,12 +124,10 @@ public class TextShopUtil {
             Category category = instance.getActiveCategory();
             Item item = index < 0 ? category.getItems().get(0) : (index < category.getItems().size() ? category.getItems().get(index) : category.getItems().get(category.getItems().size() - 1));
 
-            buildHeader(item.getName(), shop).send(player);
-            for (FancyMessage message : buildItemContent(player, shop, item)) {
-                message.send(player);
-            }
-            buildFooterInfo(shop).send(player);
-            buildFooter("", null, shop, -1).send(player);
+            MessageUtil.sendMessage(player, buildHeader(item.getName(), shop));
+            MessageUtil.sendMessages(player, buildItemContent(player, shop, item));
+            MessageUtil.sendMessage(player, buildFooterInfo(shop));
+            MessageUtil.sendMessage(player, buildFooter("", null, shop, -1));
 
             instance.setActiveItem(item);
         }
@@ -148,16 +135,14 @@ public class TextShopUtil {
 
     public static void sendItemInfo(Player player, Shop shop, Item item) {
         if (item != null) {
-            buildHeader(item.getName(), shop).send(player);
-            for (FancyMessage message : buildItemContent(player, shop, item)) {
-                message.send(player);
-            }
-            buildFooterInfo(shop).send(player);
-            buildFooter("", null, shop, -1).send(player);
+            MessageUtil.sendMessage(player, buildHeader(item.getName(), shop));
+            MessageUtil.sendMessages(player, buildItemContent(player, shop, item));
+            MessageUtil.sendMessage(player, buildFooterInfo(shop));
+            MessageUtil.sendMessage(player, buildFooter("", null, shop, -1));
         }
     }
 
-    private static FancyMessage buildHeader(String title, Shop shop) {
+    private static TextComponent buildHeader(String title, Shop shop) {
         StringBuilder header = new StringBuilder();
         String prefix = shop.getBorderC();
 
@@ -171,36 +156,36 @@ public class TextShopUtil {
 
         header.append(ChatColor.getByChar(shop.getColorBorder())).append(prefix).append(" ")
                 .append(ChatColor.getByChar(shop.getColorTitle())).append(title).append(" ")
-                .append(ChatColor.getByChar(shop.getColorBorder()));
+                .append(LegacyTextUtil.getLegacyText(shop.getColorBorder()));
 
         for (int i = 0; i < 40; i++) {
             header.append(shop.getBorderH());
         }
 
-        return new FancyMessage(TextUtils.trim(header.toString(), null));
+        return TextComponent.of(TextUtils.trim(header.toString(), null));
     }
 
-    private static List<FancyMessage> buildShopInfo(Shop shop, boolean items) {
-        List<FancyMessage> messages = new ArrayList<>();
-        FancyMessage message = new FancyMessage(shop.getBorderV())
-                .color(ChatColor.getByChar(shop.getColorBorder()))
-                .then(" " + shop.getInfo().trim())
-                .color(ChatColor.getByChar(shop.getColorText()));
+    private static List<TextComponent> buildShopInfo(Shop shop, boolean items) {
+        List<TextComponent> messages = new ArrayList<>();
+        TextComponent message = TextComponent.of(shop.getBorderV())
+                .color(LegacyTextUtil.getColor(shop.getColorBorder()))
+                .append(TextComponent.of((" " + shop.getInfo().trim()))
+                        .color(LegacyTextUtil.getColor(shop.getColorText())));
         messages.add(message);
-        message = new FancyMessage(shop.getBorderV())
-                .color(ChatColor.getByChar(shop.getColorBorder()))
-                .then(" " + "Prices are in " + shop.getCurrency() + ". Choose " + (items ? "an item" : "a category") + " with ")
-                .color(ChatColor.getByChar(shop.getColorText()))
-                .then(new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+        message = TextComponent.of(shop.getBorderV())
+                .color(LegacyTextUtil.getColor(shop.getColorBorder()))
+                .append(TextComponent.of((" " + "Prices are in " + shop.getCurrency() + ". Choose " + (items ? "an item" : "a category") + " with "))
+                        .color(LegacyTextUtil.getColor(shop.getColorText())))
+                .append(TextComponent.of((new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
                         .append(" #")
-                        .toString())
-                .color(ChatColor.getByChar(shop.getColorBottom()));
+                        .toString()))
+                        .color(LegacyTextUtil.getColor(shop.getColorBottom())));
         messages.add(message);
 
         return messages;
     }
 
-    private static List<FancyMessage> buildCategoryListContent(Shop shop, List<Category> categories, int page) {
+    private static List<TextComponent> buildCategoryListContent(Shop shop, List<Category> categories, int page) {
         if (page < 1) {
             page = 1;
         }
@@ -210,9 +195,9 @@ public class TextShopUtil {
             page = pages;
         }
 
-        List<FancyMessage> messages = new ArrayList<>();
-        FancyMessage message = new FancyMessage(shop.getBorderV())
-                .color(ChatColor.getByChar(shop.getColorBorder()));
+        List<TextComponent> messages = new ArrayList<>();
+        TextComponent message = TextComponent.of(shop.getBorderV())
+                .color(LegacyTextUtil.getColor(shop.getColorBorder()));
         messages.add(message);
 
         int start = (page - 1) * 4;
@@ -227,39 +212,39 @@ public class TextShopUtil {
                 break;
             }
 
-            message = new FancyMessage(shop.getBorderV())
-                    .color(ChatColor.getByChar(shop.getColorBorder()))
-                    .then(" " + (i + 1) + ".")
-                    .color(ChatColor.getByChar(shop.getColorId()))
-                    .then(" [ ")
-                    .color(ChatColor.getByChar(shop.getColorBracket()))
-                    .then(category.getName().trim())
-                    .color(ChatColor.getByChar(shop.getColorName()))
-                    .then(" ]")
-                    .color(ChatColor.getByChar(shop.getColorBracket()));
+            message = TextComponent.of(shop.getBorderV())
+                    .color(LegacyTextUtil.getColor(shop.getColorBorder()))
+                    .append(TextComponent.of((" " + (i + 1) + "."))
+                            .color(LegacyTextUtil.getColor(shop.getColorId()))
+                            .append(TextComponent.of((" [ "))
+                                    .color(LegacyTextUtil.getColor(shop.getColorBracket()))
+                                    .append(TextComponent.of((category.getName().trim()))
+                                            .color(LegacyTextUtil.getColor(shop.getColorName()))
+                                            .append(TextComponent.of((" ]"))
+                                                    .color(LegacyTextUtil.getColor(shop.getColorBracket()))))));
             messages.add(message);
 
             StringBuilder descriptionBuilder = new StringBuilder();
             if (category.getInfo() != null && !category.getInfo().isEmpty()) {
-                descriptionBuilder.append(ChatColor.getByChar(shop.getColorBorder()).toString())
+                descriptionBuilder.append(LegacyTextUtil.getLegacyText(shop.getColorBorder()).toString())
                         .append(shop.getBorderV())
-                        .append(ChatColor.getByChar(shop.getColorInfo()).toString()).append(" ").append(category.getInfo().trim());
+                        .append(LegacyTextUtil.getLegacyText(shop.getColorInfo()).toString()).append(" ").append(category.getInfo().trim());
             }
 
             if (descriptionBuilder.length() > 0) {
-                message = new FancyMessage(TextUtils.trim(descriptionBuilder.toString(), null));
+                message = TextComponent.of(TextUtils.trim(descriptionBuilder.toString(), null));
                 messages.add(message);
             }
 
-            message = new FancyMessage(shop.getBorderV())
-                    .color(ChatColor.getByChar(shop.getColorBorder()));
+            message = TextComponent.of(shop.getBorderV())
+                    .color(LegacyTextUtil.getColor(shop.getColorBorder()));
             messages.add(message);
         }
 
         return messages;
     }
 
-    private static List<FancyMessage> buildItemListContent(Player player, Shop shop, List<Item> items, int page) {
+    private static List<TextComponent> buildItemListContent(Player player, Shop shop, List<Item> items, int page) {
         int maxEntries = shop.getSimpleItems().booleanValue() ? 8 : 4;
 
         if (page < 1) {
@@ -271,9 +256,9 @@ public class TextShopUtil {
             page = pages;
         }
 
-        List<FancyMessage> messages = new ArrayList<>();
-        FancyMessage message = new FancyMessage(shop.getBorderV())
-                .color(ChatColor.getByChar(shop.getColorBorder()));
+        List<TextComponent> messages = new ArrayList<>();
+        TextComponent message = TextComponent.of(shop.getBorderV())
+                .color(LegacyTextUtil.getColor(shop.getColorBorder()));
         messages.add(message);
 
         int start = (page - 1) * maxEntries;
@@ -288,36 +273,36 @@ public class TextShopUtil {
                 break;
             }
 
-            message = new FancyMessage(shop.getBorderV())
-                    .color(ChatColor.getByChar(shop.getColorBorder()))
-                    .then(" " + (i + 1) + ". ")
-                    .color(ChatColor.getByChar(shop.getColorId()))
-                    .then(item.getName().trim())
-                    .color(ChatColor.getByChar(shop.getColorName()))
-                    .then(" (")
-                    .color(ChatColor.getByChar(shop.getColorBracket()));
+            message = TextComponent.of(shop.getBorderV())
+                    .color(LegacyTextUtil.getColor(shop.getColorBorder()))
+                    .append(TextComponent.of((" " + (i + 1) + ". "))
+                            .color(LegacyTextUtil.getColor(shop.getColorId()))
+                            .append(TextComponent.of((item.getName().trim()))
+                                    .color(LegacyTextUtil.getColor(shop.getColorName()))
+                                    .append(TextComponent.of((" ("))
+                                            .color(LegacyTextUtil.getColor(shop.getColorBracket())))));
 
             if (item.getPrice() != null) {
-                message.then(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE")
-                        .color(ChatColor.getByChar(shop.getColorPrice()));
+                message.append(TextComponent.of((item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE"))
+                        .color(LegacyTextUtil.getColor(shop.getColorPrice())));
                 if (item.getPrice() > 0.0) {
-                    message.then(" " + shop.getCurrency())
-                            .color(ChatColor.getByChar(shop.getColorPrice()));
+                    message.append(TextComponent.of((" " + shop.getCurrency()))
+                            .color(LegacyTextUtil.getColor(shop.getColorPrice())));
                 }
             }
 
             if (item.getPoints() != null) {
                 if (item.getPrice() != null) {
-                    message.then(" or ")
-                            .color(ChatColor.getByChar(shop.getColorPrice()));
+                    message.append(TextComponent.of((" or "))
+                            .color(LegacyTextUtil.getColor(shop.getColorPrice())));
                 }
 
-                message.then(item.getPoints() + " Points")
-                        .color(ChatColor.getByChar(shop.getColorPrice()));
+                message.append(TextComponent.of((item.getPoints() + " Points"))
+                        .color(LegacyTextUtil.getColor(shop.getColorPrice())));
             }
 
-            message.then(")")
-                    .color(ChatColor.getByChar(shop.getColorBracket()));
+            message.append(TextComponent.of((")"))
+                    .color(LegacyTextUtil.getColor(shop.getColorBracket())));
             messages.add(message);
 
             if (!shop.getSimpleItems().booleanValue()) {
@@ -325,13 +310,13 @@ public class TextShopUtil {
 
                 try {
                     URL url = new URL(shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
-                    urlBuilder.append(ChatColor.getByChar(shop.getColorBorder()).toString())
+                    urlBuilder.append(LegacyTextUtil.getLegacyText(shop.getColorBorder()).toString())
                             .append(shop.getBorderV())
-                            .append(ChatColor.getByChar(shop.getColorUrl())).append(" ").append(shop.getBuyUrl()).append(item.getId()).append("?player=").append(player.getName());
+                            .append(LegacyTextUtil.getLegacyText(shop.getColorUrl())).append(" ").append(shop.getBuyUrl()).append(item.getId()).append("?player=").append(player.getName());
 
                     if (urlBuilder.length() > 0) {
-                        message = new FancyMessage(TextUtils.trim(urlBuilder.toString(), null))
-                                .link(url.toExternalForm());
+                        message = TextComponent.of(TextUtils.trim(urlBuilder.toString(), null))
+                                .clickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.toExternalForm()));
                         messages.add(message);
                     }
                 } catch (MalformedURLException e) {
@@ -340,120 +325,120 @@ public class TextShopUtil {
 
                 StringBuilder descriptionBuilder = new StringBuilder();
                 if (item.getInfo() != null && !item.getInfo().isEmpty()) {
-                    descriptionBuilder.append(ChatColor.getByChar(shop.getColorBorder()))
+                    descriptionBuilder.append(LegacyTextUtil.getLegacyText(shop.getColorBorder()))
                             .append(shop.getBorderV())
-                            .append(ChatColor.getByChar(shop.getColorInfo())).append(" ").append(item.getInfo().trim());
+                            .append(LegacyTextUtil.getLegacyText(shop.getColorInfo())).append(" ").append(item.getInfo().trim());
                 }
 
                 if (descriptionBuilder.length() > 0) {
-                    message = new FancyMessage(TextUtils.trim(descriptionBuilder.toString(), null));
+                    message = TextComponent.of(TextUtils.trim(descriptionBuilder.toString(), null));
                     messages.add(message);
                 }
             }
 
-            message = new FancyMessage(shop.getBorderV())
-                    .color(ChatColor.getByChar(shop.getColorBorder()));
+            message = TextComponent.of(shop.getBorderV())
+                    .color(LegacyTextUtil.getColor(shop.getColorBorder()));
             messages.add(message);
         }
 
         return messages;
     }
 
-    private static List<FancyMessage> buildItemContent(Player player, Shop shop, Item item) {
-        List<FancyMessage> messages = new ArrayList<>();
-        FancyMessage message = null;
+    private static List<TextComponent> buildItemContent(Player player, Shop shop, Item item) {
+        List<TextComponent> messages = new ArrayList<>();
+        TextComponent message = null;
 
         StringBuilder builder = new StringBuilder();
-        builder.append(ChatColor.getByChar(shop.getColorBorder()))
+        builder.append(LegacyTextUtil.getLegacyText(shop.getColorBorder()))
                 .append(shop.getBorderV());
 
         if (item.getPrice() != null) {
-            builder.append(ChatColor.getByChar(shop.getColorText()))
+            builder.append(LegacyTextUtil.getLegacyText(shop.getColorText()))
                     .append(" Price: ")
-                    .append(ChatColor.getByChar(shop.getColorPrice()))
+                    .append(LegacyTextUtil.getLegacyText(shop.getColorPrice()))
                     .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE");
-            message = new FancyMessage(builder.toString());
+            message = TextComponent.of(builder.toString());
             messages.add(message);
         }
 
         if (item.getPoints() != null) {
             message = null;
             if (item.getPrice() != null) {
-                message = new FancyMessage(shop.getBorderV())
-                        .color(ChatColor.getByChar(shop.getColorBorder()));
+                message = TextComponent.of(shop.getBorderV())
+                        .color(LegacyTextUtil.getColor(shop.getColorBorder()));
             }
 
             if (message != null) {
-                message.then(" Points: ")
-                        .color(ChatColor.getByChar(shop.getColorText()))
-                        .then(item.getPoints() > 0 ? item.getPoints().toString() : "FREE")
-                        .color(ChatColor.getByChar(shop.getColorPrice()));
+                message.append(TextComponent.of((" Points: "))
+                        .color(LegacyTextUtil.getColor(shop.getColorText()))
+                        .append(TextComponent.of((item.getPoints() > 0 ? item.getPoints().toString() : "FREE"))
+                                .color(LegacyTextUtil.getColor(shop.getColorPrice()))));
             } else {
-                message = new FancyMessage(" Points: ")
-                        .color(ChatColor.getByChar(shop.getColorText()))
-                        .then(item.getPoints() > 0 ? item.getPoints().toString() : "FREE")
-                        .color(ChatColor.getByChar(shop.getColorPrice()));
+                message = TextComponent.of(" Points: ")
+                        .color(LegacyTextUtil.getColor(shop.getColorText()))
+                        .append(TextComponent.of((item.getPoints() > 0 ? item.getPoints().toString() : "FREE"))
+                                .color(LegacyTextUtil.getColor(shop.getColorPrice())));
             }
 
             messages.add(message);
         }
 
-        message = new FancyMessage(shop.getBorderV())
-                .color(ChatColor.getByChar(shop.getColorBorder()))
-                .then(" Info:")
-                .color(ChatColor.getByChar(shop.getColorText()));
+        message = TextComponent.of(shop.getBorderV())
+                .color(LegacyTextUtil.getColor(shop.getColorBorder()))
+                .append(TextComponent.of((" Info:"))
+                        .color(LegacyTextUtil.getColor(shop.getColorText())));
         messages.add(message);
         StringBuilder info = new StringBuilder()
-                .append(ChatColor.getByChar(shop.getColorBorder()))
+                .append(LegacyTextUtil.getColor(shop.getColorBorder()))
                 .append(shop.getBorderV())
-                .append(ChatColor.getByChar(shop.getColorInfo())).append(" ").append(item.getInfo());
-        message = new FancyMessage(TextUtils.trim(info.toString(), ""));
+                .append(LegacyTextUtil.getColor(shop.getColorInfo())).append(" ").append(item.getInfo());
+        message = TextComponent.of(TextUtils.trim(info.toString(), ""));
         messages.add(message);
-        message = new FancyMessage(shop.getBorderV())
-                .color(ChatColor.getByChar(shop.getColorBorder()));
+        message = TextComponent.of(shop.getBorderV())
+                .color(LegacyTextUtil.getColor(shop.getColorBorder()));
         messages.add(message);
-        message = new FancyMessage(shop.getBorderV())
-                .color(ChatColor.getByChar(shop.getColorBorder()))
-                .then(" Click on the following link to checkout:")
-                .color(ChatColor.getByChar(shop.getColorText()));
+        message = TextComponent.of(shop.getBorderV())
+                .color(LegacyTextUtil.getColor(shop.getColorBorder()))
+                .append(TextComponent.of((" Click on the following link to checkout:"))
+                        .color(LegacyTextUtil.getColor(shop.getColorText())));
         messages.add(message);
 
         StringBuilder urlBuilder = new StringBuilder();
         try {
             URL url = new URL(shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
-            urlBuilder.append(ChatColor.getByChar(shop.getColorBorder()))
+            urlBuilder.append(LegacyTextUtil.getLegacyText(shop.getColorBorder()))
                     .append(shop.getBorderV())
-                    .append(ChatColor.getByChar(shop.getColorUrl())).append(" ").append(shop.getBuyUrl()).append(item.getId()).append("?player=").append(player.getName());
+                    .append(LegacyTextUtil.getLegacyText(shop.getColorUrl())).append(" ").append(shop.getBuyUrl()).append(item.getId()).append("?player=").append(player.getName());
 
             if (urlBuilder.length() > 0) {
-                message = new FancyMessage(TextUtils.trim(urlBuilder.toString(), null))
-                        .link(url.toExternalForm());
+                message = TextComponent.of(TextUtils.trim(urlBuilder.toString(), null))
+                        .clickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.toExternalForm()));
                 messages.add(message);
             }
         } catch (MalformedURLException e) {
             Enjin.getLogger().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
         }
 
-        message = new FancyMessage(shop.getBorderV())
-                .color(ChatColor.getByChar(shop.getColorBorder()));
+        message = TextComponent.of(shop.getBorderV())
+                .color(LegacyTextUtil.getColor(shop.getColorBorder()));
         messages.add(message);
 
         return messages;
     }
 
-    private static FancyMessage buildFooterInfo(Shop shop) {
+    private static TextComponent buildFooterInfo(Shop shop) {
         StringBuilder builder = new StringBuilder()
-                .append(ChatColor.getByChar(shop.getColorBorder()))
+                .append(LegacyTextUtil.getLegacyText(shop.getColorBorder()))
                 .append(shop.getBorderV())
-                .append(ChatColor.getByChar(shop.getColorText()))
+                .append(LegacyTextUtil.getLegacyText(shop.getColorText()))
                 .append(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
                         .append(" to go back")
                         .toString());
 
-        return new FancyMessage(builder.toString());
+        return TextComponent.of(builder.toString());
     }
 
-    private static FancyMessage buildFooter(String title, PlayerShopInstance instance, Shop shop, int page) {
+    private static TextComponent buildFooter(String title, PlayerShopInstance instance, Shop shop, int page) {
         StringBuilder footer = new StringBuilder();
         String prefix = shop.getBorderC();
         String separator = "";
@@ -467,7 +452,7 @@ public class TextShopUtil {
             prefix = prefix.substring(0, 4);
         }
 
-        footer.append(ChatColor.getByChar(shop.getColorBorder()))
+        footer.append(LegacyTextUtil.getLegacyText(shop.getColorBorder()))
                 .append(prefix);
 
         if (page > 0) {
@@ -483,16 +468,16 @@ public class TextShopUtil {
             int lastPage = (int) Math.ceil((double) entries / 4);
             pagination = "Page " + (page > lastPage ? lastPage : page) + " of " + lastPage;
 
-            footer.append(ChatColor.getByChar(shop.getColorBottom())).append(" ").append(title).append(" ")
-                    .append(ChatColor.getByChar(shop.getColorBorder())).append(separator).append(" ")
-                    .append(ChatColor.getByChar(shop.getColorBottom())).append(pagination).append(" ")
-                    .append(ChatColor.getByChar(shop.getColorBorder()));
+            footer.append(LegacyTextUtil.getLegacyText(shop.getColorBottom())).append(" ").append(title).append(" ")
+                    .append(LegacyTextUtil.getLegacyText(shop.getColorBorder())).append(separator).append(" ")
+                    .append(LegacyTextUtil.getLegacyText(shop.getColorBottom())).append(pagination).append(" ")
+                    .append(LegacyTextUtil.getLegacyText(shop.getColorBorder()));
         }
 
         for (int i = 0; i < 40; i++) {
             footer.append(shop.getBorderH());
         }
 
-        return new FancyMessage(TextUtils.trim(footer.toString(), null));
+        return TextComponent.of(TextUtils.trim(footer.toString(), null));
     }
 }

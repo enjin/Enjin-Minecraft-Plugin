@@ -86,7 +86,7 @@ public class TicketService implements Service {
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().log(e);
             Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
@@ -123,7 +123,7 @@ public class TicketService implements Service {
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().log(e);
             Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
@@ -154,7 +154,7 @@ public class TicketService implements Service {
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().log(e);
             Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
@@ -188,7 +188,7 @@ public class TicketService implements Service {
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().log(e);
             Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
@@ -221,7 +221,7 @@ public class TicketService implements Service {
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().log(e);
             Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
@@ -259,13 +259,13 @@ public class TicketService implements Service {
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().log(e);
             Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
     }
 
-    public RPCData<Boolean> createTicket(final Integer preset, final String subject, final String description, final String player, final List<ExtraQuestion> extraQuestions) {
+    public RPCData<RPCSuccess> createTicket(final Integer preset, final String subject, final String description, final String player, final List<ExtraQuestion> extraQuestions) {
         String method = "Tickets.createTicket";
         final Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -289,13 +289,13 @@ public class TicketService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<Boolean> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<Boolean>>() {
+            RPCData<RPCSuccess> data = GSON_TICKET.fromJson(response.toJSONString(), new TypeToken<RPCData<RPCSuccess>>() {
             }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
         } catch (Exception e) {
-            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().log(e);
             Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }
@@ -332,7 +332,7 @@ public class TicketService implements Service {
             data.setResponse(response);
             return data;
         } catch (JSONRPC2SessionException e) {
-            Enjin.getLogger().debug(e.getMessage());
+            Enjin.getLogger().log(e);
             Enjin.getLogger().debug("Failed Request to " + session.getURL().toString() + ": " + request.toJSONString());
             return null;
         }

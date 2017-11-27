@@ -76,7 +76,7 @@ public class TicketServiceTest {
     @Test
     public void test5CreateTicket() {
         TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<Boolean> data = service.createTicket(PRESET_ID, "This is my subject", "This is my description", "Favorlock", new ArrayList<ExtraQuestion>());
+        RPCData<RPCSuccess> data = service.createTicket(PRESET_ID, "This is my subject", "This is my description", "Favorlock", new ArrayList<ExtraQuestion>());
 
         Assert.assertNotNull("data is null", data);
 
@@ -86,7 +86,7 @@ public class TicketServiceTest {
             return;
         }
 
-        Boolean success = data.getResult();
+        RPCSuccess success = data.getResult();
 
         Assert.assertNotNull("success is null", success);
     }

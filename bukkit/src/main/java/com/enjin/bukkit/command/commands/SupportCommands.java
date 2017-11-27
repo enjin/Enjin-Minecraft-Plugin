@@ -7,13 +7,15 @@ import com.enjin.bukkit.modules.impl.SupportModule;
 import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketViewBuilder;
 import com.enjin.bukkit.util.PermissionsUtil;
+import com.enjin.bukkit.util.text.MessageUtil;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
 import com.enjin.rpc.mappings.mappings.tickets.*;
 import com.enjin.rpc.mappings.services.TicketService;
-import mkremins.fanciful.FancyMessage;
+import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.ComponentSerializers;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -111,9 +113,7 @@ public class SupportCommands {
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
-                                for (FancyMessage message : TicketViewBuilder.buildTicketList(tickets)) {
-                                    message.send(sender);
-                                }
+                                MessageUtil.sendMessages(sender, TicketViewBuilder.buildTicketList(tickets));
                             } else {
                                 sender.sendMessage("You do not have any tickets at this time!");
                             }
@@ -136,9 +136,7 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, PermissionsUtil.hasPermission(sender, "enjin.ticket.private"))) {
-                                    message.send(sender);
-                                }
+                                MessageUtil.sendMessages(sender, TicketViewBuilder.buildTicket(args[0], replies, PermissionsUtil.hasPermission(sender, "enjin.ticket.private")));
                             } else {
                                 sender.sendMessage("You entered an invalid ticket code!");
                             }
@@ -169,9 +167,7 @@ public class SupportCommands {
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
-                                for (FancyMessage message : TicketViewBuilder.buildTicketList(tickets)) {
-                                    message.send(sender);
-                                }
+                                MessageUtil.sendMessages(sender, TicketViewBuilder.buildTicketList(tickets));
                             } else {
                                 sender.sendMessage("There are no open tickets at this time.");
                             }
@@ -194,9 +190,7 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                for (FancyMessage message : TicketViewBuilder.buildTicket(args[0], replies, PermissionsUtil.hasPermission(sender, "enjin.ticket.private"))) {
-                                    message.send(sender);
-                                }
+                                MessageUtil.sendMessages(sender, TicketViewBuilder.buildTicket(args[0], replies, PermissionsUtil.hasPermission(sender, "enjin.ticket.private")));
                             } else {
                                 sender.sendMessage("You entered an invalid ticket code!");
                             }

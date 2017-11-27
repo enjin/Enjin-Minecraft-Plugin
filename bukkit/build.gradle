@@ -5,11 +5,11 @@ Enforces compiling with the specified compiler if environment variable JAVA#_HOM
 For example, projects that build with Java 7 should have environment variable JAVA7_HOME set.
  */
 apply from: scriptFile('env.gradle')
-configureJavaCompilers(7)
+configureJavaCompilers(8)
 
 ext {
     bukkit = '1.11-R0.1-SNAPSHOT'
-    fanciful = '0.3.5-SNAPSHOT'
+    kyoripowered_text = '1.12-1.3.0'
     vault = '1.5.6'
     votifier = '1.9'
     zPermissions = '1.3beta1'
@@ -29,7 +29,9 @@ dependencies {
     shadow project(':rpcapi')
     shadow project(':core')
     // Project specific dependencies.
-    compile group: 'mkremins', name: 'fanciful', version: fanciful
+    compile (group: 'net.kyori', name: 'text', version: kyoripowered_text) {
+        exclude group: 'com.google.guava'
+    }
     compile group: 'org.reflections', name: 'reflections', version: reflections
     compile group: 'javassist', name: 'javassist', version: javassist
     provided group: 'org.spigotmc', name: 'spigot-api', version: bukkit
@@ -61,7 +63,7 @@ shadowJar {
 
     dependencies {
         include(project(':common'))
-        include(dependency('.*:fanciful'))
+        include(dependency('.*:text'))
         include(dependency('.*:reflections'))
         include(dependency('.*:javassist'))
         include(dependency('.*:zip4j'))

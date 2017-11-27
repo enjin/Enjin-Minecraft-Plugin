@@ -52,6 +52,7 @@ subprojects {
     }
 
     repositories {
+        mavenLocal()
         maven { url 'http://maven.enjinpink.com:8081/repository/maven-public/' }
     }
 

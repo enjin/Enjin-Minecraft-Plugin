@@ -2,6 +2,7 @@ package com.enjin.bukkit.tickets;
 
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
 import com.enjin.rpc.mappings.mappings.tickets.ExtraQuestion;
 import com.enjin.rpc.mappings.mappings.tickets.QuestionType;
 import com.enjin.rpc.mappings.services.TicketService;
@@ -53,7 +54,7 @@ public class TicketSubmission {
         }
 
         player.sendMessage("\n" + ChatColor.GOLD + "Submitting ticket...");
-        RPCData<Boolean> result = service.createTicket(moduleId, (String) subject.getAnswer(), (String) description.getAnswer(), player.getName(), extra);
+        RPCData<RPCSuccess> result = service.createTicket(moduleId, (String) subject.getAnswer(), (String) description.getAnswer(), player.getName(), extra);
         if (player != null) {
             if (result != null) {
                 if (result.getError() != null) {
