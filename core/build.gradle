@@ -1,13 +1,22 @@
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
+
+ext {
+    enjin_coin_sdk = '0.0.1-SNAPSHOT'
+}
 
 dependencies {
     // Project specific dependencies.
     compile group: 'com.google.code.gson', name: 'gson', version: gson
+    compile group: 'com.enjin', name: 'enj-sdk-base', version: enjin_coin_sdk, classifier: 'all'
 }
 
 shadowJar {
     dependencies {
         include(dependency('.*:json-smart'))
         include(dependency('.*:gson'))
+        include(dependency('.*:enj-sdk-base'))
     }
+
+    relocate 'com.pusher', 'com.enjin.shaded.pusher'
+    relocate 'org.immutables', 'com.enjin.shaded.immutables'
 }
