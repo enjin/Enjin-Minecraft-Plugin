@@ -13,7 +13,11 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,13 +30,11 @@ public class Log implements EnjinLogger {
     private static final SimpleDateFormat LOG_ZIP_NAME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getName());
-    private Level defaultLevel = logger.getLevel();
     private LineAppender lineAppender = null;
     private FileAppender logAppender = null;
     private File logs = null;
     private File log = null;
     private boolean configured = false;
-    private boolean debug = false;
 
     public Log(File configDir) {
         logs = new File(configDir, "logs");
@@ -95,9 +97,7 @@ public class Log implements EnjinLogger {
     }
 
     public void debug(String msg) {
-        if (Enjin.getConfiguration().isDebug()) {
-            logger.info("[DEBUG] " + hideSensitiveText(msg));
-        }
+        logger.info("[DEBUG] " + hideSensitiveText(msg));
     }
 
     @Override
@@ -133,9 +133,14 @@ public class Log implements EnjinLogger {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
         if (log4j2Handler != null) {
+            for (Appender appender : logger.getAppenders().values()) {
+                ((AbstractAppender) appender).addFilter(LogFilter.DEFAULT);
+            }
+
             if (Enjin.getConfiguration().isLoggingEnabled()) {
                 try {
                     logAppender = log4j2Handler.createFileAppender(ctx, "EnjinFileOut", log.getPath());
+                    logAppender.addFilter(LogFilter.FILE_APPENDER_FILTER);
                     logAppender.start();
                     logger.addAppender(logAppender);
                 } catch (Throwable t) {
@@ -145,6 +150,7 @@ public class Log implements EnjinLogger {
 
             try {
                 lineAppender = new LineAppender("EnjinLineIn", log4j2Handler.createPatternLayout(ctx));
+                lineAppender.addFilter(LogFilter.DEFAULT);
                 lineAppender.start();
                 Logger root = (Logger) LogManager.getRootLogger();
                 root.addAppender(lineAppender);
@@ -158,13 +164,7 @@ public class Log implements EnjinLogger {
     }
 
     public void setDebug(boolean debug) {
-        this.debug = debug;
-
-        if (this.debug) {
-            logger.setLevel(Level.DEBUG);
-        } else {
-            logger.setLevel(defaultLevel);
-        }
+        LogFilter.DEFAULT.setDebug(debug);
     }
 
     @Override
