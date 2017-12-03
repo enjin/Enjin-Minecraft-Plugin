@@ -5,7 +5,7 @@ Enforces compiling with the specified compiler if environment variable JAVA#_HOM
 For example, projects that build with Java 7 should have environment variable JAVA7_HOME set.
  */
 apply from: scriptFile('env.gradle')
-configureJavaCompilers(7)
+configureJavaCompilers(8)
 
 ext {
     bungeecord = '1.11-SNAPSHOT'
