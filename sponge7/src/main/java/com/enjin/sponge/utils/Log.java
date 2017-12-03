@@ -127,7 +127,6 @@ public class Log implements EnjinLogger {
 
     public void configure() {
         Log4j2Handler log4j2Handler = Log4j2Handlers.findHandler();
-        logger.info("Log4j 2 handler detected: " + (log4j2Handler != null ? log4j2Handler.getClass().getName() : "N/A"));
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
         if (log4j2Handler != null) {
