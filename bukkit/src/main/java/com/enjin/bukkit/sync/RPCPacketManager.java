@@ -1,6 +1,8 @@
 package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.config.RankUpdatesConfig;
+import com.enjin.bukkit.events.PostSyncEvent;
+import com.enjin.bukkit.events.PreSyncEvent;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.modules.impl.VotifierModule;
 import com.enjin.bukkit.sync.data.*;
@@ -66,21 +68,39 @@ public class RPCPacketManager implements Runnable {
 //        }
 
         Enjin.getLogger().debug("Constructing payload...");
-        Status status = new Status(System.getProperty("java.version"),
-                this.plugin.getMcVersion(),
-                getPlugins(),
-                isPermissionsAvailable(),
-                this.plugin.getDescription().getVersion(),
-                getWorlds(),
-                getGroups(),
-                getMaxPlayers(),
-                getOnlineCount(),
-                getOnlinePlayers(),
-                getPlayerGroups(),
-                TPSMonitor.getInstance().getLastTPSMeasurement(),
-                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
-                getVotes(),
-                stats);
+        HashMap<String, Object> status = new HashMap<>();
+        status.put("java_version", System.getProperty("java.version"));
+        status.put("mc_version", this.plugin.getMcVersion());
+        status.put("plugins", getPlugins());
+        status.put("pluginversion", this.plugin.getDescription().getVersion());
+        status.put("worlds", getWorlds());
+        status.put("groups", getGroups());
+        status.put("maxplayers", getMaxPlayers());
+        status.put("players", getOnlineCount());
+        status.put("playerlist", getOnlinePlayers());
+        status.put("playergroups", getPlayerGroups());
+        status.put("tps", TPSMonitor.getInstance().getLastTPSMeasurement());
+        status.put("executed_commands", EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands());
+        status.put("votifier", EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands());
+        status.put("stats", stats);
+
+//        Status status = new Status(System.getProperty("java.version"),
+//                this.plugin.getMcVersion(),
+//                getPlugins(),
+//                isPermissionsAvailable(),
+//                this.plugin.getDescription().getVersion(),
+//                getWorlds(),
+//                getGroups(),
+//                getMaxPlayers(),
+//                getOnlineCount(),
+//                getOnlinePlayers(),
+//                getPlayerGroups(),
+//                TPSMonitor.getInstance().getLastTPSMeasurement(),
+//                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
+//                getVotes(),
+//                stats);
+
+        Bukkit.getPluginManager().callEvent(new PreSyncEvent(status));
 
         Enjin.getLogger().debug("Fetching plugin service...");
         PluginService service = EnjinServices.getService(PluginService.class);
@@ -90,14 +110,18 @@ public class RPCPacketManager implements Runnable {
 
         if (data == null) {
             Enjin.getLogger().debug("Data is null while requesting sync update from Plugin.sync.");
+            Bukkit.getPluginManager().callEvent(new PostSyncEvent(false, null));
             return;
         }
 
         if (data.getError() != null) {
             this.plugin.getLogger().warning(data.getError().getMessage());
+            Bukkit.getPluginManager().callEvent(new PostSyncEvent(false, data));
         } else {
             SyncResponse result = data.getResult();
             if (result != null && result.getStatus().equalsIgnoreCase("ok")) {
+                Bukkit.getPluginManager().callEvent(new PostSyncEvent(true, data));
+
                 for (Instruction instruction : result.getInstructions()) {
                     switch (instruction.getCode()) {
                         case ADD_PLAYER_GROUP:
@@ -145,6 +169,7 @@ public class RPCPacketManager implements Runnable {
                 }
             } else {
                 Enjin.getLogger().debug("Did not receive \"ok\" status. Status: " + (result == null ? "n/a" : result.getStatus()));
+                Bukkit.getPluginManager().callEvent(new PostSyncEvent(false, data));
             }
         }
 

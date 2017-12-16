@@ -77,11 +77,11 @@ public class PluginService implements Service {
         }
     }
 
-    public RPCData<SyncResponse> sync(final Status status) {
+    public RPCData<SyncResponse> sync(final Map<String, Object> status) {
         String method = "Plugin.sync";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
-            put("status", EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(status), Object.class));
+            put("status", status);
         }};
 
         Integer id = EnjinRPC.getNextRequestId();
