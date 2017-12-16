@@ -20,8 +20,8 @@ dependencies {
     shadow project(':rpcapi')
     shadow project(':core')
     // Project specific dependencies.
-    provided group: 'net.md-5', name: 'bungeecord-bootstrap', version: bungeecord
-    provided group: 'com.imaginarycode.minecraft', name: 'RedisBungee', version: redis_bungee
+    shadow group: 'net.md-5', name: 'bungeecord-bootstrap', version: bungeecord
+    shadow group: 'com.imaginarycode.minecraft', name: 'RedisBungee', version: redis_bungee
 }
 
 jar {

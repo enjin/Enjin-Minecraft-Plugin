@@ -7,7 +7,6 @@ buildscript {
 }
 
 plugins {
-    id 'nebula.provided-base' version '3.0.3'
     id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
@@ -58,12 +57,12 @@ subprojects {
 
     dependencies {
         testCompile group: 'junit', name: 'junit', version: junit
-        provided group: 'net.minidev', name: 'json-smart', version: json_smart
-        provided group: 'org.projectlombok', name: 'lombok', version: lombok
-        provided group: 'com.google.guava', name: 'guava', version: guava
-        provided group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4j
-        provided group: 'com.google.code.gson', name: 'gson', version: gson
-        provided group: 'net.lingala.zip4j', name: 'zip4j', version: zip4j
+        shadow group: 'net.minidev', name: 'json-smart', version: json_smart
+        shadow group: 'org.projectlombok', name: 'lombok', version: lombok
+        shadow group: 'com.google.guava', name: 'guava', version: guava
+        shadow group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4j
+        shadow group: 'com.google.code.gson', name: 'gson', version: gson
+        shadow group: 'net.lingala.zip4j', name: 'zip4j', version: zip4j
     }
 
     shadowJar {
