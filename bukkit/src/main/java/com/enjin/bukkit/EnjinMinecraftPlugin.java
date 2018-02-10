@@ -20,7 +20,6 @@ import com.enjin.bukkit.modules.ModuleManager;
 import com.enjin.bukkit.modules.impl.*;
 import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.Plugins;
-import com.enjin.bukkit.util.io.EnjinErrorReport;
 import com.enjin.bukkit.listeners.*;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.stats.StatsPlayer;
@@ -104,10 +103,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     @Getter
     private PermissionListener permissionListener;
-
-    @Getter
-    @Setter
-    private EnjinErrorReport lastError = null;
 
     @Getter
     private ModuleManager moduleManager = null;

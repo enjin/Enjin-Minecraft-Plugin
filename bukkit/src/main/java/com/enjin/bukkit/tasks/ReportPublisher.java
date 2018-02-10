@@ -4,8 +4,9 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.Stack;
 
+import com.enjin.bukkit.util.io.ReverseLineInputStream;
 import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
 import net.lingala.zip4j.core.ZipFile;
@@ -18,14 +19,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.util.io.ReverseFileReader;
 
 public class ReportPublisher implements Runnable {
+
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+
     private EnjinMinecraftPlugin plugin;
     private StringBuilder builder;
     private CommandSender sender;
     private File logs = null;
     private File log = null;
+
+    private boolean dirty = false;
 
     public ReportPublisher(EnjinMinecraftPlugin plugin, StringBuilder builder, CommandSender sender) {
         this.plugin = plugin;
@@ -37,100 +42,98 @@ public class ReportPublisher implements Runnable {
 
     @Override
     public synchronized void run() {
-        builder.append("\nLast Severe error message: \n");
-        ReverseFileReader serverReader = null;
-        try {
-            //Test to see if we are using the new logs location in 1.7.2
-            File serverLog = new File("logs/latest.log");
-            if (serverLog.exists()) {
-                serverReader = new ReverseFileReader(serverLog.getAbsolutePath());
+        builder.append('\n');
 
-                LinkedList<String> errorMessages = new LinkedList<>();
+        File bukkitLog = new File("logs/latest.log");
+
+        if (bukkitLog.exists()) {
+            Stack<String> mostRecentLogs = new Stack<>();
+            Stack<String> mostRecentError = new Stack<>();
+
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(new ReverseLineInputStream(bukkitLog)));
+
+                boolean errorDiscovered = false;
+                boolean errorProcessed = false;
+
                 String line;
-                boolean errorFound = false;
-                while ((line = serverReader.readLine()) != null && !errorFound) {
-                    if (errorMessages.size() >= 40) {
-                        errorMessages.removeFirst();
+                while ((line = reader.readLine()) != null) {
+                    if (mostRecentLogs.size() < 100)
+                        mostRecentLogs.push(line);
+                    else if (errorProcessed)
+                        break;
+
+                    if (line.toLowerCase().startsWith("[SEVERE]") || line.toLowerCase().startsWith("[ERROR]")) {
+                        if (!errorDiscovered)
+                            errorDiscovered = true;
+                        mostRecentError.push(line);
+                    } else if (errorDiscovered) {
+                        break;
                     }
-
-                    errorMessages.add(line);
-
-                    if (line.contains("[SEVERE]") || line.contains("ERROR]")) {
-                        //let's catch the entire severe error message.
-                        boolean severeEnded = false;
-                        while ((line = serverReader.readLine()) != null && !severeEnded) {
-                            if (line.contains("[SEVERE]") || line.contains("ERROR]")) {
-                                if (errorMessages.size() >= 40) {
-                                    errorMessages.removeFirst();
-                                }
-
-                                errorMessages.add(line);
-                            } else {
-                                severeEnded = true;
-                            }
-                        }
-
-                        for (int i = errorMessages.size(); i > 0; i--) {
-                            builder.append(errorMessages.get(i - 1)).append("\n");
-                        }
-
-                        errorFound = true;
+                }
+            } catch (Exception e) {
+                Enjin.getLogger().log(e);
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        Enjin.getLogger().log(e);
                     }
                 }
             }
-        } catch (Exception e) {
-            if (Enjin.getConfiguration().isDebug()) {
-                Enjin.getLogger().log(e);
+
+            if (!mostRecentError.isEmpty()) {
+                builder.append("Last Severe error message:");
+                setDirtyThenClean(1);
+                while (!mostRecentError.empty()) {
+                    builder.append(mostRecentError.pop());
+                    setDirtyThenClean(1);
+                }
+                setDirty();
             }
-        } finally {
-            if (serverReader != null) {
-                serverReader.close();
+
+            if (!mostRecentLogs.isEmpty()) {
+                setClean(2);
+                builder.append("Last 100 lines of enjin.log:");
+                setDirtyThenClean(1);
+                while (!mostRecentLogs.empty()) {
+                    builder.append(mostRecentLogs.pop());
+                    setDirtyThenClean(1);
+                }
+                setDirty();
             }
         }
 
-        builder.append("\nLast 100 lines of enjin.log: \n");
-        ReverseFileReader enjinReader = null;
-        try {
-            enjinReader = new ReverseFileReader(log.getAbsolutePath());
-            LinkedList<String> lines = new LinkedList<String>();
-            String line;
-            for (int i = 0; i < 100 && (line = enjinReader.readLine()) != null; i++) {
-                lines.add(line);
-            }
-
-            for (int i = lines.size(); i > 0; i--) {
-                builder.append(lines.get(i - 1)).append("\n");
-            }
-        } catch (Exception e) {
-            Enjin.getLogger().log(e);
-        } finally {
-            if (enjinReader != null) {
-                enjinReader.close();
-            }
-        }
-
-        if (plugin.getLastError() != null) {
-            builder.append("\nLast Enjin Plugin Severe error message: \n");
-            builder.append(plugin.getLastError().toString());
-        }
-
-        builder.append("\n=========================================\n");
-        builder.append("Enjin HTTPS test: ").append(ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!").append("\n");
-        builder.append("Enjin HTTP test: ").append(ConnectionUtil.testHTTPconnection() ? "passed" : "FAILED!").append("\n");
-        builder.append("Enjin web connectivity test: ").append(ConnectionUtil.testWebConnection() ? "passed" : "FAILED!").append("\n");
+        setClean(1);
+        builder.append("=========================================");
+        setDirtyThenClean(1);
+        builder.append("Enjin HTTPS test: ").append(ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!");
+        setDirtyThenClean(1);
+        builder.append("Enjin HTTP test: ").append(ConnectionUtil.testHTTPconnection() ? "passed" : "FAILED!");
+        setDirtyThenClean(1);
+        builder.append("Enjin web connectivity test: ").append(ConnectionUtil.testWebConnection() ? "passed" : "FAILED!");
+        setDirtyThenClean(1);
         builder.append("Is mineshafter present: ").append(ConnectionUtil.isMineshafterPresent() ? "yes" : "no");
-        builder.append("\n=========================================\n");
-
-        builder.append("\n=========================================\n");
+        setDirtyThenClean(1);
+        builder.append("=========================================");
+        setDirtyThenClean(2);
+        builder.append("=========================================");
+        setDirtyThenClean(1);
         builder.append("Java System Time: ").append(System.currentTimeMillis() / 1000);
-        builder.append("\n=========================================\n");
+        setDirtyThenClean(1);
+        builder.append("=========================================");
+        setDirtyThenClean(2);
 
-        File bukkitYmlFile = new File("bukkit.yml");
-        YamlConfiguration bukkitYml = new YamlConfiguration();
-        if (bukkitYmlFile.exists()) {
+        File bukkitConfigFile = new File("bukkit.yml");
+        YamlConfiguration bukkitConfig = new YamlConfiguration();
+
+        if (bukkitConfigFile.exists()) {
             try {
-                bukkitYml.load(bukkitYmlFile);
-                if (bukkitYml.getBoolean("settings.plugin-profiling", false)) {
+                bukkitConfig.load(bukkitConfigFile);
+
+                if (bukkitConfig.getBoolean("settings.plugin-profiling", false)) {
                     plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), "timings merged");
 
                     try {
@@ -141,72 +144,109 @@ public class ReportPublisher implements Runnable {
                         // Do nothing.
                     }
 
-                    boolean foundTimings = false;
-                    File timingsFile;
+                    File timingsFile = null;
+                    boolean timingsDiscovered = false;
+
                     Enjin.getLogger().debug("Searching for timings file");
                     //If the server owner has over 99 timings files, I don't know what to say...
-                    for (int i = 99; i >= 0 && !foundTimings; i--) {
+                    for (int i = 99; i >= 0 && !timingsDiscovered; i--) {
                         if (i == 0) {
                             timingsFile = new File(logs + File.separator + "timings" + File.separator + "timings.txt");
                         } else {
                             timingsFile = new File(logs + File.separator + "timings" + File.separator + "timings" + i + ".txt");
                         }
 
-                        DataInputStream dataInputStream = null;
-                        try {
-                            if (timingsFile.exists()) {
-                                Enjin.getLogger().debug("Found timings file at: " + timingsFile.getAbsolutePath());
-                                foundTimings = true;
-                                builder.append("\nTimings file output:\n");
-                                FileInputStream fileInputStream = new FileInputStream(timingsFile);
-                                dataInputStream = new DataInputStream(fileInputStream);
-                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(dataInputStream));
-                                String line;
+                        if (timingsFile.exists()) {
+                            Enjin.getLogger().debug("Found timings file at: " + timingsFile.getAbsolutePath());
 
+
+                            BufferedReader bufferedReader = null;
+                            timingsDiscovered = true;
+
+                            try {
+                                bufferedReader = new BufferedReader(
+                                        new InputStreamReader(
+                                                new DataInputStream(
+                                                        new FileInputStream(timingsFile))));
+
+                                builder.append("Timings file output:");
+                                setDirtyThenClean(1);
+
+                                String line;
                                 while ((line = bufferedReader.readLine()) != null) {
-                                    builder.append(line).append("\n");
+                                    builder.append(line);
+                                    setDirtyThenClean(1);
                                 }
-                            }
-                        } finally {
-                            if (dataInputStream != null) {
-                                dataInputStream.close();
+                                setDirty();
+
+                            } finally {
+                                if (bufferedReader != null)
+                                    bufferedReader.close();
                             }
                         }
                     }
-                } else {
-                    builder.append("\nTimings file output not enabled!\n");
                 }
             } catch (Exception e) {
                 Enjin.getLogger().log(e);
             }
         }
+
         //let's make sure to hide the apikey, wherever it may occurr in the file.
         String report = builder.toString().replaceAll("authkey=\\w{50}", "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
         Date date = new Date();
+
         InputStream in = null;
 
         try {
             in = new ByteArrayInputStream(report.getBytes());
 
-            ZipFile zip = new ZipFile(new File("enjinreport_" + format.format(date) + ".zip"));
+            ZipFile archive = new ZipFile(new File("enjinreport_" + DATE_FORMAT.format(date) + ".zip"));
+
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
-            zip.addFile(Enjin.getLogger().getLogFile(), parameters);
-            parameters.setFileNameInZip("enjinreport_" + format.format(date) + ".txt");
-            parameters.setSourceExternalStream(true);
-            zip.addStream(in, parameters);
 
-            sender.sendMessage(ChatColor.GOLD + "Enjin report created in " + zip.getFile().getPath() + " successfully!");
+            // Add Enjin Log
+            archive.addFile(log, parameters);
+
+            parameters.setFileNameInZip("enjinreport_" + DATE_FORMAT.format(date) + ".txt");
+            parameters.setSourceExternalStream(true);
+
+            // Add Report
+            archive.addStream(in, parameters);
+
+            sender.sendMessage(ChatColor.GOLD + "Enjin report created in " + archive.getFile().getPath() + " successfully!");
         } catch (ZipException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin report!");
             Enjin.getLogger().log(e);
         } finally {
             try {
-                in.close();
+                if (in != null)
+                    in.close();
             } catch (IOException e) {
                 Enjin.getLogger().log(e);
             }
         }
+    }
+
+    public boolean isDirty() {
+        return this.dirty;
+    }
+
+    public void setDirty() {
+        this.dirty = true;
+    }
+
+    public void setClean(int nl) {
+        if (isDirty()) {
+            this.dirty = false;
+            if (builder != null && builder.length() > 0)
+                while (nl-- > 0)
+                    builder.append('\n');
+        }
+    }
+
+    public void setDirtyThenClean(int nl) {
+        setDirty();
+        setClean(nl);
     }
 }
