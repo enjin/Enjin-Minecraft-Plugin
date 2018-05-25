@@ -1,9 +1,9 @@
 package com.enjin.bukkit.statsigns;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,7 +25,7 @@ public enum SignType {
     @Getter
     private SubType defaultSubType;
     @Getter
-    private List<SubType> supportedSubTypes = Lists.newArrayList();
+    private List<SubType> supportedSubTypes = new ArrayList<>();
 
     SignType(SubType defaultSubType, SubType... supportedSubTypes) {
         this.pattern = Pattern.compile("\\[" + name().toLowerCase() + "([1-9]|10)\\]");

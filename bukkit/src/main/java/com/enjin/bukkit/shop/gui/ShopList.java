@@ -7,16 +7,16 @@ import com.enjin.bukkit.util.ui.Menu;
 import com.enjin.bukkit.util.ui.MenuItem;
 import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
-import com.google.common.collect.Maps;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ShopList extends Menu {
-    private final Map<MenuItem, Menu> shops = Maps.newHashMap();
+    private final Map<MenuItem, Menu> shops = new HashMap<>();
 
     public ShopList(Player player) {
         super(ChatColor.GOLD + "Select A Shop", 6);

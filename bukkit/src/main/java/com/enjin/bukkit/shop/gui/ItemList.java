@@ -8,20 +8,20 @@ import com.enjin.bukkit.util.ui.MenuItem;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ItemList extends Menu {
     private static DecimalFormat priceFormat = new DecimalFormat("#.00");
-    private final Map<MenuItem, Menu> lists = Maps.newHashMap();
+    private final Map<MenuItem, Menu> lists = new HashMap<>();
 
     public ItemList(Menu parent, Shop shop, Category category) {
         super(ChatColor.GOLD + category.getName().substring(0, category.getName().length() >= 30 ? 30 : category.getName().length()), 6);
@@ -63,7 +63,7 @@ public class ItemList extends Menu {
                 }
             };
 
-            List<String> descriptions = Lists.newArrayList();
+            List<String> descriptions = new ArrayList<>();
             if (item.getPrice() != null) {
                 descriptions.add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "PRICE: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPrice() == 0.0 ? "FREE" : priceFormat.format(item.getPrice()) + " " + shop.getCurrency()));
             }

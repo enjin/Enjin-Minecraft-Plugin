@@ -1,7 +1,6 @@
 package com.enjin.bukkit.util.ui;
 
 import com.enjin.core.Enjin;
-import com.google.common.collect.Maps;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -12,9 +11,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class MenuHolder extends MenuBase implements InventoryHolder {
-    private Map<UUID, Long> cooldown = Maps.newConcurrentMap();
+    private Map<UUID, Long> cooldown = new ConcurrentHashMap<>();
 
     protected MenuHolder(int max_items) {
         super(max_items);

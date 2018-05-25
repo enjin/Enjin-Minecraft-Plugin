@@ -16,7 +16,6 @@ import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.Stats;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -37,7 +36,7 @@ public class SignStatsModule {
     @Getter
     private Stats stats;
     @Getter
-    private List<Integer> items = Lists.newArrayList();
+    private List<Integer> items = new ArrayList<>();
 
     public SignStatsModule() {
         this.plugin = EnjinMinecraftPlugin.getInstance();

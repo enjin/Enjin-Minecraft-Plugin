@@ -1,33 +1,24 @@
 package com.enjin.bukkit.command;
 
 import com.enjin.core.Enjin;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor
 public class CommandBank {
     @Getter
-    protected static Map<String, CommandNode> nodes = Maps.newHashMap();
+    protected static Map<String, CommandNode> nodes = new HashMap<>();
     private static DispatchCommand dispatchCommand = new DispatchCommand();
 
     /**
@@ -38,7 +29,7 @@ public class CommandBank {
     public static void register(Class<?>... handles) {
         for (Class<?> clazz : handles) {
             Enjin.getLogger().debug("Registering commands and directives for " + clazz.getSimpleName());
-            List<Method> methods = Lists.newArrayList();
+            List<Method> methods = new ArrayList<>();
             for (Method method : clazz.getMethods()) {
                 if (!(method.isAnnotationPresent(Command.class) || method.isAnnotationPresent(Directive.class))) {
                     continue;
@@ -68,8 +59,8 @@ public class CommandBank {
                 methods.add(method);
             }
 
-            List<CommandNode> root = Lists.newArrayList();
-            List<DirectiveNode> sub = Lists.newArrayList();
+            List<CommandNode> root = new ArrayList<>();
+            List<DirectiveNode> sub = new ArrayList<>();
             for (Method method : methods) {
                 if (method.isAnnotationPresent(Command.class)) {
                     root.add(method.isAnnotationPresent(Permission.class)

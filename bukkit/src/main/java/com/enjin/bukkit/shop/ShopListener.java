@@ -4,18 +4,18 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.modules.impl.PurchaseModule;
 import com.enjin.bukkit.util.ui.Menu;
 import com.enjin.common.shop.PlayerShopInstance;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class ShopListener implements Listener {
     @Getter
-    private static final Map<UUID, Menu> guiInstances = Maps.newHashMap();
+    private static final Map<UUID, Menu> guiInstances = new HashMap<>();
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {

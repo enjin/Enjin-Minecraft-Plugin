@@ -2,12 +2,13 @@ package com.enjin.bukkit;
 
 import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.enjin.bukkit.command.CommandBank;
 import com.enjin.bukkit.command.commands.*;
@@ -108,9 +109,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private ModuleManager moduleManager = null;
 
     @Getter
-    private List<Long> pendingCommands = Lists.newArrayList();
+    private List<Long> pendingCommands = new ArrayList<>();
     @Getter
-    private List<Long> executedCommands = Lists.newCopyOnWriteArrayList();
+    private List<Long> executedCommands = new CopyOnWriteArrayList<>();
 
     @Getter
     private long serverId = -1;

@@ -3,10 +3,10 @@ package com.enjin.bukkit.modules;
 import com.enjin.bukkit.util.Plugins;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinPlugin;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.reflections.Reflections;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,7 +17,7 @@ public class ModuleManager {
 
     public ModuleManager(EnjinPlugin plugin) {
         this.plugin = plugin;
-        this.modules = Maps.newHashMap();
+        this.modules = new HashMap<>();
     }
 
     public void init() {

@@ -3,16 +3,15 @@ package com.enjin.bukkit.command;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.core.Enjin;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class CommandNode {
@@ -22,7 +21,7 @@ public class CommandNode {
     private Permission permission;
     private Method method;
     @Getter
-    private Map<String, DirectiveNode> directives = Maps.newHashMap();
+    private Map<String, DirectiveNode> directives = new HashMap<>();
 
     public CommandNode(Command data, Method method) {
         this.data = data;

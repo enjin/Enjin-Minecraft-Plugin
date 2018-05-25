@@ -2,7 +2,6 @@ package com.enjin.bukkit.listeners.perm.processors;
 
 import com.enjin.bukkit.listeners.perm.PermissionListener;
 import com.enjin.bukkit.util.PermissionsUtil;
-import com.google.common.collect.Lists;
 import com.platymuus.bukkit.permissions.Group;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
 import org.bukkit.Bukkit;
@@ -10,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionsBukkitListener extends PermissionListener {
@@ -41,7 +41,7 @@ public class PermissionsBukkitListener extends PermissionListener {
         PermissionsPlugin plugin = (PermissionsPlugin) Bukkit.getPluginManager().getPlugin("PermissionsBukkit");
         List<Group> groups = plugin.getGroups(player.getUniqueId());
 
-        List<String> result = Lists.newArrayList();
+        List<String> result = new ArrayList<>();
         for (Group group : groups) {
             result.add(group.getName());
         }

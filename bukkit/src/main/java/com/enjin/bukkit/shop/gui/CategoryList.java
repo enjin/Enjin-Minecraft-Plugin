@@ -7,17 +7,17 @@ import com.enjin.bukkit.util.ui.Menu;
 import com.enjin.bukkit.util.ui.MenuItem;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
-import com.google.common.collect.Maps;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CategoryList extends Menu {
-    private final Map<MenuItem, Menu> lists = Maps.newHashMap();
+    private final Map<MenuItem, Menu> lists = new HashMap<>();
 
     public CategoryList(Menu parent, Shop shop) {
         super(ChatColor.GOLD + shop.getName().substring(0, shop.getName().length() >= 30 ? 30 : shop.getName().length()), 6);
