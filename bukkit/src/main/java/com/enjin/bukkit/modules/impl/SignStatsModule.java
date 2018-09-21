@@ -227,7 +227,7 @@ public class SignStatsModule {
         if (data.getHeadLocation() != null) {
             block = data.getHeadLocation().toLocation().getBlock();
 
-            if (block.getType() != Material.SKULL) {
+            if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
                 data.setHeadLocation(null);
             } else {
                 updateHead(block, data, name);
@@ -236,25 +236,25 @@ public class SignStatsModule {
         }
 
         block = sign.getBlock().getRelative(((org.bukkit.material.Sign) sign.getData()).getAttachedFace()).getRelative(0, 1, 0);
-        if (block.getType() == Material.SKULL) {
+        if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, 1, 0);
-        if (block.getType() == Material.SKULL) {
+        if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, -1, 0);
-        if (block.getType() == Material.SKULL) {
+        if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, 2, 0);
-        if (block.getType() == Material.SKULL) {
+        if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
@@ -268,7 +268,7 @@ public class SignStatsModule {
             }
         }
 
-        if (block.getType() != Material.SKULL) {
+        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
             return;
         }
 

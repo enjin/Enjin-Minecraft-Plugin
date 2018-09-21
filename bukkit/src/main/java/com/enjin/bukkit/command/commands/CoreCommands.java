@@ -179,176 +179,176 @@ public class CoreCommands {
         sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + config.isDebug());
     }
 
-    @Permission(value = "enjin.give")
-    @Directive(parent = "enjin", value = "give", requireValidKey = false)
-    public static void give(CommandSender sender, String[] args) {
-        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-
-        if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "Syntax: /enjin give <player|uuid> <material>");
-            return;
-        }
-
-        Player player;
-        String index = args[0].trim();
-        UUID uuid = null;
-
-        if (index.length() > 16) {
-            if (index.length() == 32) {
-                index = index.substring(0, 8) + "-" + index.substring(8, 12) + "-" + index.substring(12, 16) + "-" + index.substring(16, 20) + "-" + index.substring(20, 32);
-            } else if (index.length() != 36) {
-                sender.sendMessage(ChatColor.RED + "Invalid UUID");
-                return;
-            }
-
-            try {
-                uuid = UUID.fromString(index);
-                player = Bukkit.getPlayer(uuid);
-            } catch (IllegalArgumentException e) {
-                sender.sendMessage(ChatColor.RED + "Invalid UUID");
-                return;
-            }
-        } else {
-            player = Bukkit.getPlayer(index);
-        }
-
-        boolean online = true;
-        if (player == null || !player.isOnline()) {
-            if (!plugin.isTuxTwoLibInstalled()) {
-                sender.sendMessage(ChatColor.RED + "This player is not online. In order to give items to players not online please install TuxTwoLib");
-                return;
-            }
-
-            OfflinePlayer offlinePlayer;
-
-            if (uuid != null) {
-                offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-            } else {
-                offlinePlayer = Bukkit.getOfflinePlayer(index);
-            }
-
-            Player target = TuxTwoPlayer.getOfflinePlayer(offlinePlayer);
-
-            if (target != null) {
-                target.loadData();
-                online = false;
-                player = target;
-            } else {
-                sender.sendMessage(ChatColor.DARK_RED + "[Enjin] Player not found. Item not given.");
-                return;
-            }
-        }
-
-        try {
-            int extradatastart = 3;
-            Pattern digits = Pattern.compile("\\d+");
-            if (args[1].contains(":")) {
-                String[] split = args[1].split(":");
-                ItemStack is;
-                Pattern pattern = Pattern.compile("\\d+:\\d+");
-                Matcher match = pattern.matcher(args[1]);
-
-                if (match.find()) {
-                    try {
-                        int itemid = Integer.parseInt(split[0]);
-                        int damage = Integer.parseInt(split[1]);
-                        int quantity = 1;
-
-                        if (args.length > 2 && digits.matcher(args[2]).find()) {
-                            quantity = Integer.parseInt(args[2]);
-                            extradatastart = 3;
-                        }
-
-                        is = new ItemStack(itemid, quantity, (short) damage);
-                        sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
-                    } catch (NumberFormatException e) {
-                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
-                        return;
-                    }
-                } else {
-                    try {
-                        Material itemid = Material.getMaterial(split[0].trim().toUpperCase());
-
-                        if (itemid == null) {
-                            sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
-                            return;
-                        }
-
-                        int damage = Integer.parseInt(split[1]);
-                        int quantity = 1;
-
-                        if (args.length > 2 && digits.matcher(args[2]).find()) {
-                            quantity = Integer.parseInt(args[2]);
-                            extradatastart = 3;
-                        }
-
-                        is = new ItemStack(itemid, quantity, (short) damage);
-                    } catch (NumberFormatException ex) {
-                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
-                        return;
-                    }
-                }
-
-                if (args.length > extradatastart) {
-                    addCustomData(is, args, player, extradatastart);
-                }
-
-                player.getInventory().addItem(is);
-
-                if (!online) {
-                    player.saveData();
-                }
-
-                String itemname = is.getType().toString().toLowerCase();
-                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + player.getName() + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
-            } else {
-                ItemStack is;
-                try {
-                    int itemid = Integer.parseInt(args[1]);
-                    int quantity = 1;
-
-                    if (args.length > 2 && digits.matcher(args[2]).find()) {
-                        quantity = Integer.parseInt(args[2]);
-                        extradatastart = 3;
-                    }
-
-                    is = new ItemStack(itemid, quantity);
-                    sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
-                } catch (NumberFormatException e) {
-                    Material material = Material.getMaterial(args[1].trim().toUpperCase());
-
-                    if (material == null) {
-                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
-                        return;
-                    }
-
-                    int quantity = 1;
-
-                    if (args.length > 2 && digits.matcher(args[2]).find()) {
-                        quantity = Integer.parseInt(args[2]);
-                        extradatastart = 3;
-                    }
-
-                    is = new ItemStack(material, quantity);
-                }
-
-                if (args.length > extradatastart) {
-                    addCustomData(is, args, player, extradatastart);
-                }
-
-                player.getInventory().addItem(is);
-
-                if (!online) {
-                    player.saveData();
-                }
-
-                String itemname = is.getType().toString().toLowerCase();
-                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + player.getName() + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
-            }
-        } catch (Exception e) {
-            sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
-        }
-    }
+//    @Permission(value = "enjin.give")
+//    @Directive(parent = "enjin", value = "give", requireValidKey = false)
+//    public static void give(CommandSender sender, String[] args) {
+//        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+//
+//        if (args.length < 2) {
+//            sender.sendMessage(ChatColor.RED + "Syntax: /enjin give <player|uuid> <material>");
+//            return;
+//        }
+//
+//        Player player;
+//        String index = args[0].trim();
+//        UUID uuid = null;
+//
+//        if (index.length() > 16) {
+//            if (index.length() == 32) {
+//                index = index.substring(0, 8) + "-" + index.substring(8, 12) + "-" + index.substring(12, 16) + "-" + index.substring(16, 20) + "-" + index.substring(20, 32);
+//            } else if (index.length() != 36) {
+//                sender.sendMessage(ChatColor.RED + "Invalid UUID");
+//                return;
+//            }
+//
+//            try {
+//                uuid = UUID.fromString(index);
+//                player = Bukkit.getPlayer(uuid);
+//            } catch (IllegalArgumentException e) {
+//                sender.sendMessage(ChatColor.RED + "Invalid UUID");
+//                return;
+//            }
+//        } else {
+//            player = Bukkit.getPlayer(index);
+//        }
+//
+//        boolean online = true;
+//        if (player == null || !player.isOnline()) {
+//            if (!plugin.isTuxTwoLibInstalled()) {
+//                sender.sendMessage(ChatColor.RED + "This player is not online. In order to give items to players not online please install TuxTwoLib");
+//                return;
+//            }
+//
+//            OfflinePlayer offlinePlayer;
+//
+//            if (uuid != null) {
+//                offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+//            } else {
+//                offlinePlayer = Bukkit.getOfflinePlayer(index);
+//            }
+//
+//            Player target = TuxTwoPlayer.getOfflinePlayer(offlinePlayer);
+//
+//            if (target != null) {
+//                target.loadData();
+//                online = false;
+//                player = target;
+//            } else {
+//                sender.sendMessage(ChatColor.DARK_RED + "[Enjin] Player not found. Item not given.");
+//                return;
+//            }
+//        }
+//
+//        try {
+//            int extradatastart = 3;
+//            Pattern digits = Pattern.compile("\\d+");
+//            if (args[1].contains(":")) {
+//                String[] split = args[1].split(":");
+//                ItemStack is;
+//                Pattern pattern = Pattern.compile("\\d+:\\d+");
+//                Matcher match = pattern.matcher(args[1]);
+//
+//                if (match.find()) {
+//                    try {
+//                        int itemid = Integer.parseInt(split[0]);
+//                        int damage = Integer.parseInt(split[1]);
+//                        int quantity = 1;
+//
+//                        if (args.length > 2 && digits.matcher(args[2]).find()) {
+//                            quantity = Integer.parseInt(args[2]);
+//                            extradatastart = 3;
+//                        }
+//
+//                        is = new ItemStack(itemid, quantity, (short) damage);
+//                        sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
+//                    } catch (NumberFormatException e) {
+//                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+//                        return;
+//                    }
+//                } else {
+//                    try {
+//                        Material itemid = Material.getMaterial(split[0].trim().toUpperCase());
+//
+//                        if (itemid == null) {
+//                            sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
+//                            return;
+//                        }
+//
+//                        int damage = Integer.parseInt(split[1]);
+//                        int quantity = 1;
+//
+//                        if (args.length > 2 && digits.matcher(args[2]).find()) {
+//                            quantity = Integer.parseInt(args[2]);
+//                            extradatastart = 3;
+//                        }
+//
+//                        is = new ItemStack(itemid, quantity, (short) damage);
+//                    } catch (NumberFormatException ex) {
+//                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+//                        return;
+//                    }
+//                }
+//
+//                if (args.length > extradatastart) {
+//                    addCustomData(is, args, player, extradatastart);
+//                }
+//
+//                player.getInventory().addItem(is);
+//
+//                if (!online) {
+//                    player.saveData();
+//                }
+//
+//                String itemname = is.getType().toString().toLowerCase();
+//                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + player.getName() + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+//            } else {
+//                ItemStack is;
+//                try {
+//                    int itemid = Integer.parseInt(args[1]);
+//                    int quantity = 1;
+//
+//                    if (args.length > 2 && digits.matcher(args[2]).find()) {
+//                        quantity = Integer.parseInt(args[2]);
+//                        extradatastart = 3;
+//                    }
+//
+//                    is = new ItemStack(itemid, quantity);
+//                    sender.sendMessage(ChatColor.RED + "Using IDs is depreciated. Please switch to using material name: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html");
+//                } catch (NumberFormatException e) {
+//                    Material material = Material.getMaterial(args[1].trim().toUpperCase());
+//
+//                    if (material == null) {
+//                        sender.sendMessage(ChatColor.DARK_RED + "Ooops, I couldn't find a material with that name. Did you spell it correctly?");
+//                        return;
+//                    }
+//
+//                    int quantity = 1;
+//
+//                    if (args.length > 2 && digits.matcher(args[2]).find()) {
+//                        quantity = Integer.parseInt(args[2]);
+//                        extradatastart = 3;
+//                    }
+//
+//                    is = new ItemStack(material, quantity);
+//                }
+//
+//                if (args.length > extradatastart) {
+//                    addCustomData(is, args, player, extradatastart);
+//                }
+//
+//                player.getInventory().addItem(is);
+//
+//                if (!online) {
+//                    player.saveData();
+//                }
+//
+//                String itemname = is.getType().toString().toLowerCase();
+//                sender.sendMessage(ChatColor.DARK_AQUA + "You just gave " + player.getName() + " " + is.getAmount() + " " + itemname.replace("_", " ") + "!");
+//            }
+//        } catch (Exception e) {
+//            sender.sendMessage(ChatColor.DARK_RED + "Ooops, something went wrong. Did you specify the item correctly?");
+//        }
+//    }
 
     @Permission(value = "enjin.inform")
     @Directive(parent = "enjin", value = "inform", requireValidKey = false)
