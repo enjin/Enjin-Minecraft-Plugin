@@ -74,6 +74,7 @@ shadowJar {
         include(dependency('.*:reflections'))
         include(dependency('.*:javassist'))
         include(dependency('.*:zip4j'))
+        include(dependency('.*:json-smart'))
     }
 
     exclude('mkremins/fanciful/shaded/**')

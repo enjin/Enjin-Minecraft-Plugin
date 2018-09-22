@@ -272,9 +272,14 @@ public class SignStatsModule {
             return;
         }
 
+        OfflinePlayer player = Bukkit.getOfflinePlayer(name);
+
+        if (player == null) {
+            return;
+        }
+
         Skull skull = (Skull) block.getState();
-        skull.setSkullType(SkullType.PLAYER);
-        skull.setOwner(name != null ? (name.isEmpty() ? "MHF_Steve" : name) : "MHF_Steve");
+        skull.setOwningPlayer(player);
         skull.update();
         data.setHeadLocation(location);
     }
