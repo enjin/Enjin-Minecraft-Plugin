@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BuyCommand {
     @Command(value = "buy")
+    @Directive(parent = "enjin", value = "buy")
     public static void buy(Player player, String[] args) {
         Optional<Integer> selection;
         try {
