@@ -10,7 +10,6 @@ import com.enjin.rpc.mappings.mappings.shop.Shop;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.material.MaterialData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class ShopList extends Menu {
         int i = 0;
         for (final Shop shop : instance.getShops()) {
             String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + shop.getName();
-            MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(Material.CHEST)) {
+            MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), Material.CHEST) {
                 @Override
                 public void onClick(Player player) {
                     if (!shops.containsKey(this)) {

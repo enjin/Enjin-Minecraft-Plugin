@@ -5,50 +5,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MenuItem extends MenuClickBehavior {
     private MenuBase menu;
-    private int quantity;
-    private MaterialData icon;
+    private ItemStack stack;
     private String text;
     private List<String> descriptions = new ArrayList<>();
 
-    // Additional Values
-    private short data = 0;
     private int slot = 0;
 
     public MenuItem(String text) {
-        this(text, new MaterialData(Material.PAPER));
+        this(text, new ItemStack(Material.PAPER));
     }
 
-    public MenuItem(String text, MaterialData icon) {
-        this(text, icon, 1);
+    public MenuItem(String text, Material material) {
+        this(text, new ItemStack(material));
     }
 
-    @SuppressWarnings("deprecation")
-    public MenuItem(String text, MaterialData icon, int quantity) {
+    public MenuItem(String text, ItemStack stack) {
         this.text = text;
-        this.icon = icon;
-        this.quantity = quantity;
-        this.data = icon.getData();
-    }
-
-    public MenuItem(String text, MaterialData icon, short data) {
-        this.text = text;
-        this.icon = icon;
-        this.quantity = 1;
-        this.data = data;
-    }
-
-    public MenuItem(String text, MaterialData icon, int quantity, short data) {
-        this.text = text;
-        this.icon = icon;
-        this.quantity = quantity;
-        this.data = data;
+        this.stack = stack;
     }
 
     protected void addToMenu(MenuBase menu) {
@@ -66,15 +45,11 @@ public abstract class MenuItem extends MenuClickBehavior {
     }
 
     public int getQuantity() {
-        return quantity;
+        return stack.getAmount();
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public MaterialData getIcon() {
-        return icon;
+        stack.setAmount(quantity);
     }
 
     public String getText() {
@@ -86,17 +61,18 @@ public abstract class MenuItem extends MenuClickBehavior {
     }
 
     public ItemStack getSingleItemStack() {
-        ItemStack slot = new ItemStack(getIcon().getItemType(), 1, data);
+        ItemStack slot = new ItemStack(stack);
         ItemMeta meta = slot.getItemMeta();
         meta.setDisplayName(getText());
         meta.setLore(descriptions);
         slot.setItemMeta(meta);
+        slot.setAmount(1);
 
         return slot;
     }
 
     public ItemStack getItemStack() {
-        ItemStack slot = new ItemStack(getIcon().getItemType(), getQuantity(), data);
+        ItemStack slot = new ItemStack(stack);
         ItemMeta meta = slot.getItemMeta();
 
         if (meta != null) {
@@ -106,14 +82,6 @@ public abstract class MenuItem extends MenuClickBehavior {
         }
 
         return slot;
-    }
-
-    public void setData(short data) {
-        this.data = data;
-    }
-
-    public short getData() {
-        return data;
     }
 
     public void setSlot(int slot) {

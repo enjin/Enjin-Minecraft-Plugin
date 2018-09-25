@@ -20,7 +20,7 @@ public class Item {
     private Map<Integer, Variable> variables;
     @Getter
     @SerializedName(value = "icon_damage")
-    private Integer iconDamage;
+    private Byte iconDamage;
     @Getter
     @SerializedName(value = "icon_item")
     private String iconItem;

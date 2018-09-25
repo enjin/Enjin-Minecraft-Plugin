@@ -1,6 +1,7 @@
 package com.enjin.bukkit.shop.gui;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.compat.MaterialResolver;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.util.text.TextUtils;
 import com.enjin.bukkit.util.ui.Menu;
@@ -10,7 +11,7 @@ import com.enjin.rpc.mappings.mappings.shop.Shop;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ public class CategoryList extends Menu {
     }
 
     private void init(final Menu parent, final Shop shop, final List<Category> categories) {
-        MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back", new MaterialData(Material.ARROW)) {
+        MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back", Material.ARROW) {
             @Override
             public void onClick(Player player) {
                 if (parent != null) {
@@ -46,8 +47,13 @@ public class CategoryList extends Menu {
         int i = 0;
         for (final Category category : categories) {
             String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + category.getName();
-            Material material = Material.getMaterial(category.getIconItem());
-            MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), new MaterialData(material == null ? Material.CHEST : material), category.getIconDamage() != null ? category.getIconDamage().byteValue() : 0) {
+            ItemStack stack = MaterialResolver.createItemStack(category.getIconItem(), category.getIconDamage() != null ? category.getIconDamage() : 0);
+
+            if (stack == null) {
+                stack = new ItemStack(Material.CHEST);
+            }
+
+            MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), stack) {
                 @Override
                 public void onClick(Player player) {
                     if (!lists.containsKey(this)) {
