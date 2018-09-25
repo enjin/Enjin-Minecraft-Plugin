@@ -16,11 +16,11 @@ import java.util.Map;
 
 public class TicketManager {
     @Getter
-    private static Map<Integer, TicketModule> modules = new HashMap<>();
+    private static Map<Integer, TicketModule> modules           = new HashMap<>();
     @Getter
-    private static long modulesLastPolled = 0;
+    private static long                       modulesLastPolled = 0;
     @Getter
-    private static TicketListener ticketListener;
+    private static TicketListener             ticketListener;
 
     public static void init(EnjinMinecraftPlugin plugin) {
         clean();
@@ -44,7 +44,8 @@ public class TicketManager {
             RPCData<Map<Integer, TicketModule>> data = EnjinServices.getService(TicketService.class).getModules();
 
             if (data == null || data.getError() != null) {
-                Enjin.getLogger().debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
+                Enjin.getLogger()
+                     .debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
                 modules.clear();
                 return;
             }

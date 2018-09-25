@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public class InteractiveContext {
-    private Object plugin;
+    private Object                  plugin;
     @Getter
     private ChatTypeMessageReceiver receiver;
-    private Map<Object, Object> data;
+    private Map<Object, Object>     data;
 
     public InteractiveContext(Object plugin, ChatTypeMessageReceiver receiver) {
         this.plugin = plugin;

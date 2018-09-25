@@ -23,7 +23,7 @@ public class GenericInventoryListener implements InventoryListener {
 
     private final Map<Slot, SlotPos> slotToSlotPos = new TreeMap<>(SLOT_COMPARATOR);
 
-    private Player player;
+    private Player           player;
     private VirtualInventory inventory;
 
     public GenericInventoryListener(@NonNull Player player, VirtualInventory inventory) {
@@ -59,7 +59,7 @@ public class GenericInventoryListener implements InventoryListener {
             if (InventoryUtil.isSlotInInventory(slot, target)) {
                 event.setCancelled(true);
                 if (this.slotToSlotPos.containsKey(slot)) {
-                    SlotPos pos = this.slotToSlotPos.get(slot);
+                    SlotPos                   pos                  = this.slotToSlotPos.get(slot);
                     Map<SlotPos, VirtualItem> slotPosToVirtualItem = this.inventory.getSlotPosMappedVirtualItems();
                     if (slotPosToVirtualItem.containsKey(pos)) {
                         Enjin.getLogger().debug("GenericInventoryListener#onClick - VirtualItem Exists");
@@ -67,7 +67,7 @@ public class GenericInventoryListener implements InventoryListener {
                         final VirtualInventoryEventSnapshot.Click snapshot = VirtualInventoryEventSnapshot.Click
                                 .of(event, this.inventory, this.player, slot, pos, item);
                         EnjinMinecraftPlugin.getInstance().getSync()
-                                .schedule(() -> item.onClick(snapshot), 50, TimeUnit.MILLISECONDS);
+                                            .schedule(() -> item.onClick(snapshot), 50, TimeUnit.MILLISECONDS);
                     }
                 }
             }

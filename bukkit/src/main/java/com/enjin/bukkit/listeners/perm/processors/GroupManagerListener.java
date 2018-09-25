@@ -12,7 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GroupManagerListener extends PermissionListener {
-    private Pattern pattern = Pattern.compile("^(?:mandemote|manpromote|manuadd|manudel|manuaddsub|manudelsub) ([a-zA-Z0-9]{2,16}) ([a-zA-Z0-9]{1,32})(?: ?)(?:[a-zA-Z0-9_]*)$");
+    private Pattern pattern = Pattern.compile(
+            "^(?:mandemote|manpromote|manuadd|manudel|manuaddsub|manudelsub) ([a-zA-Z0-9]{2,16}) ([a-zA-Z0-9]{1,32})(?: ?)(?:[a-zA-Z0-9_]*)$");
 
     @Override
     public void processCommand(CommandSender sender, String command, Event event) {

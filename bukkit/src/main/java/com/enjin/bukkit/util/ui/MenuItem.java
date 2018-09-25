@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MenuItem extends MenuClickBehavior {
-    private MenuBase menu;
-    private ItemStack stack;
-    private String text;
+    private MenuBase     menu;
+    private ItemStack    stack;
+    private String       text;
     private List<String> descriptions = new ArrayList<>();
 
     private int slot = 0;
@@ -62,7 +62,7 @@ public abstract class MenuItem extends MenuClickBehavior {
 
     public ItemStack getSingleItemStack() {
         ItemStack slot = new ItemStack(stack);
-        ItemMeta meta = slot.getItemMeta();
+        ItemMeta  meta = slot.getItemMeta();
         meta.setDisplayName(getText());
         meta.setLore(descriptions);
         slot.setItemMeta(meta);
@@ -73,7 +73,7 @@ public abstract class MenuItem extends MenuClickBehavior {
 
     public ItemStack getItemStack() {
         ItemStack slot = new ItemStack(stack);
-        ItemMeta meta = slot.getItemMeta();
+        ItemMeta  meta = slot.getItemMeta();
 
         if (meta != null) {
             meta.setDisplayName(getText());

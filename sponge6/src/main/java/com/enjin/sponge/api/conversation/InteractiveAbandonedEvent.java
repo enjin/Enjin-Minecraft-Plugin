@@ -4,7 +4,7 @@ import lombok.Getter;
 
 public class InteractiveAbandonedEvent {
     @Getter
-    private InteractiveContext context;
+    private InteractiveContext      context;
     @Getter
     private InteractiveConversation conversation;
 

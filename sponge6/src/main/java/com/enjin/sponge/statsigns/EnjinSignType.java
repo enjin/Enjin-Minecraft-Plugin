@@ -21,9 +21,9 @@ public enum EnjinSignType {
     POINTSSPENT(SubType.TOTAL, SubType.DAY, SubType.WEEK, SubType.MONTH, SubType.TOTAL),
     MONEYSPENT(SubType.TOTAL, SubType.DAY, SubType.WEEK, SubType.MONTH, SubType.TOTAL);
 
-    private Pattern pattern;
+    private Pattern       pattern;
     @Getter
-    private SubType defaultSubType;
+    private SubType       defaultSubType;
     @Getter
     private List<SubType> supportedSubTypes = Lists.newArrayList();
 

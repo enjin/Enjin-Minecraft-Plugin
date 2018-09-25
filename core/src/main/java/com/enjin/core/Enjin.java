@@ -17,7 +17,7 @@ public class Enjin {
     private static EnjinConfig configuration;
     @Getter
     @Setter
-    private static EnjinAPI api = new EnjinAPI();
+    private static EnjinAPI    api = new EnjinAPI();
 
     public static <T extends EnjinConfig> T getConfiguration(Class<T> clazz) {
         return clazz.cast(configuration);

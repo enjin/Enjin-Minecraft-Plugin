@@ -1,14 +1,16 @@
 package com.enjin.bukkit.stats;
 
-import java.io.*;
-import java.util.Map;
-
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.core.Enjin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import com.enjin.bukkit.EnjinMinecraftPlugin;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
 
 public class WriteStats {
     private EnjinMinecraftPlugin plugin;
@@ -33,7 +35,7 @@ public class WriteStats {
 
         try {
             BufferedWriter outChannel = new BufferedWriter(new FileWriter(file));
-            String jsonString = getStatsJSON();
+            String         jsonString = getStatsJSON();
             outChannel.write(jsonString);
             outChannel.close();
         } catch (Exception e) {
@@ -45,8 +47,8 @@ public class WriteStats {
 
     @SuppressWarnings("unchecked")
     public String getStatsJSON() {
-        JSONObject stats = plugin.getServerStats().getSerialized();
-        JSONArray players = new JSONArray();
+        JSONObject stats   = plugin.getServerStats().getSerialized();
+        JSONArray  players = new JSONArray();
 
         for (Map.Entry<String, StatsPlayer> player : plugin.getPlayerStats().entrySet()) {
             players.add(player.getValue().getSerialized());

@@ -50,7 +50,8 @@ public class BanListeners implements Listener {
             return;
         }
 
-        if (event.getMessage().toLowerCase().startsWith("/ban") && PermissionsUtil.hasPermission(event.getPlayer(), "bukkit.permission.ban.player")) {
+        if (event.getMessage().toLowerCase().startsWith("/ban") && PermissionsUtil.hasPermission(event.getPlayer(),
+                                                                                                 "bukkit.permission.ban.player")) {
             String[] args = event.getMessage().split(" ");
 
             if (args.length > 1) {
@@ -58,7 +59,10 @@ public class BanListeners implements Listener {
                 BanLister.getInstance().addBannedPlayer(player);
                 plugin.getBannedPlayers().put(args[1].toLowerCase(), event.getPlayer().getName());
             }
-        } else if (event.getMessage().toLowerCase().startsWith("/pardon") && PermissionsUtil.hasPermission(event.getPlayer(), "bukkit.permission.unban.player")) {
+        } else if (event.getMessage()
+                        .toLowerCase()
+                        .startsWith("/pardon") && PermissionsUtil.hasPermission(event.getPlayer(),
+                                                                                "bukkit.permission.unban.player")) {
             String[] args = event.getMessage().split(" ");
 
             if (args.length > 1) {

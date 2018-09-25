@@ -37,9 +37,9 @@ public class PurchaseManager {
         } else {
             PurchaseManager.getPendingPurchases().put(player.getName(), item.getId());
             player.sendMessage(Text.of(TextColors.GREEN,
-                    "Type \"/",
-                    Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
-                    " confirm\" to complete your pending purchase."));
+                                       "Type \"/",
+                                       Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                       " confirm\" to complete your pending purchase."));
         }
     }
 
@@ -55,14 +55,15 @@ public class PurchaseManager {
         Runnable runnable = () -> {
             ShopService service = EnjinServices.getService(ShopService.class);
             RPCData<Integer> data = service.purchase(player.getName(),
-                    id,
-                    Optional.<Map<Integer, String>>absent(),
-                    Optional.<Integer>absent(),
-                    Optional.<Integer>absent(),
-                    false);
+                                                     id,
+                                                     Optional.<Map<Integer, String>>absent(),
+                                                     Optional.<Integer>absent(),
+                                                     Optional.<Integer>absent(),
+                                                     false);
 
             if (data == null) {
-                player.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+                player.sendMessage(Text.of(TextColors.RED,
+                                           "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
                 return;
             }
 
@@ -71,11 +72,13 @@ public class PurchaseManager {
                 return;
             }
 
-            player.sendMessage(Text.of(TextColors.GREEN, "You successfully purchased the item. Your new point balance is: ", data.getResult().toString()));
+            player.sendMessage(Text.of(TextColors.GREEN,
+                                       "You successfully purchased the item. Your new point balance is: ",
+                                       data.getResult().toString()));
         };
 
         EnjinMinecraftPlugin.getInstance().getGame().getScheduler().createTaskBuilder()
-                .execute(runnable)
-                .submit(Enjin.getPlugin());
+                            .execute(runnable)
+                            .submit(Enjin.getPlugin());
     }
 }

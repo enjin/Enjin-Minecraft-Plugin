@@ -1,10 +1,11 @@
 package com.enjin.bungee.util.io;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class ReverseFileReader {
     private RandomAccessFile randomfile;
-    private long position;
+    private long             position;
 
     public ReverseFileReader(String filename) throws Exception {
         this.randomfile = new RandomAccessFile(filename, "r");
@@ -26,8 +27,8 @@ public class ReverseFileReader {
 
     // Read one line from the current position towards the beginning
     public String readLine() throws Exception {
-        int thisCode;
-        char thisChar;
+        int    thisCode;
+        char   thisChar;
         String finalLine = "";
 
         // If our position is less than zero already, we are at the beginning

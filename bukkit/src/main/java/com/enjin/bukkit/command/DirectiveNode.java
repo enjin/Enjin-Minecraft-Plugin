@@ -9,15 +9,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class DirectiveNode {
     @Getter
-    private Directive data;
+    private Directive  data;
     @Getter
     private Permission permission;
-    private Method method;
+    private Method     method;
 
     public DirectiveNode(Directive data, Method method) {
         this.data = data;
@@ -34,7 +33,9 @@ public class DirectiveNode {
             return;
         }
 
-        if (!sender.isOp() && permission != null && !permission.value().equals("") && !PermissionsUtil.hasPermission(sender, permission.value())) {
+        if (!sender.isOp() && permission != null && !permission.value().equals("") && !PermissionsUtil.hasPermission(
+                sender,
+                permission.value())) {
             sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + permission.value() + ChatColor.RED + "\" or OP to run that directive.");
             return;
         }

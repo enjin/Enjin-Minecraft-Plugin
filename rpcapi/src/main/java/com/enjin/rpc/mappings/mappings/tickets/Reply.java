@@ -9,7 +9,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Reply {
     @Getter
-    private String mode;
+    private String  mode;
     @Getter
     private Integer agent;
     @Getter
@@ -23,9 +23,9 @@ public class Reply {
     @Getter
     private Integer id;
     @Getter
-    private String text;
+    private String  text;
     @Getter
-    private Long sent;
+    private Long    sent;
     @Getter
-    private String username;
+    private String  username;
 }

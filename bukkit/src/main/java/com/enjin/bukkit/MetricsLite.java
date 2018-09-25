@@ -28,8 +28,8 @@
 
 package com.enjin.bukkit;
 
-import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
+import com.enjin.rpc.util.ConnectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -278,12 +278,12 @@ public class MetricsLite {
      * Generic method that posts a plugin to the metrics website
      */
     private void postPlugin(boolean isPing) throws IOException {
-        PluginDescriptionFile description = plugin.getDescription();
-        String pluginName = description.getName();
-        boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
-        String pluginVersion = description.getVersion();
-        String serverVersion = Bukkit.getVersion();
-        int playersOnline = Bukkit.getOnlinePlayers().size();
+        PluginDescriptionFile description   = plugin.getDescription();
+        String                pluginName    = description.getName();
+        boolean               onlineMode    = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
+        String                pluginVersion = description.getVersion();
+        String                serverVersion = Bukkit.getVersion();
+        int                   playersOnline = Bukkit.getOnlinePlayers().size();
 
         StringBuilder json = new StringBuilder(1024);
         json.append('{');
@@ -293,11 +293,11 @@ public class MetricsLite {
         appendJSONPair(json, "server_version", serverVersion);
         appendJSONPair(json, "players_online", Integer.toString(playersOnline));
 
-        String osname = System.getProperty("os.name");
-        String osarch = System.getProperty("os.arch");
-        String osversion = System.getProperty("os.version");
+        String osname       = System.getProperty("os.name");
+        String osarch       = System.getProperty("os.arch");
+        String osversion    = System.getProperty("os.version");
         String java_version = System.getProperty("java.version");
-        int coreCount = Runtime.getRuntime().availableProcessors();
+        int    coreCount    = Runtime.getRuntime().availableProcessors();
 
         if (osarch.equals("amd64")) {
             osarch = "x86_64";
@@ -327,7 +327,7 @@ public class MetricsLite {
         }
 
         byte[] uncompressed = json.toString().getBytes();
-        byte[] compressed = gzip(json.toString());
+        byte[] compressed   = gzip(json.toString());
 
         connection.addRequestProperty("User-Agent", "MCStats/" + REVISION);
         connection.addRequestProperty("Content-Type", "application/json");
@@ -339,15 +339,16 @@ public class MetricsLite {
         connection.setDoOutput(true);
 
         if (debug) {
-            Enjin.getLogger().debug("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
+            Enjin.getLogger()
+                 .debug("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
         }
 
         OutputStream os = connection.getOutputStream();
         os.write(compressed);
         os.flush();
 
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String response = reader.readLine();
+        final BufferedReader reader   = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String               response = reader.readLine();
 
         os.close();
         reader.close();
@@ -367,11 +368,12 @@ public class MetricsLite {
      * GZip compress a string of bytes
      *
      * @param input The input being processed.
+     *
      * @return byte[] The output to return.
      */
     public static byte[] gzip(String input) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GZIPOutputStream gzos = null;
+        GZIPOutputStream      gzos = null;
 
         try {
             gzos = new GZIPOutputStream(baos);
@@ -379,9 +381,11 @@ public class MetricsLite {
         } catch (IOException e) {
             Enjin.getLogger().log(e);
         } finally {
-            if (gzos != null) try {
-                gzos.close();
-            } catch (IOException ignore) {
+            if (gzos != null) {
+                try {
+                    gzos.close();
+                } catch (IOException ignore) {
+                }
             }
         }
 
@@ -394,9 +398,12 @@ public class MetricsLite {
      * @param json  The string builder to append to.
      * @param key   The key to append.
      * @param value The value to append.
+     *
      * @throws UnsupportedEncodingException
      */
-    private static void appendJSONPair(StringBuilder json, String key, String value) throws UnsupportedEncodingException {
+    private static void appendJSONPair(StringBuilder json,
+                                       String key,
+                                       String value) throws UnsupportedEncodingException {
         boolean isValueNumeric = false;
 
         try {
@@ -426,6 +433,7 @@ public class MetricsLite {
      * Escape a string to create a valid JSON string
      *
      * @param text The text to escape.
+     *
      * @return String The escaped text.
      */
     private static String escapeJSON(String text) {
@@ -472,6 +480,7 @@ public class MetricsLite {
      * Encode text as UTF-8
      *
      * @param text the text to encode
+     *
      * @return the encoded text, as UTF-8
      */
     private static String urlEncode(final String text) throws UnsupportedEncodingException {

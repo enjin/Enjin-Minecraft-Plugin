@@ -11,14 +11,14 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class RPCData<T> {
     @Getter
-    private Integer id;
+    private           Integer          id;
     @Getter
-    private T result;
+    private           T                result;
     @Getter
-    private RPCError error;
+    private           RPCError         error;
     @Getter
     @Setter
-    private transient JSONRPC2Request request;
+    private transient JSONRPC2Request  request;
     @Getter
     @Setter
     private transient JSONRPC2Response response;

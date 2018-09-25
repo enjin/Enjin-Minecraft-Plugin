@@ -4,20 +4,23 @@ import com.enjin.rpc.mappings.mappings.tickets.Reply;
 import com.enjin.rpc.mappings.mappings.tickets.Ticket;
 import net.kyori.text.TextComponent;
 import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
 import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
 import net.kyori.text.serializer.ComponentSerializers;
 import net.kyori.text.serializer.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class TicketViewBuilder {
-    private static final DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss dd-MM-yyyy");
+    private static final DateFormat                dateFormat                  = new SimpleDateFormat(
+            "hh:mm:ss dd-MM-yyyy");
     private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = ComponentSerializers.LEGACY;
 
     public static List<TextComponent> buildTicketList(List<Ticket> tickets) {
@@ -31,18 +34,20 @@ public class TicketViewBuilder {
         List<TextComponent> messages = new ArrayList<>();
 
         TextComponent message = TextComponent.of("Your Tickets:")
-                .color(TextColor.GOLD);
+                                             .color(TextColor.GOLD);
         messages.add(message);
 
         for (Ticket ticket : tickets) {
-            message = TextComponent.of(ticket.getCode() + ") " + ticket.getSubject() + " (" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay((System.currentTimeMillis() / 1000) - ticket.getUpdated()) + ")")
-                    .color(TextColor.GREEN)
-                    .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/e ticket " + ticket.getCode()));
+            message = TextComponent.of(ticket.getCode() + ") " + ticket.getSubject() + " (" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay(
+                    (System.currentTimeMillis() / 1000) - ticket.getUpdated()) + ")")
+                                   .color(TextColor.GREEN)
+                                   .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                              "/e ticket " + ticket.getCode()));
             messages.add(message);
         }
 
         message = TextComponent.of("[Please click a ticket or type /e ticket <#> to view it]")
-                .color(TextColor.GOLD);
+                               .color(TextColor.GOLD);
         messages.add(message);
 
         return messages;
@@ -61,7 +66,7 @@ public class TicketViewBuilder {
         TextComponent message = null;
         for (Reply reply : replies) {
             message = TextComponent.of("---------------")
-                    .color(TextColor.GOLD);
+                                   .color(TextColor.GOLD);
             messages.add(message);
 
             if (!showPrivate && reply.getMode().equalsIgnoreCase("private")) {
@@ -69,26 +74,31 @@ public class TicketViewBuilder {
             }
 
             message = TextComponent.of(reply.getUsername())
-                    .color(TextColor.GOLD)
-                    .append(TextComponent.of(" (").color(TextColor.GRAY))
-                    .append(TextComponent.of(dateFormat.format(new Date(reply.getSent() * 1000))).color(TextColor.GREEN))
-                    .append(TextComponent.of(")").color(TextColor.GRAY))
-                    .append(TextComponent.of(":").color(TextColor.DARK_GRAY));
+                                   .color(TextColor.GOLD)
+                                   .append(TextComponent.of(" (").color(TextColor.GRAY))
+                                   .append(TextComponent.of(dateFormat.format(new Date(reply.getSent() * 1000)))
+                                                        .color(TextColor.GREEN))
+                                   .append(TextComponent.of(")").color(TextColor.GRAY))
+                                   .append(TextComponent.of(":").color(TextColor.DARK_GRAY));
             messages.add(message);
 
             if (showPrivate && reply.getMode().equalsIgnoreCase("private")) {
                 message = TextComponent.of("(")
-                        .color(TextColor.DARK_GRAY)
-                        .append(TextComponent.of("Private").color(TextColor.GRAY))
-                        .append(TextComponent.of(")").color(TextColor.DARK_GRAY));
+                                       .color(TextColor.DARK_GRAY)
+                                       .append(TextComponent.of("Private").color(TextColor.GRAY))
+                                       .append(TextComponent.of(")").color(TextColor.DARK_GRAY));
             } else {
                 message = null;
             }
 
-            String text = reply.getText().replaceAll("\\s+", " ");
+            String   text  = reply.getText().replaceAll("\\s+", " ");
             String[] parts = text.split("<br>");
             for (String part : parts) {
-                TextComponent comp = LEGACY_COMPONENT_SERIALIZER.deserialize(part.replace("<b>", ChatColor.GRAY.toString() + ChatColor.BOLD.toString()).replace("</b>", ChatColor.GRAY.toString()) + '\n');
+                TextComponent comp = LEGACY_COMPONENT_SERIALIZER.deserialize(part.replace("<b>",
+                                                                                          ChatColor.GRAY.toString() + ChatColor.BOLD
+                                                                                                  .toString())
+                                                                                 .replace("</b>",
+                                                                                          ChatColor.GRAY.toString()) + '\n');
                 if (showPrivate && message != null) {
                     message.append(comp);
                 } else {
@@ -105,20 +115,22 @@ public class TicketViewBuilder {
 
         Reply reply = replies.get(0);
         message = TextComponent.of("[")
-                .color(TextColor.GRAY)
-                .append(TextComponent.of("to reply to this ticket please type:").color(TextColor.GOLD));
+                               .color(TextColor.GRAY)
+                               .append(TextComponent.of("to reply to this ticket please type:").color(TextColor.GOLD));
         messages.add(message);
         message = TextComponent.of("/e reply " + reply.getPresetId() + " " + ticketCode + " <message>")
-                .color(TextColor.GREEN)
-                .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/e reply " + reply.getPresetId() + " " + ticketCode + " <message>"));
+                               .color(TextColor.GREEN)
+                               .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+                                                          "/e reply " + reply.getPresetId() + " " + ticketCode + " <message>"));
         messages.add(message);
         message = TextComponent.of("or to set the status of this ticket type:")
-                .color(TextColor.GOLD);
+                               .color(TextColor.GOLD);
         messages.add(message);
         message = TextComponent.of("/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>")
-                .color(TextColor.GREEN)
-                .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>"))
-                .append(TextComponent.of("]").color(TextColor.GRAY));
+                               .color(TextColor.GREEN)
+                               .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+                                                          "/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>"))
+                               .append(TextComponent.of("]").color(TextColor.GRAY));
         messages.add(message);
 
         return messages;

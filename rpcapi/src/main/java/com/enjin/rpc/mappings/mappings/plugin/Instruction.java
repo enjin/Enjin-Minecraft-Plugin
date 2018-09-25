@@ -12,5 +12,5 @@ public class Instruction {
     @Getter
     private InstructionCode code;
     @Getter
-    private Object data;
+    private Object          data;
 }

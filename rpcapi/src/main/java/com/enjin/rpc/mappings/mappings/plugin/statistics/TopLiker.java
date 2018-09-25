@@ -12,7 +12,7 @@ import lombok.ToString;
 public class TopLiker {
     @Getter
     @SerializedName(value = "player_name")
-    private String name;
+    private String  name;
     @Getter
     private Integer likes;
 }

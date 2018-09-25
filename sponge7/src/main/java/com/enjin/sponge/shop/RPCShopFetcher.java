@@ -3,13 +3,12 @@ package com.enjin.sponge.shop;
 import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
-import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
+import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.command.commands.BuyCommand;
 import com.enjin.sponge.config.EMPConfig;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -21,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RPCShopFetcher implements Runnable {
     private EnjinMinecraftPlugin plugin;
-    private UUID uuid;
+    private UUID                 uuid;
 
     public RPCShopFetcher(Player player) {
         this.plugin = EnjinMinecraftPlugin.getInstance();
@@ -37,8 +36,8 @@ public class RPCShopFetcher implements Runnable {
             return;
         }
 
-        Player player = p.get();
-        RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(player.getName());
+        Player              player = p.get();
+        RPCData<List<Shop>> data   = EnjinServices.getService(ShopService.class).get(player.getName());
 
         if (data == null) {
             player.sendMessage(Text.builder("Failed to fetch shop data.").color(TextColors.RED).build());
@@ -53,7 +52,9 @@ public class RPCShopFetcher implements Runnable {
         List<Shop> shops = data.getResult();
 
         if (shops == null || shops.isEmpty()) {
-            player.sendMessage(Text.builder("There are no shops available at this time.").color(TextColors.RED).build());
+            player.sendMessage(Text.builder("There are no shops available at this time.")
+                                   .color(TextColors.RED)
+                                   .build());
             return;
         }
 
@@ -67,7 +68,7 @@ public class RPCShopFetcher implements Runnable {
 
         if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
             EnjinMinecraftPlugin.getInstance().getSync().schedule(() -> {
-                BuyCommand.buy(player, new String[]{});
+                BuyCommand.buy(player, new String[] {});
             }, 0, TimeUnit.SECONDS);
         } else {
             TextShopUtil.sendTextShop(player, instance, -1);

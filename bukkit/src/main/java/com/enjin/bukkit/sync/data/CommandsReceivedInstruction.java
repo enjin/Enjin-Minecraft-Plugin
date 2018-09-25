@@ -1,10 +1,10 @@
 package com.enjin.bukkit.sync.data;
 
+import com.enjin.core.Enjin;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
-import com.enjin.core.Enjin;
 
 public class CommandsReceivedInstruction {
 

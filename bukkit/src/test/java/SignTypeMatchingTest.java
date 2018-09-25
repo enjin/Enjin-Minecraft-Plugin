@@ -12,17 +12,17 @@ import java.io.File;
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class SignTypeMatchingTest {
     private static final String API_URL = "http://api.enjinpink.com/api/v1/";
-    private static final String KEY = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
+    private static final String KEY     = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
 
     @Test
     public void test1MatchPositive() {
-        String line = "[" + SignType.DONATION.name() + "1]";
+        String            line  = "[" + SignType.DONATION.name() + "1]";
         Optional<Integer> index = SignType.DONATION.matches(line);
     }
 
     @Test
     public void test2MatchNegative() {
-        String line = "[" + SignType.DONATION.name() + "11]";
+        String            line  = "[" + SignType.DONATION.name() + "11]";
         Optional<Integer> index = SignType.DONATION.matches(line);
     }
 

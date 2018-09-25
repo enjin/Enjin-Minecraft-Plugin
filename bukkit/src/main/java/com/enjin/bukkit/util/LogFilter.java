@@ -6,11 +6,12 @@ import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class LogFilter extends AbstractFilter {
 
-    public static final MutableLogFilter DEFAULT = new MutableLogFilter();
-    public static final LogFilter FILE_APPENDER_FILTER = new LogFilter(true);
+    public static final MutableLogFilter DEFAULT              = new MutableLogFilter();
+    public static final LogFilter        FILE_APPENDER_FILTER = new LogFilter(true);
 
     @Getter
     protected boolean debug = false;

@@ -12,11 +12,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PlayerInfo {
     @Getter
-    private String name;
+    private String  name;
     @Getter
     private Boolean vanish;
     @Getter
-    private String uuid;
+    private String  uuid;
 
     public PlayerInfo(String name, Boolean vanished, UUID uuid) {
         this.name = name;

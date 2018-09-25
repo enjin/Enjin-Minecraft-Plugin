@@ -8,15 +8,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class InteractiveFactory {
-    private Object plugin;
-    private InteractivePrompt startPrompt;
-    private boolean passthroughToChat;
-    private boolean echoInput;
-    private boolean allowCommands;
-    private Text prefix;
+    private Object                             plugin;
+    private InteractivePrompt                  startPrompt;
+    private boolean                            passthroughToChat;
+    private boolean                            echoInput;
+    private boolean                            allowCommands;
+    private Text                               prefix;
     private List<InteractiveAbandonedListener> abandonedListeners;
     private List<InteractiveCompletedListener> completedListeners;
-    private List<InteractiveCanceller> cancellers;
+    private List<InteractiveCanceller>         cancellers;
 
     public InteractiveFactory(Object plugin) {
         this.plugin = plugin;

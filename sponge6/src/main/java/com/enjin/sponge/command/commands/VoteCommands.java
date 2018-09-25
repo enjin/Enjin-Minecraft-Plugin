@@ -33,7 +33,11 @@ public class VoteCommands {
             VotifierManager.getPlayerVotes().put(listname, new ArrayList<>());
         }
 
-        VotifierManager.getPlayerVotes().get(listname).add(new Object[]{username, System.currentTimeMillis() / 1000});
-        sender.sendMessage(Text.of(TextColors.GREEN, "You just added a vote for player ", username, " on list ", listname));
+        VotifierManager.getPlayerVotes().get(listname).add(new Object[] {username, System.currentTimeMillis() / 1000});
+        sender.sendMessage(Text.of(TextColors.GREEN,
+                                   "You just added a vote for player ",
+                                   username,
+                                   " on list ",
+                                   listname));
     }
 }

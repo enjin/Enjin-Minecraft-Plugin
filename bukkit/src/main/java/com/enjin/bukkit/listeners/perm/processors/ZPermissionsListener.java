@@ -17,13 +17,15 @@ public class ZPermissionsListener extends PermissionListener {
     @Override
     public void processCommand(CommandSender sender, String command, Event event) {
         String[] args = command.split(" ");
-        if (args.length >= 5 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("perms") || args[0].equalsIgnoreCase("permissions"))) {
+        if (args.length >= 5 && (args[0].equalsIgnoreCase("perm") || args[0].equalsIgnoreCase("perms") || args[0].equalsIgnoreCase(
+                "permissions"))) {
             if (args[1].equalsIgnoreCase("player")) {
-                String name = args[2];
-                OfflinePlayer op = Bukkit.getOfflinePlayer(name);
+                String        name = args[2];
+                OfflinePlayer op   = Bukkit.getOfflinePlayer(name);
 
                 if (args[3].equalsIgnoreCase("setgroup") || args[3].equalsIgnoreCase("group")) {
-                    if (args[4].equalsIgnoreCase("-A") || args[4].equalsIgnoreCase("--add") || args[4].equalsIgnoreCase("--add-no-reset")) {
+                    if (args[4].equalsIgnoreCase("-A") || args[4].equalsIgnoreCase("--add") || args[4].equalsIgnoreCase(
+                            "--add-no-reset")) {
                         if (args.length < 6) {
                         } else {
                             update(op);
@@ -31,14 +33,15 @@ public class ZPermissionsListener extends PermissionListener {
                     } else {
                         update(op);
                     }
-                } else if (args[3].equalsIgnoreCase("removegroup") || args[3].equalsIgnoreCase("rmgroup") || args[3].equalsIgnoreCase("remove") || args[3].equalsIgnoreCase("rm")) {
+                } else if (args[3].equalsIgnoreCase("removegroup") || args[3].equalsIgnoreCase("rmgroup") || args[3].equalsIgnoreCase(
+                        "remove") || args[3].equalsIgnoreCase("rm")) {
                     update(op);
                 } else if (args[3].equalsIgnoreCase("addgroup") || args[3].equalsIgnoreCase("add")) {
                     update(op);
                 }
             } else if (args[1].equalsIgnoreCase("group")) {
-                String name = args.length > 5 ? args[5] : args[4];
-                OfflinePlayer op = Bukkit.getOfflinePlayer(name);
+                String        name = args.length > 5 ? args[5] : args[4];
+                OfflinePlayer op   = Bukkit.getOfflinePlayer(name);
                 if (args[3].equalsIgnoreCase("add") || args[3].equalsIgnoreCase("remove")) {
                     update(op);
                 }

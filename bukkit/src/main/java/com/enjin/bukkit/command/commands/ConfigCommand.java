@@ -4,7 +4,6 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.config.EMPConfig;
-import com.enjin.bukkit.util.Log;
 import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,8 +15,8 @@ public class ConfigCommand {
         if (args.length == 0) {
             help(sender);
         } else {
-            String rawKey = args[0];
-            ConfigKey key = null;
+            String    rawKey = args[0];
+            ConfigKey key    = null;
             for (ConfigKey k : ConfigKey.values()) {
                 if (k.name().equalsIgnoreCase(rawKey)) {
                     key = k;

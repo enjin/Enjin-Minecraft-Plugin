@@ -13,7 +13,11 @@ import com.enjin.rpc.mappings.adapters.ShortAdapter;
 import com.enjin.rpc.mappings.deserializers.AuthDeserializer;
 import com.enjin.rpc.mappings.deserializers.InstructionDeserializer;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.plugin.*;
+import com.enjin.rpc.mappings.mappings.plugin.Auth;
+import com.enjin.rpc.mappings.mappings.plugin.Instruction;
+import com.enjin.rpc.mappings.mappings.plugin.Stats;
+import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
+import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.google.common.base.Optional;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -42,7 +46,10 @@ public class PluginService implements Service {
             .registerTypeAdapter(Auth.class, new AuthDeserializer())
             .create();
 
-    public RPCData<Auth> auth(final Optional<String> authKey, final Integer port, final boolean save, final boolean fetchServerId) {
+    public RPCData<Auth> auth(final Optional<String> authKey,
+                              final Integer port,
+                              final boolean save,
+                              final boolean fetchServerId) {
         String method = "Plugin.auth";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", authKey.isPresent() ? authKey.get() : Enjin.getConfiguration().getAuthKey());
@@ -53,8 +60,8 @@ public class PluginService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -86,8 +93,8 @@ public class PluginService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -98,8 +105,9 @@ public class PluginService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<SyncResponse> data = PluginService.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<SyncResponse>>() {
-            }.getType());
+            RPCData<SyncResponse> data = PluginService.gson.fromJson(response.toJSONString(),
+                                                                     new TypeToken<RPCData<SyncResponse>>() {
+                                                                     }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -119,8 +127,8 @@ public class PluginService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -131,8 +139,9 @@ public class PluginService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<TagData>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<TagData>>>() {
-            }.getType());
+            RPCData<List<TagData>> data = EnjinRPC.gson.fromJson(response.toJSONString(),
+                                                                 new TypeToken<RPCData<ArrayList<TagData>>>() {
+                                                                 }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -154,8 +163,8 @@ public class PluginService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -189,8 +198,8 @@ public class PluginService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -225,8 +234,8 @@ public class PluginService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {

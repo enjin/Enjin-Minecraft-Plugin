@@ -1,14 +1,9 @@
 package com.enjin.bukkit.tasks;
 
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Stack;
-
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.util.io.ReverseLineInputStream;
-import com.enjin.rpc.util.ConnectionUtil;
 import com.enjin.core.Enjin;
+import com.enjin.rpc.util.ConnectionUtil;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
@@ -18,17 +13,28 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.enjin.bukkit.EnjinMinecraftPlugin;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Stack;
 
 public class ReportPublisher implements Runnable {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
     private EnjinMinecraftPlugin plugin;
-    private StringBuilder builder;
-    private CommandSender sender;
-    private File logs = null;
-    private File log = null;
+    private StringBuilder        builder;
+    private CommandSender        sender;
+    private File                 logs = null;
+    private File                 log  = null;
 
     private boolean dirty = false;
 
@@ -47,7 +53,7 @@ public class ReportPublisher implements Runnable {
         File bukkitLog = new File("logs/latest.log");
 
         if (bukkitLog.exists()) {
-            Stack<String> mostRecentLogs = new Stack<>();
+            Stack<String> mostRecentLogs  = new Stack<>();
             Stack<String> mostRecentError = new Stack<>();
 
             BufferedReader reader = null;
@@ -55,18 +61,20 @@ public class ReportPublisher implements Runnable {
                 reader = new BufferedReader(new InputStreamReader(new ReverseLineInputStream(bukkitLog)));
 
                 boolean errorDiscovered = false;
-                boolean errorProcessed = false;
+                boolean errorProcessed  = false;
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (mostRecentLogs.size() < 100)
+                    if (mostRecentLogs.size() < 100) {
                         mostRecentLogs.push(line);
-                    else if (errorProcessed)
+                    } else if (errorProcessed) {
                         break;
+                    }
 
                     if (line.toLowerCase().startsWith("[SEVERE]") || line.toLowerCase().startsWith("[ERROR]")) {
-                        if (!errorDiscovered)
+                        if (!errorDiscovered) {
                             errorDiscovered = true;
+                        }
                         mostRecentError.push(line);
                     } else if (errorDiscovered) {
                         break;
@@ -113,7 +121,8 @@ public class ReportPublisher implements Runnable {
         setDirtyThenClean(1);
         builder.append("Enjin HTTP test: ").append(ConnectionUtil.testHTTPconnection() ? "passed" : "FAILED!");
         setDirtyThenClean(1);
-        builder.append("Enjin web connectivity test: ").append(ConnectionUtil.testWebConnection() ? "passed" : "FAILED!");
+        builder.append("Enjin web connectivity test: ")
+               .append(ConnectionUtil.testWebConnection() ? "passed" : "FAILED!");
         setDirtyThenClean(1);
         builder.append("Is mineshafter present: ").append(ConnectionUtil.isMineshafterPresent() ? "yes" : "no");
         setDirtyThenClean(1);
@@ -126,8 +135,8 @@ public class ReportPublisher implements Runnable {
         builder.append("=========================================");
         setDirtyThenClean(2);
 
-        File bukkitConfigFile = new File("bukkit.yml");
-        YamlConfiguration bukkitConfig = new YamlConfiguration();
+        File              bukkitConfigFile = new File("bukkit.yml");
+        YamlConfiguration bukkitConfig     = new YamlConfiguration();
 
         if (bukkitConfigFile.exists()) {
             try {
@@ -144,7 +153,7 @@ public class ReportPublisher implements Runnable {
                         // Do nothing.
                     }
 
-                    File timingsFile = null;
+                    File    timingsFile       = null;
                     boolean timingsDiscovered = false;
 
                     Enjin.getLogger().debug("Searching for timings file");
@@ -180,8 +189,9 @@ public class ReportPublisher implements Runnable {
                                 setDirty();
 
                             } finally {
-                                if (bufferedReader != null)
+                                if (bufferedReader != null) {
                                     bufferedReader.close();
+                                }
                             }
                         }
                     }
@@ -192,8 +202,10 @@ public class ReportPublisher implements Runnable {
         }
 
         //let's make sure to hide the apikey, wherever it may occurr in the file.
-        String report = builder.toString().replaceAll("authkey=\\w{50}", "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        Date date = new Date();
+        String report = builder.toString()
+                               .replaceAll("authkey=\\w{50}",
+                                           "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        Date   date   = new Date();
 
         InputStream in = null;
 
@@ -214,14 +226,16 @@ public class ReportPublisher implements Runnable {
             // Add Report
             archive.addStream(in, parameters);
 
-            sender.sendMessage(ChatColor.GOLD + "Enjin report created in " + archive.getFile().getPath() + " successfully!");
+            sender.sendMessage(ChatColor.GOLD + "Enjin report created in " + archive.getFile()
+                                                                                    .getPath() + " successfully!");
         } catch (ZipException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin report!");
             Enjin.getLogger().log(e);
         } finally {
             try {
-                if (in != null)
+                if (in != null) {
                     in.close();
+                }
             } catch (IOException e) {
                 Enjin.getLogger().log(e);
             }
@@ -239,9 +253,11 @@ public class ReportPublisher implements Runnable {
     public void setClean(int nl) {
         if (isDirty()) {
             this.dirty = false;
-            if (builder != null && builder.length() > 0)
-                while (nl-- > 0)
+            if (builder != null && builder.length() > 0) {
+                while (nl-- > 0) {
                     builder.append('\n');
+                }
+            }
         }
     }
 

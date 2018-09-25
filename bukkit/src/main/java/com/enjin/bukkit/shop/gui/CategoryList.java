@@ -21,19 +21,24 @@ public class CategoryList extends Menu {
     private final Map<MenuItem, Menu> lists = new HashMap<>();
 
     public CategoryList(Menu parent, Shop shop) {
-        super(ChatColor.GOLD + shop.getName().substring(0, shop.getName().length() >= 30 ? 30 : shop.getName().length()), 6);
+        super(ChatColor.GOLD + shop.getName()
+                                   .substring(0, shop.getName().length() >= 30 ? 30 : shop.getName().length()), 6);
 
         init(parent, shop, shop.getCategories());
     }
 
     public CategoryList(Menu parent, Shop shop, Category category) {
-        super(ChatColor.GOLD + category.getName().substring(0, category.getName().length() >= 30 ? 30 : category.getName().length()), 6);
+        super(ChatColor.GOLD + category.getName()
+                                       .substring(0,
+                                                  category.getName().length() >= 30 ? 30 : category.getName().length()),
+              6);
 
         init(parent, shop, category.getCategories());
     }
 
     private void init(final Menu parent, final Shop shop, final List<Category> categories) {
-        MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back", Material.ARROW) {
+        MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back",
+                                     Material.ARROW) {
             @Override
             public void onClick(Player player) {
                 if (parent != null) {
@@ -46,8 +51,12 @@ public class CategoryList extends Menu {
 
         int i = 0;
         for (final Category category : categories) {
-            String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + category.getName();
-            ItemStack stack = MaterialResolver.createItemStack(category.getIconItem(), category.getIconDamage() != null ? category.getIconDamage() : 0);
+            String    name  = ChatColor.translateAlternateColorCodes('&',
+                                                                     "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor
+                    .translateAlternateColorCodes('&',
+                                                  "&" + shop.getColorName()) + category.getName();
+            ItemStack stack = MaterialResolver.createItemStack(category.getIconItem(),
+                                                               category.getIconDamage() != null ? category.getIconDamage() : 0);
 
             if (stack == null) {
                 stack = new ItemStack(Material.CHEST);
@@ -57,7 +66,12 @@ public class CategoryList extends Menu {
                 @Override
                 public void onClick(Player player) {
                     if (!lists.containsKey(this)) {
-                        lists.put(this, category.getCategories() != null && !category.getCategories().isEmpty() ? new CategoryList(CategoryList.this, shop, category) : new ItemList(CategoryList.this, shop, category));
+                        lists.put(this,
+                                  category.getCategories() != null && !category.getCategories()
+                                                                               .isEmpty() ? new CategoryList(
+                                          CategoryList.this,
+                                          shop,
+                                          category) : new ItemList(CategoryList.this, shop, category));
                     }
 
                     switchMenu(EnjinMinecraftPlugin.getInstance().getMenuAPI(), player, lists.get(this));
@@ -65,7 +79,10 @@ public class CategoryList extends Menu {
                 }
             };
 
-            menuItem.setDescriptions(TextUtils.splitToListWithPrefix(category.getInfo(), 30, ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorInfo())));
+            menuItem.setDescriptions(TextUtils.splitToListWithPrefix(category.getInfo(),
+                                                                     30,
+                                                                     ChatColor.translateAlternateColorCodes('&',
+                                                                                                            "&" + shop.getColorInfo())));
             addMenuItem(menuItem, i++ + 9);
         }
     }

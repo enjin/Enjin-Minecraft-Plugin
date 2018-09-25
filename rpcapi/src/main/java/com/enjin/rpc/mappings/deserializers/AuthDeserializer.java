@@ -1,15 +1,21 @@
 package com.enjin.rpc.mappings.deserializers;
 
 import com.enjin.rpc.mappings.mappings.plugin.Auth;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
 public class AuthDeserializer implements JsonDeserializer<Auth> {
     @Override
-    public Auth deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        boolean authed = false;
-        long serverId = -1;
+    public Auth deserialize(JsonElement jsonElement,
+                            Type type,
+                            JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        boolean authed   = false;
+        long    serverId = -1;
         if (jsonElement.isJsonPrimitive()) {
             authed = jsonElement.getAsBoolean();
         } else if (jsonElement.isJsonObject()) {

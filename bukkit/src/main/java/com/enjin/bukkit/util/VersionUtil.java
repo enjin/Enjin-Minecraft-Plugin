@@ -28,8 +28,8 @@ public class VersionUtil {
         String version = Bukkit.getVersion();
         if (version == null) version = "Custom";
         if (version.startsWith("git-Spigot-")) {
-            String[] parts = version.substring("git-Spigot-".length()).split("-");
-            int cbVersions = getDistance("craftbukkit", parts[1].substring(0, parts[1].indexOf(' ')));
+            String[] parts      = version.substring("git-Spigot-".length()).split("-");
+            int      cbVersions = getDistance("craftbukkit", parts[1].substring(0, parts[1].indexOf(' ')));
             if (cbVersions == -1) {
                 return -1;
             } else {
@@ -59,7 +59,8 @@ public class VersionUtil {
     public static int getDistance(String repo, String hash) {
         try {
             BufferedReader reader = Resources.asCharSource(
-                    new URL("https://hub.spigotmc.org/stash/rest/api/1.0/projects/SPIGOT/repos/" + repo + "/commits?since=" + URLEncoder.encode(hash, "UTF-8") + "&withCounts=true"),
+                    new URL("https://hub.spigotmc.org/stash/rest/api/1.0/projects/SPIGOT/repos/" + repo + "/commits?since=" + URLEncoder
+                            .encode(hash, "UTF-8") + "&withCounts=true"),
                     Charsets.UTF_8
             ).openBufferedStream();
             try {

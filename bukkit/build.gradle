@@ -1,4 +1,4 @@
-import org.apache.tools.ant.filters.*
+import org.apache.tools.ant.filters.ReplaceTokens
 
 /*
 Enforces compiling with the specified compiler if environment variable JAVA#_HOME is set.
@@ -36,7 +36,7 @@ dependencies {
     shadow project(':rpcapi')
     shadow project(':core')
     // Project specific dependencies.
-    compile (group: 'net.kyori', name: 'text', version: kyoripowered_text) {
+    compile(group: 'net.kyori', name: 'text', version: kyoripowered_text) {
         exclude group: 'com.google.guava'
     }
     compile group: 'org.reflections', name: 'reflections', version: reflections

@@ -11,15 +11,15 @@ import org.bukkit.block.Block;
 @NoArgsConstructor
 public class SignData {
     @Getter
-    private SerializableLocation location;
+    private           SerializableLocation location;
     @Getter
-    private SignType type;
+    private           SignType             type;
     @Getter
-    private SignType.SubType subType;
+    private           SignType.SubType     subType;
     @Getter
-    private Integer itemId;
+    private           Integer              itemId;
     @Getter
-    private int index;
+    private           int                  index;
     @Getter
     @Setter
     private transient SerializableLocation headLocation;

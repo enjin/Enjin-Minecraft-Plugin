@@ -9,12 +9,21 @@ import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.enjin.sponge.command.CommandBank;
-import com.enjin.sponge.command.commands.*;
+import com.enjin.sponge.command.commands.BuyCommand;
+import com.enjin.sponge.command.commands.ConfigCommand;
+import com.enjin.sponge.command.commands.CoreCommands;
+import com.enjin.sponge.command.commands.HeadCommands;
+import com.enjin.sponge.command.commands.PointCommands;
+import com.enjin.sponge.command.commands.SupportCommands;
+import com.enjin.sponge.command.commands.VoteCommands;
 import com.enjin.sponge.config.EMPConfig;
 import com.enjin.sponge.config.ExecutedCommandsConfig;
 import com.enjin.sponge.config.RankUpdatesConfig;
 import com.enjin.sponge.listeners.ConnectionListener;
-import com.enjin.sponge.managers.*;
+import com.enjin.sponge.managers.PurchaseManager;
+import com.enjin.sponge.managers.StatSignManager;
+import com.enjin.sponge.managers.TicketManager;
+import com.enjin.sponge.managers.VotifierManager;
 import com.enjin.sponge.shop.ShopListener;
 import com.enjin.sponge.stats.StatsPlayer;
 import com.enjin.sponge.stats.StatsServer;
@@ -48,40 +57,42 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "enjin-minecraft-plugin", dependencies = {@Dependency(id = "ninja.leaping.permissionsex", optional = true),
+@Plugin(id = "enjin-minecraft-plugin", dependencies = {
+        @Dependency(id = "ninja.leaping.permissionsex", optional = true),
         @Dependency(id = "permissionmanager", optional = true),
         @Dependency(id = "com.vexsoftware", optional = true),
-        @Dependency(id = "nuvotifier", optional = true)})
+        @Dependency(id = "nuvotifier", optional = true)
+})
 public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
-    private static EnjinMinecraftPlugin instance;
+    private static EnjinMinecraftPlugin   instance;
     @Getter
-    private static List<CommandSpec> commands = Lists.newArrayList();
+    private static List<CommandSpec>      commands          = Lists.newArrayList();
     @Getter
-    private static List<CommandWrapper> processedCommands = Lists.newArrayList();
-    private static RankUpdatesConfig rankUpdatesConfiguration;
+    private static List<CommandWrapper>   processedCommands = Lists.newArrayList();
+    private static RankUpdatesConfig      rankUpdatesConfiguration;
     private static ExecutedCommandsConfig executedCommandsConfiguration;
 
     @Inject
     @Getter
-    private PluginContainer container;
+    private PluginContainer          container;
     @Inject
     @Getter
-    private Logger logger;
+    private Logger                   logger;
     @Inject
     @Getter
     private java.util.logging.Logger javaLogger;
     @Inject
     @ConfigDir(sharedRoot = false)
     @Getter
-    private File configDir;
+    private File                     configDir;
     @Inject
     @Getter
-    private Game game;
+    private Game                     game;
     @Getter
-    private SpongeExecutorService sync;
+    private SpongeExecutorService    sync;
     @Getter
-    private SpongeExecutorService async;
+    private SpongeExecutorService    async;
 
     @Getter
     private Task syncTask;
@@ -89,22 +100,22 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     @Getter
     private InstructionHandler instructionHandler = new SpongeInstructionHandler();
     @Getter
-    private boolean firstRun = true;
+    private boolean            firstRun           = true;
     @Getter
     @Setter
-    private boolean authKeyInvalid = false;
+    private boolean            authKeyInvalid     = false;
 
     @Getter
-    private StatsServer serverStats = new StatsServer();
+    private StatsServer              serverStats = new StatsServer();
     @Getter
     private Map<String, StatsPlayer> playerStats = new ConcurrentHashMap<>();
 
     @Getter
-    private List<Long> pendingCommands = Lists.newCopyOnWriteArrayList();
+    private List<Long> pendingCommands  = Lists.newCopyOnWriteArrayList();
     @Getter
     private List<Long> executedCommands = Lists.newCopyOnWriteArrayList();
     @Getter
-    private long serverId = -1;
+    private long       serverId         = -1;
 
     public EnjinMinecraftPlugin() {
         instance = this;
@@ -142,7 +153,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
             Enjin.getLogger().debug("Init commands done.");
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
-                RPCData<Auth> data = EnjinServices.getService(PluginService.class).auth(Optional.absent(), getPort(), true, true);
+                RPCData<Auth> data = EnjinServices.getService(PluginService.class)
+                                                  .auth(Optional.absent(), getPort(), true, true);
                 if (data == null) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
@@ -184,7 +196,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
     public void initConfig() {
         try {
-            File configFile = new File(configDir, "config.json");
+            File      configFile    = new File(configDir, "config.json");
             EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
             Enjin.setConfiguration(configuration);
 
@@ -204,7 +216,8 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     private void initCommandsConfiguration() {
         try {
             File configFile = new File(configDir, "commands.json");
-            EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
+            EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile,
+                                                                                 ExecutedCommandsConfig.class);
 
             if (!configFile.exists()) {
                 executedCommandsConfiguration.save(configFile);
@@ -235,7 +248,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
 
         CommandBank.register(BuyCommand.class, CoreCommands.class, PointCommands.class,
                 /* StatCommands.class, */ SupportCommands.class, ConfigCommand.class, HeadCommands.class,
-                VoteCommands.class);
+                             VoteCommands.class);
 
         String buyCommand = Enjin.getConfiguration(EMPConfig.class).getBuyCommand();
         if (buyCommand != null && !buyCommand.isEmpty() && !CommandBank.isCommandRegistered(buyCommand)) {
@@ -246,7 +259,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     private void initManagers() {
         Enjin.getLogger().info("Initializing EMP Managers");
         PurchaseManager.init();
-//		StatsManager.init(this);
+        //		StatsManager.init(this);
         StatSignManager.init(this);
         VotifierManager.init(this);
         TicketManager.init(this);
@@ -271,7 +284,7 @@ public class EnjinMinecraftPlugin implements EnjinPlugin {
     }
 
     public void disable() {
-//        StatsManager.disable();
+        //        StatsManager.disable();
     }
 
     public void stopTasks() {

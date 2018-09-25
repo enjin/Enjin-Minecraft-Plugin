@@ -2,18 +2,16 @@ package com.enjin.sponge.shop;
 
 import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.core.Enjin;
-import com.enjin.sponge.EnjinMinecraftPlugin;
-import com.enjin.sponge.config.EMPConfig;
-import com.enjin.sponge.utils.text.TextUtils;
 import com.enjin.rpc.mappings.mappings.shop.Category;
 import com.enjin.rpc.mappings.mappings.shop.Item;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
+import com.enjin.sponge.EnjinMinecraftPlugin;
+import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.utils.text.TextUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializer;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,7 +35,9 @@ public class TextShopUtil {
             } else {
                 Category category = instance.getActiveCategory();
                 if (category.getCategories() != null && !category.getCategories().isEmpty()) {
-                    Enjin.getLogger().debug("Sending " + category.getCategories().size() + " sub-categories to " + player.getName());
+                    Enjin.getLogger()
+                         .debug("Sending " + category.getCategories()
+                                                     .size() + " sub-categories to " + player.getName());
                     sendAvailableCategories(player, instance, page < 1 ? 1 : page);
                 } else {
                     Enjin.getLogger().debug("Sending a list of items to " + player.getName());
@@ -51,12 +51,15 @@ public class TextShopUtil {
         List<Shop> available = instance.getShops();
 
         Text.Builder builder = Text.builder("=== Choose Shop ===\n")
-                .append(Text.of("Please type "))
-                .append(Text.builder(new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
-                        .append(" shop #\n\n")
-                        .toString()).color(TextColors.YELLOW).build());
+                                   .append(Text.of("Please type "))
+                                   .append(Text.builder(new StringBuilder('/').append(Enjin.getConfiguration(EMPConfig.class)
+                                                                                           .getBuyCommand())
+                                                                              .append(" shop #\n\n")
+                                                                              .toString())
+                                               .color(TextColors.YELLOW)
+                                               .build());
 
-        int index = 1;
+        int            index    = 1;
         Iterator<Shop> iterator = available.iterator();
         while (iterator.hasNext()) {
             Shop shop = iterator.next();
@@ -71,25 +74,27 @@ public class TextShopUtil {
 
     private static void sendAvailableCategories(Player player, PlayerShopInstance instance, int page) {
         Text.Builder builder = Text.builder();
-        Shop shop = instance.getActiveShop();
+        Shop         shop    = instance.getActiveShop();
 
         if (instance.getActiveCategory() == null) {
             builder.append(buildHeader(shop.getName(), shop))
-                    .append(buildShopInfo(shop, false))
-                    .append(buildCategoryListContent(shop, shop.getCategories(), page))
-                    .append(buildFooterInfo(shop))
-                    .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
-                            .append(" page #")
-                            .toString(), instance, shop, page < 1 ? 1 : page));
+                   .append(buildShopInfo(shop, false))
+                   .append(buildCategoryListContent(shop, shop.getCategories(), page))
+                   .append(buildFooterInfo(shop))
+                   .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class)
+                                                                               .getBuyCommand())
+                                                                  .append(" page #")
+                                                                  .toString(), instance, shop, page < 1 ? 1 : page));
         } else {
             Category category = instance.getActiveCategory();
             builder.append(buildHeader(category.getName(), shop))
-                    .append(buildShopInfo(shop, false))
-                    .append(buildCategoryListContent(shop, category.getCategories(), page))
-                    .append(buildFooterInfo(shop))
-                    .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
-                            .append(" page #")
-                            .toString(), instance, shop, page < 1 ? 1 : page));
+                   .append(buildShopInfo(shop, false))
+                   .append(buildCategoryListContent(shop, category.getCategories(), page))
+                   .append(buildFooterInfo(shop))
+                   .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class)
+                                                                               .getBuyCommand())
+                                                                  .append(" page #")
+                                                                  .toString(), instance, shop, page < 1 ? 1 : page));
         }
 
         player.sendMessage(builder.build());
@@ -97,19 +102,20 @@ public class TextShopUtil {
 
     private static void sendAvailableItems(Player player, PlayerShopInstance instance, int page) {
         Text.Builder builder = Text.builder().color(TextColors.RED);
-        Shop shop = instance.getActiveShop();
+        Shop         shop    = instance.getActiveShop();
 
         if (instance.getActiveCategory() == null) {
             builder.append(Text.of("You must select a category before you can view the item list"));
         } else {
             Category category = instance.getActiveCategory();
             builder.append(buildHeader(category.getName(), shop))
-                    .append(buildShopInfo(shop, true))
-                    .append(buildItemListContent(player, shop, category.getItems(), page))
-                    .append(buildFooterInfo(shop))
-                    .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
-                            .append(" page #")
-                            .toString(), instance, shop, page < 1 ? 1 : page));
+                   .append(buildShopInfo(shop, true))
+                   .append(buildItemListContent(player, shop, category.getItems(), page))
+                   .append(buildFooterInfo(shop))
+                   .append(buildFooter(new StringBuilder("Type /").append(Enjin.getConfiguration(EMPConfig.class)
+                                                                               .getBuyCommand())
+                                                                  .append(" page #")
+                                                                  .toString(), instance, shop, page < 1 ? 1 : page));
         }
 
         player.sendMessage(builder.build());
@@ -117,17 +123,21 @@ public class TextShopUtil {
 
     public static void sendItemInfo(Player player, PlayerShopInstance instance, int index) {
         Text.Builder builder = Text.builder().color(TextColors.RED);
-        Shop shop = instance.getActiveShop();
+        Shop         shop    = instance.getActiveShop();
 
         if (instance.getActiveCategory() == null) {
             builder.append(Text.of("You must select a category before you can view the item list"));
         } else {
             Category category = instance.getActiveCategory();
-            Item item = index < 0 ? category.getItems().get(0) : (index < category.getItems().size() ? category.getItems().get(index) : category.getItems().get(category.getItems().size() - 1));
+            Item     item     = index < 0 ? category.getItems().get(0) : (index < category.getItems()
+                                                                                          .size() ? category.getItems()
+                                                                                                            .get(index) : category
+                    .getItems()
+                    .get(category.getItems().size() - 1));
             builder.append(buildHeader(item.getName(), shop))
-                    .append(buildItemContent(player, shop, item))
-                    .append(buildFooterInfo(shop))
-                    .append(buildFooter("", instance, shop, -1));
+                   .append(buildItemContent(player, shop, item))
+                   .append(buildFooterInfo(shop))
+                   .append(buildFooter("", instance, shop, -1));
         }
 
         player.sendMessage(builder.build());
@@ -138,16 +148,16 @@ public class TextShopUtil {
 
         if (item != null) {
             builder.append(buildHeader(item.getName(), shop))
-                    .append(buildItemContent(player, shop, item))
-                    .append(buildFooterInfo(shop))
-                    .append(buildFooter("", null, shop, -1));
+                   .append(buildItemContent(player, shop, item))
+                   .append(buildFooterInfo(shop))
+                   .append(buildFooter("", null, shop, -1));
             player.sendMessage(builder.build());
         }
     }
 
     private static Text buildHeader(String title, Shop shop) {
         StringBuilder header = new StringBuilder();
-        String prefix = shop.getBorderC();
+        String        prefix = shop.getBorderC();
 
         for (int i = 0; i < 3; i++) {
             prefix += shop.getBorderH();
@@ -158,17 +168,17 @@ public class TextShopUtil {
         }
 
         header.append('&').append(shop.getColorBorder()).append(prefix).append(' ')
-                .append('&').append(shop.getColorTitle()).append(title).append(' ')
-                .append('&').append(shop.getColorBorder());
+              .append('&').append(shop.getColorTitle()).append(title).append(' ')
+              .append('&').append(shop.getColorBorder());
 
         for (int i = 0; i < 40; i++) {
             header.append(shop.getBorderH());
         }
 
         return Text.builder()
-                .append(TextUtils.translateText(TextUtils.trim(header.toString(), null)))
-                .append(Text.NEW_LINE)
-                .build();
+                   .append(TextUtils.translateText(TextUtils.trim(header.toString(), null)))
+                   .append(Text.NEW_LINE)
+                   .build();
     }
 
     private static Text buildShopInfo(Shop shop, boolean items) {
@@ -177,7 +187,7 @@ public class TextShopUtil {
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
                 .append('&').append(shop.getColorText()).append(' ').append(shop.getInfo().trim());
         text.append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE);
         builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
                 .append('&').append(shop.getColorText()).append(" Prices are in ").append(shop.getCurrency())
@@ -185,7 +195,7 @@ public class TextShopUtil {
                 .append('&').append(shop.getColorBottom()).append('/')
                 .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand()).append(" #");
         text.append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE);
 
         return text.build();
     }
@@ -204,7 +214,7 @@ public class TextShopUtil {
         StringBuilder builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV());
         text.append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE);
 
         int start = (page - 1) * 4;
         for (int i = start; i < start + 4; i++) {
@@ -225,7 +235,7 @@ public class TextShopUtil {
                     .append('&').append(shop.getColorName()).append(category.getName().trim())
                     .append('&').append(shop.getColorBracket()).append(" ]");
             text.append(TextUtils.translateText(builder.toString()))
-                    .append(Text.NEW_LINE);
+                .append(Text.NEW_LINE);
 
             if (category.getInfo() != null && !category.getInfo().isEmpty()) {
                 builder = new StringBuilder()
@@ -233,13 +243,13 @@ public class TextShopUtil {
                         .append('&').append(shop.getColorInfo()).append(' ').append(category.getInfo().trim());
 
                 text.append(TextUtils.translateText(TextUtils.trim(builder.toString(), null)))
-                        .append(Text.NEW_LINE);
+                    .append(Text.NEW_LINE);
             }
 
             builder = new StringBuilder()
                     .append('&').append(shop.getColorBorder()).append(shop.getBorderV());
             text.append(TextUtils.translateText(builder.toString()))
-                    .append(Text.NEW_LINE);
+                .append(Text.NEW_LINE);
         }
 
         return text.build();
@@ -263,8 +273,8 @@ public class TextShopUtil {
                 .append(shop.getBorderV());
 
         Text.Builder textBuilder = Text.builder()
-                .append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE);
+                                       .append(TextUtils.translateText(builder.toString()))
+                                       .append(Text.NEW_LINE);
         int start = (page - 1) * maxEntries;
         for (int i = start; i < start + maxEntries; i++) {
             if (i >= items.size()) {
@@ -278,15 +288,29 @@ public class TextShopUtil {
             }
 
             builder = new StringBuilder()
-                    .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
-                    .append('&').append(shop.getColorId()).append(" ").append(i + 1).append(". ")
-                    .append('&').append(shop.getColorName()).append(item.getName().trim())
-                    .append('&').append(shop.getColorBracket()).append(" (")
-                    .append('&').append(shop.getColorPrice()).append(item.getPrice() > 0.0 ? priceFormat.format(item.getPoints()) : "FREE")
-                    .append('&').append(shop.getColorBracket()).append(')');
+                    .append('&')
+                    .append(shop.getColorBorder())
+                    .append(shop.getBorderV())
+                    .append('&')
+                    .append(shop.getColorId())
+                    .append(" ")
+                    .append(i + 1)
+                    .append(". ")
+                    .append('&')
+                    .append(shop.getColorName())
+                    .append(item.getName().trim())
+                    .append('&')
+                    .append(shop.getColorBracket())
+                    .append(" (")
+                    .append('&')
+                    .append(shop.getColorPrice())
+                    .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPoints()) : "FREE")
+                    .append('&')
+                    .append(shop.getColorBracket())
+                    .append(')');
             textBuilder.
-                    append(TextUtils.translateText(builder.toString()))
-                    .append(Text.NEW_LINE);
+                               append(TextUtils.translateText(builder.toString()))
+                       .append(Text.NEW_LINE);
 
             if (!shop.getSimpleItems().booleanValue()) {
                 StringBuilder urlBuilder = new StringBuilder();
@@ -300,14 +324,15 @@ public class TextShopUtil {
 
                     if (urlBuilder.length() > 0) {
                         Text text = Text.builder()
-                                .append(TextUtils.translateText(TextUtils.trim(urlBuilder.toString(), null)))
-                                .onClick(TextActions.openUrl(url))
-                                .build();
+                                        .append(TextUtils.translateText(TextUtils.trim(urlBuilder.toString(), null)))
+                                        .onClick(TextActions.openUrl(url))
+                                        .build();
                         textBuilder.append(text)
-                                .append(Text.NEW_LINE);
+                                   .append(Text.NEW_LINE);
                     }
                 } catch (MalformedURLException e) {
-                    Enjin.getLogger().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+                    Enjin.getLogger()
+                         .debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
                 }
 
                 StringBuilder descriptionBuilder = new StringBuilder();
@@ -319,7 +344,7 @@ public class TextShopUtil {
 
                 if (descriptionBuilder.length() > 0) {
                     textBuilder.append(TextUtils.translateText(TextUtils.trim(descriptionBuilder.toString(), null)))
-                            .append(Text.NEW_LINE);
+                               .append(Text.NEW_LINE);
                 }
             }
 
@@ -327,7 +352,7 @@ public class TextShopUtil {
                     .append('&').append(shop.getColorBorder()).append(shop.getBorderV());
 
             textBuilder.append(TextUtils.translateText(builder.toString()))
-                    .append(Text.NEW_LINE);
+                       .append(Text.NEW_LINE);
         }
 
         return textBuilder.build();
@@ -338,34 +363,40 @@ public class TextShopUtil {
         StringBuilder builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV());
         text.append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE);
 
         builder = new StringBuilder()
-                .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
-                .append('&').append(shop.getColorText()).append(" Price: ")
-                .append('&').append(shop.getColorPrice()).append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE");
+                .append('&')
+                .append(shop.getColorBorder())
+                .append(shop.getBorderV())
+                .append('&')
+                .append(shop.getColorText())
+                .append(" Price: ")
+                .append('&')
+                .append(shop.getColorPrice())
+                .append(item.getPrice() > 0.0 ? priceFormat.format(item.getPrice()) : "FREE");
         text.append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE);
 
         builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
                 .append('&').append(shop.getColorText()).append(" Info:");
         text.append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE);
 
         builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV())
                 .append('&').append(shop.getColorInfo()).append(' ').append(item.getInfo());
         text.append(TextUtils.translateText(TextUtils.trim(builder.toString(), null)))
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE);
 
         builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV());
         text.append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE)
-                .append(TextUtils.translateText(builder.toString()))
-                .append(Text.builder(" Click on the following link to checkout:").color(TextColors.RESET).build())
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE)
+            .append(TextUtils.translateText(builder.toString()))
+            .append(Text.builder(" Click on the following link to checkout:").color(TextColors.RESET).build())
+            .append(Text.NEW_LINE);
 
         try {
             URL url = new URL(shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
@@ -376,20 +407,21 @@ public class TextShopUtil {
 
             if (builder.length() > 0) {
                 Text t = Text.builder()
-                        .append(TextUtils.translateText(TextUtils.trim(builder.toString(), null)))
-                        .onClick(TextActions.openUrl(url))
-                        .build();
+                             .append(TextUtils.translateText(TextUtils.trim(builder.toString(), null)))
+                             .onClick(TextActions.openUrl(url))
+                             .build();
                 text.append(t)
-                        .append(Text.NEW_LINE);
+                    .append(Text.NEW_LINE);
             }
         } catch (MalformedURLException e) {
-            Enjin.getLogger().debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
+            Enjin.getLogger()
+                 .debug("Malformed URL: " + shop.getBuyUrl() + item.getId() + "?player=" + player.getName());
         }
 
         builder = new StringBuilder()
                 .append('&').append(shop.getColorBorder()).append(shop.getBorderV());
         text.append(TextUtils.translateText(builder.toString()))
-                .append(Text.NEW_LINE);
+            .append(Text.NEW_LINE);
 
         return text.build();
     }
@@ -404,10 +436,10 @@ public class TextShopUtil {
     }
 
     private static Text buildFooter(String title, PlayerShopInstance instance, Shop shop, int page) {
-        StringBuilder footer = new StringBuilder();
-        String prefix = shop.getBorderC();
-        String separator = "";
-        String pagination = "";
+        StringBuilder footer     = new StringBuilder();
+        String        prefix     = shop.getBorderC();
+        String        separator  = "";
+        String        pagination = "";
 
         for (int i = 0; i < 3; i++) {
             prefix += shop.getBorderH();
@@ -428,14 +460,22 @@ public class TextShopUtil {
                 separator = separator.substring(0, 12);
             }
 
-            int entries = instance.getActiveCategory() != null ? (instance.getActiveCategory().getCategories().size() > 0 ? instance.getActiveCategory().getCategories().size() : instance.getActiveCategory().getItems().size()) : shop.getCategories().size();
+            int entries  = instance.getActiveCategory() != null ? (instance.getActiveCategory()
+                                                                           .getCategories()
+                                                                           .size() > 0 ? instance.getActiveCategory()
+                                                                                                 .getCategories()
+                                                                                                 .size() : instance.getActiveCategory()
+                                                                                                                   .getItems()
+                                                                                                                   .size()) : shop
+                    .getCategories()
+                    .size();
             int lastPage = (int) Math.ceil((double) entries / 4);
             pagination = "Page " + (page > lastPage ? lastPage : page) + " of " + lastPage;
 
             footer.append('&').append(shop.getColorBottom()).append(' ').append(title).append(' ')
-                    .append('&').append(shop.getColorBorder()).append(separator).append(' ')
-                    .append('&').append(shop.getColorBottom()).append(pagination).append(' ')
-                    .append('&').append(shop.getColorBorder());
+                  .append('&').append(shop.getColorBorder()).append(separator).append(' ')
+                  .append('&').append(shop.getColorBottom()).append(pagination).append(' ')
+                  .append('&').append(shop.getColorBorder());
         }
 
         for (int i = 0; i < 40; i++) {

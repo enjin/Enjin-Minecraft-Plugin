@@ -18,11 +18,11 @@ public class TPSMonitor implements Runnable {
     }
 
     @Getter
-    private static TPSMonitor instance;
-    private LinkedList<Double> list = new LinkedList<>();
-    private long last = System.currentTimeMillis();
-    private int interval = 40;
-    private int max = 25;
+    private static TPSMonitor         instance;
+    private        LinkedList<Double> list     = new LinkedList<>();
+    private        long               last     = System.currentTimeMillis();
+    private        int                interval = 40;
+    private        int                max      = 25;
 
     public TPSMonitor() {
         TPSMonitor.instance = this;
@@ -30,9 +30,9 @@ public class TPSMonitor implements Runnable {
 
     @Override
     public synchronized void run() {
-        long current = System.currentTimeMillis();
+        long   current  = System.currentTimeMillis();
         double duration = ((double) current - (double) last) / 1000f;
-        double tps = (double) interval / duration;
+        double tps      = (double) interval / duration;
 
         if (list.size() >= max) {
             list.pop();

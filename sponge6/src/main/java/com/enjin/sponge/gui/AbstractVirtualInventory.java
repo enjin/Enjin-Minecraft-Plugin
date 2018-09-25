@@ -1,7 +1,6 @@
 package com.enjin.sponge.gui;
 
 import com.enjin.core.Enjin;
-import com.enjin.core.EnjinPlugin;
 import lombok.Getter;
 import lombok.NonNull;
 import org.spongepowered.api.entity.living.player.Player;
@@ -68,19 +67,19 @@ public abstract class AbstractVirtualInventory implements VirtualInventory, Inve
     @Override
     public Inventory.Builder buildInventory(Player player, InventoryListener listener) {
         return Inventory.builder()
-                .of(getInventoryArchetype())
-                .property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(this.title))
-                .property(InventoryDimension.PROPERTY_NAME, InventoryDimension.of(this.width, this.height))
-                .withCarrier(player)
-                .listener(InteractInventoryEvent.Open.class, listener::onOpen)
-                .listener(InteractInventoryEvent.Close.class, listener::onClose)
-                .listener(ClickInventoryEvent.class, listener::onClick);
+                        .of(getInventoryArchetype())
+                        .property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(this.title))
+                        .property(InventoryDimension.PROPERTY_NAME, InventoryDimension.of(this.width, this.height))
+                        .withCarrier(player)
+                        .listener(InteractInventoryEvent.Open.class, listener::onOpen)
+                        .listener(InteractInventoryEvent.Close.class, listener::onClose)
+                        .listener(ClickInventoryEvent.class, listener::onClick);
     }
 
     @Override
     public Inventory createInventory(Player player) {
-        InventoryListener listener = getInventoryListener(player);
-        Inventory inventory = populateInventory(buildInventory(player, listener).build(Enjin.getPlugin()));
+        InventoryListener listener  = getInventoryListener(player);
+        Inventory         inventory = populateInventory(buildInventory(player, listener).build(Enjin.getPlugin()));
         listener.updateSlotMaps(inventory);
         return inventory;
     }

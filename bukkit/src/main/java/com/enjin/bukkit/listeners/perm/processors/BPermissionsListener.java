@@ -35,9 +35,12 @@ public class BPermissionsListener extends PermissionListener {
     }
 
     private void update(CommandSender sender, String[] args) {
-        if (args.length > 2 && (args[1].trim().equalsIgnoreCase("addgroup") || args[1].trim().equalsIgnoreCase("rmgroup") || args[1].trim().equalsIgnoreCase("setgroup"))) {
+        if (args.length > 2 && (args[1].trim().equalsIgnoreCase("addgroup") || args[1].trim()
+                                                                                      .equalsIgnoreCase("rmgroup") || args[1]
+                .trim()
+                .equalsIgnoreCase("setgroup"))) {
             if (usereditingwhatplayer.containsKey(sender.getName())) {
-                String ep = usereditingwhatplayer.get(sender.getName());
+                String        ep = usereditingwhatplayer.get(sender.getName());
                 OfflinePlayer op = Bukkit.getOfflinePlayer(ep);
                 //We need to make sure the value executes before we actually grab the data.
                 update(op);

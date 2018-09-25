@@ -22,28 +22,30 @@ import java.util.UUID;
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class BungeeCordServiceTest {
     private static final String API_URL = "http://api.enjinpink.com/api/v1/";
-    private static final String KEY = "5739f6891198cdd40898a5e7e222c77592a8e0dcb62f2d97e8";
+    private static final String KEY     = "5739f6891198cdd40898a5e7e222c77592a8e0dcb62f2d97e8";
 
     @Test
     public void test1Get() {
         Status status = new Status(System.getProperty("java.version"),
-                "UNKNOWN",
-                null,
-                true,
-                "3.0.0-bungee",
-                null,
-                null,
-                75,
-                2,
-                new ArrayList<PlayerInfo>() {{
-                    add(new PlayerInfo("Favorlock", UUID.fromString("8b7a881c-6ccb-4ada-8f6a-60cc99e6aa20")));
-                    add(new PlayerInfo("AlmightyToaster", UUID.fromString("5b6cf5cd-d1c8-4f54-a06e-9c4462095706")));
-                }},
-                null,
-                null,
-                null,
-                null,
-                null);
+                                   "UNKNOWN",
+                                   null,
+                                   true,
+                                   "3.0.0-bungee",
+                                   null,
+                                   null,
+                                   75,
+                                   2,
+                                   new ArrayList<PlayerInfo>() {{
+                                       add(new PlayerInfo("Favorlock",
+                                                          UUID.fromString("8b7a881c-6ccb-4ada-8f6a-60cc99e6aa20")));
+                                       add(new PlayerInfo("AlmightyToaster",
+                                                          UUID.fromString("5b6cf5cd-d1c8-4f54-a06e-9c4462095706")));
+                                   }},
+                                   null,
+                                   null,
+                                   null,
+                                   null,
+                                   null);
         Map<String, NodeState> servers = new HashMap<String, NodeState>() {{
             put("lobby", new NodeState(new ArrayList<String>() {{
                 add("Favorlock");
@@ -52,8 +54,8 @@ public class BungeeCordServiceTest {
                 add("AlmightyToaster");
             }}, 25));
         }};
-        BungeeCordService service = EnjinServices.getService(BungeeCordService.class);
-        RPCData<SyncResponse> data = service.get(status, servers);
+        BungeeCordService     service = EnjinServices.getService(BungeeCordService.class);
+        RPCData<SyncResponse> data    = service.get(status, servers);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("result is null", data.getResult());

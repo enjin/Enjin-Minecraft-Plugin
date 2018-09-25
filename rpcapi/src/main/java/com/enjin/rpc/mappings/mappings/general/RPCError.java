@@ -6,5 +6,5 @@ public class RPCError {
     @Getter
     private Integer code;
     @Getter
-    private String message;
+    private String  message;
 }

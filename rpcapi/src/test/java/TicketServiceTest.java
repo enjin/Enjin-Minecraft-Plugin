@@ -3,9 +3,18 @@ import com.enjin.core.EnjinServices;
 import com.enjin.core.config.EnjinConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
-import com.enjin.rpc.mappings.mappings.tickets.*;
+import com.enjin.rpc.mappings.mappings.tickets.ExtraQuestion;
+import com.enjin.rpc.mappings.mappings.tickets.Reply;
+import com.enjin.rpc.mappings.mappings.tickets.ReplyResults;
+import com.enjin.rpc.mappings.mappings.tickets.Ticket;
+import com.enjin.rpc.mappings.mappings.tickets.TicketModule;
+import com.enjin.rpc.mappings.mappings.tickets.TicketResults;
+import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
 import com.enjin.rpc.mappings.services.TicketService;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
@@ -15,16 +24,16 @@ import java.util.Map;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class TicketServiceTest {
-    private static final String API_URL = "http://api.enjinpink.com/api/v1/";
-    private static final String KEY = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
-    private static final String PLAYER = "Favorlock";
-    private static final int PRESET_ID = 31915436;
+    private static final String API_URL     = "http://api.enjinpink.com/api/v1/";
+    private static final String KEY         = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
+    private static final String PLAYER      = "Favorlock";
+    private static final int    PRESET_ID   = 31915436;
     private static final String TICKET_CODE = "ef452f91";
 
     @Test
     public void test1GetModules() {
-        TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<Map<Integer, TicketModule>> data = service.getModules();
+        TicketService                       service = EnjinServices.getService(TicketService.class);
+        RPCData<Map<Integer, TicketModule>> data    = service.getModules();
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
@@ -36,8 +45,8 @@ public class TicketServiceTest {
 
     @Test
     public void test2GetTickets() {
-        TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<TicketResults> data = service.getTickets(-1, TicketStatus.closed);
+        TicketService          service = EnjinServices.getService(TicketService.class);
+        RPCData<TicketResults> data    = service.getTickets(-1, TicketStatus.closed);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
@@ -49,8 +58,8 @@ public class TicketServiceTest {
 
     @Test
     public void test3GetPlayerTickets() {
-        TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<TicketResults> data = service.getPlayerTickets(-1, PLAYER);
+        TicketService          service = EnjinServices.getService(TicketService.class);
+        RPCData<TicketResults> data    = service.getPlayerTickets(-1, PLAYER);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
@@ -62,8 +71,8 @@ public class TicketServiceTest {
 
     @Test
     public void test4GetReplies() {
-        TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<ReplyResults> data = service.getReplies(PRESET_ID, TICKET_CODE, PLAYER);
+        TicketService         service = EnjinServices.getService(TicketService.class);
+        RPCData<ReplyResults> data    = service.getReplies(PRESET_ID, TICKET_CODE, PLAYER);
 
         Assert.assertNotNull("data is null", data);
         Assert.assertNotNull("data result is null", data.getResult());
@@ -75,8 +84,12 @@ public class TicketServiceTest {
 
     @Test
     public void test5CreateTicket() {
-        TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<RPCSuccess> data = service.createTicket(PRESET_ID, "This is my subject", "This is my description", "Favorlock", new ArrayList<ExtraQuestion>());
+        TicketService       service = EnjinServices.getService(TicketService.class);
+        RPCData<RPCSuccess> data    = service.createTicket(PRESET_ID,
+                                                           "This is my subject",
+                                                           "This is my description",
+                                                           "Favorlock",
+                                                           new ArrayList<ExtraQuestion>());
 
         Assert.assertNotNull("data is null", data);
 
@@ -93,8 +106,13 @@ public class TicketServiceTest {
 
     @Test
     public void test6SendReply() {
-        TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<RPCSuccess> data = service.sendReply(PRESET_ID, TICKET_CODE, "This is a reply", "public", TicketStatus.pending, "Favorlock");
+        TicketService       service = EnjinServices.getService(TicketService.class);
+        RPCData<RPCSuccess> data    = service.sendReply(PRESET_ID,
+                                                        TICKET_CODE,
+                                                        "This is a reply",
+                                                        "public",
+                                                        TicketStatus.pending,
+                                                        "Favorlock");
 
         Assert.assertNotNull("data is null", data);
 
@@ -111,8 +129,8 @@ public class TicketServiceTest {
 
     @Test
     public void test7SetStatus() {
-        TicketService service = EnjinServices.getService(TicketService.class);
-        RPCData<Boolean> data = service.setStatus(PRESET_ID, TICKET_CODE, TicketStatus.closed);
+        TicketService    service = EnjinServices.getService(TicketService.class);
+        RPCData<Boolean> data    = service.setStatus(PRESET_ID, TICKET_CODE, TicketStatus.closed);
 
         Assert.assertNotNull("data is null", data);
 

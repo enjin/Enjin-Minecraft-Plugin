@@ -15,41 +15,41 @@ import java.util.Map;
 public class Status {
     @Getter
     @SerializedName(value = "java_version")
-    private String javaVersion;
+    private String                       javaVersion;
     @Getter
     @SerializedName(value = "mc_version")
-    private String mcVersion;
+    private String                       mcVersion;
     @Getter
-    private List<String> plugins;
+    private List<String>                 plugins;
     @Getter
     @SerializedName(value = "hasranks")
-    private Boolean ranksEnabled;
+    private Boolean                      ranksEnabled;
     @Getter
     @SerializedName(value = "pluginversion")
-    private String pluginVersion;
+    private String                       pluginVersion;
     @Getter
-    private List<String> worlds;
+    private List<String>                 worlds;
     @Getter
-    private List<String> groups;
+    private List<String>                 groups;
     @Getter
     @SerializedName(value = "maxplayers")
-    private Integer maxPlayers;
+    private Integer                      maxPlayers;
     @Getter
-    private Integer players;
+    private Integer                      players;
     @Getter
     @SerializedName(value = "playerlist")
-    private List<PlayerInfo> playersList;
+    private List<PlayerInfo>             playersList;
     @Getter
     @SerializedName(value = "playergroups")
     private Map<String, PlayerGroupInfo> playerGroups;
     @Getter
-    private Double tps;
+    private Double                       tps;
     @Getter
     @SerializedName(value = "executed_commands")
-    private List<ExecutedCommand> executedCommands;
+    private List<ExecutedCommand>        executedCommands;
     @Getter
     @SerializedName(value = "votifier")
-    private Map<String, List<Object[]>> votes;
+    private Map<String, List<Object[]>>  votes;
 
     /**
      * gzipped and base64 encoded

@@ -1,21 +1,22 @@
 package com.enjin.bukkit.tasks;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.core.Enjin;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-import com.enjin.bukkit.EnjinMinecraftPlugin;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BanLister implements Runnable {
     @Getter
-    private static BanLister instance;
-    private EnjinMinecraftPlugin plugin;
-    private List<String> currentBannedPlayers = new CopyOnWriteArrayList<>();
-    private boolean firstRun = true;
+    private static BanLister            instance;
+    private        EnjinMinecraftPlugin plugin;
+    private        List<String>         currentBannedPlayers = new CopyOnWriteArrayList<>();
+    private        boolean              firstRun             = true;
 
     public BanLister(EnjinMinecraftPlugin plugin) {
         BanLister.instance = this;

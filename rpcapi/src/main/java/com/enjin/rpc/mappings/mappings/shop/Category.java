@@ -11,19 +11,19 @@ import java.util.List;
 @EqualsAndHashCode
 public class Category {
     @Getter
-    private Integer id;
+    private Integer        id;
     @Getter
-    private String name;
+    private String         name;
     @Getter
-    private String info;
+    private String         info;
     @Getter
     private List<Category> categories;
     @Getter
-    private List<Item> items;
+    private List<Item>     items;
     @Getter
     @SerializedName(value = "icon_item")
-    private String iconItem;
+    private String         iconItem;
     @Getter
     @SerializedName(value = "icon_damage")
-    private Byte iconDamage;
+    private Byte           iconDamage;
 }

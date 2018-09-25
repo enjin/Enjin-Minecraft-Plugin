@@ -44,7 +44,10 @@ public class BuyCommand {
             fetchShop(player);
         } else {
             if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
-                Menu menu = ShopListener.getGuiInstances().containsKey(player.getUniqueId()) ? ShopListener.getGuiInstances().get(player.getUniqueId()) : new ShopList(player);
+                Menu menu = ShopListener.getGuiInstances()
+                                        .containsKey(player.getUniqueId()) ? ShopListener.getGuiInstances()
+                                                                                         .get(player.getUniqueId()) : new ShopList(
+                        player);
                 menu.openMenu(player);
 
                 return;

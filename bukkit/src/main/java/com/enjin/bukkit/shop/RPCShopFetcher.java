@@ -1,12 +1,12 @@
 package com.enjin.bukkit.shop;
 
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.commands.BuyCommand;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.util.OptionalUtil;
+import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
-import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.common.shop.PlayerShopInstance;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.shop.Shop;
 import com.enjin.rpc.mappings.services.ShopService;
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class RPCShopFetcher implements Runnable {
     private EnjinMinecraftPlugin plugin;
-    private UUID uuid;
+    private UUID                 uuid;
 
     public RPCShopFetcher(Player player) {
         this.plugin = EnjinMinecraftPlugin.getInstance();
@@ -36,8 +36,8 @@ public class RPCShopFetcher implements Runnable {
             return;
         }
 
-        final Player player = p.get();
-        RPCData<List<Shop>> data = EnjinServices.getService(ShopService.class).get(player.getName());
+        final Player        player = p.get();
+        RPCData<List<Shop>> data   = EnjinServices.getService(ShopService.class).get(player.getName());
 
         if (data == null) {
             player.sendMessage(ChatColor.RED + "Failed to fetch shop data.");
@@ -68,7 +68,7 @@ public class RPCShopFetcher implements Runnable {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    BuyCommand.buy(player, new String[]{});
+                    BuyCommand.buy(player, new String[] {});
                 }
             }, 0);
         } else {

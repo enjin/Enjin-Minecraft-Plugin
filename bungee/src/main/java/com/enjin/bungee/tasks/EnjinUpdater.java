@@ -11,11 +11,11 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 public class EnjinUpdater implements Runnable {
-    private String downloadLocation = "";
-    private File destination;
+    private String               downloadLocation = "";
+    private File                 destination;
     private EnjinMinecraftPlugin plugin;
-    private String versionNumber;
-    private String updateJar = "http://resources.guild-hosting.net/1/downloads/emp/";
+    private String               versionNumber;
+    private String               updateJar        = "http://resources.guild-hosting.net/1/downloads/emp/";
 
     public EnjinUpdater(String downloadLocation, String versionNumber, File destination, EnjinMinecraftPlugin plugin) {
         this.downloadLocation = downloadLocation;
@@ -33,7 +33,7 @@ public class EnjinUpdater implements Runnable {
             URL website = new URL(updateJar + versionNumber + "/EnjinMinecraftPlugin.jar");
 
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            FileOutputStream fos = new FileOutputStream(tempfile);
+            FileOutputStream    fos = new FileOutputStream(tempfile);
             fos.getChannel().transferFrom(rbc, 0, 1 << 24);
             fos.close();
 
@@ -41,7 +41,8 @@ public class EnjinUpdater implements Runnable {
                 plugin.setHasUpdate(true);
                 plugin.setNewVersion(versionNumber);
                 plugin.setUpdateFailed(false);
-                Enjin.getLogger().info("Enjin Minecraft Plugin was updated to version " + versionNumber + ". Please restart your server.");
+                Enjin.getLogger()
+                     .info("Enjin Minecraft Plugin was updated to version " + versionNumber + ". Please restart your server.");
                 return;
             } else {
                 plugin.setUpdateFailed(true);

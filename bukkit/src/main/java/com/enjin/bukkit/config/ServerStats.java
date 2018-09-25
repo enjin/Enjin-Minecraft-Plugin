@@ -12,5 +12,5 @@ public class ServerStats {
     @Getter
     @Setter
     @SerializedName(value = "player-kicks")
-    private boolean playerKicks = true;
+    private boolean playerKicks       = true;
 }

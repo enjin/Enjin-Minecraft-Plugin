@@ -37,7 +37,7 @@ public class TextUtils {
 
     public static List<String> splitToListWithPrefix(String text, int length, String prefix) {
         List<String> result = new ArrayList<>();
-        String[] parts = text.split(" ");
+        String[]     parts  = text.split(" ");
 
         StringBuilder builder = new StringBuilder();
         for (String part : parts) {

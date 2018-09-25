@@ -22,7 +22,7 @@ public class ConnectionUtil {
 
     public static boolean testConnection(boolean https) {
         BufferedReader in = null;
-        boolean ok = false;
+        boolean        ok = false;
 
         try {
             URL url = EnjinRPC.getUrl("api.php");
@@ -51,10 +51,10 @@ public class ConnectionUtil {
 
     public static boolean testWebConnection() {
         BufferedReader in = null;
-        boolean ok = false;
+        boolean        ok = false;
 
         try {
-            URL url = new URL("http://google.com");
+            URL           url = new URL("http://google.com");
             URLConnection con = url.openConnection();
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine = in.readLine();

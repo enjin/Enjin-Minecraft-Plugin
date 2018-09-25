@@ -1,9 +1,9 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.modules.impl.SignStatsModule;
 import com.enjin.bukkit.statsigns.SignData;
 import com.enjin.bukkit.statsigns.SignType;
-import com.enjin.bukkit.modules.impl.SignStatsModule;
 import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.bukkit.util.serialization.SerializableLocation;
 import com.google.common.base.Optional;
@@ -23,9 +23,9 @@ public class SignListener implements Listener {
         if (module != null) {
             String line = event.getLine(0);
             for (SignType type : SignType.values()) {
-                Optional<Integer> index = type.matches(line);
-                SignType.SubType subType = null;
-                Optional<Integer> itemId = Optional.absent();
+                Optional<Integer> index   = type.matches(line);
+                SignType.SubType  subType = null;
+                Optional<Integer> itemId  = Optional.absent();
 
                 if (index.isPresent()) {
                     if (PermissionsUtil.hasPermission(event.getPlayer(), "enjin.sign.set")) {
@@ -73,7 +73,8 @@ public class SignListener implements Listener {
 
                         return;
                     } else {
-                        event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to set Enjin stat signs.");
+                        event.getPlayer()
+                             .sendMessage(ChatColor.RED + "You do not have permission to set Enjin stat signs.");
                         event.setCancelled(true);
                     }
                 }
@@ -84,14 +85,17 @@ public class SignListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getBlock().getState() instanceof Sign) {
-            SignStatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(SignStatsModule.class);
+            SignStatsModule module = EnjinMinecraftPlugin.getInstance()
+                                                         .getModuleManager()
+                                                         .getModule(SignStatsModule.class);
             if (module != null) {
                 SerializableLocation location = new SerializableLocation(event.getBlock().getLocation());
 
                 for (SignData data : new ArrayList<>(module.getConfig().getSigns())) {
                     if (data.getLocation().equals(location)) {
                         if (!PermissionsUtil.hasPermission(event.getPlayer(), "enjin.sign.remove")) {
-                            event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to remove Enjin stat signs.");
+                            event.getPlayer()
+                                 .sendMessage(ChatColor.RED + "You do not have permission to remove Enjin stat signs.");
                             event.setCancelled(true);
                         } else {
                             module.remove(location);

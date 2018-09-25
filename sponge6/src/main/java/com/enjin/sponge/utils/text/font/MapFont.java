@@ -6,15 +6,16 @@ import java.util.HashMap;
  * Represents a bitmap font drawable to a map.
  */
 public class MapFont {
-    private final HashMap<Character, CharacterSprite> chars = new HashMap<Character, CharacterSprite>();
-    private int height = 0;
-    protected boolean malleable = true;
+    private final HashMap<Character, CharacterSprite> chars     = new HashMap<Character, CharacterSprite>();
+    private       int                                 height    = 0;
+    protected     boolean                             malleable = true;
 
     /**
      * Set the sprite for a given character.
      *
      * @param ch     The character to set the sprite for.
      * @param sprite The CharacterSprite to set.
+     *
      * @throws IllegalStateException if this font is static.
      */
     public void setChar(char ch, CharacterSprite sprite) {
@@ -32,6 +33,7 @@ public class MapFont {
      * Get the sprite for a given character.
      *
      * @param ch The character to get the sprite for.
+     *
      * @return The CharacterSprite associated with the character, or null if
      * there is none.
      */
@@ -44,6 +46,7 @@ public class MapFont {
      * font.
      *
      * @param text The text.
+     *
      * @return The width in pixels.
      */
     public int getWidth(String text) {
@@ -77,6 +80,7 @@ public class MapFont {
      * Check whether the given text is valid.
      *
      * @param text The text.
+     *
      * @return True if the string contains only defined characters, false
      * otherwise.
      */
@@ -94,8 +98,8 @@ public class MapFont {
      */
     public static class CharacterSprite {
 
-        private final int width;
-        private final int height;
+        private final int       width;
+        private final int       height;
         private final boolean[] data;
 
         public CharacterSprite(int width, int height, boolean[] data) {
@@ -113,6 +117,7 @@ public class MapFont {
          *
          * @param row The row, in the range [0,8).
          * @param col The column, in the range [0,8).
+         *
          * @return True if the pixel is solid, false if transparent.
          */
         public boolean get(int row, int col) {

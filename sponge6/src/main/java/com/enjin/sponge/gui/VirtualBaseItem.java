@@ -17,19 +17,22 @@ import java.util.function.Consumer;
 
 public class VirtualBaseItem implements VirtualItem {
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private ItemType type;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Text title;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int quantity;
 
     @Getter
     private List<Text> lore;
 
-    private Optional<Consumer<VirtualInventoryEventSnapshot.Click>> primaryActionConsumer = Optional.empty();
+    private Optional<Consumer<VirtualInventoryEventSnapshot.Click>> primaryActionConsumer   = Optional.empty();
     private Optional<Consumer<VirtualInventoryEventSnapshot.Click>> secondaryActionConsumer = Optional.empty();
 
     public VirtualBaseItem(@NonNull ItemType type, @NonNull Text title, int quantity, @NonNull List<Text> lore) {
@@ -41,19 +44,19 @@ public class VirtualBaseItem implements VirtualItem {
 
     public VirtualBaseItem(ItemStack item) {
         this(item.getItem(),
-                item.get(Keys.DISPLAY_NAME).orElse(Text.of()),
-                item.getQuantity(),
-                item.get(Keys.ITEM_LORE).orElse(new ArrayList<>()));
+             item.get(Keys.DISPLAY_NAME).orElse(Text.of()),
+             item.getQuantity(),
+             item.get(Keys.ITEM_LORE).orElse(new ArrayList<>()));
     }
 
     @Override
     public ItemStack createItemStack() {
         return ItemStack.builder()
-                .itemType(getType())
-                .add(Keys.DISPLAY_NAME, getTitle())
-                .add(Keys.ITEM_LORE, getLore())
-                .quantity(getQuantity())
-                .build();
+                        .itemType(getType())
+                        .add(Keys.DISPLAY_NAME, getTitle())
+                        .add(Keys.ITEM_LORE, getLore())
+                        .quantity(getQuantity())
+                        .build();
     }
 
     @Override

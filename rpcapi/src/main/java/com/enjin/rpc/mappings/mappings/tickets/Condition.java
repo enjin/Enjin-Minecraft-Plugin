@@ -10,7 +10,7 @@ public class Condition {
     @Getter
     private Integer question;
     @Getter
-    private Status status;
+    private Status  status;
     @Getter
     private Integer answer;
 

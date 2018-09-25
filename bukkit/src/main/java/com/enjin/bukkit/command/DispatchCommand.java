@@ -2,7 +2,7 @@ package com.enjin.bukkit.command;
 
 import com.enjin.core.Enjin;
 import com.google.common.base.Optional;
-import org.bukkit.command.*;
+import org.bukkit.command.CommandSender;
 
 public class DispatchCommand extends org.bukkit.command.Command {
     protected DispatchCommand() {

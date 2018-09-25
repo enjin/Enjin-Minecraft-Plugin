@@ -14,7 +14,7 @@ import java.io.File;
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class ConfigUpdateTest {
     private static final String API_URL = "http://api.enjinpink.com/api/v1/";
-    private static final String KEY = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
+    private static final String KEY     = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
 
     @Test
     public void test1ConfigUpdate() {
@@ -23,8 +23,8 @@ public class ConfigUpdateTest {
             file.delete();
         }
 
-        EMPConfig config = JsonConfig.load(file, EMPConfig.class);
-        ConfigUpdateData data = new ConfigUpdateData(false);
+        EMPConfig        config = JsonConfig.load(file, EMPConfig.class);
+        ConfigUpdateData data   = new ConfigUpdateData(false);
 
         config.update(file, EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(data), Object.class));
         config = JsonConfig.load(file, EMPConfig.class);

@@ -21,17 +21,21 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemList extends Menu {
-    private static DecimalFormat priceFormat = new DecimalFormat("#.00");
-    private final Map<MenuItem, Menu> lists = new HashMap<>();
+    private static DecimalFormat       priceFormat = new DecimalFormat("#.00");
+    private final  Map<MenuItem, Menu> lists       = new HashMap<>();
 
     public ItemList(Menu parent, Shop shop, Category category) {
-        super(ChatColor.GOLD + category.getName().substring(0, category.getName().length() >= 30 ? 30 : category.getName().length()), 6);
+        super(ChatColor.GOLD + category.getName()
+                                       .substring(0,
+                                                  category.getName().length() >= 30 ? 30 : category.getName().length()),
+              6);
 
         init(parent, shop, category.getItems());
     }
 
     private void init(final Menu parent, final Shop shop, final List<Item> items) {
-        MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back", Material.ARROW) {
+        MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back",
+                                     Material.ARROW) {
             @Override
             public void onClick(Player player) {
                 if (parent != null) {
@@ -52,8 +56,12 @@ public class ItemList extends Menu {
                 }
             }
 
-            String    name  = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + item.getName();
-            ItemStack stack = MaterialResolver.createItemStack(item.getIconItem(), item.getIconDamage() != null ? item.getIconDamage() : 0);
+            String    name  = ChatColor.translateAlternateColorCodes('&',
+                                                                     "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor
+                    .translateAlternateColorCodes('&',
+                                                  "&" + shop.getColorName()) + item.getName();
+            ItemStack stack = MaterialResolver.createItemStack(item.getIconItem(),
+                                                               item.getIconDamage() != null ? item.getIconDamage() : 0);
 
             if (stack == null) {
                 stack = new ItemStack(Material.PAPER);
@@ -72,14 +80,25 @@ public class ItemList extends Menu {
 
             List<String> descriptions = new ArrayList<>();
             if (item.getPrice() != null) {
-                descriptions.add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "PRICE: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPrice() == 0.0 ? "FREE" : priceFormat.format(item.getPrice()) + " " + shop.getCurrency()));
+                descriptions.add(ChatColor.translateAlternateColorCodes('&',
+                                                                        "&" + shop.getColorText()) + "PRICE: " + ChatColor
+                        .translateAlternateColorCodes('&',
+                                                      "&" + shop.getColorPrice()) + (item.getPrice() == 0.0 ? "FREE" : priceFormat
+                        .format(item.getPrice()) + " " + shop.getCurrency()));
             }
 
             if (item.getPoints() != null) {
-                descriptions.add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "POINTS: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPoints() == 0 ? "FREE" : item.getPoints()));
+                descriptions.add(ChatColor.translateAlternateColorCodes('&',
+                                                                        "&" + shop.getColorText()) + "POINTS: " + ChatColor
+                        .translateAlternateColorCodes('&',
+                                                      "&" + shop.getColorPrice()) + (item.getPoints() == 0 ? "FREE" : item
+                        .getPoints()));
             }
 
-            descriptions.addAll(TextUtils.splitToListWithPrefix(item.getInfo(), 30, ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorInfo())));
+            descriptions.addAll(TextUtils.splitToListWithPrefix(item.getInfo(),
+                                                                30,
+                                                                ChatColor.translateAlternateColorCodes('&',
+                                                                                                       "&" + shop.getColorInfo())));
             menuItem.setDescriptions(descriptions);
 
             addMenuItem(menuItem, i++ + 9);

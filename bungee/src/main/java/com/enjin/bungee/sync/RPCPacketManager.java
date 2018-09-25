@@ -39,27 +39,27 @@ public class RPCPacketManager implements Runnable {
     @Override
     public void run() {
         final Status status = new Status(System.getProperty("java.version"),
-                null,
-                getPlugins(),
-                null,
-                plugin.getDescription().getVersion(),
-                null,
-                null,
-                getMaxPlayers(),
-                getOnlineCount(),
-                getOnlinePlayers(),
-                null,
-                null,
-                null,
-                null,
-                null);
+                                         null,
+                                         getPlugins(),
+                                         null,
+                                         plugin.getDescription().getVersion(),
+                                         null,
+                                         null,
+                                         getMaxPlayers(),
+                                         getOnlineCount(),
+                                         getOnlinePlayers(),
+                                         null,
+                                         null,
+                                         null,
+                                         null,
+                                         null);
 
         final Map<String, NodeState> servers = getServers();
         ProxyServer.getInstance().getScheduler().schedule(plugin, new Runnable() {
             @Override
             public void run() {
-                BungeeCordService service = EnjinServices.getService(BungeeCordService.class);
-                RPCData<SyncResponse> data = service.get(status, servers);
+                BungeeCordService     service = EnjinServices.getService(BungeeCordService.class);
+                RPCData<SyncResponse> data    = service.get(status, servers);
 
                 if (data == null) {
                     Enjin.getLogger().debug("Data is null while requesting sync update from Bungeecord.get.");
@@ -77,7 +77,9 @@ public class RPCPacketManager implements Runnable {
                                     RemoteConfigUpdateInstruction.handle((Map<String, Object>) instruction.getData());
                                     break;
                                 case RESPONSE_STATUS:
-                                    Enjin.getPlugin().getInstructionHandler().statusReceived((String) instruction.getData());
+                                    Enjin.getPlugin()
+                                         .getInstructionHandler()
+                                         .statusReceived((String) instruction.getData());
                                     break;
                                 case NOTIFICATIONS:
                                     NotificationsInstruction.handle((NotificationData) instruction.getData());
@@ -138,7 +140,8 @@ public class RPCPacketManager implements Runnable {
                         servers.put(server.getKey(), new NodeState(null, null));
                     } else {
                         if (ping != null && ping.getPlayers() != null) {
-                            List<String> players = isRedisBungeeEnabled() ? getPlayersFromRedisBungee(info) : getPlayersFromProxy(info);
+                            List<String> players = isRedisBungeeEnabled() ? getPlayersFromRedisBungee(info) : getPlayersFromProxy(
+                                    info);
                             servers.put(server.getKey(), new NodeState(players, ping.getPlayers().getMax()));
                         }
                     }
@@ -158,8 +161,8 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<String> getPlayersFromRedisBungee(ServerInfo info) {
-        List<String> players = new ArrayList<>();
-        List<UUID> rbplayers = new ArrayList<>(RedisBungee.getApi().getPlayersOnServer(info.getName()));
+        List<String> players   = new ArrayList<>();
+        List<UUID>   rbplayers = new ArrayList<>(RedisBungee.getApi().getPlayersOnServer(info.getName()));
         if (rbplayers != null && !rbplayers.isEmpty()) {
             for (UUID uuid : rbplayers) {
                 String name = RedisBungee.getApi().getNameFromUuid(uuid);

@@ -11,7 +11,7 @@ public class PostSyncEvent extends Event {
     private static final HandlerList HANDLERS = new HandlerList();
 
     @Getter
-    private boolean successful;
+    private boolean               successful;
     @Getter
     private RPCData<SyncResponse> response;
 

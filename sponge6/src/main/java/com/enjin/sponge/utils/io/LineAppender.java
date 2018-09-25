@@ -1,7 +1,8 @@
 package com.enjin.sponge.utils.io;
 
 import lombok.Getter;
-import org.apache.logging.log4j.core.*;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 
 import java.io.Serializable;

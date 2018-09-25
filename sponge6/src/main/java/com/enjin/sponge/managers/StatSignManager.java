@@ -35,13 +35,13 @@ import java.util.concurrent.TimeUnit;
 
 public class StatSignManager {
     @Getter
-    private static File file;
+    private static File           file;
     @Getter
     private static StatSignConfig config;
     @Getter
-    private static Stats stats;
+    private static Stats          stats;
     @Getter
-    private static List<Integer> items = Lists.newArrayList();
+    private static List<Integer>  items = Lists.newArrayList();
 
     public static void init(EnjinMinecraftPlugin plugin) {
         try {
@@ -76,15 +76,15 @@ public class StatSignManager {
 
         if (delayed) {
             EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
-            int delay = config == null ? 5 : config.getSendStatsInterval();
+            int       delay  = config == null ? 5 : config.getSendStatsInterval();
             Sponge.getScheduler().createTaskBuilder().async()
-                    .delay(delay, TimeUnit.MINUTES)
-                    .execute(runnable)
-                    .submit(Enjin.getPlugin());
+                  .delay(delay, TimeUnit.MINUTES)
+                  .execute(runnable)
+                  .submit(Enjin.getPlugin());
         } else {
             Sponge.getScheduler().createTaskBuilder().async()
-                    .execute(runnable)
-                    .submit(Enjin.getPlugin());
+                  .execute(runnable)
+                  .submit(Enjin.getPlugin());
         }
     }
 
@@ -152,7 +152,7 @@ public class StatSignManager {
                 return;
             }
 
-            Sign sign = (Sign) location.getTileEntity().get();
+            Sign   sign = (Sign) location.getTileEntity().get();
             String name = null;
             switch (data.getType()) {
                 case DONATION:
@@ -223,8 +223,10 @@ public class StatSignManager {
         if (state.supports(ImmutableDirectionalData.class)) {
             ImmutableDirectionalData directional = state.get(ImmutableDirectionalData.class).get();
             if (directional != null) {
-                Direction direction = directional.direction().get();
-                Location<World> loc = sign.getLocation().getRelative(direction.getOpposite()).getRelative(Direction.UP);
+                Direction       direction = directional.direction().get();
+                Location<World> loc       = sign.getLocation()
+                                                .getRelative(direction.getOpposite())
+                                                .getRelative(Direction.UP);
 
                 if (loc != null && loc.getBlockType().equals(BlockTypes.SKULL)) {
                     updateHead(loc.getBlock(), loc, data, name);
@@ -260,7 +262,8 @@ public class StatSignManager {
             }
         }
 
-        if (block.getType() != BlockTypes.SKULL && !location.hasTileEntity() && !(location.getTileEntity().get() instanceof Skull)) {
+        if (block.getType() != BlockTypes.SKULL && !location.hasTileEntity() && !(location.getTileEntity()
+                                                                                          .get() instanceof Skull)) {
             return;
         }
 

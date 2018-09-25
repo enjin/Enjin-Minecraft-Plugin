@@ -12,8 +12,9 @@ public class PlayerUtil {
     /**
      * Returns an OfflinePlayer instance for the provided player name if found.
      *
-     * @param name the player name
+     * @param name      the player name
      * @param cacheOnly search cache only if true, else use method that may block
+     *
      * @return OfflinePlayer instance or null
      */
     public static OfflinePlayer getOfflinePlayer(@NonNull String name, boolean cacheOnly) {

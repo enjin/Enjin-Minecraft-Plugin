@@ -4,8 +4,8 @@ import com.enjin.core.Enjin;
 import com.enjin.core.services.Service;
 import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.minecraft.ServerInfo;
 import com.enjin.rpc.mappings.mappings.minecraft.MinecraftPlayerInfo;
+import com.enjin.rpc.mappings.mappings.minecraft.ServerInfo;
 import com.google.common.base.Optional;
 import com.google.gson.reflect.TypeToken;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
@@ -26,8 +26,8 @@ public class MinecraftService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -38,8 +38,9 @@ public class MinecraftService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<ServerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<List<ServerInfo>>>() {
-            }.getType());
+            RPCData<List<ServerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(),
+                                                                    new TypeToken<RPCData<List<ServerInfo>>>() {
+                                                                    }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -50,7 +51,9 @@ public class MinecraftService implements Service {
         }
     }
 
-    public RPCData<List<MinecraftPlayerInfo>> getPlayers(final Integer serverId, final Optional<List<String>> names, final Optional<List<String>> uuids) {
+    public RPCData<List<MinecraftPlayerInfo>> getPlayers(final Integer serverId,
+                                                         final Optional<List<String>> names,
+                                                         final Optional<List<String>> uuids) {
         String method = "Minecraft.getPlayers";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -67,8 +70,8 @@ public class MinecraftService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -79,8 +82,9 @@ public class MinecraftService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<MinecraftPlayerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<List<MinecraftPlayerInfo>>>() {
-            }.getType());
+            RPCData<List<MinecraftPlayerInfo>> data = EnjinRPC.gson.fromJson(response.toJSONString(),
+                                                                             new TypeToken<RPCData<List<MinecraftPlayerInfo>>>() {
+                                                                             }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;

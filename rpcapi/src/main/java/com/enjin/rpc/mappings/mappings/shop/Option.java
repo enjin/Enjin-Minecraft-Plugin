@@ -8,11 +8,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Option {
     @Getter
-    private String name;
+    private String  name;
     @Getter
-    private String value;
+    private String  value;
     @Getter
-    private Double price;
+    private Double  price;
     @Getter
     private Integer points;
 }

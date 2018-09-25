@@ -9,11 +9,11 @@ public class TagData {
     private Integer id;
     @Getter
     @SerializedName(value = "tagname")
-    private String name;
+    private String  name;
     @Getter
     @SerializedName(value = "date_added")
-    private Long date;
+    private Long    date;
     @Getter
     @SerializedName(value = "expiry_time")
-    private Long expire;
+    private Long    expire;
 }

@@ -7,7 +7,7 @@ import lombok.Setter;
 public class PlayerStats {
     @Getter
     @Setter
-    private boolean travel = true;
+    private boolean travel       = true;
     @Getter
     @Setter
     @SerializedName(value = "blocks-broken")
@@ -18,11 +18,11 @@ public class PlayerStats {
     private boolean blocksPlaced = true;
     @Getter
     @Setter
-    private boolean kills = true;
+    private boolean kills        = true;
     @Getter
     @Setter
-    private boolean deaths = true;
+    private boolean deaths       = true;
     @Getter
     @Setter
-    private boolean xp = true;
+    private boolean xp           = true;
 }

@@ -1,8 +1,8 @@
 package com.enjin.sponge.utils;
 
 import com.enjin.common.Log4j2Handlers;
-import com.enjin.common.compatibility.Log4j2Handler;
 import com.enjin.common.compatibility.LegacyLog4j2Handler;
+import com.enjin.common.compatibility.Log4j2Handler;
 import com.enjin.core.Enjin;
 import com.enjin.core.util.EnjinLogger;
 import com.enjin.sponge.EnjinMinecraftPlugin;
@@ -26,10 +26,10 @@ public class Log implements EnjinLogger {
 
     private static final SimpleDateFormat LOG_ZIP_NAME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getSimpleName());
+    private Logger       logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getSimpleName());
     private LineAppender listener;
-    private File logs = null;
-    private File log = null;
+    private File         logs   = null;
+    private File         log    = null;
 
     public Log(File configDir) {
         logs = new File(configDir, "logs");
@@ -51,13 +51,13 @@ public class Log implements EnjinLogger {
         FileInputStream fis = null;
         try {
             String date = LOG_ZIP_NAME_FORMAT.format(Calendar.getInstance().getTime());
-            int i = 0;
-            File file = null;
+            int    i    = 0;
+            File   file = null;
             while (file == null || file.exists()) {
                 file = new File(logs, date + "-" + ++i + ".log.zip");
             }
 
-            ZipFile zip = new ZipFile(file);
+            ZipFile       zip        = new ZipFile(file);
             ZipParameters parameters = new ZipParameters();
             parameters.setFileNameInZip(date + "-" + i + ".log");
             parameters.setSourceExternalStream(true);
@@ -117,23 +117,28 @@ public class Log implements EnjinLogger {
     }
 
     private String hideSensitiveText(String msg) {
-        if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
+        if (Enjin.getConfiguration() == null || Enjin.getConfiguration()
+                                                     .getAuthKey() == null || Enjin.getConfiguration()
+                                                                                   .getAuthKey()
+                                                                                   .isEmpty()) {
             return msg;
         } else {
             return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
-                    "**************************************************");
+                                  "**************************************************");
         }
     }
 
     public void configure() {
         Log4j2Handler log4j2Handler = Log4j2Handlers.findHandler();
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        LoggerContext ctx           = (LoggerContext) LogManager.getContext(false);
 
         if (log4j2Handler != null) {
             if (Enjin.getConfiguration().isLoggingEnabled()) {
                 FileAppender fileAppender;
                 try {
-                    fileAppender = LegacyLog4j2Handler.detected ? log4j2Handler.createFileAppender(ctx,"EnjinFileOut", log.getPath()) : null;
+                    fileAppender = LegacyLog4j2Handler.detected ? log4j2Handler.createFileAppender(ctx,
+                                                                                                   "EnjinFileOut",
+                                                                                                   log.getPath()) : null;
                     fileAppender.start();
                     logger.addAppender(fileAppender);
                 } catch (Throwable t) {
@@ -142,7 +147,8 @@ public class Log implements EnjinLogger {
             }
 
             try {
-                listener = new LineAppender("EnjinLineIn", LegacyLog4j2Handler.detected ? log4j2Handler.createPatternLayout(ctx) : null);
+                listener = new LineAppender("EnjinLineIn",
+                                            LegacyLog4j2Handler.detected ? log4j2Handler.createPatternLayout(ctx) : null);
                 listener.start();
                 Logger root = (Logger) LogManager.getRootLogger();
                 root.addAppender(listener);

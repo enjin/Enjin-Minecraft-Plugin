@@ -7,10 +7,8 @@ import com.enjin.sponge.permissions.PermissionHandler;
 import com.enjin.sponge.permissions.handlers.SpongePermissionHandler;
 import lombok.Getter;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Login;
@@ -19,12 +17,14 @@ import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.permission.PermissionService;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class ConnectionListener {
     @Getter
     private static ConnectionListener instance;
-    private PermissionHandler permissionHandler = null;
+    private        PermissionHandler  permissionHandler = null;
 
     public ConnectionListener() {
         ConnectionListener.instance = this;
@@ -34,7 +34,8 @@ public class ConnectionListener {
     private void init() {
         final ServiceManager services = Sponge.getServiceManager();
         if (services.isRegistered(PermissionService.class)) {
-            final Optional<ProviderRegistration<PermissionService>> potential = services.getRegistration(PermissionService.class);
+            final Optional<ProviderRegistration<PermissionService>> potential = services.getRegistration(
+                    PermissionService.class);
             if (potential.isPresent()) {
                 initPermissions(potential.get());
             }
@@ -89,14 +90,16 @@ public class ConnectionListener {
 
     private static void updatePlayerRanks1(GameProfile profile) {
         if (profile == null || !profile.getName().isPresent()) {
-            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
+            Enjin.getLogger()
+                 .debug("[ConnectionListener::updatePlayerRanks] Player or their name is null. Unable to update their ranks.");
             return;
         }
 
         PlayerGroupInfo info = new PlayerGroupInfo(profile.getUniqueId());
 
         if (info == null) {
-            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] PlayerGroupInfo is null. Unable to update " + profile.getName() + "'s ranks.");
+            Enjin.getLogger()
+                 .debug("[ConnectionListener::updatePlayerRanks] PlayerGroupInfo is null. Unable to update " + profile.getName() + "'s ranks.");
             return;
         }
 

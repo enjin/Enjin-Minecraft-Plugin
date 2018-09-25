@@ -31,8 +31,12 @@ public class ShopList extends Menu {
     private void init(PlayerShopInstance instance) {
         int i = 0;
         for (final Shop shop : instance.getShops()) {
-            String name = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + shop.getName();
-            MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()), Material.CHEST) {
+            String name = ChatColor.translateAlternateColorCodes('&',
+                                                                 "&" + shop.getColorId()) + (i + 1) + ". " + ChatColor.translateAlternateColorCodes(
+                    '&',
+                    "&" + shop.getColorName()) + shop.getName();
+            MenuItem menuItem = new MenuItem(name.substring(0, name.length() >= 32 ? 32 : name.length()),
+                                             Material.CHEST) {
                 @Override
                 public void onClick(Player player) {
                     if (!shops.containsKey(this)) {
@@ -43,7 +47,10 @@ public class ShopList extends Menu {
                     ShopListener.getGuiInstances().put(player.getUniqueId(), shops.get(this));
                 }
             };
-            menuItem.setDescriptions(TextUtils.splitToListWithPrefix(shop.getInfo(), 30, ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorInfo())));
+            menuItem.setDescriptions(TextUtils.splitToListWithPrefix(shop.getInfo(),
+                                                                     30,
+                                                                     ChatColor.translateAlternateColorCodes('&',
+                                                                                                            "&" + shop.getColorInfo())));
 
             this.addMenuItem(menuItem, i++);
         }

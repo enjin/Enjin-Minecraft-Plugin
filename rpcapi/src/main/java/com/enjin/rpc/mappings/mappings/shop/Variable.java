@@ -11,26 +11,26 @@ import java.util.Map;
 @EqualsAndHashCode
 public class Variable {
     @Getter
-    private String name;
+    private String               name;
     @Getter
-    private String type;
+    private String               type;
     @Getter
     @SerializedName(value = "max_length")
-    private Integer maxLength;
+    private Integer              maxLength;
     @SerializedName(value = "min_length")
-    private Integer minLength;
+    private Integer              minLength;
     @SerializedName(value = "max_value")
-    private Integer maxValue;
+    private Integer              maxValue;
     @SerializedName(value = "min_value")
-    private Integer minValue;
+    private Integer              minValue;
     @Getter
-    private Boolean required;
+    private Boolean              required;
     @Getter
     private Map<Integer, Option> options;
     @Getter
     @SerializedName(value = "pricemin")
-    private Double minPrice;
+    private Double               minPrice;
     @Getter
     @SerializedName(value = "pricemax")
-    private Double maxPrice;
+    private Double               maxPrice;
 }

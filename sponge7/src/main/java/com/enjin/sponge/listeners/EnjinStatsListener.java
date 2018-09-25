@@ -95,7 +95,7 @@ public class EnjinStatsListener {
         }
 
         Sponge.getScheduler().createTaskBuilder().execute(() -> {
-            Player p = (Player) event.getTargetEntity();
+            Player      p      = (Player) event.getTargetEntity();
             StatsPlayer player = StatsManager.getPlayerStats(p);
             player.addDeath();
         }).async().submit(Enjin.getPlugin());
@@ -109,7 +109,7 @@ public class EnjinStatsListener {
         }
 
         Sponge.getScheduler().createTaskBuilder().execute(() -> {
-            Player p = event.getCause().first(Player.class).get();
+            Player      p      = event.getCause().first(Player.class).get();
             StatsPlayer player = StatsManager.getPlayerStats(p);
 
             player.addKilled();
@@ -134,18 +134,19 @@ public class EnjinStatsListener {
         }
 
         Sponge.getScheduler().createTaskBuilder().execute(() -> {
-            Player p = (Player) event.getTargetEntity();
+            Player      p      = (Player) event.getTargetEntity();
             StatsPlayer player = StatsManager.getPlayerStats(p);
 
             Location<World> from = event.getFromTransform().getLocation();
-            Location<World> to = event.getToTransform().getLocation();
+            Location<World> to   = event.getToTransform().getLocation();
 
             //Make sure we didn't teleport between two worlds or something
             if (!from.getExtent().getName().equals(to.getExtent().getName())) {
                 return;
             }
 
-            double distance = (to.getX() - from.getX()) * (to.getX() - from.getX()) + (to.getY() - from.getY()) * (to.getY() - from.getY()) + (to.getZ() - from.getZ()) * (to.getZ() - from.getZ());
+            double distance = (to.getX() - from.getX()) * (to.getX() - from.getX()) + (to.getY() - from.getY()) * (to.getY() - from
+                    .getY()) + (to.getZ() - from.getZ()) * (to.getZ() - from.getZ());
 
             //You can't go over 4 blocks before a teleport event happens, otherwise you are using hacks to move.
             if (distance > 36) {
@@ -178,7 +179,7 @@ public class EnjinStatsListener {
         }
 
         Sponge.getScheduler().createTaskBuilder().execute(() -> {
-            Player p = (Player) event.getTargetEntity();
+            Player      p      = (Player) event.getTargetEntity();
             StatsPlayer player = StatsManager.getPlayerStats(p);
 
             if (player != null && p != null) {

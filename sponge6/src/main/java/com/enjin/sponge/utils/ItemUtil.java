@@ -36,10 +36,11 @@ public class ItemUtil {
 
     public static void setLegacyData(@NonNull ItemStack stack, int data) {
         if (stack.supports(Keys.DYE_COLOR)) {
-            if (data < 0)
+            if (data < 0) {
                 data = 0;
-            else if (data > 15)
+            } else if (data > 15) {
                 data = 15;
+            }
             stack.offer(Keys.DYE_COLOR, DYES.get(data));
         }
     }

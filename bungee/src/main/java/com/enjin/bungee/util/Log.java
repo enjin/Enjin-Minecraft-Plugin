@@ -24,8 +24,8 @@ public class Log implements EnjinLogger {
 
     @Getter
     private final static Logger logger = Logger.getLogger(EnjinMinecraftPlugin.class.getName());
-    private File logs = null;
-    private File log = null;
+    private              File   logs   = null;
+    private              File   log    = null;
 
     public Log(File configDir) {
         logs = new File(configDir, "logs");
@@ -47,13 +47,13 @@ public class Log implements EnjinLogger {
         FileInputStream fis = null;
         try {
             String date = LOG_ZIP_NAME_FORMAT.format(Calendar.getInstance().getTime());
-            int i = 0;
-            File file = null;
+            int    i    = 0;
+            File   file = null;
             while (file == null || file.exists()) {
                 file = new File(logs, date + "-" + ++i + ".log.zip");
             }
 
-            ZipFile zip = new ZipFile(file);
+            ZipFile       zip        = new ZipFile(file);
             ZipParameters parameters = new ZipParameters();
             parameters.setFileNameInZip(date + "-" + i + ".log");
             parameters.setSourceExternalStream(true);
@@ -114,21 +114,27 @@ public class Log implements EnjinLogger {
     }
 
     private String hideSensitiveText(String msg) {
-        if (Enjin.getConfiguration() == null || Enjin.getConfiguration().getAuthKey() == null || Enjin.getConfiguration().getAuthKey().isEmpty()) {
+        if (Enjin.getConfiguration() == null || Enjin.getConfiguration()
+                                                     .getAuthKey() == null || Enjin.getConfiguration()
+                                                                                   .getAuthKey()
+                                                                                   .isEmpty()) {
             return msg;
         } else {
             return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
-                    "**************************************************");
+                                  "**************************************************");
         }
     }
 
     public void configure() {
         if (Enjin.getConfiguration().isLoggingEnabled()) {
             EnjinLogFormatter formatter = new EnjinLogFormatter();
-            FileHandler handler = null;
+            FileHandler       handler   = null;
 
             try {
-                handler = new FileHandler(EnjinMinecraftPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log", true);
+                handler = new FileHandler(EnjinMinecraftPlugin.getInstance()
+                                                              .getDataFolder()
+                                                              .getAbsolutePath() + File.separator + "logs" + File.separator + "enjin.log",
+                                          true);
             } catch (IOException e) {
                 Enjin.getLogger().log(e);
             }

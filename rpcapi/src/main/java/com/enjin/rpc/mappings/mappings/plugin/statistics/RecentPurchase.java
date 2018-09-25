@@ -14,9 +14,9 @@ import java.util.List;
 public class RecentPurchase {
     @Getter
     @SerializedName(value = "player_name")
-    private String name;
+    private String        name;
     @Getter
     private List<Integer> items;
     @Getter
-    private Double price;
+    private Double        price;
 }

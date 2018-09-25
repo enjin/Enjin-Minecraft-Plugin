@@ -13,14 +13,14 @@ public class CurrentLog4j2Handler implements Log4j2Handler {
 
     private static MethodHandle patternLayoutNewBuilder;
     private static MethodHandle fileAppenderNewBuilder;
-    public static boolean detected;
+    public static  boolean      detected;
 
     static {
         try {
             patternLayoutNewBuilder = MethodHandles.lookup().findStatic(PatternLayout.class, "newBuilder",
-                    MethodType.methodType(PatternLayout.Builder.class));
+                                                                        MethodType.methodType(PatternLayout.Builder.class));
             fileAppenderNewBuilder = MethodHandles.lookup().findStatic(FileAppender.class, "newBuilder",
-                    MethodType.methodType(FileAppender.Builder.class));
+                                                                       MethodType.methodType(FileAppender.Builder.class));
             detected = true;
         } catch (Exception e) {
             detected = false;
@@ -30,18 +30,18 @@ public class CurrentLog4j2Handler implements Log4j2Handler {
     @Override
     public PatternLayout createPatternLayout(LoggerContext ctx) throws Throwable {
         return PatternLayout.newBuilder()
-                .withPattern("[%d{yyyy-MM-dd HH:mm:ss} %p] %msg%n")
-                .withConfiguration(ctx.getConfiguration())
-                .withCharset(Charset.forName("UTF-8"))
-                .build();
+                            .withPattern("[%d{yyyy-MM-dd HH:mm:ss} %p] %msg%n")
+                            .withConfiguration(ctx.getConfiguration())
+                            .withCharset(Charset.forName("UTF-8"))
+                            .build();
     }
 
     @Override
     public FileAppender createFileAppender(LoggerContext ctx, String name, String path) throws Throwable {
         FileAppender.Builder builder = (FileAppender.Builder) FileAppender.newBuilder()
-                .withFileName(path)
-                .withName(name)
-                .withLayout(createPatternLayout(ctx));
+                                                                          .withFileName(path)
+                                                                          .withName(name)
+                                                                          .withLayout(createPatternLayout(ctx));
         return builder.build();
     }
 

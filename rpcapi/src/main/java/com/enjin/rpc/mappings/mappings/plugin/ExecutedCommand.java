@@ -7,10 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 @ToString
 @EqualsAndHashCode
@@ -18,11 +16,11 @@ import java.security.NoSuchAlgorithmException;
 public class ExecutedCommand {
     @Getter
     @SerializedName(value = "command_id")
-    private String id;
+    private           String id;
     @Getter
-    private String hash;
+    private           String hash;
     @Getter
-    private String response;
+    private           String response;
     @Getter
     private transient String command;
 
@@ -35,11 +33,11 @@ public class ExecutedCommand {
 
     private String generateHash(String command) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(command.getBytes("UTF-8"));
+            MessageDigest md     = MessageDigest.getInstance("MD5");
+            byte[]        digest = md.digest(command.getBytes("UTF-8"));
 
             BigInteger bigInt = new BigInteger(1, digest);
-            String hash = bigInt.toString(16);
+            String     hash   = bigInt.toString(16);
 
             while (hash.length() < 32) {
                 hash = "0" + hash;

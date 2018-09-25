@@ -30,15 +30,15 @@ public class EnjinRPC {
             .registerTypeAdapter(Double.class, new DoubleAdapter())
             .create();
 
-    private static final Integer READ_TIMEOUT = 15000;
+    private static final Integer READ_TIMEOUT    = 15000;
     private static final Integer CONNECT_TIMEOUT = 15000;
 
     private static Integer nextRequestId = 0;
 
     public static URL getUrl(String clazz) {
         try {
-            EnjinConfig config = Enjin.getConfiguration();
-            String apiUrl = config.getApiUrl();
+            EnjinConfig   config  = Enjin.getConfiguration();
+            String        apiUrl  = config.getApiUrl();
             StringBuilder builder = new StringBuilder(config.isHttps() ? "https" : "http");
 
             if (apiUrl.startsWith("https")) {

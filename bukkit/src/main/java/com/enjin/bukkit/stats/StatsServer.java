@@ -1,26 +1,25 @@
 package com.enjin.bukkit.stats;
 
+import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.util.PrimitiveUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.json.simple.JSONObject;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.enjin.bukkit.util.PrimitiveUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.json.simple.JSONObject;
-
-import com.enjin.bukkit.EnjinMinecraftPlugin;
-
 public class StatsServer {
 
     EnjinMinecraftPlugin plugin;
 
-    long lastserverstarttime = System.currentTimeMillis();
-    int totalkicks = 0;
-    ConcurrentHashMap<String, Integer> playerkicks = new ConcurrentHashMap<String, Integer>();
-    int creeperexplosions = 0;
+    long                               lastserverstarttime = System.currentTimeMillis();
+    int                                totalkicks          = 0;
+    ConcurrentHashMap<String, Integer> playerkicks         = new ConcurrentHashMap<String, Integer>();
+    int                                creeperexplosions   = 0;
 
     public StatsServer(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -33,7 +32,7 @@ public class StatsServer {
         creeperexplosions = PrimitiveUtils.getInt(serverstats.get("creeperexplosions"));
         Object okicks = serverstats.get("playerskickedlist");
         if (okicks instanceof JSONObject) {
-            JSONObject kicks = (JSONObject) okicks;
+            JSONObject     kicks  = (JSONObject) okicks;
             Set<Map.Entry> skicks = kicks.entrySet();
             for (Map.Entry kick : skicks) {
                 playerkicks.put(kick.getKey().toString(), PrimitiveUtils.getInt(kick.getValue()));
@@ -97,18 +96,20 @@ public class StatsServer {
 
         }
         serverbuilder.put("totalentities", new Integer(totalentities));
-        Runtime runtime = Runtime.getRuntime();
-        long memused = runtime.totalMemory() / (1024 * 1024);
-        long maxmemory = runtime.maxMemory() / (1024 * 1024);
+        Runtime runtime   = Runtime.getRuntime();
+        long    memused   = runtime.totalMemory() / (1024 * 1024);
+        long    maxmemory = runtime.maxMemory() / (1024 * 1024);
         serverbuilder.put("maxmemory", new Integer((int) maxmemory));
         serverbuilder.put("memoryused", new Integer((int) memused));
         serverbuilder.put("javaversion", System.getProperty("java.version") + " " + System.getProperty("java.vendor"));
-        serverbuilder.put("os", System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"));
+        serverbuilder.put("os",
+                          System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty(
+                                  "os.arch"));
         serverbuilder.put("corecount", new Integer(runtime.availableProcessors()));
         serverbuilder.put("serverversion", plugin.getServer().getVersion());
         serverbuilder.put("laststarttime", new Integer((int) (lastserverstarttime / 1000)));
-        JSONObject kickedplayers = new JSONObject();
-        Set<Entry<String, Integer>> kicks = playerkicks.entrySet();
+        JSONObject                  kickedplayers = new JSONObject();
+        Set<Entry<String, Integer>> kicks         = playerkicks.entrySet();
         for (Entry<String, Integer> kick : kicks) {
             kickedplayers.put(kick.getKey(), kick.getValue());
         }

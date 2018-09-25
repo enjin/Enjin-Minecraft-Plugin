@@ -29,9 +29,9 @@ public class ExtraQuestion {
     private QuestionType type;
     @Getter
     @SerializedName("question_id")
-    private Integer questionId;
+    private Integer      questionId;
     @Getter
-    private String label;
+    private String       label;
     @Getter
-    private Object answer;
+    private Object       answer;
 }

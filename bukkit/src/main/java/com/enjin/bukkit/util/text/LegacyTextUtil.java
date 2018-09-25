@@ -27,7 +27,7 @@ public class LegacyTextUtil {
 
     public static String getLegacyText(String text) {
         TextColor color = getColor(text);
-        return new String(new char[]{CHARACTER, color.legacy()});
+        return new String(new char[] {CHARACTER, color.legacy()});
     }
 
 }

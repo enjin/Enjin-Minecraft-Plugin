@@ -24,8 +24,8 @@ public class VoteService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {

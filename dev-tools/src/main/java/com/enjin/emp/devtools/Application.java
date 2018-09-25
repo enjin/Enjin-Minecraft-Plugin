@@ -26,10 +26,10 @@ import java.util.zip.ZipFile;
 public class Application {
 
     public static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
-    public static final File CWD = new File(".");
-    public static final boolean autocrlf = !"\n".equals(System.getProperty("line.separator"));
-    private static File msysDir;
-    private static String mvn;
+    public static final File    CWD        = new File(".");
+    public static final boolean autocrlf   = !"\n".equals(System.getProperty("line.separator"));
+    private static      File    msysDir;
+    private static      String  mvn;
 
     public static void main(String... args) throws Exception {
         if (CWD.getAbsolutePath().contains("'") || CWD.getAbsolutePath().contains("#")) {
@@ -41,14 +41,15 @@ public class Application {
             runProcess(CWD, "sh", "-c", "exit");
         } catch (Exception ex) {
             if (IS_WINDOWS) {
-                String gitVersion = "PortableGit-2.15.0-" + (System.getProperty("os.arch").endsWith("64") ? "64" : "32") + "-bit";
+                String gitVersion = "PortableGit-2.15.0-" + (System.getProperty("os.arch")
+                                                                   .endsWith("64") ? "64" : "32") + "-bit";
                 msysDir = new File(gitVersion, "PortableGit");
 
                 if (!msysDir.isDirectory()) {
                     System.out.println("*** Could not find PortableGit installation, downloading. ***");
 
-                    String gitName = gitVersion + ".7z.exe";
-                    File gitInstall = new File(gitVersion, gitName);
+                    String gitName    = gitVersion + ".7z.exe";
+                    File   gitInstall = new File(gitVersion, gitName);
                     gitInstall.getParentFile().mkdirs();
 
                     if (!gitInstall.exists()) {
@@ -63,7 +64,8 @@ public class Application {
                 }
 
                 System.out.println("*** Using downloaded git " + msysDir + " ***");
-                System.out.println("*** Please note that this is a beta feature, so if it does not work please also try a manual install of git from https://git-for-windows.github.io/ ***");
+                System.out.println(
+                        "*** Please note that this is a beta feature, so if it does not work please also try a manual install of git from https://git-for-windows.github.io/ ***");
             } else {
                 System.out.println("You must run this jar through bash (msysgit)");
                 System.exit(1);
@@ -73,7 +75,7 @@ public class Application {
         runProcess(CWD, "git", "--version");
 
         // Validate Maven installation
-        File maven;
+        File   maven;
         String m2Home = System.getenv("M2_HOME");
         if (m2Home == null || !(maven = new File(m2Home)).exists()) {
             maven = new File("apache-maven-3.5.0");
@@ -94,19 +96,19 @@ public class Application {
 
         // Download and install jars to local maven repository manually
         downloadAndInstallJar("https://dev.bukkit.org/projects/zpermissions/files/787619/download",
-                "org.tyrannyofheaven.bukkit", "zPermissions", "1.3beta1");
+                              "org.tyrannyofheaven.bukkit", "zPermissions", "1.3beta1");
         downloadAndInstallJar("https://dev.bukkit.org/projects/bpermissions/files/941243/download",
-                "de.banaco", "bPermissions-Bukkit", "2.12.1");
+                              "de.banaco", "bPermissions-Bukkit", "2.12.1");
         downloadAndInstallJar("https://dev.bukkit.org/projects/vanish/files/2597365/download",
-                "org.kitteh", "VanishNoPacket", "3.20.1");
+                              "org.kitteh", "VanishNoPacket", "3.20.1");
         downloadAndInstallJar("https://dev.bukkit.org/projects/tuxtwolib/files/2431867/download",
-                "Tux2", "TuxTwoLib", "1.12-b8");
+                              "Tux2", "TuxTwoLib", "1.12-b8");
         downloadAndInstallJar("https://dev.bukkit.org/projects/permissionsex/files/909154/download",
-                "ru.tehkode", "PermissionsEx", "1.23.4");
+                              "ru.tehkode", "PermissionsEx", "1.23.4");
         downloadAndInstallJar("https://dev.bukkit.org/projects/permbukkit/files/911279/download",
-                "com.platymuus", "bukkit-permissions", "2.5");
+                              "com.platymuus", "bukkit-permissions", "2.5");
         downloadAndInstallJar("https://popicraft.net/jenkins/job/mcMMO/16/artifact/mcMMO/target/mcMMO.jar",
-                "com.gmail.nossr50.mcMMO", "mcMMO", "1.5.10");
+                              "com.gmail.nossr50.mcMMO", "mcMMO", "1.5.10");
     }
 
     public static int runProcess(File workDir, String... command) throws Exception {
@@ -115,7 +117,7 @@ public class Application {
                 command[0] = "git-bash";
             }
 
-            String[] shim = new String[] { "cmd.exe", "/C" };
+            String[] shim = new String[] {"cmd.exe", "/C"};
             command = ObjectArrays.concat(shim, command, String.class);
         }
 
@@ -184,7 +186,7 @@ public class Application {
         targetFolder.mkdir();
 
         try (ZipFile zip = new ZipFile(zipFile)) {
-            for (Enumeration<? extends ZipEntry> entries = zip.entries(); entries.hasMoreElements();) {
+            for (Enumeration<? extends ZipEntry> entries = zip.entries(); entries.hasMoreElements(); ) {
                 ZipEntry entry = entries.nextElement();
 
                 if (filter != null) {
@@ -215,26 +217,33 @@ public class Application {
         }
     }
 
-    public static void install(File artifact, String groupId, String artifactId, String version, String packaging) throws Exception {
+    public static void install(File artifact,
+                               String groupId,
+                               String artifactId,
+                               String version,
+                               String packaging) throws Exception {
         runProcess(CWD,
-                "sh", mvn, "install:install-file",
-                "-Dfile=" + artifact,
-                "-Dpackaging=" + packaging,
-                "-DgroupId=" + groupId,
-                "-DartifactId=" + artifactId,
-                "-Dversion=" + version);
+                   "sh", mvn, "install:install-file",
+                   "-Dfile=" + artifact,
+                   "-Dpackaging=" + packaging,
+                   "-DgroupId=" + groupId,
+                   "-DartifactId=" + artifactId,
+                   "-Dversion=" + version);
     }
 
-    public static void downloadAndInstallJar(String url, String groupId, String artifactId, String version) throws Exception {
+    public static void downloadAndInstallJar(String url,
+                                             String groupId,
+                                             String artifactId,
+                                             String version) throws Exception {
         String pluginsName = "./jars/";
-        File pluginsDir = new File(pluginsName);
+        File   pluginsDir  = new File(pluginsName);
 
         if (!pluginsDir.exists()) {
             pluginsDir.mkdirs();
         }
 
         String targetName = artifactId + "-" + version + ".jar";
-        File targetFile = new File(pluginsDir, targetName);
+        File   targetFile = new File(pluginsDir, targetName);
 
         if (!targetFile.exists()) {
             download(url, targetFile);

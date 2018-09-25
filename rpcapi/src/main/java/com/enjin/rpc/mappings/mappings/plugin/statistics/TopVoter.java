@@ -12,7 +12,7 @@ import lombok.ToString;
 public class TopVoter {
     @Getter
     @SerializedName(value = "player_name")
-    private String name;
+    private String  name;
     @Getter
     @SerializedName(value = "cnt")
     private Integer count;

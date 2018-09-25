@@ -8,15 +8,15 @@ import lombok.NoArgsConstructor;
 public class ExecuteData {
     @Getter
     @SerializedName(value = "command_id")
-    private Long id = -1L;
+    private Long    id      = -1L;
     @Getter
-    private String command = "";
+    private String  command = "";
     @Getter
-    private Long delay = 0L;
+    private Long    delay   = 0L;
     @Getter
-    private String player;
+    private String  player;
     @Getter
-    private String uuid;
+    private String  uuid;
     @Getter
     @SerializedName(value = "require_online")
     private Boolean requireOnline;

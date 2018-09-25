@@ -1,25 +1,29 @@
 package com.enjin.sponge.utils;
 
 import com.google.common.collect.ImmutableList;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.Callable;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 
 public class UUIDFetcher implements Callable<Map<String, UUID>> {
-    private static final double PROFILES_PER_REQUEST = 100;
-    private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
-    private final JSONParser jsonParser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
-    private final List<String> names;
-    private final boolean rateLimiting;
+    private static final double       PROFILES_PER_REQUEST = 100;
+    private static final String       PROFILE_URL          = "https://api.mojang.com/profiles/minecraft";
+    private final        JSONParser   jsonParser           = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+    private final        List<String> names;
+    private final        boolean      rateLimiting;
 
     public UUIDFetcher(List<String> names, boolean rateLimiting) {
         this.names = ImmutableList.copyOf(names);
@@ -31,18 +35,19 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
     }
 
     public Map<String, UUID> call() throws Exception {
-        Map<String, UUID> uuidMap = new HashMap<String, UUID>();
-        int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
+        Map<String, UUID> uuidMap  = new HashMap<String, UUID>();
+        int               requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
         for (int i = 0; i < requests; i++) {
             HttpURLConnection connection = createConnection();
-            String body = JSONArray.toJSONString(names.subList(i * 100, Math.min((i + 1) * 100, names.size())));
+            String            body       = JSONArray.toJSONString(names.subList(i * 100,
+                                                                                Math.min((i + 1) * 100, names.size())));
             writeBody(connection, body);
             JSONArray array = (JSONArray) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
             for (Object profile : array) {
                 JSONObject jsonProfile = (JSONObject) profile;
-                String id = (String) jsonProfile.get("id");
-                String name = (String) jsonProfile.get("name");
-                UUID uuid = UUIDFetcher.getUUID(id);
+                String     id          = (String) jsonProfile.get("id");
+                String     name        = (String) jsonProfile.get("name");
+                UUID       uuid        = UUIDFetcher.getUUID(id);
                 uuidMap.put(name, uuid);
             }
             if (rateLimiting && i != requests - 1) {
@@ -60,7 +65,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
     }
 
     private static HttpURLConnection createConnection() throws Exception {
-        URL url = new URL(PROFILE_URL);
+        URL               url        = new URL(PROFILE_URL);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json");
@@ -71,7 +76,10 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
     }
 
     private static UUID getUUID(String id) {
-        return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" + id.substring(20, 32));
+        return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12,
+                                                                                                   16) + "-" + id.substring(
+                16,
+                20) + "-" + id.substring(20, 32));
     }
 
     public static byte[] toBytes(UUID uuid) {
@@ -85,15 +93,15 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
         if (array.length != 16) {
             throw new IllegalArgumentException("Illegal byte array length: " + array.length);
         }
-        ByteBuffer byteBuffer = ByteBuffer.wrap(array);
-        long mostSignificant = byteBuffer.getLong();
-        long leastSignificant = byteBuffer.getLong();
+        ByteBuffer byteBuffer       = ByteBuffer.wrap(array);
+        long       mostSignificant  = byteBuffer.getLong();
+        long       leastSignificant = byteBuffer.getLong();
         return new UUID(mostSignificant, leastSignificant);
     }
 
     public static UUID getUUIDOf(String name) throws Exception {
         Map<String, UUID> uuids = new UUIDFetcher(Arrays.asList(name)).call();
-        UUID uuid = null;
+        UUID              uuid  = null;
 
         for (Entry<String, UUID> entry : uuids.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(name)) {

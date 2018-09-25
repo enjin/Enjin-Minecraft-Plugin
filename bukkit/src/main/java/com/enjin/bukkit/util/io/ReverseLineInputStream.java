@@ -1,15 +1,19 @@
 package com.enjin.bukkit.util.io;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 public class ReverseLineInputStream extends InputStream {
 
     private RandomAccessFile in;
 
     private long currentLineStart = -1;
-    private long currentLineEnd = -1;
-    private long currentPos = -1;
-    private long lastPosInFile = -1;
+    private long currentLineEnd   = -1;
+    private long currentPos       = -1;
+    private long lastPosInFile    = -1;
 
     public ReverseLineInputStream(File file) throws FileNotFoundException {
         in = new RandomAccessFile(file, "r");

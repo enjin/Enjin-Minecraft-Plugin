@@ -19,13 +19,13 @@ import java.util.List;
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class MinecraftServiceTest {
     private static final String API_URL = "http://api.enjinpink.com/api/v1/";
-    private static final String KEY = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
-    private static final int SERVER = 439024;
+    private static final String KEY     = "cfc9718c515f63e26804af7f56b1c966de13501ecdad1ad41e";
+    private static final int    SERVER  = 439024;
 
     @Test
     public void test1GetServers() {
-        MinecraftService service = EnjinServices.getService(MinecraftService.class);
-        RPCData<List<ServerInfo>> data = service.getServers();
+        MinecraftService          service = EnjinServices.getService(MinecraftService.class);
+        RPCData<List<ServerInfo>> data    = service.getServers();
 
         Assert.assertNotNull(data);
         Assert.assertNotNull(data.getResult());
@@ -39,11 +39,11 @@ public class MinecraftServiceTest {
         MinecraftService service = EnjinServices.getService(MinecraftService.class);
 
         RPCData<List<MinecraftPlayerInfo>> data = service.getPlayers(SERVER,
-                Optional.<List<String>>of(new ArrayList<String>() {{
-                    add("Favorlock");
-                    add("AlmightyToaster");
-                }}),
-                Optional.<List<String>>absent());
+                                                                     Optional.<List<String>>of(new ArrayList<String>() {{
+                                                                         add("Favorlock");
+                                                                         add("AlmightyToaster");
+                                                                     }}),
+                                                                     Optional.<List<String>>absent());
 
         Assert.assertNotNull(data);
         Assert.assertNotNull(data.getResult());

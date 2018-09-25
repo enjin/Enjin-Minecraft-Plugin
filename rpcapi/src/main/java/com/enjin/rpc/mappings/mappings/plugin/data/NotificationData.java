@@ -8,9 +8,9 @@ import java.util.List;
 @NoArgsConstructor
 public class NotificationData {
     @Getter
-    private String message;
+    private String       message;
     @Getter
     private List<String> players;
     @Getter
-    private Long time;
+    private Long         time;
 }

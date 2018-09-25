@@ -11,21 +11,21 @@ import java.util.Map;
 @EqualsAndHashCode
 public class Item {
     @Getter
-    private Integer id;
+    private Integer                id;
     @Getter
-    private String name;
+    private String                 name;
     @Getter
-    private String info;
+    private String                 info;
     @Getter
     private Map<Integer, Variable> variables;
     @Getter
     @SerializedName(value = "icon_damage")
-    private Byte iconDamage;
+    private Byte                   iconDamage;
     @Getter
     @SerializedName(value = "icon_item")
-    private String iconItem;
+    private String                 iconItem;
     @Getter
-    private Double price;
+    private Double                 price;
     @Getter
-    private Integer points;
+    private Integer                points;
 }

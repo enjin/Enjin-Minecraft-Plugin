@@ -2,34 +2,53 @@ package com.enjin.bukkit.tickets;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.core.Enjin;
-import com.enjin.rpc.mappings.mappings.tickets.*;
+import com.enjin.rpc.mappings.mappings.tickets.Condition;
+import com.enjin.rpc.mappings.mappings.tickets.ConditionQualify;
+import com.enjin.rpc.mappings.mappings.tickets.Question;
+import com.enjin.rpc.mappings.mappings.tickets.QuestionType;
+import com.enjin.rpc.mappings.mappings.tickets.TicketModule;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.conversations.*;
+import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.conversations.ConversationAbandonedListener;
+import org.bukkit.conversations.ConversationContext;
+import org.bukkit.conversations.ConversationFactory;
+import org.bukkit.conversations.MessagePrompt;
+import org.bukkit.conversations.NumericPrompt;
+import org.bukkit.conversations.Prompt;
+import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class TicketCreationSession {
-    private static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-    private static ConversationFactory factory;
+    private static final DateFormat                       dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private static       ConversationFactory              factory;
     @Getter
-    private static Map<UUID, TicketCreationSession> sessions = new HashMap<>();
+    private static       Map<UUID, TicketCreationSession> sessions   = new HashMap<>();
 
-    private int moduleId;
-    private Map<Integer, Question> idMap;
-    private List<Question> questions;
-    private List<Question> conditional = new ArrayList<>();
-    private Map<Integer, QuestionResponse> responses = new HashMap<>();
+    private int                            moduleId;
+    private Map<Integer, Question>         idMap;
+    private List<Question>                 questions;
+    private List<Question>                 conditional = new ArrayList<>();
+    private Map<Integer, QuestionResponse> responses   = new HashMap<>();
 
     private EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-    private UUID uuid;
+    private UUID                 uuid;
     @Getter
-    private Conversation conversation;
+    private Conversation         conversation;
 
     static {
         dateFormat.setLenient(false);
@@ -55,7 +74,8 @@ public class TicketCreationSession {
             Enjin.getLogger().debug("Processing question: " + question.getId() + " of type " + question.getType());
 
             if (question.getType() == QuestionType.file) {
-                Enjin.getLogger().debug("File question type detected. Required: " + question.getRequired().booleanValue());
+                Enjin.getLogger()
+                     .debug("File question type detected. Required: " + question.getRequired().booleanValue());
                 if (question.getRequired().booleanValue()) {
                     player.sendMessage(ChatColor.GOLD + "This support ticket requires a file upload and must be submitted on the website.");
                     return;
@@ -106,7 +126,9 @@ public class TicketCreationSession {
         if (questions != null) {
             if (!questions.isEmpty()) {
                 Question question = questions.remove(0);
-                Enjin.getLogger().debug("Creating prompt for question: " + question.getId() + "|" + question.getLabel() + " in module: " + question.getPresetId());
+                Enjin.getLogger()
+                     .debug("Creating prompt for question: " + question.getId() + "|" + question.getLabel() + " in module: " + question
+                             .getPresetId());
                 prompt = createPrompt(question);
             } else {
                 Enjin.getLogger().debug("Checking conditionals for next question to prompt.");
@@ -114,7 +136,8 @@ public class TicketCreationSession {
                     for (Question question : new ArrayList<>(conditional)) {
                         boolean conditionsMet = false;
                         if (question.getConditionQualify() == ConditionQualify.one_true) {
-                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " requires that condition be met. Checking conditions.");
+                            Enjin.getLogger()
+                                 .debug("Question: " + question.getId() + "|" + question.getLabel() + " requires that condition be met. Checking conditions.");
                             for (Condition condition : question.getConditions()) {
                                 boolean result = conditionMet(condition);
                                 if (result) {
@@ -132,17 +155,21 @@ public class TicketCreationSession {
                         }
 
                         if (conditionsMet) {
-                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " meets conditions.");
+                            Enjin.getLogger()
+                                 .debug("Question: " + question.getId() + "|" + question.getLabel() + " meets conditions.");
                             conditional.remove(question);
                             prompt = createPrompt(question);
                         } else {
-                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " does not meet conditions.");
+                            Enjin.getLogger()
+                                 .debug("Question: " + question.getId() + "|" + question.getLabel() + " does not meet conditions.");
                             Enjin.getLogger().debug("Checking if condition relies on another conditional.");
                             boolean conditionalRequiresConditional = false;
                             for (Condition condition : question.getConditions()) {
                                 for (Question q : conditional) {
                                     if (condition.getQuestion() == q.getId()) {
-                                        Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " relies on conditional: " + q.getId() + "|" + q.getLabel());
+                                        Enjin.getLogger()
+                                             .debug("Question: " + question.getId() + "|" + question.getLabel() + " relies on conditional: " + q
+                                                     .getId() + "|" + q.getLabel());
                                         conditionalRequiresConditional = true;
                                     }
                                 }
@@ -179,9 +206,9 @@ public class TicketCreationSession {
 
     public boolean conditionMet(Condition condition) {
         if (responses.containsKey(condition.getQuestion())) {
-            Question question = idMap.get(condition.getQuestion());
+            Question         question = idMap.get(condition.getQuestion());
             QuestionResponse response = responses.get(question.getId());
-            String option = question.getOptions().get(condition.getAnswer());
+            String           option   = question.getOptions().get(condition.getAnswer());
 
             if (question.getType() == QuestionType.radio || question.getType() == QuestionType.select) {
                 if (response.getAnswer() instanceof String) {
@@ -440,7 +467,8 @@ public class TicketCreationSession {
                 }
             }
 
-            responses.put(question.getId(), new QuestionResponse(question, answers.toArray(new String[answers.size()])));
+            responses.put(question.getId(),
+                          new QuestionResponse(question, answers.toArray(new String[answers.size()])));
             TicketCreationSession session = sessions.get(((Player) context.getForWhom()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }

@@ -1,37 +1,54 @@
 package com.enjin.bukkit.sync;
 
+import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.events.PostSyncEvent;
 import com.enjin.bukkit.events.PreSyncEvent;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.modules.impl.VotifierModule;
-import com.enjin.bukkit.sync.data.*;
+import com.enjin.bukkit.sync.data.AddPlayerGroupInstruction;
+import com.enjin.bukkit.sync.data.AddWhitelistPlayerInstruction;
+import com.enjin.bukkit.sync.data.BanPlayersInstruction;
+import com.enjin.bukkit.sync.data.CommandsReceivedInstruction;
+import com.enjin.bukkit.sync.data.ExecuteCommandInstruction;
+import com.enjin.bukkit.sync.data.NewerVersionInstruction;
+import com.enjin.bukkit.sync.data.NotificationsInstruction;
+import com.enjin.bukkit.sync.data.PardonPlayersInstruction;
+import com.enjin.bukkit.sync.data.RemoteConfigUpdateInstruction;
+import com.enjin.bukkit.sync.data.RemovePlayerGroupInstruction;
+import com.enjin.bukkit.sync.data.RemoveWhitelistPlayerInstruction;
 import com.enjin.bukkit.tasks.TPSMonitor;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
-import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.core.util.StringUtils;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
-import com.enjin.rpc.mappings.mappings.plugin.*;
+import com.enjin.rpc.mappings.mappings.plugin.Instruction;
+import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
+import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
+import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import com.enjin.rpc.mappings.services.PluginService;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class RPCPacketManager implements Runnable {
 
     private EnjinMinecraftPlugin plugin;
-    private long nextStatUpdate = System.currentTimeMillis();
+    private long                 nextStatUpdate = System.currentTimeMillis();
 
     private boolean firstRun = true;
-    private int elapsed = 0;
+    private int     elapsed  = 0;
 
     public RPCPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -52,20 +69,21 @@ public class RPCPacketManager implements Runnable {
         if (!this.firstRun && syncDelay > 0) {
             if (Bukkit.getOnlinePlayers().isEmpty()) {
                 if (++this.elapsed < syncDelay) {
-                    Enjin.getLogger().debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
-                            + (syncDelay - this.elapsed));
+                    Enjin.getLogger()
+                         .debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
+                                        + (syncDelay - this.elapsed));
                     return;
                 }
             }
         }
 
         String stats = null;
-//        if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
-//            Enjin.getLogger().debug("Collecting player stats...");
-//            stats = getStats();
-//            this.nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
-//            Enjin.getLogger().debug("Player stats collected!");
-//        }
+        //        if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
+        //            Enjin.getLogger().debug("Collecting player stats...");
+        //            stats = getStats();
+        //            this.nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+        //            Enjin.getLogger().debug("Player stats collected!");
+        //        }
 
         Enjin.getLogger().debug("Constructing payload...");
         HashMap<String, Object> status = new HashMap<>();
@@ -84,21 +102,21 @@ public class RPCPacketManager implements Runnable {
         status.put("votifier", EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands());
         status.put("stats", stats);
 
-//        Status status = new Status(System.getProperty("java.version"),
-//                this.plugin.getMcVersion(),
-//                getPlugins(),
-//                isPermissionsAvailable(),
-//                this.plugin.getDescription().getVersion(),
-//                getWorlds(),
-//                getGroups(),
-//                getMaxPlayers(),
-//                getOnlineCount(),
-//                getOnlinePlayers(),
-//                getPlayerGroups(),
-//                TPSMonitor.getInstance().getLastTPSMeasurement(),
-//                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
-//                getVotes(),
-//                stats);
+        //        Status status = new Status(System.getProperty("java.version"),
+        //                this.plugin.getMcVersion(),
+        //                getPlugins(),
+        //                isPermissionsAvailable(),
+        //                this.plugin.getDescription().getVersion(),
+        //                getWorlds(),
+        //                getGroups(),
+        //                getMaxPlayers(),
+        //                getOnlineCount(),
+        //                getOnlinePlayers(),
+        //                getPlayerGroups(),
+        //                TPSMonitor.getInstance().getLastTPSMeasurement(),
+        //                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
+        //                getVotes(),
+        //                stats);
 
         Bukkit.getPluginManager().callEvent(new PreSyncEvent(status));
 
@@ -168,7 +186,8 @@ public class RPCPacketManager implements Runnable {
                     }
                 }
             } else {
-                Enjin.getLogger().debug("Did not receive \"ok\" status. Status: " + (result == null ? "n/a" : result.getStatus()));
+                Enjin.getLogger()
+                     .debug("Did not receive \"ok\" status. Status: " + (result == null ? "n/a" : result.getStatus()));
                 Bukkit.getPluginManager().callEvent(new PostSyncEvent(false, data));
             }
         }
@@ -202,11 +221,11 @@ public class RPCPacketManager implements Runnable {
                 groups.addAll(Arrays.asList(module.getPermission().getGroups()));
             } catch (Exception e) {
                 Enjin.getLogger().warning(new StringBuilder("Exception thrown by Vault permissions implementation. ")
-                        .append("Please ensure Vault and your permissions plugin are up-to-date.")
-                        .toString());
+                                                  .append("Please ensure Vault and your permissions plugin are up-to-date.")
+                                                  .toString());
                 Enjin.getLogger().debug(new StringBuilder("Vault Exception: \n")
-                        .append(StringUtils.throwableToString(e))
-                        .toString());
+                                                .append(StringUtils.throwableToString(e))
+                                                .toString());
             }
         }
 
@@ -224,7 +243,9 @@ public class RPCPacketManager implements Runnable {
     private List<PlayerInfo> getOnlinePlayers() {
         List<PlayerInfo> infos = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            infos.add(new PlayerInfo(player.getName(), Enjin.getApi().getVanishState(player.getUniqueId()), player.getUniqueId()));
+            infos.add(new PlayerInfo(player.getName(),
+                                     Enjin.getApi().getVanishState(player.getUniqueId()),
+                                     player.getUniqueId()));
         }
         return infos;
     }
@@ -258,8 +279,8 @@ public class RPCPacketManager implements Runnable {
     }
 
     private Map<String, List<Object[]>> getVotes() {
-        Map<String, List<Object[]>> votes = null;
-        VotifierModule module = this.plugin.getModuleManager().getModule(VotifierModule.class);
+        Map<String, List<Object[]>> votes  = null;
+        VotifierModule              module = this.plugin.getModuleManager().getModule(VotifierModule.class);
         if (module != null && !module.getPlayerVotes().isEmpty()) {
             votes = new HashMap<>(module.getPlayerVotes());
             module.getPlayerVotes().clear();
@@ -267,9 +288,9 @@ public class RPCPacketManager implements Runnable {
         return votes;
     }
 
-//    private String getStats() {
-//        return new WriteStats(plugin).getStatsJSON();
-//    }
+    //    private String getStats() {
+    //        return new WriteStats(plugin).getStatsJSON();
+    //    }
 
     private boolean isPermissionsAvailable() {
         VaultModule module = this.plugin.getModuleManager().getModule(VaultModule.class);

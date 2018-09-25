@@ -2,40 +2,54 @@ package com.enjin.sponge.sync;
 
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
-import com.enjin.core.InstructionHandler;
-import com.enjin.rpc.mappings.mappings.plugin.*;
+import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.Instruction;
+import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
+import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
+import com.enjin.rpc.mappings.mappings.plugin.Status;
+import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
-import com.enjin.sponge.EnjinMinecraftPlugin;
-import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.services.PluginService;
-import com.enjin.sponge.config.EMPConfig;
+import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.config.RankUpdatesConfig;
 import com.enjin.sponge.listeners.ConnectionListener;
 import com.enjin.sponge.managers.VotifierManager;
 import com.enjin.sponge.stats.WriteStats;
-import com.enjin.sponge.sync.data.*;
+import com.enjin.sponge.sync.data.AddPlayerGroupInstruction;
+import com.enjin.sponge.sync.data.AddWhitelistPlayerInstruction;
+import com.enjin.sponge.sync.data.BanPlayersInstruction;
+import com.enjin.sponge.sync.data.CommandsReceivedInstruction;
+import com.enjin.sponge.sync.data.ExecuteCommandInstruction;
+import com.enjin.sponge.sync.data.NewerVersionInstruction;
+import com.enjin.sponge.sync.data.NotificationsInstruction;
+import com.enjin.sponge.sync.data.PardonPlayersInstruction;
+import com.enjin.sponge.sync.data.RemoteConfigUpdateInstruction;
+import com.enjin.sponge.sync.data.RemovePlayerGroupInstruction;
+import com.enjin.sponge.sync.data.RemoveWhitelistPlayerInstruction;
 import com.enjin.sponge.tasks.TPSMonitor;
-import com.google.common.collect.Maps;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.world.World;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
     private static final int ZERO_PLAYERS_THRESHOLD = 10;
 
     private EnjinMinecraftPlugin plugin;
-    private long nextStatUpdate = System.currentTimeMillis();
+    private long                 nextStatUpdate = System.currentTimeMillis();
 
     private boolean firstRun = true;
-    private int elapsed = 0;
+    private int     elapsed  = 0;
 
     public RPCPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -47,8 +61,9 @@ public class RPCPacketManager implements Runnable {
         if (!this.firstRun && syncDelay > 0) {
             if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
                 if (++this.elapsed < syncDelay) {
-                    Enjin.getLogger().debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
-                            + (syncDelay - this.elapsed));
+                    Enjin.getLogger()
+                         .debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
+                                        + (syncDelay - this.elapsed));
                     return;
                 }
             }
@@ -57,29 +72,29 @@ public class RPCPacketManager implements Runnable {
 
         Enjin.getLogger().debug("Syncing...");
         String stats = null;
-//		if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
-//			Enjin.getLogger().debug("Collecting stats...");
-//			stats = getStats();
-//			nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
-//			Enjin.getLogger().debug("Stats collected...");
-//		}
+        //		if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
+        //			Enjin.getLogger().debug("Collecting stats...");
+        //			stats = getStats();
+        //			nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+        //			Enjin.getLogger().debug("Stats collected...");
+        //		}
 
         Enjin.getLogger().debug("Constructing status...");
         Status status = new Status(System.getProperty("java.version"),
-                Sponge.getPlatform().getMinecraftVersion().getName(),
-                getPlugins(),
-                ConnectionListener.permissionsEnabled(),
-                plugin.getContainer().getVersion().get(),
-                getWorlds(),
-                getGroups(),
-                getMaxPlayers(),
-                getOnlineCount(),
-                getOnlinePlayers(),
-                getPlayerGroups(),
-                TPSMonitor.getInstance().getLastTPSMeasurement(),
-                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
-                getVotes(),
-                stats);
+                                   Sponge.getPlatform().getMinecraftVersion().getName(),
+                                   getPlugins(),
+                                   ConnectionListener.permissionsEnabled(),
+                                   plugin.getContainer().getVersion().get(),
+                                   getWorlds(),
+                                   getGroups(),
+                                   getMaxPlayers(),
+                                   getOnlineCount(),
+                                   getOnlinePlayers(),
+                                   getPlayerGroups(),
+                                   TPSMonitor.getInstance().getLastTPSMeasurement(),
+                                   EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
+                                   getVotes(),
+                                   stats);
 
         Enjin.getLogger().debug("Fetching service...");
         PluginService service = EnjinServices.getService(PluginService.class);
@@ -150,7 +165,11 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<String> getPlugins() {
-        return Sponge.getPluginManager().getPlugins().stream().map(PluginContainer::getName).collect(Collectors.toList());
+        return Sponge.getPluginManager()
+                     .getPlugins()
+                     .stream()
+                     .map(PluginContainer::getName)
+                     .collect(Collectors.toList());
     }
 
     private List<String> getWorlds() {
@@ -170,9 +189,15 @@ public class RPCPacketManager implements Runnable {
     }
 
     private List<PlayerInfo> getOnlinePlayers() {
-        return plugin.getGame().getServer().getOnlinePlayers().stream().map(player -> new PlayerInfo(player.getName(),
-                Enjin.getApi().getVanishState(player.getUniqueId()),
-                player.getUniqueId())).collect(Collectors.toList());
+        return plugin.getGame()
+                     .getServer()
+                     .getOnlinePlayers()
+                     .stream()
+                     .map(player -> new PlayerInfo(player.getName(),
+                                                   Enjin.getApi()
+                                                        .getVanishState(player.getUniqueId()),
+                                                   player.getUniqueId()))
+                     .collect(Collectors.toList());
     }
 
     private Map<String, PlayerGroupInfo> getPlayerGroups() {
@@ -184,8 +209,8 @@ public class RPCPacketManager implements Runnable {
         }
 
         ConnectionListener.updatePlayersRanks(Sponge.getServer().getOnlinePlayers().stream()
-                .map(Player::getProfile)
-                .collect(Collectors.toList()).toArray(new GameProfile[]{}));
+                                                    .map(Player::getProfile)
+                                                    .collect(Collectors.toList()).toArray(new GameProfile[] {}));
 
         Map<String, PlayerGroupInfo> groups = config.getPlayerPerms();
         Map<String, PlayerGroupInfo> update = new HashMap<>();
@@ -209,7 +234,9 @@ public class RPCPacketManager implements Runnable {
 
     private Map<String, List<Object[]>> getVotes() {
         Map<String, List<Object[]>> votes = null;
-        Enjin.getLogger().debug("Votifier Enabled: " + VotifierManager.isEnabled() + ", Pending Votes: " + !VotifierManager.getPlayerVotes().isEmpty());
+        Enjin.getLogger()
+             .debug("Votifier Enabled: " + VotifierManager.isEnabled() + ", Pending Votes: " + !VotifierManager.getPlayerVotes()
+                                                                                                               .isEmpty());
         if (VotifierManager.isEnabled() && !VotifierManager.getPlayerVotes().isEmpty()) {
             votes = new HashMap<>(VotifierManager.getPlayerVotes());
             VotifierManager.getPlayerVotes().clear();

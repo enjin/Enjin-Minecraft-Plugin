@@ -3,10 +3,10 @@ package com.enjin.bukkit.util.ui;
 import org.bukkit.entity.Player;
 
 public abstract class MenuBase {
-    private final int max_items;
-    protected MenuItem[] items;
-    protected boolean exitOnClickOutside = true;
-    protected MenuCloseBehavior menuCloseBehavior;
+    private final int               max_items;
+    protected     MenuItem[]        items;
+    protected     boolean           exitOnClickOutside = true;
+    protected     MenuCloseBehavior menuCloseBehavior;
 
     protected MenuBase(int max_items) {
         this.max_items = max_items;

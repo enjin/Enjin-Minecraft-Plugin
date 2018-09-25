@@ -1,5 +1,3 @@
-import org.apache.tools.ant.filters.*
-
 /*
 Enforces compiling with the specified compiler if environment variable JAVA#_HOME is set.
 For example, projects that build with Java 7 should have environment variable JAVA7_HOME set.

@@ -6,10 +6,10 @@ import java.util.Date;
 
 public class EnjinErrorReport {
 
-    Throwable e = null;
-    String info = "";
-    String otherinformation = "";
-    long timethrown = System.currentTimeMillis();
+    Throwable e                = null;
+    String    info             = "";
+    String    otherinformation = "";
+    long      timethrown       = System.currentTimeMillis();
 
     public EnjinErrorReport(Throwable e, String otherinformation) {
         this.e = e;
@@ -24,9 +24,11 @@ public class EnjinErrorReport {
     @Override
     public String toString() {
         StringBuilder errorstring = new StringBuilder();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
-        Date date = new Date(timethrown);
-        errorstring.append("Enjin plugin error report. Error generated on: ").append(dateFormat.format(date)).append(":\n");
+        DateFormat    dateFormat  = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+        Date          date        = new Date(timethrown);
+        errorstring.append("Enjin plugin error report. Error generated on: ")
+                   .append(dateFormat.format(date))
+                   .append(":\n");
         errorstring.append("Extra data: ").append(otherinformation).append("\n");
         if (e != null) {
             errorstring.append("Stack trace:\n");

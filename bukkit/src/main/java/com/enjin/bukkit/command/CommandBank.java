@@ -18,8 +18,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class CommandBank {
     @Getter
-    protected static Map<String, CommandNode> nodes = new HashMap<>();
-    private static DispatchCommand dispatchCommand = new DispatchCommand();
+    protected static Map<String, CommandNode> nodes           = new HashMap<>();
+    private static   DispatchCommand          dispatchCommand = new DispatchCommand();
 
     /**
      * Registers the provided handles.
@@ -47,7 +47,8 @@ public class CommandBank {
 
                 Class<?>[] types = method.getParameterTypes();
                 if (!CommandSender.class.isAssignableFrom(types[0])) {
-                    Enjin.getLogger().debug(method.getName() + "'s first argument is not assignable from CommandSender.");
+                    Enjin.getLogger()
+                         .debug(method.getName() + "'s first argument is not assignable from CommandSender.");
                     continue;
                 }
 
@@ -59,19 +60,23 @@ public class CommandBank {
                 methods.add(method);
             }
 
-            List<CommandNode> root = new ArrayList<>();
-            List<DirectiveNode> sub = new ArrayList<>();
+            List<CommandNode>   root = new ArrayList<>();
+            List<DirectiveNode> sub  = new ArrayList<>();
             for (Method method : methods) {
                 if (method.isAnnotationPresent(Command.class)) {
                     root.add(method.isAnnotationPresent(Permission.class)
-                            ? new CommandNode(method.getAnnotation(Command.class), method, method.getAnnotation(Permission.class))
-                            : new CommandNode(method.getAnnotation(Command.class), method));
+                                     ? new CommandNode(method.getAnnotation(Command.class),
+                                                       method,
+                                                       method.getAnnotation(Permission.class))
+                                     : new CommandNode(method.getAnnotation(Command.class), method));
                 }
 
                 if (method.isAnnotationPresent(Directive.class)) {
                     sub.add(method.isAnnotationPresent(Permission.class)
-                            ? new DirectiveNode(method.getAnnotation(Directive.class), method, method.getAnnotation(Permission.class))
-                            : new DirectiveNode(method.getAnnotation(Directive.class), method));
+                                    ? new DirectiveNode(method.getAnnotation(Directive.class),
+                                                        method,
+                                                        method.getAnnotation(Permission.class))
+                                    : new DirectiveNode(method.getAnnotation(Directive.class), method));
                 }
             }
 
@@ -140,7 +145,9 @@ public class CommandBank {
                     continue;
                 }
 
-                Enjin.getLogger().debug("Registering directive: " + node.getData().value() + " for command: " + node.getData().parent());
+                Enjin.getLogger()
+                     .debug("Registering directive: " + node.getData().value() + " for command: " + node.getData()
+                                                                                                        .parent());
                 command.getDirectives().put(key, node);
                 registerDirectiveAlias(node.getData().parent(), node.getData().value(), node.getData().aliases());
             }
@@ -168,7 +175,9 @@ public class CommandBank {
     private static void registerCommand(String command) {
         try {
             SimpleCommandMap commandMap = getCommandMap();
-            commandMap.register(command.toLowerCase(), command.equalsIgnoreCase("enjin") ? "" : "enjin", dispatchCommand);
+            commandMap.register(command.toLowerCase(),
+                                command.equalsIgnoreCase("enjin") ? "" : "enjin",
+                                dispatchCommand);
         } catch (ReflectiveOperationException e) {
             Enjin.getLogger().log(e);
         }
@@ -176,7 +185,7 @@ public class CommandBank {
 
     private static void unregisterCommand(String command) {
         try {
-            SimpleCommandMap commandMap = getCommandMap();
+            SimpleCommandMap                        commandMap    = getCommandMap();
             Map<String, org.bukkit.command.Command> knownCommands = getServerCommands(commandMap);
 
             knownCommands.remove(command);

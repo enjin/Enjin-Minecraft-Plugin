@@ -45,10 +45,10 @@ public class PurchaseModule {
         } else {
             pendingPurchases.put(player.getName(), item.getId());
             player.sendMessage(new StringBuilder(ChatColor.GREEN.toString())
-                    .append("Type \"/")
-                    .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
-                    .append(" confirm\" to complete your pending purchase.")
-                    .toString());
+                                       .append("Type \"/")
+                                       .append(Enjin.getConfiguration(EMPConfig.class).getBuyCommand())
+                                       .append(" confirm\" to complete your pending purchase.")
+                                       .toString());
         }
     }
 
@@ -66,11 +66,11 @@ public class PurchaseModule {
             public void run() {
                 ShopService service = EnjinServices.getService(ShopService.class);
                 RPCData<Integer> data = service.purchase(player.getName(),
-                        id,
-                        Optional.<Map<Integer, String>>absent(),
-                        Optional.<Integer>absent(),
-                        Optional.<Integer>absent(),
-                        false);
+                                                         id,
+                                                         Optional.<Map<Integer, String>>absent(),
+                                                         Optional.<Integer>absent(),
+                                                         Optional.<Integer>absent(),
+                                                         false);
 
                 if (data == null) {
                     player.sendMessage(ChatColor.RED + "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
@@ -82,7 +82,9 @@ public class PurchaseModule {
                     return;
                 }
 
-                player.sendMessage(ChatColor.GREEN + "You successfully purchased the item. Your new point balance is: " + data.getResult().toString());
+                player.sendMessage(ChatColor.GREEN + "You successfully purchased the item. Your new point balance is: " + data
+                        .getResult()
+                        .toString());
             }
         };
 

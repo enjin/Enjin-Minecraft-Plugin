@@ -14,7 +14,10 @@ import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ShopService implements Service {
     public RPCData<List<Shop>> get(final String player) {
@@ -26,8 +29,8 @@ public class ShopService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -41,8 +44,9 @@ public class ShopService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<Shop>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Shop>>>() {
-            }.getType());
+            RPCData<List<Shop>> data = EnjinRPC.gson.fromJson(response.toJSONString(),
+                                                              new TypeToken<RPCData<ArrayList<Shop>>>() {
+                                                              }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -63,8 +67,8 @@ public class ShopService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -75,8 +79,9 @@ public class ShopService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<Purchase>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<Purchase>>>() {
-            }.getType());
+            RPCData<List<Purchase>> data = EnjinRPC.gson.fromJson(response.toJSONString(),
+                                                                  new TypeToken<RPCData<ArrayList<Purchase>>>() {
+                                                                  }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -96,8 +101,8 @@ public class ShopService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {
@@ -108,8 +113,9 @@ public class ShopService implements Service {
             Enjin.getLogger().debug("JSONRPC2 Request: " + request.toJSONString());
             Enjin.getLogger().debug("JSONRPC2 Response: " + response.toJSONString());
 
-            RPCData<List<FilteredItem>> data = EnjinRPC.gson.fromJson(response.toJSONString(), new TypeToken<RPCData<ArrayList<FilteredItem>>>() {
-            }.getType());
+            RPCData<List<FilteredItem>> data = EnjinRPC.gson.fromJson(response.toJSONString(),
+                                                                      new TypeToken<RPCData<ArrayList<FilteredItem>>>() {
+                                                                      }.getType());
             data.setRequest(request);
             data.setResponse(response);
             return data;
@@ -120,7 +126,12 @@ public class ShopService implements Service {
         }
     }
 
-    public RPCData<Integer> purchase(final String player, final Integer itemId, final Optional<Map<Integer, String>> variables, final Optional<Integer> customPoints, final Optional<Integer> customPrice, final boolean ignoreMessages) {
+    public RPCData<Integer> purchase(final String player,
+                                     final Integer itemId,
+                                     final Optional<Map<Integer, String>> variables,
+                                     final Optional<Integer> customPoints,
+                                     final Optional<Integer> customPrice,
+                                     final boolean ignoreMessages) {
         String method = "Shop.purchase";
         Map<String, Object> parameters = new HashMap<String, Object>() {{
             put("authkey", Enjin.getConfiguration().getAuthKey());
@@ -143,8 +154,8 @@ public class ShopService implements Service {
 
         Integer id = EnjinRPC.getNextRequestId();
 
-        JSONRPC2Session session = null;
-        JSONRPC2Request request = null;
+        JSONRPC2Session  session  = null;
+        JSONRPC2Request  request  = null;
         JSONRPC2Response response = null;
 
         try {

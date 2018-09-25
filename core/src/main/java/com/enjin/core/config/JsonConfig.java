@@ -1,9 +1,15 @@
 package com.enjin.core.config;
 
 import com.enjin.core.Enjin;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
 
 public class JsonConfig {
@@ -26,7 +32,7 @@ public class JsonConfig {
         return clazz.cast(config);
     }
 
-    private static  <T extends JsonConfig> T loadNew(Class<T> clazz) throws Exception {
+    private static <T extends JsonConfig> T loadNew(Class<T> clazz) throws Exception {
         return clazz.newInstance();
     }
 
@@ -56,15 +62,16 @@ public class JsonConfig {
     }
 
     public boolean update(File file, Object data) {
-        JsonElement old = gson.toJsonTree(this);
+        JsonElement old     = gson.toJsonTree(this);
         JsonElement updates = gson.toJsonTree(data);
 
         if (!old.isJsonObject() && !updates.isJsonObject()) {
-            Enjin.getLogger().warning("Could not update the config at " + file.getName() + " as it or the updated data is not an object.");
+            Enjin.getLogger()
+                 .warning("Could not update the config at " + file.getName() + " as it or the updated data is not an object.");
             return false;
         }
 
-        JsonObject oldObj = old.getAsJsonObject();
+        JsonObject oldObj     = old.getAsJsonObject();
         JsonObject updatesObj = updates.getAsJsonObject();
 
         update(oldObj, updatesObj);

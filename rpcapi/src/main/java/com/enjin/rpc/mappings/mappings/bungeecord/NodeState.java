@@ -16,7 +16,7 @@ public class NodeState {
     private List<String> players;
     @Getter
     @SerializedName(value = "maxplayers")
-    private Integer maxPlayers;
+    private Integer      maxPlayers;
 
     public NodeState(List<String> players, Integer maxPlayers) {
         this.players = players;

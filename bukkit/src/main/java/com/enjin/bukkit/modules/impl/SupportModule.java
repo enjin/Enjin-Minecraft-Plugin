@@ -16,13 +16,13 @@ import java.util.Map;
 
 @Module(name = "Support")
 public class SupportModule {
-    private EnjinMinecraftPlugin plugin;
+    private EnjinMinecraftPlugin                                               plugin;
     @Getter
-    private Map<Integer, com.enjin.rpc.mappings.mappings.tickets.TicketModule> modules = new HashMap<>();
+    private Map<Integer, com.enjin.rpc.mappings.mappings.tickets.TicketModule> modules           = new HashMap<>();
     @Getter
-    private long modulesLastPolled = 0;
+    private long                                                               modulesLastPolled = 0;
     @Getter
-    private TicketListener ticketListener;
+    private TicketListener                                                     ticketListener;
 
     public SupportModule() {
         this.plugin = EnjinMinecraftPlugin.getInstance();
@@ -48,10 +48,12 @@ public class SupportModule {
     public void pollModules() {
         if (System.currentTimeMillis() - modulesLastPolled > 10 * 60 * 1000) {
             modulesLastPolled = System.currentTimeMillis();
-            RPCData<Map<Integer, com.enjin.rpc.mappings.mappings.tickets.TicketModule>> data = EnjinServices.getService(TicketService.class).getModules();
+            RPCData<Map<Integer, com.enjin.rpc.mappings.mappings.tickets.TicketModule>> data = EnjinServices.getService(
+                    TicketService.class).getModules();
 
             if (data == null || data.getError() != null) {
-                Enjin.getLogger().debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
+                Enjin.getLogger()
+                     .debug(data == null ? "Could not retrieve support modules." : data.getError().getMessage());
                 modules.clear();
                 return;
             }
@@ -60,7 +62,8 @@ public class SupportModule {
                 modules.clear();
             }
 
-            for (Map.Entry<Integer, com.enjin.rpc.mappings.mappings.tickets.TicketModule> entry : data.getResult().entrySet()) {
+            for (Map.Entry<Integer, com.enjin.rpc.mappings.mappings.tickets.TicketModule> entry : data.getResult()
+                                                                                                      .entrySet()) {
                 modules.put(entry.getKey(), entry.getValue());
             }
         }

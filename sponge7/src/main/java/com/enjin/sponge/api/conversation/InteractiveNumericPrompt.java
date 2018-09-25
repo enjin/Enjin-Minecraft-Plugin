@@ -5,7 +5,8 @@ import org.spongepowered.api.text.Text;
 
 public abstract class InteractiveNumericPrompt extends InteractiveValidatingPrompt {
     protected boolean isInputValid(InteractiveContext context, Text input) {
-        return NumberUtils.isNumber(input.toPlain()) && this.isNumberValid(context, NumberUtils.createNumber(input.toPlain()));
+        return NumberUtils.isNumber(input.toPlain()) && this.isNumberValid(context,
+                                                                           NumberUtils.createNumber(input.toPlain()));
     }
 
     protected boolean isNumberValid(InteractiveContext context, Number input) {
@@ -23,7 +24,10 @@ public abstract class InteractiveNumericPrompt extends InteractiveValidatingProm
     protected abstract InteractivePrompt acceptValidatedInput(InteractiveContext context, Number number);
 
     protected String getFailedValidationText(InteractiveContext context, Text invalidInput) {
-        return NumberUtils.isNumber(invalidInput.toPlain()) ? this.getFailedValidationText(context, NumberUtils.createNumber(invalidInput.toPlain())) : this.getInputNotNumericText(context, invalidInput);
+        return NumberUtils.isNumber(invalidInput.toPlain()) ? this.getFailedValidationText(context,
+                                                                                           NumberUtils.createNumber(
+                                                                                                   invalidInput.toPlain())) : this
+                .getInputNotNumericText(context, invalidInput);
     }
 
     protected String getInputNotNumericText(InteractiveContext context, Text invalidInput) {

@@ -9,17 +9,16 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.command.ConsoleCommandSender;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 
 public class CommandNode extends net.md_5.bungee.api.plugin.Command {
     @Getter
-    private Command data;
+    private Command                    data;
     @Getter
-    private Permission perm;
-    private Method method;
+    private Permission                 perm;
+    private Method                     method;
     @Getter
     private Map<String, DirectiveNode> directives = Maps.newHashMap();
 
@@ -39,7 +38,8 @@ public class CommandNode extends net.md_5.bungee.api.plugin.Command {
             return;
         }
 
-        if (sender instanceof ProxiedPlayer && perm != null && !perm.value().equals("") && !sender.hasPermission(perm.value())) {
+        if (sender instanceof ProxiedPlayer && perm != null && !perm.value()
+                                                                    .equals("") && !sender.hasPermission(perm.value())) {
             sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + perm.value() + ChatColor.RED + "\" or OP to run that command.");
             return;
         }
@@ -47,7 +47,7 @@ public class CommandNode extends net.md_5.bungee.api.plugin.Command {
         if (args.length > 0) {
             DirectiveNode directive = directives.get(args[0]);
             if (directive != null) {
-                directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[]{});
+                directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[] {});
                 return;
             }
         }

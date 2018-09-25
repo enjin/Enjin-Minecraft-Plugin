@@ -1,10 +1,10 @@
 package com.enjin.bukkit.command.commands;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.modules.impl.SignStatsModule;
-import com.enjin.bukkit.util.io.EnjinConsole;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.modules.impl.SignStatsModule;
+import com.enjin.bukkit.util.io.EnjinConsole;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -37,7 +37,9 @@ public class HeadCommands {
     @Permission("enjin.updateheads")
     @Directive(parent = "enjin", value = "updateheads", requireValidKey = true)
     public static void update(final CommandSender sender, final String[] args) {
-        final SignStatsModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(SignStatsModule.class);
+        final SignStatsModule module = EnjinMinecraftPlugin.getInstance()
+                                                           .getModuleManager()
+                                                           .getModule(SignStatsModule.class);
         if (module == null) {
             return;
         }

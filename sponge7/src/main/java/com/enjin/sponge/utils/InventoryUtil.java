@@ -13,14 +13,15 @@ import java.lang.invoke.MethodType;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InventoryUtil {
 
-    private static final Class<?> SLOT_ADAPTER_CLASS;
+    private static final Class<?>     SLOT_ADAPTER_CLASS;
     private static final MethodHandle GET_ORDINAL;
 
     static {
         try {
             MethodType getOrdinalMethodType = MethodType.methodType(int.class);
             SLOT_ADAPTER_CLASS = Class.forName("org.spongepowered.common.item.inventory.adapter.impl.slots.SlotAdapter");
-            GET_ORDINAL = MethodHandles.publicLookup().findVirtual(SLOT_ADAPTER_CLASS, "getOrdinal", getOrdinalMethodType);
+            GET_ORDINAL = MethodHandles.publicLookup()
+                                       .findVirtual(SLOT_ADAPTER_CLASS, "getOrdinal", getOrdinalMethodType);
         } catch (ReflectiveOperationException e) {
             throw Throwables.propagate(e);
         }

@@ -9,7 +9,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class CommandWrapper {
     @Getter
-    private UUID uuid;
+    private UUID   uuid;
     @Getter
     private String command;
     @Getter

@@ -12,24 +12,28 @@ import org.spongepowered.api.world.World;
 @NoArgsConstructor
 public class EnjinSignData {
     @Getter
-    private SerializableLocation location;
+    private           SerializableLocation  location;
     @Getter
-    private EnjinSignType type;
+    private           EnjinSignType         type;
     @Getter
-    private EnjinSignType.SubType subType;
+    private           EnjinSignType.SubType subType;
     @Getter
-    private Integer itemId;
+    private           Integer               itemId;
     @Getter
-    private int index;
+    private           int                   index;
     @Getter
     @Setter
-    private transient SerializableLocation headLocation;
+    private transient SerializableLocation  headLocation;
 
     public EnjinSignData(Location<World> location, EnjinSignType type, EnjinSignType.SubType subType, int index) {
         this(location, type, subType, null, index);
     }
 
-    public EnjinSignData(Location<World> location, EnjinSignType type, EnjinSignType.SubType subType, Integer itemId, int index) {
+    public EnjinSignData(Location<World> location,
+                         EnjinSignType type,
+                         EnjinSignType.SubType subType,
+                         Integer itemId,
+                         int index) {
         this.location = new SerializableLocation(location);
         this.type = type;
         this.subType = subType;

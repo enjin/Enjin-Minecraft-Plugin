@@ -22,7 +22,7 @@ import java.util.Map;
 public class CommandBank implements Listener {
     @Getter
     private static Map<String, CommandNode> nodes = Maps.newHashMap();
-    private static CommandBank instance;
+    private static CommandBank              instance;
 
     /**
      * Prepares the parent bank for operation.
@@ -65,7 +65,8 @@ public class CommandBank implements Listener {
 
                 Class<?>[] types = method.getParameterTypes();
                 if (!CommandSender.class.isAssignableFrom(types[0])) {
-                    Enjin.getLogger().debug(method.getName() + "'s first argument is not assignable from CommandSender.");
+                    Enjin.getLogger()
+                         .debug(method.getName() + "'s first argument is not assignable from CommandSender.");
                     continue;
                 }
 
@@ -77,19 +78,23 @@ public class CommandBank implements Listener {
                 methods.add(method);
             }
 
-            List<CommandNode> root = Lists.newArrayList();
-            List<DirectiveNode> sub = Lists.newArrayList();
+            List<CommandNode>   root = Lists.newArrayList();
+            List<DirectiveNode> sub  = Lists.newArrayList();
             for (Method method : methods) {
                 if (method.isAnnotationPresent(Command.class)) {
                     root.add(method.isAnnotationPresent(Permission.class)
-                            ? new CommandNode(method.getAnnotation(Command.class), method, method.getAnnotation(Permission.class))
-                            : new CommandNode(method.getAnnotation(Command.class), method));
+                                     ? new CommandNode(method.getAnnotation(Command.class),
+                                                       method,
+                                                       method.getAnnotation(Permission.class))
+                                     : new CommandNode(method.getAnnotation(Command.class), method));
                 }
 
                 if (method.isAnnotationPresent(Directive.class)) {
                     sub.add(method.isAnnotationPresent(Permission.class)
-                            ? new DirectiveNode(method.getAnnotation(Directive.class), method, method.getAnnotation(Permission.class))
-                            : new DirectiveNode(method.getAnnotation(Directive.class), method));
+                                    ? new DirectiveNode(method.getAnnotation(Directive.class),
+                                                        method,
+                                                        method.getAnnotation(Permission.class))
+                                    : new DirectiveNode(method.getAnnotation(Directive.class), method));
                 }
             }
 
@@ -130,7 +135,9 @@ public class CommandBank implements Listener {
                     continue;
                 }
 
-                Enjin.getLogger().debug("Registering directive: " + node.getData().value() + " for command: " + node.getData().parent());
+                Enjin.getLogger()
+                     .debug("Registering directive: " + node.getData().value() + " for command: " + node.getData()
+                                                                                                        .parent());
                 command.getDirectives().put(node.getData().value(), node);
                 registerDirectiveAlias(node.getData().parent(), node.getData().value(), node.getData().aliases());
             }
@@ -173,13 +180,13 @@ public class CommandBank implements Listener {
             return false;
         }
 
-        String[] parts = c.startsWith("/") ? c.replaceFirst("/", "").split(" ") : c.split(" ");
-        String command = parts[0];
+        String[] parts   = c.startsWith("/") ? c.replaceFirst("/", "").split(" ") : c.split(" ");
+        String   command = parts[0];
 
         Optional<CommandNode> w = Optional.fromNullable(nodes.get(command));
         if (w.isPresent()) {
             CommandNode wrapper = w.get();
-            String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[]{};
+            String[]    args    = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[] {};
             wrapper.invoke(sender, args);
             return true;
         }

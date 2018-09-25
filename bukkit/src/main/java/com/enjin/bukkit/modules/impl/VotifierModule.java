@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Module(name = "Votifier", hardPluginDependencies = "Votifier")
 public class VotifierModule {
-    private EnjinMinecraftPlugin plugin;
+    private EnjinMinecraftPlugin        plugin;
     @Getter
     private Map<String, List<Object[]>> playerVotes = new ConcurrentHashMap<>();
 

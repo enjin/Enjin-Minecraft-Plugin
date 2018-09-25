@@ -13,10 +13,10 @@ public class Purchase {
     private Integer id;
     @Getter
     @SerializedName(value = "item_name")
-    private String name;
+    private String  name;
     @Getter
     @SerializedName(value = "purchase_date")
-    private String date;
+    private String  date;
     @Getter
-    private String expires;
+    private String  expires;
 }

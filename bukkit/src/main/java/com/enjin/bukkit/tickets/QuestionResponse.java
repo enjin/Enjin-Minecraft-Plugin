@@ -7,7 +7,7 @@ public class QuestionResponse {
     @Getter
     private Question question;
     @Getter
-    private Object answer;
+    private Object   answer;
 
     public QuestionResponse(Question question, Object answer) {
         this.question = question;

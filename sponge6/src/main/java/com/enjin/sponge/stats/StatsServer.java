@@ -12,10 +12,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StatsServer {
-    private long lastserverstarttime = System.currentTimeMillis();
-    private int totalkicks = 0;
-    private ConcurrentHashMap<String, Integer> playerkicks = new ConcurrentHashMap<String, Integer>();
-    private int creeperexplosions = 0;
+    private long                               lastserverstarttime = System.currentTimeMillis();
+    private int                                totalkicks          = 0;
+    private ConcurrentHashMap<String, Integer> playerkicks         = new ConcurrentHashMap<String, Integer>();
+    private int                                creeperexplosions   = 0;
 
     public StatsServer() {
         //
@@ -26,7 +26,7 @@ public class StatsServer {
         creeperexplosions = PrimitiveUtils.getInt(serverstats.get("creeperexplosions"));
         Object okicks = serverstats.get("playerskickedlist");
         if (okicks instanceof JSONObject) {
-            JSONObject kicks = (JSONObject) okicks;
+            JSONObject                 kicks  = (JSONObject) okicks;
             Set<Entry<String, Object>> skicks = kicks.entrySet();
             for (Entry kick : skicks) {
                 playerkicks.put(kick.getKey().toString(), PrimitiveUtils.getInt(kick.getValue()));
@@ -90,18 +90,20 @@ public class StatsServer {
             Enjin.getLogger().log(e);
         }
         serverbuilder.put("totalentities", new Integer(totalentities));
-        Runtime runtime = Runtime.getRuntime();
-        long memused = runtime.totalMemory() / (1024 * 1024);
-        long maxmemory = runtime.maxMemory() / (1024 * 1024);
+        Runtime runtime   = Runtime.getRuntime();
+        long    memused   = runtime.totalMemory() / (1024 * 1024);
+        long    maxmemory = runtime.maxMemory() / (1024 * 1024);
         serverbuilder.put("maxmemory", new Integer((int) maxmemory));
         serverbuilder.put("memoryused", new Integer((int) memused));
         serverbuilder.put("javaversion", System.getProperty("java.version") + " " + System.getProperty("java.vendor"));
-        serverbuilder.put("os", System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"));
+        serverbuilder.put("os",
+                          System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty(
+                                  "os.arch"));
         serverbuilder.put("corecount", new Integer(runtime.availableProcessors()));
         serverbuilder.put("serverversion", Sponge.getPlatform().getApi().getVersion().get());
         serverbuilder.put("laststarttime", new Integer((int) (lastserverstarttime / 1000)));
-        JSONObject kickedplayers = new JSONObject();
-        Set<Entry<String, Integer>> kicks = playerkicks.entrySet();
+        JSONObject                  kickedplayers = new JSONObject();
+        Set<Entry<String, Integer>> kicks         = playerkicks.entrySet();
         for (Entry<String, Integer> kick : kicks) {
             kickedplayers.put(kick.getKey(), kick.getValue());
         }

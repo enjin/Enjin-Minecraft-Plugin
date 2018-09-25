@@ -114,7 +114,7 @@ public class EnjinStatsListener implements Listener {
             public void run() {
                 StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
                 if (module != null) {
-                    Player p = event.getEntity();
+                    Player      p      = event.getEntity();
                     StatsPlayer player = module.getPlayerStats(p);
                     player.addDeath();
                 }
@@ -126,7 +126,8 @@ public class EnjinStatsListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDeath(final EntityDeathEvent event) {
         if (event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent) {
-            final EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) event.getEntity().getLastDamageCause();
+            final EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) event.getEntity()
+                                                                                           .getLastDamageCause();
 
             if (damageEvent.getDamager() instanceof Player) {
                 Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), new Runnable() {
@@ -134,7 +135,7 @@ public class EnjinStatsListener implements Listener {
                     public void run() {
                         StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
                         if (module != null) {
-                            Player p = (Player) damageEvent.getDamager();
+                            Player      p      = (Player) damageEvent.getDamager();
                             StatsPlayer player = module.getPlayerStats(p);
 
                             player.addKilled();
@@ -164,17 +165,18 @@ public class EnjinStatsListener implements Listener {
                 StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
                 if (module != null) {
                     StatsPlayer player = module.getPlayerStats(event.getPlayer());
-                    Player p = event.getPlayer();
+                    Player      p      = event.getPlayer();
 
                     Location from = event.getFrom();
-                    Location to = event.getTo();
+                    Location to   = event.getTo();
 
                     //Make sure we didn't teleport between two worlds or something
                     if (!from.getWorld().getName().equals(to.getWorld().getName())) {
                         return;
                     }
 
-                    double distance = (to.getX() - from.getX()) * (to.getX() - from.getX()) + (to.getY() - from.getY()) * (to.getY() - from.getY()) + (to.getZ() - from.getZ()) * (to.getZ() - from.getZ());
+                    double distance = (to.getX() - from.getX()) * (to.getX() - from.getX()) + (to.getY() - from.getY()) * (to
+                            .getY() - from.getY()) + (to.getZ() - from.getZ()) * (to.getZ() - from.getZ());
 
                     //You can't go over 4 blocks before a teleport event happens, otherwise you are using hacks to move.
                     if (distance > 36) {
@@ -214,7 +216,7 @@ public class EnjinStatsListener implements Listener {
                 StatsModule module = plugin.getModuleManager().getModule(StatsModule.class);
                 if (module != null) {
                     StatsPlayer player = module.getPlayerStats(event.getPlayer());
-                    Player p = event.getPlayer();
+                    Player      p      = event.getPlayer();
 
                     if (player != null && p != null) {
                         player.setXpLevel(p.getLevel());

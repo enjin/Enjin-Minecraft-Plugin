@@ -2,7 +2,7 @@ package com.enjin.sponge.stats;
 
 public class StatValue {
 
-    Object value;
+    Object  value;
     boolean cumulative = true;
 
     public StatValue(int stat, boolean isRelative) {

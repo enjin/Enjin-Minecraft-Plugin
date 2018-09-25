@@ -5,7 +5,12 @@ import com.enjin.rpc.EnjinRPC;
 import com.enjin.rpc.mappings.mappings.tickets.Condition;
 import com.enjin.rpc.mappings.mappings.tickets.MetaOptions;
 import com.enjin.rpc.mappings.mappings.tickets.Question;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -14,7 +19,9 @@ import java.util.List;
 
 public class QuestionDeserializer implements JsonDeserializer<Question> {
     @Override
-    public Question deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public Question deserialize(JsonElement jsonElement,
+                                Type type,
+                                JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject object = jsonElement.getAsJsonObject();
 
         if (object.has("conditions")) {

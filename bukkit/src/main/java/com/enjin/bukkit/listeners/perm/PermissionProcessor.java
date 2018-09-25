@@ -17,6 +17,7 @@ public abstract class PermissionProcessor {
         }
 
         Enjin.getLogger().debug(player.getName() + " just got a rank change... processing...");
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), new DelayedPlayerPermsUpdate(player), 2);
+        Bukkit.getScheduler()
+              .scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), new DelayedPlayerPermsUpdate(player), 2);
     }
 }

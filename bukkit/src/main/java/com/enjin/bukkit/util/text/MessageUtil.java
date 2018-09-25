@@ -11,7 +11,7 @@ import java.util.List;
 public class MessageUtil {
 
     public static void sendMessage(Player player, TextComponent component) {
-        String json = ComponentSerializers.JSON.serialize(component);
+        String          json       = ComponentSerializers.JSON.serialize(component);
         BaseComponent[] components = ComponentSerializer.parse(json);
         player.spigot().sendMessage(components);
     }

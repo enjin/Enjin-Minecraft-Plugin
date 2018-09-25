@@ -22,13 +22,15 @@ public class ItemDetail extends Menu {
     private static DecimalFormat priceFormat = new DecimalFormat("#.00");
 
     public ItemDetail(Menu parent, Shop shop, Item item) {
-        super(ChatColor.GOLD + item.getName().substring(0, item.getName().length() >= 30 ? 30 : item.getName().length()), 6);
+        super(ChatColor.GOLD + item.getName()
+                                   .substring(0, item.getName().length() >= 30 ? 30 : item.getName().length()), 6);
 
         init(parent, shop, item);
     }
 
     private void init(final Menu parent, final Shop shop, final Item item) {
-        MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back", Material.ARROW) {
+        MenuItem back = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Back",
+                                     Material.ARROW) {
             @Override
             public void onClick(Player player) {
                 if (parent != null) {
@@ -48,7 +50,8 @@ public class ItemDetail extends Menu {
         }
 
         String    name  = ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorName()) + item.getName();
-        ItemStack stack = MaterialResolver.createItemStack(item.getIconItem(), item.getIconDamage() != null ? item.getIconDamage() : 0);
+        ItemStack stack = MaterialResolver.createItemStack(item.getIconItem(),
+                                                           item.getIconDamage() != null ? item.getIconDamage() : 0);
 
         if (stack == null) {
             stack = new ItemStack(Material.PAPER);
@@ -59,29 +62,41 @@ public class ItemDetail extends Menu {
             public void onClick(Player player) {
             }
         };
-        menuItem.setDescriptions(TextUtils.splitToListWithPrefix(item.getInfo(), 30, ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorInfo())));
+        menuItem.setDescriptions(TextUtils.splitToListWithPrefix(item.getInfo(),
+                                                                 30,
+                                                                 ChatColor.translateAlternateColorCodes('&',
+                                                                                                        "&" + shop.getColorInfo())));
         addMenuItem(menuItem, 4);
 
         MenuItem pointOption = null;
         if (item.getPoints() != null) {
-            pointOption = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Buy with Points", Material.EMERALD) {
+            pointOption = new MenuItem(ChatColor.translateAlternateColorCodes('&',
+                                                                              "&" + shop.getColorText()) + "Buy with Points",
+                                       Material.EMERALD) {
                 @Override
                 public void onClick(Player player) {
                     closeMenu(player);
-                    PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
+                    PurchaseModule module = EnjinMinecraftPlugin.getInstance()
+                                                                .getModuleManager()
+                                                                .getModule(PurchaseModule.class);
                     if (module != null) {
                         module.processItemPurchase(player, shop, item);
                     }
                 }
             };
             pointOption.setDescriptions(new ArrayList<String>() {{
-                add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "POINTS: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPoints() == 0 ? "FREE" : item.getPoints()));
+                add(ChatColor.translateAlternateColorCodes('&',
+                                                           "&" + shop.getColorText()) + "POINTS: " + ChatColor.translateAlternateColorCodes(
+                        '&',
+                        "&" + shop.getColorPrice()) + (item.getPoints() == 0 ? "FREE" : item.getPoints()));
             }});
         }
 
         MenuItem priceOption = null;
         if (item.getPrice() != null) {
-            priceOption = new MenuItem(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "Buy with Money", Material.DIAMOND) {
+            priceOption = new MenuItem(ChatColor.translateAlternateColorCodes('&',
+                                                                              "&" + shop.getColorText()) + "Buy with Money",
+                                       Material.DIAMOND) {
                 @Override
                 public void onClick(Player player) {
                     closeMenu(player);
@@ -89,7 +104,11 @@ public class ItemDetail extends Menu {
                 }
             };
             priceOption.setDescriptions(new ArrayList<String>() {{
-                add(ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorText()) + "PRICE: " + ChatColor.translateAlternateColorCodes('&', "&" + shop.getColorPrice()) + (item.getPrice() == 0.0 ? "FREE" : priceFormat.format(item.getPrice()) + " " + shop.getCurrency()));
+                add(ChatColor.translateAlternateColorCodes('&',
+                                                           "&" + shop.getColorText()) + "PRICE: " + ChatColor.translateAlternateColorCodes(
+                        '&',
+                        "&" + shop.getColorPrice()) + (item.getPrice() == 0.0 ? "FREE" : priceFormat.format(item.getPrice()) + " " + shop
+                        .getCurrency()));
             }});
         }
 

@@ -14,10 +14,10 @@ import java.lang.reflect.Method;
 
 public class DirectiveNode {
     @Getter
-    private Directive data;
+    private Directive  data;
     @Getter
     private Permission permission;
-    private Method method;
+    private Method     method;
 
     public DirectiveNode(Directive data, Method method) {
         this.data = data;
@@ -35,7 +35,12 @@ public class DirectiveNode {
         }
 
         if (permission != null && !permission.value().equals("") && !sender.hasPermission(permission.value())) {
-            sender.sendMessage(Text.of(TextColors.RED, "You need to have the \"", TextColors.GOLD, permission.value(), TextColors.RED, "\" to run that directive."));
+            sender.sendMessage(Text.of(TextColors.RED,
+                                       "You need to have the \"",
+                                       TextColors.GOLD,
+                                       permission.value(),
+                                       TextColors.RED,
+                                       "\" to run that directive."));
             return;
         }
 
@@ -51,7 +56,8 @@ public class DirectiveNode {
             }
 
             if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid() && data.requireValidKey()) {
-                sender.sendMessage(Text.of(TextColors.RED, "This directive requires the server to successfully be authenticated with Enjin."));
+                sender.sendMessage(Text.of(TextColors.RED,
+                                           "This directive requires the server to successfully be authenticated with Enjin."));
                 return;
             }
 

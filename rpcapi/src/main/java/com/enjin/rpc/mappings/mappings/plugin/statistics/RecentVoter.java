@@ -12,14 +12,14 @@ import lombok.ToString;
 public class RecentVoter {
     @Getter
     @SerializedName(value = "player_name")
-    private String name;
+    private String  name;
     @Getter
     @SerializedName(value = "vote_time")
-    private Long time;
+    private Long    time;
     @Getter
     @SerializedName(value = "list_id")
     private Integer listId;
     @Getter
     @SerializedName(value = "list_name")
-    private String listName;
+    private String  listName;
 }

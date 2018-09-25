@@ -13,5 +13,5 @@ public class SyncResponse {
     @Getter
     private List<Instruction> instructions = new ArrayList<>();
     @Getter
-    private String status;
+    private String            status;
 }

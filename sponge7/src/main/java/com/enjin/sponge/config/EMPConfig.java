@@ -9,11 +9,11 @@ public class EMPConfig extends GenericEnjinConfig {
     @Getter
     @Setter
     @SerializedName(value = "buy-command")
-    private String buyCommand = "buy";
+    private String  buyCommand         = "buy";
     @Getter
     @Setter
     @SerializedName(value = "use-buy-gui")
-    private boolean useBuyGUI = true;
+    private boolean useBuyGUI          = true;
     @Getter
     @Setter
     @SerializedName(value = "collect-player-stats")
@@ -21,5 +21,5 @@ public class EMPConfig extends GenericEnjinConfig {
     @Getter
     @Setter
     @SerializedName(value = "send-stats-interval")
-    private int sendStatsInterval = 5;
+    private int     sendStatsInterval  = 5;
 }

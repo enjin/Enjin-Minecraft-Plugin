@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class ModuleManager {
     @Getter
-    private EnjinPlugin plugin;
+    private EnjinPlugin        plugin;
     private Map<Class, Object> modules;
 
     public ModuleManager(EnjinPlugin plugin) {
@@ -21,8 +21,8 @@ public class ModuleManager {
     }
 
     public void init() {
-        Reflections reflections = new Reflections("com.enjin.bukkit.modules.impl");
-        Set<Class<?>> modules = reflections.getTypesAnnotatedWith(Module.class);
+        Reflections   reflections = new Reflections("com.enjin.bukkit.modules.impl");
+        Set<Class<?>> modules     = reflections.getTypesAnnotatedWith(Module.class);
 
         if (modules != null && !modules.isEmpty()) {
             for (Class<?> clazz : modules) {

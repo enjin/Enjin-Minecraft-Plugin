@@ -1,8 +1,5 @@
 package com.enjin.bungee;
 
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
 import com.enjin.bungee.command.CommandBank;
 import com.enjin.bungee.command.commands.CoreCommands;
 import com.enjin.bungee.command.commands.PointCommands;
@@ -19,38 +16,39 @@ import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.enjin.rpc.mappings.services.PluginService;
-
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin instance;
     @Getter
-    private InstructionHandler instructionHandler = new BungeeInstructionHandler();
+    private        InstructionHandler   instructionHandler = new BungeeInstructionHandler();
     @Getter
-    private boolean firstRun = true;
+    private        boolean              firstRun           = true;
 
     @Getter
     @Setter
-    private boolean unableToContactEnjin = false;
+    private boolean          unableToContactEnjin = false;
     @Getter
     @Setter
-    private boolean authKeyInvalid = false;
+    private boolean          authKeyInvalid       = false;
     @Getter
     @Setter
-    private EnjinErrorReport lastError = null;
+    private EnjinErrorReport lastError            = null;
 
     @Getter
     @Setter
-    private String newVersion = "";
+    private String  newVersion   = "";
     @Getter
     @Setter
-    private boolean hasUpdate = false;
+    private boolean hasUpdate    = false;
     @Getter
     @Setter
     private boolean updateFailed = false;
@@ -90,7 +88,11 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
                 Optional<Integer> port = getPort();
-                RPCData<Auth> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), port.isPresent() ? port.get() : null, true, true);
+                RPCData<Auth>     data = EnjinServices.getService(PluginService.class)
+                                                      .auth(Optional.<String>absent(),
+                                                            port.isPresent() ? port.get() : null,
+                                                            true,
+                                                            true);
                 if (data == null) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
@@ -122,7 +124,7 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
     public void initConfig() {
         try {
-            File configFile = new File(getDataFolder(), "config.json");
+            File               configFile    = new File(getDataFolder(), "config.json");
             GenericEnjinConfig configuration = JsonConfig.load(configFile, GenericEnjinConfig.class);
             Enjin.setConfiguration(configuration);
 
@@ -161,7 +163,13 @@ public class EnjinMinecraftPlugin extends Plugin implements EnjinPlugin {
 
     public static Optional<Integer> getPort() {
         if (ProxyServer.getInstance().getConfig().getListeners().size() > 0) {
-            return Optional.fromNullable(ProxyServer.getInstance().getConfig().getListeners().iterator().next().getHost().getPort());
+            return Optional.fromNullable(ProxyServer.getInstance()
+                                                    .getConfig()
+                                                    .getListeners()
+                                                    .iterator()
+                                                    .next()
+                                                    .getHost()
+                                                    .getPort());
         }
 
         return Optional.absent();

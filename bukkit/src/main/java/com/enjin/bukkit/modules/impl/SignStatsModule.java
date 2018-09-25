@@ -3,11 +3,11 @@ package com.enjin.bukkit.modules.impl;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.StatSignConfig;
+import com.enjin.bukkit.listeners.SignListener;
 import com.enjin.bukkit.modules.Module;
 import com.enjin.bukkit.statsigns.SignData;
 import com.enjin.bukkit.statsigns.SignType;
 import com.enjin.bukkit.statsigns.StatSignProcessor;
-import com.enjin.bukkit.listeners.SignListener;
 import com.enjin.bukkit.util.serialization.SerializableLocation;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
@@ -17,7 +17,10 @@ import com.enjin.rpc.mappings.mappings.plugin.Stats;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
@@ -30,13 +33,13 @@ import java.util.List;
 public class SignStatsModule {
     private EnjinMinecraftPlugin plugin;
     @Getter
-    private File file;
+    private File                 file;
     @Getter
-    private StatSignConfig config;
+    private StatSignConfig       config;
     @Getter
-    private Stats stats;
+    private Stats                stats;
     @Getter
-    private List<Integer> items = new ArrayList<>();
+    private List<Integer>        items = new ArrayList<>();
 
     public SignStatsModule() {
         this.plugin = EnjinMinecraftPlugin.getInstance();
@@ -160,14 +163,14 @@ public class SignStatsModule {
             @Override
             public void run() {
                 Location location = data.getLocation().toLocation();
-                Block block = location.getBlock();
+                Block    block    = location.getBlock();
 
                 if (block.getState() == null || !(block.getState() instanceof Sign)) {
                     config.getSigns().remove(data);
                     return;
                 }
 
-                Sign sign = (Sign) block.getState();
+                Sign   sign = (Sign) block.getState();
                 String name = null;
                 switch (data.getType()) {
                     case DONATION:
@@ -235,7 +238,9 @@ public class SignStatsModule {
             }
         }
 
-        block = sign.getBlock().getRelative(((org.bukkit.material.Sign) sign.getData()).getAttachedFace()).getRelative(0, 1, 0);
+        block = sign.getBlock()
+                    .getRelative(((org.bukkit.material.Sign) sign.getData()).getAttachedFace())
+                    .getRelative(0, 1, 0);
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;

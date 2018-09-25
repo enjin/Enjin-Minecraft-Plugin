@@ -8,15 +8,14 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.command.ConsoleCommandSender;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class DirectiveNode {
     @Getter
-    private Directive data;
+    private Directive  data;
     @Getter
     private Permission permission;
-    private Method method;
+    private Method     method;
 
     public DirectiveNode(Directive data, Method method) {
         this.data = data;
@@ -33,7 +32,9 @@ public class DirectiveNode {
             return;
         }
 
-        if (sender instanceof ProxiedPlayer && permission != null && !permission.value().equals("") && !sender.hasPermission(permission.value())) {
+        if (sender instanceof ProxiedPlayer && permission != null && !permission.value()
+                                                                                .equals("") && !sender.hasPermission(
+                permission.value())) {
             sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + permission.value() + ChatColor.RED + "\" or OP to run that directive.");
             return;
         }

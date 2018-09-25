@@ -19,10 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class VotifierManager {
     @Getter
-    private static final Map<String, List<Object[]>> playerVotes = new ConcurrentHashMap<>();
+    private static final Map<String, List<Object[]>> playerVotes      = new ConcurrentHashMap<>();
     @Getter
-    private static boolean enabled = false;
-    private static List<String> supportedPlugins = Lists.newArrayList();
+    private static       boolean                     enabled          = false;
+    private static       List<String>                supportedPlugins = Lists.newArrayList();
 
     static {
         supportedPlugins.add("com.vexsoftware");
@@ -43,7 +43,7 @@ public class VotifierManager {
             return;
         }
 
-        String userid = username;
+        String userid   = username;
         String listname = event.getVote().getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 
         Optional<Player> player = Sponge.getServer().getPlayer(userid);
@@ -55,8 +55,9 @@ public class VotifierManager {
             playerVotes.put(listname, new ArrayList<>());
         }
 
-        playerVotes.get(listname).add(new Object[]{userid, System.currentTimeMillis() / 1000});
-        Enjin.getLogger().debug("Vote successfully stored for " + vote.getUsername() + " using " + vote.getServiceName());
+        playerVotes.get(listname).add(new Object[] {userid, System.currentTimeMillis() / 1000});
+        Enjin.getLogger()
+             .debug("Vote successfully stored for " + vote.getUsername() + " using " + vote.getServiceName());
     }
 
     public static void init(EnjinMinecraftPlugin plugin) {

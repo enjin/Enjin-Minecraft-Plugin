@@ -1,13 +1,16 @@
 package com.enjin.sponge.stats;
 
+import com.enjin.core.Enjin;
 import com.enjin.sponge.EnjinMinecraftPlugin;
-
-import java.io.*;
-import java.util.Map;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
-import com.enjin.core.Enjin;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
 
 public class WriteStats {
     public boolean write(File file) {
@@ -29,7 +32,7 @@ public class WriteStats {
 
         try {
             BufferedWriter outChannel = new BufferedWriter(new FileWriter(file));
-            String jsonString = getStatsJSON();
+            String         jsonString = getStatsJSON();
             outChannel.write(jsonString);
             outChannel.close();
         } catch (Exception e) {

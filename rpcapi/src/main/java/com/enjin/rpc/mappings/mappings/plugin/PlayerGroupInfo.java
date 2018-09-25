@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PlayerGroupInfo {
     @Getter
-    private String uuid;
+    private String                    uuid;
     @Getter
     private Map<String, List<String>> worlds = new HashMap<String, List<String>>();
 

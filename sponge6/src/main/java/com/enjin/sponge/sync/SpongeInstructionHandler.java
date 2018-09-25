@@ -10,7 +10,6 @@ import com.google.common.base.Optional;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 
@@ -54,7 +53,12 @@ public class SpongeInstructionHandler implements InstructionHandler {
     }
 
     @Override
-    public void execute(Long id, String command, Optional<Long> delay, Optional<Boolean> requireOnline, Optional<String> name, Optional<String> uuid) {
+    public void execute(Long id,
+                        String command,
+                        Optional<Long> delay,
+                        Optional<Boolean> requireOnline,
+                        Optional<String> name,
+                        Optional<String> uuid) {
         if (id == null || id <= -1) {
             Enjin.getLogger().debug("Execute instruction has invalid id: " + id);
             return;
@@ -71,14 +75,14 @@ public class SpongeInstructionHandler implements InstructionHandler {
             UserStorageService storage = Sponge.getServiceManager().provide(UserStorageService.class).get();
 
             java.util.Optional<User> optional = null;
-            User user = null;
+            User                     user     = null;
             if (Sponge.getServer().getOnlineMode() && uuid.isPresent() && !uuid.get().isEmpty()) {
                 Enjin.getLogger().debug("Searching for player by uuid...");
                 String value = uuid.get().replaceAll("-", "");
-                UUID u = null;
+                UUID   u     = null;
                 if (value.length() == 32) {
                     BigInteger least = new BigInteger(value.substring(0, 16), 16);
-                    BigInteger most = new BigInteger(value.substring(16, 32), 16);
+                    BigInteger most  = new BigInteger(value.substring(16, 32), 16);
                     u = new UUID(least.longValue(), most.longValue());
                 } else {
                     Enjin.getLogger().debug("Player uuid " + value + " is invalid.");
@@ -136,7 +140,11 @@ public class SpongeInstructionHandler implements InstructionHandler {
                     if (id > 0) {
                         plugin.getExecutedCommands().add(id);
                         plugin.getPendingCommands().remove(id);
-                        EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().add(new ExecutedCommand(Long.toString(id), command, Enjin.getLogger().getLastLine()));
+                        EnjinMinecraftPlugin.getExecutedCommandsConfiguration()
+                                            .getExecutedCommands()
+                                            .add(new ExecutedCommand(Long.toString(id),
+                                                                     command,
+                                                                     Enjin.getLogger().getLastLine()));
                         EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
                     }
 
@@ -154,18 +162,19 @@ public class SpongeInstructionHandler implements InstructionHandler {
 
             if (!delay.isPresent() || delay.get() <= 0) {
                 Sponge.getScheduler().createTaskBuilder().execute(runnable)
-                        .submit(Enjin.getPlugin());
+                      .submit(Enjin.getPlugin());
             } else {
                 Sponge.getScheduler().createTaskBuilder().execute(runnable)
-                        .delay(delay.get(), TimeUnit.SECONDS)
-                        .submit(Enjin.getPlugin());
+                      .delay(delay.get(), TimeUnit.SECONDS)
+                      .submit(Enjin.getPlugin());
             }
         }
     }
 
     @Override
     public void commandConfirmed(List<Long> executed) {
-        for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands())) {
+        for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration()
+                                                                           .getExecutedCommands())) {
             for (long id : executed) {
                 Enjin.getLogger().debug("Confirming Command ID: " + id);
                 if (Long.parseLong(command.getId()) == id) {

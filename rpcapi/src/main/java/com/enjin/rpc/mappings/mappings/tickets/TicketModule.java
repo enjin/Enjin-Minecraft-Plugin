@@ -1,6 +1,5 @@
 package com.enjin.rpc.mappings.mappings.tickets;
 
-import com.enjin.core.Enjin;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,12 +16,12 @@ public class TicketModule {
     private List<Question> questions;
     @Getter
     @SerializedName(value = "module_name")
-    private String name;
+    private String         name;
     @Getter
-    private String command;
+    private String         command;
     @Getter
     @SerializedName(value = "command_help")
-    private String help;
+    private String         help;
 
     public Map<Integer, Question> getIdMappedQuestions() {
         Map<Integer, Question> map = new HashMap<>();

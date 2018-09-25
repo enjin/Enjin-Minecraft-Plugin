@@ -21,7 +21,9 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class CoreCommands {
     @Command(value = "benjin", aliases = "be", requireValidKey = false)
@@ -97,12 +99,16 @@ public class CoreCommands {
                     return;
                 }
 
-                Optional<Integer> port = EnjinMinecraftPlugin.getPort();
-                PluginService service = EnjinServices.getService(PluginService.class);
-                RPCData<Auth> data = service.auth(Optional.of(args[0]), port.isPresent() ? port.get() : null, true, true);
+                Optional<Integer> port    = EnjinMinecraftPlugin.getPort();
+                PluginService     service = EnjinServices.getService(PluginService.class);
+                RPCData<Auth>     data    = service.auth(Optional.of(args[0]),
+                                                         port.isPresent() ? port.get() : null,
+                                                         true,
+                                                         true);
 
                 if (data == null) {
-                    sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+                    sender.sendMessage(
+                            "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
                     return;
                 }
 
@@ -131,8 +137,8 @@ public class CoreCommands {
     @Directive(parent = "benjin", value = "report", requireValidKey = false)
     public static void report(CommandSender sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-        Date date = new Date();
-        DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+        Date                 date   = new Date();
+        DateFormat           format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
         sender.sendMessage(ChatColor.GREEN + "Please wait while we generate the report");
 
@@ -141,8 +147,18 @@ public class CoreCommands {
         report.append("Enjin plugin version: ").append(plugin.getDescription().getVersion()).append("\n");
 
         report.append("BungeeCord version: ").append(ProxyServer.getInstance().getVersion()).append("\n");
-        report.append("Java version: ").append(System.getProperty("java.version")).append(" ").append(System.getProperty("java.vendor")).append("\n");
-        report.append("Operating system: ").append(System.getProperty("os.name")).append(" ").append(System.getProperty("os.version")).append(" ").append(System.getProperty("os.arch")).append("\n");
+        report.append("Java version: ")
+              .append(System.getProperty("java.version"))
+              .append(" ")
+              .append(System.getProperty("java.vendor"))
+              .append("\n");
+        report.append("Operating system: ")
+              .append(System.getProperty("os.name"))
+              .append(" ")
+              .append(System.getProperty("os.version"))
+              .append(" ")
+              .append(System.getProperty("os.arch"))
+              .append("\n");
 
         if (plugin.isAuthKeyInvalid()) {
             report.append("ERROR: Authkey reported by plugin as invalid!\n");
@@ -153,12 +169,15 @@ public class CoreCommands {
         }
 
         report.append("Enjin Server ID: ")
-                .append(plugin.getServerId())
-                .append('\n');
+              .append(plugin.getServerId())
+              .append('\n');
 
         report.append("\nPlugins: \n");
         for (Plugin p : ProxyServer.getInstance().getPluginManager().getPlugins()) {
-            report.append(p.getDescription().getName()).append(" version ").append(p.getDescription().getVersion()).append("\n");
+            report.append(p.getDescription().getName())
+                  .append(" version ")
+                  .append(p.getDescription().getVersion())
+                  .append("\n");
         }
 
         ProxyServer.getInstance().getScheduler().runAsync(plugin, new ReportPublisher(plugin, report, sender));
@@ -172,12 +191,13 @@ public class CoreCommands {
             return;
         }
 
-        String name = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
-        PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<List<TagData>> data = service.getTags(name);
+        String                 name    = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
+        PluginService          service = EnjinServices.getService(PluginService.class);
+        RPCData<List<TagData>> data    = service.getTags(name);
 
         if (data == null) {
-            sender.sendMessage("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
+            sender.sendMessage(
+                    "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support.");
             return;
         }
 
@@ -186,8 +206,8 @@ public class CoreCommands {
             return;
         }
 
-        List<TagData> tags = data.getResult();
-        String tagList = "";
+        List<TagData> tags    = data.getResult();
+        String        tagList = "";
         if (tags != null) {
             Iterator<TagData> iterator = tags.iterator();
             while (iterator.hasNext()) {

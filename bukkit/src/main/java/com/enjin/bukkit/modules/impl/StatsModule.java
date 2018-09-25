@@ -4,13 +4,10 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ChatListener;
 import com.enjin.bukkit.listeners.EnjinStatsListener;
-import com.enjin.bukkit.modules.Module;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.StatsUtils;
-import com.enjin.bukkit.stats.WriteStats;
 import com.enjin.bukkit.util.io.FileUtil;
 import com.enjin.core.Enjin;
-import com.gmail.nossr50.datatypes.skills.SkillType;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -26,14 +23,13 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
 
 //@Module(name = "Stats")
 public class StatsModule {
     private EnjinMinecraftPlugin plugin;
     @Getter
-    private boolean mcMmoEnabled = false;
-    private EnjinStatsListener listener;
+    private boolean              mcMmoEnabled = false;
+    private EnjinStatsListener   listener;
 
     public StatsModule() {
         plugin = EnjinMinecraftPlugin.getInstance();
@@ -107,11 +103,11 @@ public class StatsModule {
     }
 
     public void disable() {
-//        EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
-//        if (configuration.isCollectPlayerStats()) {
-//            new WriteStats(plugin).write("enjin-stats.json");
-//            Enjin.getLogger().debug("Stats saved to enjin-stats.json.");
-//        }
+        //        EMPConfig configuration = Enjin.getConfiguration(EMPConfig.class);
+        //        if (configuration.isCollectPlayerStats()) {
+        //            new WriteStats(plugin).write("enjin-stats.json");
+        //            Enjin.getLogger().debug("Stats saved to enjin-stats.json.");
+        //        }
     }
 
     public StatsPlayer getPlayerStats(OfflinePlayer player) {
@@ -119,7 +115,7 @@ public class StatsModule {
             return null;
         }
 
-        String uuid = player.getUniqueId().toString().toLowerCase();
+        String      uuid  = player.getUniqueId().toString().toLowerCase();
         StatsPlayer stats = EnjinMinecraftPlugin.getInstance().getPlayerStats().get(uuid);
 
         if (stats == null) {

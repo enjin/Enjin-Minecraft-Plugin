@@ -11,11 +11,11 @@ import org.spongepowered.api.item.inventory.property.SlotPos;
 public class VirtualInventoryEventSnapshot<T extends Event> {
 
     @Getter
-    protected T event;
+    protected T                event;
     @Getter
     protected VirtualInventory inventory;
     @Getter
-    protected Player player;
+    protected Player           player;
 
     protected VirtualInventoryEventSnapshot(T event, VirtualInventory inventory, Player player) {
         this.event = event;
@@ -50,9 +50,9 @@ public class VirtualInventoryEventSnapshot<T extends Event> {
     public static class Click extends VirtualInventoryEventSnapshot<ClickInventoryEvent> {
 
         @Getter
-        private Slot slot;
+        private Slot        slot;
         @Getter
-        private SlotPos position;
+        private SlotPos     position;
         @Getter
         private VirtualItem item;
 

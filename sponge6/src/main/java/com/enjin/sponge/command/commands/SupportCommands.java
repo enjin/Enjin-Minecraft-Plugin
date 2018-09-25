@@ -4,7 +4,12 @@ import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
-import com.enjin.rpc.mappings.mappings.tickets.*;
+import com.enjin.rpc.mappings.mappings.tickets.Reply;
+import com.enjin.rpc.mappings.mappings.tickets.ReplyResults;
+import com.enjin.rpc.mappings.mappings.tickets.Ticket;
+import com.enjin.rpc.mappings.mappings.tickets.TicketModule;
+import com.enjin.rpc.mappings.mappings.tickets.TicketResults;
+import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
 import com.enjin.rpc.mappings.services.TicketService;
 import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.enjin.sponge.command.Directive;
@@ -26,7 +31,7 @@ public class SupportCommands {
     @Permission(value = "enjin.support")
     @Directive(parent = "enjin", value = "support", requireValidKey = true)
     public static void support(final Player sender, final String[] args) {
-        final EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+        final EnjinMinecraftPlugin       plugin  = EnjinMinecraftPlugin.getInstance();
         final Map<Integer, TicketModule> modules = TicketManager.getModules();
 
         if (TicketCreationSession.getSessions().containsKey(sender.getUniqueId())) {
@@ -70,10 +75,13 @@ public class SupportCommands {
                 } else {
                     Enjin.getLogger().debug(String.valueOf(modules.size()));
                     for (Entry<Integer, TicketModule> entry : modules.entrySet()) {
-                        int id = entry.getKey();
+                        int          id     = entry.getKey();
                         TicketModule module = entry.getValue();
                         sender.sendMessage(TextUtils.translateText((module.getHelp() != null
-                                && !module.getHelp().isEmpty()) ? module.getHelp() : "Type /e support " + id + " to create a support ticket for " + module.getName().replaceAll("\\s+", " ")));
+                                && !module.getHelp()
+                                          .isEmpty()) ? module.getHelp() : "Type /e support " + id + " to create a support ticket for " + module
+                                .getName()
+                                .replaceAll("\\s+", " ")));
                     }
                 }
             }
@@ -87,8 +95,8 @@ public class SupportCommands {
 
         if (args.length == 0) {
             plugin.getAsync().execute(() -> {
-                TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<TicketResults> data = service.getPlayerTickets(-1, sender.getName());
+                TicketService          service = EnjinServices.getService(TicketService.class);
+                RPCData<TicketResults> data    = service.getPlayerTickets(-1, sender.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -107,8 +115,8 @@ public class SupportCommands {
             });
         } else {
             plugin.getAsync().execute(() -> {
-                TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<ReplyResults> data = service.getReplies(-1, args[0], sender.getName());
+                TicketService         service = EnjinServices.getService(TicketService.class);
+                RPCData<ReplyResults> data    = service.getReplies(-1, args[0], sender.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -116,7 +124,9 @@ public class SupportCommands {
                     } else {
                         List<Reply> replies = data.getResult().getResults();
                         if (replies.size() > 0) {
-                            sender.sendMessage(TicketViewBuilder.buildTicket(args[0], replies, sender.hasPermission("enjin.ticket.private")));
+                            sender.sendMessage(TicketViewBuilder.buildTicket(args[0],
+                                                                             replies,
+                                                                             sender.hasPermission("enjin.ticket.private")));
                         } else {
                             sender.sendMessage(Text.of(TextColors.RED, "You entered an invalid ticket code!"));
                         }
@@ -135,8 +145,8 @@ public class SupportCommands {
 
         if (args.length == 0) {
             plugin.getAsync().execute(() -> {
-                TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<TicketResults> data = service.getTickets(-1, TicketStatus.open);
+                TicketService          service = EnjinServices.getService(TicketService.class);
+                RPCData<TicketResults> data    = service.getTickets(-1, TicketStatus.open);
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -155,8 +165,8 @@ public class SupportCommands {
             });
         } else {
             plugin.getAsync().execute(() -> {
-                TicketService service = EnjinServices.getService(TicketService.class);
-                RPCData<ReplyResults> data = service.getReplies(-1, args[0], sender.getName());
+                TicketService         service = EnjinServices.getService(TicketService.class);
+                RPCData<ReplyResults> data    = service.getReplies(-1, args[0], sender.getName());
 
                 if (data != null) {
                     if (data.getError() != null) {
@@ -164,7 +174,9 @@ public class SupportCommands {
                     } else {
                         List<Reply> replies = data.getResult().getResults();
                         if (replies.size() > 0) {
-                            sender.sendMessage(TicketViewBuilder.buildTicket(args[0], replies, sender.hasPermission("enjin.ticket.private")));
+                            sender.sendMessage(TicketViewBuilder.buildTicket(args[0],
+                                                                             replies,
+                                                                             sender.hasPermission("enjin.ticket.private")));
                         } else {
                             sender.sendMessage(Text.of(TextColors.RED, "You entered an invalid ticket code!"));
                         }
@@ -193,8 +205,8 @@ public class SupportCommands {
                 return;
             }
 
-            final String ticket = args[1];
-            String message = "";
+            final String ticket  = args[1];
+            String       message = "";
             for (String arg : Arrays.copyOfRange(args, 2, args.length)) {
                 message = message.concat(arg + " ");
             }
@@ -202,7 +214,13 @@ public class SupportCommands {
             final String finalMessage = message;
 
             plugin.getAsync().execute(() -> {
-                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(preset, ticket, finalMessage, "public", TicketStatus.open, sender.getName());
+                RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class)
+                                                          .sendReply(preset,
+                                                                     ticket,
+                                                                     finalMessage,
+                                                                     "public",
+                                                                     TicketStatus.open,
+                                                                     sender.getName());
                 if (result != null) {
                     if (result.getError() == null) {
                         sender.sendMessage(Text.of(TextColors.GREEN, "You replied to the ticket successfully."));
@@ -222,13 +240,15 @@ public class SupportCommands {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
 
         if (args.length != 3) {
-            sender.sendMessage(Text.of(TextColors.RED, "Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>"));
+            sender.sendMessage(Text.of(TextColors.RED,
+                                       "Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>"));
         } else {
             final int preset;
             try {
                 preset = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(Text.of(TextColors.RED, "Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>"));
+                sender.sendMessage(Text.of(TextColors.RED,
+                                           "Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>"));
                 return;
             }
 
@@ -241,26 +261,34 @@ public class SupportCommands {
             }
 
             if (tempStatus == null) {
-                sender.sendMessage(Text.of(TextColors.RED, "Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>"));
+                sender.sendMessage(Text.of(TextColors.RED,
+                                           "Usage: /e ticketstatus <preset_id> <ticket_code> <open,pending,closed>"));
                 return;
             }
 
-            final String ticket = args[1];
+            final String       ticket = args[1];
             final TicketStatus status = tempStatus;
             plugin.getAsync().execute(() -> {
-                RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(preset, ticket, status);
+                RPCData<Boolean> result = EnjinServices.getService(TicketService.class)
+                                                       .setStatus(preset, ticket, status);
                 if (result != null) {
                     if (result.getError() == null) {
                         if (result.getResult()) {
-                            sender.sendMessage(Text.of(TextColors.GREEN, "The tickets status was successfully changed to ", status.name()));
+                            sender.sendMessage(Text.of(TextColors.GREEN,
+                                                       "The tickets status was successfully changed to ",
+                                                       status.name()));
                         } else {
-                            sender.sendMessage(Text.of(TextColors.RED, "The tickets status was unable to be changed to ", status.name()));
+                            sender.sendMessage(Text.of(TextColors.RED,
+                                                       "The tickets status was unable to be changed to ",
+                                                       status.name()));
                         }
                     } else {
                         sender.sendMessage(Text.of(TextColors.RED, result.getError().getMessage()));
                     }
                 } else {
-                    sender.sendMessage(Text.of(TextColors.RED, "The tickets status was unable to be changed to ", status.name()));
+                    sender.sendMessage(Text.of(TextColors.RED,
+                                               "The tickets status was unable to be changed to ",
+                                               status.name()));
                 }
             });
         }

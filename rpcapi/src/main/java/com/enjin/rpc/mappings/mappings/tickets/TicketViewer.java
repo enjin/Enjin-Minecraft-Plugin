@@ -13,5 +13,5 @@ public class TicketViewer {
     private Integer id;
     @Getter
     @SerializedName(value = "time_expire")
-    private Long expiration;
+    private Long    expiration;
 }

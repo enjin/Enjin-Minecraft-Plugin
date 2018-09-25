@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 
 public class Menu extends MenuHolder {
-    private final String title;
-    private int rows;
-    protected Inventory inventory;
+    private final String    title;
+    private       int       rows;
+    protected     Inventory inventory;
 
     public Menu(String title, int rows) {
         super(9 * 6);

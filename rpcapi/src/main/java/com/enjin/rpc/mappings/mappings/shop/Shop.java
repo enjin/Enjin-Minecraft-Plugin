@@ -11,64 +11,64 @@ import java.util.List;
 @EqualsAndHashCode
 public class Shop {
     @Getter
-    private Integer id;
+    private Integer        id;
     @Getter
-    private String name;
+    private String         name;
     @Getter
-    private String info;
+    private String         info;
     @Getter
     @SerializedName(value = "buyurl")
-    private String buyUrl;
+    private String         buyUrl;
     @Getter
-    private String currency;
+    private String         currency;
     @Getter
     @SerializedName(value = "ingame_purchase_points_enabled")
-    private Boolean pointsEnabled;
+    private Boolean        pointsEnabled;
     @Getter
     @SerializedName(value = "current_points")
-    private Integer currentPoints;
+    private Integer        currentPoints;
     @Getter
     @SerializedName(value = "simpleitems")
-    private Boolean simpleItems;
+    private Boolean        simpleItems;
     @Getter
     @SerializedName("colortext")
-    private String colorText;
+    private String         colorText;
     @Getter
     @SerializedName("colortitle")
-    private String colorTitle;
+    private String         colorTitle;
     @Getter
     @SerializedName("colorid")
-    private String colorId;
+    private String         colorId;
     @Getter
     @SerializedName("colorname")
-    private String colorName;
+    private String         colorName;
     @Getter
     @SerializedName("colorprice")
-    private String colorPrice;
+    private String         colorPrice;
     @Getter
     @SerializedName("colorbracket")
-    private String colorBracket;
+    private String         colorBracket;
     @Getter
     @SerializedName("colorurl")
-    private String colorUrl;
+    private String         colorUrl;
     @Getter
     @SerializedName("colorinfo")
-    private String colorInfo;
+    private String         colorInfo;
     @Getter
     @SerializedName("colorborder")
-    private String colorBorder;
+    private String         colorBorder;
     @Getter
     @SerializedName("colorbottom")
-    private String colorBottom;
+    private String         colorBottom;
     @SerializedName(value = "border_v")
     @Getter
-    private String borderV;
+    private String         borderV;
     @SerializedName(value = "border_h")
     @Getter
-    private String borderH;
+    private String         borderH;
     @SerializedName(value = "border_c")
     @Getter
-    private String borderC;
+    private String         borderC;
     @Getter
     private List<Category> categories;
 }

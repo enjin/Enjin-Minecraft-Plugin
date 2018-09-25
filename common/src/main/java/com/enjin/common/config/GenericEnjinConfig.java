@@ -9,18 +9,18 @@ import lombok.Setter;
 public class GenericEnjinConfig extends JsonConfig implements EnjinConfig {
     @Getter
     @Setter
-    private boolean debug = false;
+    private boolean debug          = false;
     @Getter
     @Setter
     @SerializedName(value = "auth-key")
-    private String authKey = "";
+    private String  authKey        = "";
     @Getter
     @Setter
-    private boolean https = true;
+    private boolean https          = true;
     @Getter
     @Setter
     @SerializedName(value = "sync-delay")
-    private int syncDelay = 10;
+    private int     syncDelay      = 10;
     @Getter
     @Setter
     @SerializedName(value = "logging-enabled")
@@ -28,5 +28,5 @@ public class GenericEnjinConfig extends JsonConfig implements EnjinConfig {
     @Getter
     @Setter
     @SerializedName(value = "api-url")
-    private String apiUrl = "://api.enjin.com/api/v1";
+    private String  apiUrl         = "://api.enjin.com/api/v1";
 }

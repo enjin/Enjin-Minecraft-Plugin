@@ -1,7 +1,6 @@
 package com.enjin.sponge.utils.text;
 
 import com.enjin.core.Enjin;
-import com.enjin.sponge.EnjinMinecraftPlugin;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -13,9 +12,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TextUtils {
-    private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
+    private static final Pattern                 STRIP_COLOR_PATTERN         = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
     private static final Map<Character, Pattern> alternateStripColorPatterns = Maps.newHashMap();
-    public static final int MINECRAFT_CONSOLE_WIDTH = 320;
+    public static final  int                     MINECRAFT_CONSOLE_WIDTH     = 320;
 
     public static int getWidth(String text) {
         if (text == null || text.isEmpty()) {
@@ -71,7 +70,7 @@ public class TextUtils {
 
     public static List<Text> splitToListWithPrefix(String text, int length, String prefix) {
         List<String> stringResult = new ArrayList<>();
-        String[] parts = text.split(" ");
+        String[]     parts        = text.split(" ");
 
         StringBuilder builder = new StringBuilder();
         for (String part : parts) {
@@ -92,8 +91,8 @@ public class TextUtils {
         }
 
         return stringResult.stream()
-                .map(t -> TextSerializers.FORMATTING_CODE.deserialize(t))
-                .collect(Collectors.toList());
+                           .map(t -> TextSerializers.FORMATTING_CODE.deserialize(t))
+                           .collect(Collectors.toList());
     }
 
 }

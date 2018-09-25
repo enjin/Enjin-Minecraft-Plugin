@@ -16,7 +16,7 @@ public class Auth {
     private boolean authed;
     @Getter
     @SerializedName("server_id")
-    private long serverId;
+    private long    serverId;
 
     public Auth(boolean authed, long serverId) {
         this.authed = authed;

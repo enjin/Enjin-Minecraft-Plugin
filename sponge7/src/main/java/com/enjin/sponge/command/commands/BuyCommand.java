@@ -31,7 +31,10 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(Text.of(TextColors.RED, "USAGE: /", Enjin.getConfiguration(EMPConfig.class).getBuyCommand(), " #"));
+            player.sendMessage(Text.of(TextColors.RED,
+                                       "USAGE: /",
+                                       Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                       " #"));
             return;
         }
 
@@ -105,7 +108,10 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(Text.of(TextColors.RED, "USAGE: /", Enjin.getConfiguration(EMPConfig.class).getBuyCommand(), " #"));
+            player.sendMessage(Text.of(TextColors.RED,
+                                       "USAGE: /",
+                                       Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                       " #"));
             return;
         }
 
@@ -120,8 +126,8 @@ public class BuyCommand {
     @Directive(parent = "buy", value = "item")
     public static void item(Player player, String[] args) {
         if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
-//            player.sendMessage(Text.of(TextColors.RED, "The text shop has been disabled. Please use the gui to make point purchases."));
-//            return;
+            //            player.sendMessage(Text.of(TextColors.RED, "The text shop has been disabled. Please use the gui to make point purchases."));
+            //            return;
         }
 
         PlayerShopInstance instance = PlayerShopInstance.getInstances().get(player.getUniqueId());
@@ -139,7 +145,10 @@ public class BuyCommand {
             try {
                 index = Integer.valueOf(args[0]);
             } catch (NumberFormatException e) {
-                player.sendMessage(Text.of(TextColors.RED, "USAGE: /", Enjin.getConfiguration(EMPConfig.class).getBuyCommand(), " item #"));
+                player.sendMessage(Text.of(TextColors.RED,
+                                           "USAGE: /",
+                                           Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                           " item #"));
                 return;
             }
 
@@ -181,15 +190,18 @@ public class BuyCommand {
         try {
             selection = args.length == 0 ? Optional.<Integer>absent() : Optional.fromNullable(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            player.sendMessage(Text.of(TextColors.RED, "USAGE: /", Enjin.getConfiguration(EMPConfig.class).getBuyCommand(), " shop #"));
+            player.sendMessage(Text.of(TextColors.RED,
+                                       "USAGE: /",
+                                       Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                       " shop #"));
             return;
         }
 
         if (Enjin.getConfiguration(EMPConfig.class).isUseBuyGUI()) {
-//            Menu menu = new ShopList(player);
-//            menu.openMenu(player);
-//
-//            return;
+            //            Menu menu = new ShopList(player);
+            //            menu.openMenu(player);
+            //
+            //            return;
         }
 
         PlayerShopInstance instance = instances.get(player.getUniqueId());
@@ -210,7 +222,7 @@ public class BuyCommand {
 
     private static void fetchShop(Player player) {
         EnjinMinecraftPlugin.getInstance().getGame().getScheduler().createTaskBuilder()
-                .execute(new RPCShopFetcher(player))
-                .submit(Enjin.getPlugin());
+                            .execute(new RPCShopFetcher(player))
+                            .submit(Enjin.getPlugin());
     }
 }

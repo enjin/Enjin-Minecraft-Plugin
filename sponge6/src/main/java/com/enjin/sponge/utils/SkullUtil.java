@@ -12,9 +12,7 @@ import org.spongepowered.api.profile.GameProfileManager;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.UUID;
 
 public class SkullUtil {
     public static void updateSkullOwner(Location<World> location, String name) {
@@ -29,7 +27,7 @@ public class SkullUtil {
             try {
                 Optional<GameProfile> existing = entity.get(Keys.REPRESENTED_PLAYER);
                 if (existing.isPresent()) {
-                    GameProfile e = existing.get();
+                    GameProfile      e            = existing.get();
                     Optional<String> existingName = e.getName();
                     if (existingName.isPresent() && existingName.get().equalsIgnoreCase(name)) {
                         Enjin.getLogger().debug("Head already is set to player: " + name);
@@ -52,7 +50,9 @@ public class SkullUtil {
                     if (profile.isPresent()) {
                         Enjin.getLogger().debug("Updating skull owner to " + name);
                         final GameProfile p = profile.get();
-                        EnjinMinecraftPlugin.getInstance().getSync().execute(() -> entity.offer(Keys.REPRESENTED_PLAYER, p));
+                        EnjinMinecraftPlugin.getInstance()
+                                            .getSync()
+                                            .execute(() -> entity.offer(Keys.REPRESENTED_PLAYER, p));
                     }
                 });
             } catch (Exception e) {

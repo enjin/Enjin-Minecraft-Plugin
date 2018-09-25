@@ -13,16 +13,20 @@ import org.bukkit.World;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Module(name = "Vault", hardPluginDependencies = {"Vault"})
 public class VaultModule {
     private EnjinMinecraftPlugin plugin;
     @Getter
-    private Permission permission = null;
+    private Permission           permission               = null;
     @Getter
-    private Economy economy = null;
-    private boolean economyCompatibilityMode = false;
+    private Economy              economy                  = null;
+    private boolean              economyCompatibilityMode = false;
 
     public VaultModule() {
         this.plugin = EnjinMinecraftPlugin.getInstance();
@@ -39,7 +43,8 @@ public class VaultModule {
         if (provider != null && provider.getProvider() != null) {
             permission = provider.getProvider();
         } else {
-            Enjin.getLogger().info("No Vault compatible permissions plugin was found. Vault permissions will be disabled.");
+            Enjin.getLogger()
+                 .info("No Vault compatible permissions plugin was found. Vault permissions will be disabled.");
         }
     }
 
@@ -54,7 +59,9 @@ public class VaultModule {
                         economy.hasAccount(Bukkit.getOfflinePlayer("Tux2"));
                     } catch (AbstractMethodError e) {
                         economyCompatibilityMode = true;
-                        Enjin.getLogger().warning("Your economy plugin does not support UUID, using vault legacy compatibility mode.");
+                        Enjin.getLogger()
+                             .warning(
+                                     "Your economy plugin does not support UUID, using vault legacy compatibility mode.");
                     }
                 }
             });

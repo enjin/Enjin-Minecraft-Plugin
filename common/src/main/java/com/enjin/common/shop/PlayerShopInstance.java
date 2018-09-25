@@ -17,15 +17,15 @@ public class PlayerShopInstance {
     private static Map<UUID, PlayerShopInstance> instances = Maps.newHashMap();
 
     @Getter
-    private List<Shop> shops = Lists.newArrayList();
+    private List<Shop> shops          = Lists.newArrayList();
     @Getter
-    private Shop activeShop = null;
+    private Shop       activeShop     = null;
     @Getter
-    private Category activeCategory = null;
+    private Category   activeCategory = null;
     @Getter
-    private Item activeItem = null;
+    private Item       activeItem     = null;
     @Getter
-    private long lastUpdated = System.currentTimeMillis();
+    private long       lastUpdated    = System.currentTimeMillis();
 
     public PlayerShopInstance(List<Shop> shops) {
         update(shops);
@@ -73,7 +73,8 @@ public class PlayerShopInstance {
             return;
         }
 
-        List<Category> categories = activeCategory == null ? (activeShop == null ? null : activeShop.getCategories()) : activeCategory.getCategories();
+        List<Category> categories = activeCategory == null ? (activeShop == null ? null : activeShop.getCategories()) : activeCategory
+                .getCategories();
 
         if (categories == null || categories.isEmpty()) {
             Enjin.getLogger().debug("There are no categories available. Skipping category update.");
@@ -86,7 +87,8 @@ public class PlayerShopInstance {
             activeCategory = categories.get(categories.size() - 1);
         }
 
-        Enjin.getLogger().debug("Set active category to: " + (activeCategory == null ? "null" : activeCategory.getName()));
+        Enjin.getLogger()
+             .debug("Set active category to: " + (activeCategory == null ? "null" : activeCategory.getName()));
         if (activeCategory != null) {
             Enjin.getLogger().debug(activeCategory.toString());
         }

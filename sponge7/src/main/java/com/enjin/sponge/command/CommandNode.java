@@ -17,10 +17,10 @@ import java.util.Map;
 
 public class CommandNode {
     @Getter
-    private Command data;
+    private Command                    data;
     @Getter
-    private Permission permission;
-    private Method method;
+    private Permission                 permission;
+    private Method                     method;
     @Getter
     private Map<String, DirectiveNode> directives = Maps.newHashMap();
 
@@ -40,14 +40,19 @@ public class CommandNode {
         }
 
         if (permission != null && !permission.value().equals("") && !sender.hasPermission(permission.value())) {
-            sender.sendMessage(Text.of(TextColors.RED, "You need to have the \"", TextColors.GOLD, permission.value(), TextColors.RED, "\" to run that command."));
+            sender.sendMessage(Text.of(TextColors.RED,
+                                       "You need to have the \"",
+                                       TextColors.GOLD,
+                                       permission.value(),
+                                       TextColors.RED,
+                                       "\" to run that command."));
             return;
         }
 
         if (args.length > 0) {
             DirectiveNode directive = directives.get(args[0].toLowerCase());
             if (directive != null) {
-                directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[]{});
+                directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[] {});
                 return;
             }
         }
@@ -64,7 +69,8 @@ public class CommandNode {
             }
 
             if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid() && data.requireValidKey()) {
-                sender.sendMessage(Text.of(TextColors.RED, "This command requires the server to successfully be authenticated with Enjin."));
+                sender.sendMessage(Text.of(TextColors.RED,
+                                           "This command requires the server to successfully be authenticated with Enjin."));
                 return;
             }
 

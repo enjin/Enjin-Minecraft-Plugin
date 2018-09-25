@@ -11,10 +11,10 @@ public class StatsUtils {
         JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
         try {
             JSONObject jstats = (JSONObject) parser.parse(stats);
-            JSONArray array = (JSONArray) jstats.get("players");
+            JSONArray  array  = (JSONArray) jstats.get("players");
             for (Object oitem : array) {
                 if (oitem instanceof JSONObject) {
-                    JSONObject item = (JSONObject) oitem;
+                    JSONObject  item    = (JSONObject) oitem;
                     StatsPlayer splayer = new StatsPlayer(item);
                     StatsManager.setPlayerStats(splayer);
                 }

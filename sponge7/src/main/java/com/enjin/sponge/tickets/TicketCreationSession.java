@@ -1,9 +1,20 @@
 package com.enjin.sponge.tickets;
 
 import com.enjin.core.Enjin;
-import com.enjin.rpc.mappings.mappings.tickets.*;
+import com.enjin.rpc.mappings.mappings.tickets.Condition;
+import com.enjin.rpc.mappings.mappings.tickets.ConditionQualify;
+import com.enjin.rpc.mappings.mappings.tickets.Question;
+import com.enjin.rpc.mappings.mappings.tickets.QuestionType;
+import com.enjin.rpc.mappings.mappings.tickets.TicketModule;
 import com.enjin.sponge.EnjinMinecraftPlugin;
-import com.enjin.sponge.api.conversation.*;
+import com.enjin.sponge.api.conversation.InteractiveCanceller;
+import com.enjin.sponge.api.conversation.InteractiveContext;
+import com.enjin.sponge.api.conversation.InteractiveConversation;
+import com.enjin.sponge.api.conversation.InteractiveFactory;
+import com.enjin.sponge.api.conversation.InteractiveMessagePrompt;
+import com.enjin.sponge.api.conversation.InteractiveNumericPrompt;
+import com.enjin.sponge.api.conversation.InteractivePrompt;
+import com.enjin.sponge.api.conversation.InteractiveTextPrompt;
 import lombok.Getter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -13,22 +24,29 @@ import org.spongepowered.api.text.format.TextColors;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class TicketCreationSession {
-    private static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-    private static InteractiveFactory factory;
+    private static final DateFormat                       dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private static       InteractiveFactory               factory;
     @Getter
-    private static Map<UUID, TicketCreationSession> sessions = new HashMap<>();
+    private static       Map<UUID, TicketCreationSession> sessions   = new HashMap<>();
 
-    private int moduleId;
-    private Map<Integer, Question> idMap;
-    private List<Question> questions;
-    private List<Question> conditional = new ArrayList<>();
-    private Map<Integer, QuestionResponse> responses = new HashMap<>();
+    private int                            moduleId;
+    private Map<Integer, Question>         idMap;
+    private List<Question>                 questions;
+    private List<Question>                 conditional = new ArrayList<>();
+    private Map<Integer, QuestionResponse> responses   = new HashMap<>();
 
-    private EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-    private UUID uuid;
+    private EnjinMinecraftPlugin    plugin = EnjinMinecraftPlugin.getInstance();
+    private UUID                    uuid;
     @Getter
     private InteractiveConversation conversation;
 
@@ -53,9 +71,11 @@ public class TicketCreationSession {
             Enjin.getLogger().debug("Processing question: " + question.getId() + " of type " + question.getType());
 
             if (question.getType() == QuestionType.file) {
-                Enjin.getLogger().debug("File question type detected. Required: " + question.getRequired().booleanValue());
+                Enjin.getLogger()
+                     .debug("File question type detected. Required: " + question.getRequired().booleanValue());
                 if (question.getRequired().booleanValue()) {
-                    player.sendMessage(Text.of(TextColors.GOLD, "This support ticket requires a file upload and must be submitted on the website."));
+                    player.sendMessage(Text.of(TextColors.GOLD,
+                                               "This support ticket requires a file upload and must be submitted on the website."));
                     return;
                 } else {
                     this.questions.remove(question);
@@ -84,7 +104,8 @@ public class TicketCreationSession {
                     sessions.remove(p.getUniqueId());
                 }
             });
-            factory.withCancellers((InteractiveCanceller) (context, input) -> input.toPlain().equalsIgnoreCase("abandon-ticket"));
+            factory.withCancellers((InteractiveCanceller) (context, input) -> input.toPlain()
+                                                                                   .equalsIgnoreCase("abandon-ticket"));
             factory.withFirstPrompt(new StartPrompt());
         }
 
@@ -105,7 +126,9 @@ public class TicketCreationSession {
         if (questions != null) {
             if (!questions.isEmpty()) {
                 Question question = questions.remove(0);
-                Enjin.getLogger().debug("Creating prompt for question: " + question.getId() + "|" + question.getLabel() + " in module: " + question.getPresetId());
+                Enjin.getLogger()
+                     .debug("Creating prompt for question: " + question.getId() + "|" + question.getLabel() + " in module: " + question
+                             .getPresetId());
                 prompt = createPrompt(question);
             } else {
                 Enjin.getLogger().debug("Checking conditionals for next question to prompt.");
@@ -113,7 +136,8 @@ public class TicketCreationSession {
                     for (Question question : new ArrayList<>(conditional)) {
                         boolean conditionsMet = false;
                         if (question.getConditionQualify() == ConditionQualify.one_true) {
-                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " requires that condition be met. Checking conditions.");
+                            Enjin.getLogger()
+                                 .debug("Question: " + question.getId() + "|" + question.getLabel() + " requires that condition be met. Checking conditions.");
                             for (Condition condition : question.getConditions()) {
                                 boolean result = conditionMet(condition);
                                 if (result) {
@@ -131,17 +155,21 @@ public class TicketCreationSession {
                         }
 
                         if (conditionsMet) {
-                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " meets conditions.");
+                            Enjin.getLogger()
+                                 .debug("Question: " + question.getId() + "|" + question.getLabel() + " meets conditions.");
                             conditional.remove(question);
                             prompt = createPrompt(question);
                         } else {
-                            Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " does not meet conditions.");
+                            Enjin.getLogger()
+                                 .debug("Question: " + question.getId() + "|" + question.getLabel() + " does not meet conditions.");
                             Enjin.getLogger().debug("Checking if condition relies on another conditional.");
                             boolean conditionalRequiresConditional = false;
                             for (Condition condition : question.getConditions()) {
                                 for (Question q : conditional) {
                                     if (condition.getQuestion() == q.getId()) {
-                                        Enjin.getLogger().debug("Question: " + question.getId() + "|" + question.getLabel() + " relies on conditional: " + q.getId() + "|" + q.getLabel());
+                                        Enjin.getLogger()
+                                             .debug("Question: " + question.getId() + "|" + question.getLabel() + " relies on conditional: " + q
+                                                     .getId() + "|" + q.getLabel());
                                         conditionalRequiresConditional = true;
                                     }
                                 }
@@ -175,9 +203,9 @@ public class TicketCreationSession {
 
     public boolean conditionMet(Condition condition) {
         if (responses.containsKey(condition.getQuestion())) {
-            Question question = idMap.get(condition.getQuestion());
+            Question         question = idMap.get(condition.getQuestion());
             QuestionResponse response = responses.get(question.getId());
-            String option = question.getOptions().get(condition.getAnswer());
+            String           option   = question.getOptions().get(condition.getAnswer());
 
             if (question.getType() == QuestionType.radio || question.getType() == QuestionType.select) {
                 if (response.getAnswer() instanceof String) {
@@ -249,7 +277,9 @@ public class TicketCreationSession {
 
         @Override
         public Text getPromptText(InteractiveContext context) {
-            return Text.of(Text.NEW_LINE, TextColors.GOLD, "There was an error processing your ticket submission. We apologize for the inconvenience.");
+            return Text.of(Text.NEW_LINE,
+                           TextColors.GOLD,
+                           "There was an error processing your ticket submission. We apologize for the inconvenience.");
         }
     }
 
@@ -320,7 +350,10 @@ public class TicketCreationSession {
                 text = text.concat(Text.NEW_LINE).concat(Text.of(question.getHelpText()));
             }
 
-            text = text.concat(Text.of(TextColors.GRAY, Text.NEW_LINE, "[Please type a date in the format DD-MM-YYYY]", TextColors.RESET));
+            text = text.concat(Text.of(TextColors.GRAY,
+                                       Text.NEW_LINE,
+                                       "[Please type a date in the format DD-MM-YYYY]",
+                                       TextColors.RESET));
 
             return Text.NEW_LINE.concat(text);
         }
@@ -328,7 +361,7 @@ public class TicketCreationSession {
         @Override
         public InteractivePrompt acceptInput(InteractiveContext context, Text input) {
             String text = input.toPlain().replace("/", "-");
-            Date answer;
+            Date   answer;
 
             try {
                 answer = dateFormat.parse(text);
@@ -362,7 +395,12 @@ public class TicketCreationSession {
 
             int i = 1;
             for (String option : question.getOptions()) {
-                text = text.concat(Text.of(TextColors.GREEN, Text.NEW_LINE, i, TextColors.GRAY, ") ", TextColors.GOLD + option));
+                text = text.concat(Text.of(TextColors.GREEN,
+                                           Text.NEW_LINE,
+                                           i,
+                                           TextColors.GRAY,
+                                           ") ",
+                                           TextColors.GOLD + option));
                 i++;
             }
 
@@ -407,11 +445,20 @@ public class TicketCreationSession {
                 text = text.concat(Text.NEW_LINE).concat(Text.of(question.getHelpText()));
             }
 
-            text = text.concat(Text.of(TextColors.GRAY, Text.NEW_LINE, "[Please type one or more numbers separated by commas]", TextColors.RESET));
+            text = text.concat(Text.of(TextColors.GRAY,
+                                       Text.NEW_LINE,
+                                       "[Please type one or more numbers separated by commas]",
+                                       TextColors.RESET));
 
             int i = 1;
             for (String option : question.getOptions()) {
-                text = text.concat(Text.of(TextColors.GREEN, Text.NEW_LINE, i, TextColors.GRAY, ") ", TextColors.GOLD, option));
+                text = text.concat(Text.of(TextColors.GREEN,
+                                           Text.NEW_LINE,
+                                           i,
+                                           TextColors.GRAY,
+                                           ") ",
+                                           TextColors.GOLD,
+                                           option));
                 i++;
             }
 
@@ -436,7 +483,8 @@ public class TicketCreationSession {
                 }
             }
 
-            responses.put(question.getId(), new QuestionResponse(question, answers.toArray(new String[answers.size()])));
+            responses.put(question.getId(),
+                          new QuestionResponse(question, answers.toArray(new String[answers.size()])));
             TicketCreationSession session = sessions.get(((Player) context.getReceiver()).getUniqueId());
             return session != null ? session.getNextPrompt() : null;
         }

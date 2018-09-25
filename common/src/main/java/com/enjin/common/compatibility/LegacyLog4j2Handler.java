@@ -17,31 +17,31 @@ public class LegacyLog4j2Handler implements Log4j2Handler {
 
     private static MethodHandle patternLayoutCreateLayout;
     private static MethodHandle fileAppenderCreateAppender;
-    public static boolean detected;
+    public static  boolean      detected;
 
     static {
         try {
             patternLayoutCreateLayout = MethodHandles.lookup().findStatic(PatternLayout.class, "createLayout",
-                    MethodType.methodType(PatternLayout.class,
-                            String.class,
-                            Configuration.class,
-                            RegexReplacement.class,
-                            String.class,
-                            String.class));
+                                                                          MethodType.methodType(PatternLayout.class,
+                                                                                                String.class,
+                                                                                                Configuration.class,
+                                                                                                RegexReplacement.class,
+                                                                                                String.class,
+                                                                                                String.class));
             fileAppenderCreateAppender = MethodHandles.lookup().findStatic(FileAppender.class, "createAppender",
-                    MethodType.methodType(FileAppender.class,
-                            String.class,
-                            String.class,
-                            String.class,
-                            String.class,
-                            String.class,
-                            String.class,
-                            String.class,
-                            Layout.class,
-                            Filter.class,
-                            String.class,
-                            String.class,
-                            Configuration.class));
+                                                                           MethodType.methodType(FileAppender.class,
+                                                                                                 String.class,
+                                                                                                 String.class,
+                                                                                                 String.class,
+                                                                                                 String.class,
+                                                                                                 String.class,
+                                                                                                 String.class,
+                                                                                                 String.class,
+                                                                                                 Layout.class,
+                                                                                                 Filter.class,
+                                                                                                 String.class,
+                                                                                                 String.class,
+                                                                                                 Configuration.class));
             detected = true;
         } catch (Exception e) {
             detected = false;

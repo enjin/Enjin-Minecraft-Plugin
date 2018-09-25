@@ -1,33 +1,35 @@
 package com.enjin.bukkit;
 
-import com.enjin.rpc.mappings.mappings.plugin.Auth;
-import com.google.common.base.Predicate;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.enjin.bukkit.command.CommandBank;
-import com.enjin.bukkit.command.commands.*;
+import com.enjin.bukkit.command.commands.BuyCommand;
+import com.enjin.bukkit.command.commands.ConfigCommand;
+import com.enjin.bukkit.command.commands.CoreCommands;
+import com.enjin.bukkit.command.commands.HeadCommands;
+import com.enjin.bukkit.command.commands.PointCommands;
+import com.enjin.bukkit.command.commands.SupportCommands;
+import com.enjin.bukkit.command.commands.VoteCommands;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.ExecutedCommandsConfig;
 import com.enjin.bukkit.config.RankUpdatesConfig;
+import com.enjin.bukkit.listeners.BanListeners;
+import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.listeners.perm.PermissionListener;
-import com.enjin.bukkit.listeners.perm.processors.*;
+import com.enjin.bukkit.listeners.perm.processors.BPermissionsListener;
+import com.enjin.bukkit.listeners.perm.processors.GroupManagerListener;
+import com.enjin.bukkit.listeners.perm.processors.PermissionsBukkitListener;
+import com.enjin.bukkit.listeners.perm.processors.PexListener;
+import com.enjin.bukkit.listeners.perm.processors.ZPermissionsListener;
 import com.enjin.bukkit.modules.ModuleManager;
-import com.enjin.bukkit.modules.impl.*;
-import com.enjin.bukkit.util.Log;
-import com.enjin.bukkit.util.Plugins;
-import com.enjin.bukkit.listeners.*;
+import com.enjin.bukkit.modules.impl.SignStatsModule;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.StatsServer;
 import com.enjin.bukkit.sync.BukkitInstructionHandler;
 import com.enjin.bukkit.sync.RPCPacketManager;
+import com.enjin.bukkit.tasks.BanLister;
 import com.enjin.bukkit.tasks.TPSMonitor;
+import com.enjin.bukkit.util.Log;
+import com.enjin.bukkit.util.Plugins;
 import com.enjin.bukkit.util.ui.MenuAPI;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinPlugin;
@@ -35,72 +37,78 @@ import com.enjin.core.EnjinServices;
 import com.enjin.core.InstructionHandler;
 import com.enjin.core.config.JsonConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
+import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import lombok.Getter;
-
 import lombok.Setter;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.enjin.bukkit.tasks.BanLister;
-import com.enjin.bukkit.tasks.CurseUpdater;
-
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
-    private static EnjinMinecraftPlugin instance;
+    private static EnjinMinecraftPlugin   instance;
     private static ExecutedCommandsConfig executedCommandsConfiguration;
-    private static RankUpdatesConfig rankUpdatesConfiguration;
+    private static RankUpdatesConfig      rankUpdatesConfiguration;
     @Getter
-    private InstructionHandler instructionHandler = new BukkitInstructionHandler();
+    private        InstructionHandler     instructionHandler = new BukkitInstructionHandler();
     @Getter
-    private boolean firstRun = true;
+    private        boolean                firstRun           = true;
     @Getter
-    private MenuAPI menuAPI;
+    private        MenuAPI                menuAPI;
 
     @Getter
     private String mcVersion;
 
     @Getter
-    private boolean tuxTwoLibInstalled = false;
+    private boolean                  tuxTwoLibInstalled    = false;
     @Getter
-    private boolean globalGroupsSupported = true;
+    private boolean                  globalGroupsSupported = true;
     @Getter
-    private StatsServer serverStats = new StatsServer(this);
+    private StatsServer              serverStats           = new StatsServer(this);
     @Getter
-    private Map<String, StatsPlayer> playerStats = new ConcurrentHashMap<>();
+    private Map<String, StatsPlayer> playerStats           = new ConcurrentHashMap<>();
     /**
      * Key is banned player, value is admin that banned the player or blank if the console banned
      */
     @Getter
-    private Map<String, String> bannedPlayers = new ConcurrentHashMap<>();
+    private Map<String, String>      bannedPlayers         = new ConcurrentHashMap<>();
     /**
      * Key is banned player, value is admin that pardoned the player or blank if the console pardoned
      */
     @Getter
-    private Map<String, String> pardonedPlayers = new ConcurrentHashMap<>();
+    private Map<String, String>      pardonedPlayers       = new ConcurrentHashMap<>();
     @Getter
     @Setter
-    private String newVersion = "";
+    private String                   newVersion            = "";
     @Getter
     @Setter
-    private boolean hasUpdate = false;
+    private boolean                  hasUpdate             = false;
     @Getter
     @Setter
-    private boolean updateFailed = false;
+    private boolean                  updateFailed          = false;
     @Getter
     @Setter
-    private boolean authKeyInvalid = false;
+    private boolean                  authKeyInvalid        = false;
     @Getter
     @Setter
-    private boolean unableToContactEnjin = false;
+    private boolean                  unableToContactEnjin  = false;
     @Getter
     @Setter
-    private boolean permissionsNotWorking = false;
+    private boolean                  permissionsNotWorking = false;
 
     @Getter
     private PermissionListener permissionListener;
@@ -109,7 +117,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private ModuleManager moduleManager = null;
 
     @Getter
-    private List<Long> pendingCommands = new ArrayList<>();
+    private List<Long> pendingCommands  = new ArrayList<>();
     @Getter
     private List<Long> executedCommands = new CopyOnWriteArrayList<>();
 
@@ -130,8 +138,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void initVersion() {
-        String bukkitVersion = Bukkit.getBukkitVersion();
-        String[] versionParts = bukkitVersion.split("-");
+        String   bukkitVersion = Bukkit.getBukkitVersion();
+        String[] versionParts  = bukkitVersion.split("-");
         mcVersion = versionParts.length >= 1 ? versionParts[0] : "UNKNOWN";
     }
 
@@ -160,7 +168,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             moduleManager = new ModuleManager(this);
 
             if (Enjin.getConfiguration().getAuthKey().length() == 50) {
-                RPCData<Auth> data = EnjinServices.getService(PluginService.class).auth(Optional.<String>absent(), Bukkit.getPort(), true, true);
+                RPCData<Auth> data = EnjinServices.getService(PluginService.class)
+                                                  .auth(Optional.<String>absent(), Bukkit.getPort(), true, true);
                 if (data == null) {
                     authKeyInvalid = true;
                     Enjin.getLogger().debug("Auth key is invalid. Data could not be retrieved.");
@@ -218,7 +227,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public void initConfig() {
         try {
-            File configFile = new File(getDataFolder(), "config.json");
+            File      configFile    = new File(getDataFolder(), "config.json");
             EMPConfig configuration = JsonConfig.load(configFile, EMPConfig.class);
             Enjin.setConfiguration(configuration);
 
@@ -238,7 +247,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private void initCommandsConfiguration() {
         try {
             File configFile = new File(getDataFolder(), "commands.json");
-            EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile, ExecutedCommandsConfig.class);
+            EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile,
+                                                                                 ExecutedCommandsConfig.class);
 
             if (!configFile.exists()) {
                 executedCommandsConfiguration.save(configFile);
@@ -295,7 +305,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     private void initCommands() {
         CommandBank.register(CoreCommands.class, BuyCommand.class, // StatCommands.class,
-                HeadCommands.class, SupportCommands.class, PointCommands.class, ConfigCommand.class);
+                             HeadCommands.class, SupportCommands.class, PointCommands.class, ConfigCommand.class);
 
         if (Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
             CommandBank.register(VoteCommands.class);
@@ -308,12 +318,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void disableManagers() {
-//        StatsModule stats = moduleManager.getModule(StatsModule.class);
+        //        StatsModule stats = moduleManager.getModule(StatsModule.class);
         SignStatsModule signStats = moduleManager.getModule(SignStatsModule.class);
 
-//        if (stats != null) {
-//            stats.disable();
-//        }
+        //        if (stats != null) {
+        //            stats.disable();
+        //        }
 
         if (signStats != null) {
             signStats.disable();
@@ -363,12 +373,14 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         } else if (Bukkit.getPluginManager().isPluginEnabled("PermissionsBukkit")) {
             Enjin.getLogger().debug("PermissionsBukkit found, hooking custom events.");
             Bukkit.getPluginManager().registerEvents(permissionListener = new PermissionsBukkitListener(), this);
-        } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager") || Bukkit.getPluginManager().isPluginEnabled("GroupManagerX")) {
+        } else if (Bukkit.getPluginManager().isPluginEnabled("GroupManager") || Bukkit.getPluginManager()
+                                                                                      .isPluginEnabled("GroupManagerX")) {
             Enjin.getLogger().debug("GroupManager found, hooking custom events.");
             globalGroupsSupported = false;
             Bukkit.getPluginManager().registerEvents(permissionListener = new GroupManagerListener(), this);
         } else {
-            Enjin.getLogger().debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
+            Enjin.getLogger()
+                 .debug("No suitable permissions plugin found, falling back to synching on player disconnect.");
             Enjin.getLogger().debug("You might want to switch to PermissionsEx or bPermissions.");
         }
     }
@@ -389,7 +401,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                                     break;
                                 }
                             } catch (Exception e) {
-                                Enjin.getLogger().debug("Vanished metadata from " + value.getOwningPlugin().getName() + " is not of type boolean.");
+                                Enjin.getLogger()
+                                     .debug("Vanished metadata from " + value.getOwningPlugin()
+                                                                             .getName() + " is not of type boolean.");
                             }
                         }
                     }

@@ -1,8 +1,16 @@
 package com.enjin.sponge.statsigns;
 
-import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.Stats;
-import com.enjin.rpc.mappings.mappings.plugin.statistics.*;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.ItemPurchase;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.LatestMember;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.RecentPurchase;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.RecentVoter;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.TopDonator;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.TopLiker;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.TopPlayer;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.TopPoint;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.TopPoster;
+import com.enjin.rpc.mappings.mappings.plugin.statistics.TopVoter;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.data.value.mutable.ListValue;
@@ -16,8 +24,8 @@ import java.util.List;
 
 public class StatSignProcessor {
     private static DecimalFormat decimalFormat = new DecimalFormat("#.00");
-    private static DateFormat dateFormat = new SimpleDateFormat("d MMM yyyy");
-    private static DateFormat timeFormat = new SimpleDateFormat("h:mm a z");
+    private static DateFormat    dateFormat    = new SimpleDateFormat("d MMM yyyy");
+    private static DateFormat    timeFormat    = new SimpleDateFormat("h:mm a z");
 
     public static String setPurchaseSign(Sign sign, EnjinSignData data, Stats stats) {
         int index = data.getIndex();
@@ -28,7 +36,7 @@ public class StatSignProcessor {
         String name = "";
         if (data.getSubType() != null && data.getItemId() != null) {
             List<ItemPurchase> purchases = stats.getItemPurchases().get(data.getItemId());
-            String[] lines = new String[4];
+            String[]           lines     = new String[4];
             lines[0] = "Donor " + index;
 
             if (purchases != null && purchases.size() >= index) {
@@ -41,7 +49,7 @@ public class StatSignProcessor {
             updateSign(sign, lines);
         } else {
             List<RecentPurchase> purchases = stats.getRecentPurchases();
-            String[] lines = new String[4];
+            String[]             lines     = new String[4];
             lines[0] = "Latest Donor " + index;
 
             if (purchases.size() >= index) {
@@ -63,8 +71,8 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
-        String period = "Monthly";
+        String         name   = "";
+        String         period = "Monthly";
         List<TopVoter> voters = stats.getTopVotersMonth();
 
         if (data.getSubType() != null) {
@@ -99,9 +107,9 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
+        String            name   = "";
         List<RecentVoter> voters = stats.getRecentVoters();
-        String[] lines = new String[4];
+        String[]          lines  = new String[4];
         lines[0] = "Latest Voter " + index;
 
         if (voters.size() >= index) {
@@ -124,9 +132,9 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
+        String          name    = "";
         List<TopPlayer> players = stats.getTopPlayers();
-        String[] lines = new String[4];
+        String[]        lines   = new String[4];
         lines[0] = "Top Player " + index;
 
         if (players.size() >= index) {
@@ -147,9 +155,9 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
+        String          name    = "";
         List<TopPoster> players = stats.getTopPosters();
-        String[] lines = new String[4];
+        String[]        lines   = new String[4];
         lines[0] = "Top Poster " + index;
 
         if (players.size() >= index) {
@@ -170,9 +178,9 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
+        String         name    = "";
         List<TopLiker> players = stats.getTopForumLikes();
-        String[] lines = new String[4];
+        String[]       lines   = new String[4];
         lines[0] = "Top Likes " + index;
 
         if (players.size() >= index) {
@@ -193,9 +201,9 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
+        String             name    = "";
         List<LatestMember> members = stats.getLatestMembers();
-        String[] lines = new String[4];
+        String[]           lines   = new String[4];
         lines[0] = "New Member " + index;
 
         if (members.size() >= index) {
@@ -218,9 +226,9 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
+        String         name    = "";
         List<TopPoint> players = stats.getTopPoints();
-        String[] lines = new String[4];
+        String[]       lines   = new String[4];
         lines[0] = "Top Points " + index;
 
         if (players.size() >= index) {
@@ -241,8 +249,8 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
-        String period = "Total";
+        String           name   = "";
+        String           period = "Total";
         List<TopDonator> donors = stats.getTopDonatorsPoints();
 
         if (data.getSubType() != null) {
@@ -280,8 +288,8 @@ public class StatSignProcessor {
             return null;
         }
 
-        String name = "";
-        String period = "Total";
+        String           name   = "";
+        String           period = "Total";
         List<TopDonator> donors = stats.getTopDonatorsMoney();
 
         if (data.getSubType() != null) {
@@ -314,11 +322,12 @@ public class StatSignProcessor {
     }
 
     private static void updateSign(Sign sign, String[] updates) {
-        SignData data = sign.getSignData();
+        SignData        data  = sign.getSignData();
         ListValue<Text> lines = data.lines();
         for (int i = 0; i < 4; i++) {
-            if (updates[i] == null)
+            if (updates[i] == null) {
                 continue;
+            }
 
             lines.set(i, Text.of(updates[i]));
         }

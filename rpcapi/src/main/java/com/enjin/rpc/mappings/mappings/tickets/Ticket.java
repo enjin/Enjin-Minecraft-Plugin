@@ -11,82 +11,82 @@ import java.util.List;
 @EqualsAndHashCode
 public class Ticket {
     @Getter
-    private Integer id;
+    private Integer             id;
     @Getter
-    private String code;
+    private String              code;
     @Getter
     @SerializedName(value = "site_id")
-    private Integer siteId;
+    private Integer             siteId;
     @Getter
     @SerializedName(value = "preset_id")
-    private Integer presetId;
+    private Integer             presetId;
     @Getter
-    private String subject;
+    private String              subject;
     @Getter
-    private Long created;
+    private Long                created;
     @Getter
-    private TicketStatus status;
+    private TicketStatus        status;
     @Getter
-    private String assignee;
+    private String              assignee;
     @Getter
-    private Long updated;
+    private Long                updated;
     @Getter
-    private Integer requester;
+    private Integer             requester;
     @Getter
-    private Integer priority;
+    private Integer             priority;
     @Getter
     @SerializedName(value = "extra_questions")
     private List<ExtraQuestion> extraQuestions;
     @Getter
     @SerializedName(value = "status_change")
-    private Long statusChange;
+    private Long                statusChange;
     @Getter
-    private String email;
+    private String              email;
     @Getter
-    private Boolean viewers;
+    private Boolean             viewers;
     @Getter
     @SerializedName(value = "site_name")
-    private String siteName;
+    private String              siteName;
     @Getter
     @SerializedName(value = "no_reply_closed")
-    private Boolean noReplyClosed;
+    private Boolean             noReplyClosed;
     @Getter
     @SerializedName(value = "reply_frequency")
-    private Integer replyFrequency;
+    private Integer             replyFrequency;
     @Getter
     @SerializedName(value = "disable_email_notifications")
-    private Boolean disableEmailNotifications;
+    private Boolean             disableEmailNotifications;
     @Getter
     @SerializedName(value = "disable_pms")
-    private Boolean disablePms;
+    private Boolean             disablePms;
     @Getter
     @SerializedName(value = "email_user_create")
-    private String emailUserCreate;
+    private String              emailUserCreate;
     @Getter
     @SerializedName(value = "email_user_reply")
-    private String emailUserReply;
+    private String              emailUserReply;
     @Getter
     @SerializedName(value = "email_user_assigned")
-    private String emailUserAssigned;
+    private String              emailUserAssigned;
     @Getter
     @SerializedName(value = "pm_user_create")
-    private String pmUserCreate;
+    private String              pmUserCreate;
     @Getter
     @SerializedName(value = "pm_user_reply")
-    private String pmUserReply;
+    private String              pmUserReply;
     @Getter
     @SerializedName(value = "pm_agent_assigned")
-    private String pmAgentAssigned;
+    private String              pmAgentAssigned;
     @Getter
     @SerializedName(value = "users_change_priority")
-    private String usersChangePriority;
+    private String              usersChangePriority;
     @Getter
     @SerializedName(value = "feedback_surveys")
-    private Integer feedbackSurveys;
+    private Integer             feedbackSurveys;
     @Getter
     @SerializedName(value = "ticket_priority")
-    private String ticketPriority;
+    private String              ticketPriority;
     @Getter
     @SerializedName(value = "replies_count")
-    private Integer replyCount;
+    private Integer             replyCount;
 }

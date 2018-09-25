@@ -42,107 +42,168 @@ public class CoreCommands {
         sender.sendMessage(EnjinConsole.header());
 
         if (sender.hasPermission("enjin.setkey")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin key <KEY>: ", TextColors.RESET, "Enter the secret key from your ", TextColors.GRAY, "Admin - Games - Minecraft - Enjin Plugin ", TextColors.RESET, "page."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin key <KEY>: ",
+                                       TextColors.RESET,
+                                       "Enter the secret key from your ",
+                                       TextColors.GRAY,
+                                       "Admin - Games - Minecraft - Enjin Plugin ",
+                                       TextColors.RESET,
+                                       "page."));
         }
 
         if (sender.hasPermission("enjin.inform")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin inform <player> <MESSAGE>: ", TextColors.RESET, "Send a private message to a player."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin inform <player> <MESSAGE>: ",
+                                       TextColors.RESET,
+                                       "Send a private message to a player."));
         }
 
         if (sender.hasPermission("enjin.broadcast")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin broadcast <MESSAGE>: ", TextColors.RESET, "Broadcast a message to all players."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin broadcast <MESSAGE>: ",
+                                       TextColors.RESET,
+                                       "Broadcast a message to all players."));
         }
 
         if (sender.hasPermission("enjin.push")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin push: ", TextColors.RESET, "Sync your website tags with the current ranks."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin push: ",
+                                       TextColors.RESET,
+                                       "Sync your website tags with the current ranks."));
         }
 
         if (sender.hasPermission("enjin.lag")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin lag: ", TextColors.RESET, "Display TPS average and memory usage."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin lag: ",
+                                       TextColors.RESET,
+                                       "Display TPS average and memory usage."));
         }
 
         if (sender.hasPermission("enjin.debug")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin debug: ", TextColors.RESET, "Enable debug mode and display extra information in console."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin debug: ",
+                                       TextColors.RESET,
+                                       "Enable debug mode and display extra information in console."));
         }
 
         if (sender.hasPermission("enjin.report")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin report: ", TextColors.RESET, "Generate a report file that you can send to Enjin Support for troubleshooting."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin report: ",
+                                       TextColors.RESET,
+                                       "Generate a report file that you can send to Enjin Support for troubleshooting."));
         }
 
         if (sender.hasPermission("enjin.sign.set")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin heads: ", TextColors.RESET, "Shows in game help for the heads and sign stats part of the plugin."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin heads: ",
+                                       TextColors.RESET,
+                                       "Shows in game help for the heads and sign stats part of the plugin."));
         }
 
         if (sender.hasPermission("enjin.tags.view")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin tags <player>: ", TextColors.RESET, "Shows the tags on the website for the player."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin tags <player>: ",
+                                       TextColors.RESET,
+                                       "Shows the tags on the website for the player."));
         }
 
         // Points commands
         if (sender.hasPermission("enjin.points.getself")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin points: ", TextColors.RESET, "Shows your current website points."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin points: ",
+                                       TextColors.RESET,
+                                       "Shows your current website points."));
         }
 
         if (sender.hasPermission("enjin.points.getothers")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin points <NAME>: ", TextColors.RESET, "Shows another player's current website points."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin points <NAME>: ",
+                                       TextColors.RESET,
+                                       "Shows another player's current website points."));
         }
 
         if (sender.hasPermission("enjin.points.add")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin addpoints <NAME> <AMOUNT>: ", TextColors.RESET, "Add points to a player."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin addpoints <NAME> <AMOUNT>: ",
+                                       TextColors.RESET,
+                                       "Add points to a player."));
         }
 
         if (sender.hasPermission("enjin.points.remove")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin removepoints <NAME> <AMOUNT>: ", TextColors.RESET, "Remove points from a player."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin removepoints <NAME> <AMOUNT>: ",
+                                       TextColors.RESET,
+                                       "Remove points from a player."));
         }
 
         if (sender.hasPermission("enjin.points.set")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin setpoints <NAME> <AMOUNT>: ", TextColors.RESET, "Set a player's total points."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin setpoints <NAME> <AMOUNT>: ",
+                                       TextColors.RESET,
+                                       "Set a player's total points."));
         }
 
         if (sender.hasPermission("enjin.support")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin support: ", TextColors.RESET, "Starts ticket session or informs player of available modules."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin support: ",
+                                       TextColors.RESET,
+                                       "Starts ticket session or informs player of available modules."));
         }
 
         if (sender.hasPermission("enjin.ticket.self")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin ticket: ", TextColors.RESET, "Sends player a list of their tickets."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin ticket: ",
+                                       TextColors.RESET,
+                                       "Sends player a list of their tickets."));
         }
 
         if (sender.hasPermission("enjin.ticket.open")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin openticket: ", TextColors.RESET, "Sends player a list of open tickets."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin openticket: ",
+                                       TextColors.RESET,
+                                       "Sends player a list of open tickets."));
         }
 
         if (sender.hasPermission("enjin.ticket.reply")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin reply <module #> <ticket id> <message>: ", TextColors.RESET, "Sends a reply to a ticket."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin reply <module #> <ticket id> <message>: ",
+                                       TextColors.RESET,
+                                       "Sends a reply to a ticket."));
         }
 
         if (sender.hasPermission("enjin.ticket.status")) {
-            sender.sendMessage(Text.of(TextColors.GOLD, "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: ", TextColors.RESET, "Sets the status of a ticket."));
+            sender.sendMessage(Text.of(TextColors.GOLD,
+                                       "/enjin ticketstatus <module #> <ticket id> <open|pending|closed>: ",
+                                       TextColors.RESET,
+                                       "Sets the status of a ticket."));
         }
 
         // Shop buy commands
         sender.sendMessage(Text.of(TextColors.GOLD,
-                '/',
-                Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
-                ": ",
-                TextColors.RESET,
-                "Display items available for purchase."));
+                                   '/',
+                                   Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                   ": ",
+                                   TextColors.RESET,
+                                   "Display items available for purchase."));
         sender.sendMessage(Text.of(TextColors.GOLD,
-                '/',
-                Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
-                " page <#>: ",
-                TextColors.RESET,
-                "View the next page of results."));
+                                   '/',
+                                   Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                   " page <#>: ",
+                                   TextColors.RESET,
+                                   "View the next page of results."));
         sender.sendMessage(Text.of(TextColors.GOLD,
-                '/',
-                Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
-                " <ID>: ",
-                TextColors.RESET,
-                "Purchase the specified item ID in the server shop."));
+                                   '/',
+                                   Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                   " <ID>: ",
+                                   TextColors.RESET,
+                                   "Purchase the specified item ID in the server shop."));
         sender.sendMessage(Text.of(TextColors.GOLD,
-                '/',
-                Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
-                " shop <ID>: ",
-                TextColors.RESET,
-                "Shows the shop menu or opens the shop with the specified ID."));
+                                   '/',
+                                   Enjin.getConfiguration(EMPConfig.class).getBuyCommand(),
+                                   " shop <ID>: ",
+                                   TextColors.RESET,
+                                   "Shows the shop menu or opens the shop with the specified ID."));
     }
 
     @Permission(value = "enjin.broadcast")
@@ -185,7 +246,12 @@ public class CoreCommands {
 
         Player player = Sponge.getServer().getPlayer(args[0]).get();
         for (Player p : Sponge.getServer().getOnlinePlayers()) {
-            if (p.getName().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().equalsIgnoreCase(args[0]) || p.getUniqueId().toString().replace("-", "").equals(args[0])) {
+            if (p.getName().equalsIgnoreCase(args[0]) || p.getUniqueId()
+                                                          .toString()
+                                                          .equalsIgnoreCase(args[0]) || p.getUniqueId()
+                                                                                         .toString()
+                                                                                         .replace("-", "")
+                                                                                         .equals(args[0])) {
                 player = p;
             }
         }
@@ -231,10 +297,14 @@ public class CoreCommands {
             }
 
             PluginService service = EnjinServices.getService(PluginService.class);
-            RPCData<Auth> data = service.auth(Optional.of(args[0]), EnjinMinecraftPlugin.getInstance().getPort(), true, true);
+            RPCData<Auth> data    = service.auth(Optional.of(args[0]),
+                                                 EnjinMinecraftPlugin.getInstance().getPort(),
+                                                 true,
+                                                 true);
 
             if (data == null) {
-                sender.sendMessage(Text.of("A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+                sender.sendMessage(Text.of(
+                        "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
                 return;
             }
 
@@ -255,9 +325,9 @@ public class CoreCommands {
         };
 
         EnjinMinecraftPlugin.getInstance().getGame().getScheduler().createTaskBuilder()
-                .execute(runnable)
-                .async()
-                .submit(Enjin.getPlugin());
+                            .execute(runnable)
+                            .async()
+                            .submit(Enjin.getPlugin());
     }
 
     @Permission(value = "enjin.lag")
@@ -266,34 +336,39 @@ public class CoreCommands {
         TPSMonitor monitor = TPSMonitor.getInstance();
 
         sender.sendMessage(Text.of(TextColors.GOLD,
-                "Average TPS: ",
-                TextColors.GREEN,
-                TPSMonitor.getDecimalFormat().format(monitor.getTPSAverage())));
+                                   "Average TPS: ",
+                                   TextColors.GREEN,
+                                   TPSMonitor.getDecimalFormat().format(monitor.getTPSAverage())));
         sender.sendMessage(Text.of(TextColors.GOLD,
-                "Last TPS Measurement: ",
-                TextColors.GREEN,
-                TPSMonitor.getDecimalFormat().format(monitor.getLastTPSMeasurement())));
+                                   "Last TPS Measurement: ",
+                                   TextColors.GREEN,
+                                   TPSMonitor.getDecimalFormat().format(monitor.getLastTPSMeasurement())));
 
-        Runtime runtime = Runtime.getRuntime();
-        long memused = (runtime.maxMemory() - runtime.freeMemory()) / (1024 * 1024);
-        long maxmemory = runtime.maxMemory() / (1024 * 1024);
+        Runtime runtime   = Runtime.getRuntime();
+        long    memused   = (runtime.maxMemory() - runtime.freeMemory()) / (1024 * 1024);
+        long    maxmemory = runtime.maxMemory() / (1024 * 1024);
 
         sender.sendMessage(Text.of(TextColors.GOLD,
-                "Memory Used: ",
-                TextColors.GREEN,
-                memused, "MB/", maxmemory, "MB"));
+                                   "Memory Used: ",
+                                   TextColors.GREEN,
+                                   memused, "MB/", maxmemory, "MB"));
     }
 
     @Permission(value = "enjin.push")
     @Directive(parent = "enjin", value = "push")
     public static void push(CommandSource sender, String[] args) {
-        RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
+        RankUpdatesConfig                      config  = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
         java.util.Optional<UserStorageService> service = Sponge.getServiceManager().provide(UserStorageService.class);
         if (service.isPresent()) {
-            ConnectionListener.updatePlayersRanks(service.get().getAll().toArray(new GameProfile[]{}));
+            ConnectionListener.updatePlayersRanks(service.get().getAll().toArray(new GameProfile[] {}));
 
             int minutes = Double.valueOf(Math.ceil(((double) config.getPlayerPerms().size()) / 500.0D)).intValue();
-            sender.sendMessage(Text.of(TextColors.GREEN, Integer.toString(config.getPlayerPerms().size()), " players have been queued for synchronization. This should take approximately ", minutes, " minutes", (minutes > 1 ? "s." : ".")));
+            sender.sendMessage(Text.of(TextColors.GREEN,
+                                       Integer.toString(config.getPlayerPerms().size()),
+                                       " players have been queued for synchronization. This should take approximately ",
+                                       minutes,
+                                       " minutes",
+                                       (minutes > 1 ? "s." : ".")));
         }
     }
 
@@ -301,73 +376,73 @@ public class CoreCommands {
     @Directive(parent = "enjin", value = "report", requireValidKey = false)
     public static void report(CommandSource sender, String[] args) {
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-        Date date = new Date();
-        DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
+        Date                 date   = new Date();
+        DateFormat           format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
 
         sender.sendMessage(Text.of(TextColors.GREEN, "Please wait while we generate the report"));
 
         StringBuilder report = new StringBuilder();
         report.append("Enjin Debug Report generated on ")
-                .append(format.format(date))
-                .append('\n')
-                .append("Enjin Minecraft Plugin Version: ")
-                .append(plugin.getContainer().getVersion().get())
-                .append('\n');
+              .append(format.format(date))
+              .append('\n')
+              .append("Enjin Minecraft Plugin Version: ")
+              .append(plugin.getContainer().getVersion().get())
+              .append('\n');
 
         Platform platform = Sponge.getPlatform();
         report.append("Minecraft Version: ")
-                .append(platform.getMinecraftVersion().getName())
-                .append('\n')
-                .append("Sponge API Version: ")
-                .append(platform.getApi().getVersion().get())
-                .append('\n')
-                .append("Sponge Implementation Version: ")
-                .append(platform.getImplementation().getVersion().get())
-                .append('\n')
-                .append("Java Version: ")
-                .append(System.getProperty("java.version"))
-                .append(' ')
-                .append(System.getProperty("java.vendor"))
-                .append('\n')
-                .append("Operating System: ")
-                .append(System.getProperty("os.name"))
-                .append(' ')
-                .append(System.getProperty("os.version"))
-                .append(' ')
-                .append(System.getProperty("os.arch"))
-                .append('\n');
+              .append(platform.getMinecraftVersion().getName())
+              .append('\n')
+              .append("Sponge API Version: ")
+              .append(platform.getApi().getVersion().get())
+              .append('\n')
+              .append("Sponge Implementation Version: ")
+              .append(platform.getImplementation().getVersion().get())
+              .append('\n')
+              .append("Java Version: ")
+              .append(System.getProperty("java.version"))
+              .append(' ')
+              .append(System.getProperty("java.vendor"))
+              .append('\n')
+              .append("Operating System: ")
+              .append(System.getProperty("os.name"))
+              .append(' ')
+              .append(System.getProperty("os.version"))
+              .append(' ')
+              .append(System.getProperty("os.arch"))
+              .append('\n');
 
         if (plugin.isAuthKeyInvalid()) {
             report.append("ERROR: The authentication key is invalid.")
-                    .append('\n');
+                  .append('\n');
         }
 
         report.append("Enjin Server ID: ")
-                .append(plugin.getServerId())
-                .append('\n');
+              .append(plugin.getServerId())
+              .append('\n');
 
         report.append('\n')
-                .append("Plugins:")
-                .append('\n');
+              .append("Plugins:")
+              .append('\n');
         for (PluginContainer container : Sponge.getPluginManager().getPlugins()) {
             report.append(container.getName())
-                    .append(" Version: ")
-                    .append(container.getVersion().orElse("N/A"))
-                    .append('\n');
+                  .append(" Version: ")
+                  .append(container.getVersion().orElse("N/A"))
+                  .append('\n');
         }
 
         report.append('\n')
-                .append("Worlds:")
-                .append('\n');
+              .append("Worlds:")
+              .append('\n');
         for (World world : Sponge.getServer().getWorlds()) {
             report.append(world.getName())
-                    .append('\n');
+                  .append('\n');
         }
 
         Sponge.getGame().getScheduler().createTaskBuilder()
-                .execute(new ReportPublisher(sender, report))
-                .async()
-                .submit(plugin);
+              .execute(new ReportPublisher(sender, report))
+              .async()
+              .submit(plugin);
     }
 
     @Permission(value = "enjin.tags")
@@ -378,12 +453,13 @@ public class CoreCommands {
             return;
         }
 
-        String name = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
-        PluginService service = EnjinServices.getService(PluginService.class);
-        RPCData<List<TagData>> data = service.getTags(name);
+        String                 name    = args[0].substring(0, args[0].length() > 16 ? 16 : args[0].length());
+        PluginService          service = EnjinServices.getService(PluginService.class);
+        RPCData<List<TagData>> data    = service.getTags(name);
 
         if (data == null) {
-            sender.sendMessage(Text.of(TextColors.RED, "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
+            sender.sendMessage(Text.of(TextColors.RED,
+                                       "A fatal error has occurred. Please try again later. If the problem persists please contact Enjin support."));
             return;
         }
 

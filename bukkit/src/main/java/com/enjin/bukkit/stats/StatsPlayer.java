@@ -1,17 +1,11 @@
 package com.enjin.bukkit.stats;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.modules.impl.StatsModule;
 import com.enjin.bukkit.modules.impl.VaultModule;
-import com.enjin.bukkit.util.Plugins;
 import com.enjin.bukkit.util.PrimitiveUtils;
+import com.gmail.nossr50.api.ExperienceAPI;
+import com.gmail.nossr50.datatypes.skills.SkillType;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -21,8 +15,12 @@ import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.gmail.nossr50.api.ExperienceAPI;
-import com.gmail.nossr50.datatypes.skills.SkillType;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is the class behind all stats for each player. Example to get the StatsPlayer and set a custom variable:<br>
@@ -37,47 +35,47 @@ import com.gmail.nossr50.datatypes.skills.SkillType;
  */
 public class StatsPlayer {
     @Getter
-    private String name;
+    private String                                                          name;
     @Getter
-    private String uuid = "";
+    private String                                                          uuid             = "";
     @Getter
-    private boolean firsttimeplayer = false;
+    private boolean                                                         firsttimeplayer  = false;
     @Getter
-    private int deaths = 0;
+    private int                                                             deaths           = 0;
     @Getter
-    private int killed = 0;
+    private int                                                             killed           = 0;
     @Getter
-    private int pvpkills = 0;
+    private int                                                             pvpkills         = 0;
     @Getter
-    private int pvekills = 0;
+    private int                                                             pvekills         = 0;
     @Getter
-    private double footdistance = 0;
+    private double                                                          footdistance     = 0;
     @Getter
-    private double boatdistance = 0;
+    private double                                                          boatdistance     = 0;
     @Getter
-    private double pigdistance = 0;
+    private double                                                          pigdistance      = 0;
     @Getter
-    private double minecartdistance = 0;
+    private double                                                          minecartdistance = 0;
     @Getter
-    private double horsedistance = 0;
+    private double                                                          horsedistance    = 0;
     @Getter
-    private int brokenblocks = 0;
+    private int                                                             brokenblocks     = 0;
     @Getter
-    private int placedblocks = 0;
+    private int                                                             placedblocks     = 0;
     @Getter
-    private ConcurrentHashMap<EntityType, Integer> creaturekills = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<EntityType, Integer>                          creaturekills    = new ConcurrentHashMap<>();
     @Getter
-    private ConcurrentHashMap<String, Integer> brokenblocktypes = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Integer>                              brokenblocktypes = new ConcurrentHashMap<>();
     @Getter
-    private ConcurrentHashMap<String, Integer> placedblocktypes = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Integer>                              placedblocktypes = new ConcurrentHashMap<>();
     @Getter
-    private ConcurrentHashMap<String, ConcurrentHashMap<String, StatValue>> customstats = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, ConcurrentHashMap<String, StatValue>> customstats      = new ConcurrentHashMap<>();
     @Getter
-    private int totalxp = 0;
+    private int                                                             totalxp          = 0;
     @Getter
-    private int xplevel = 0;
+    private int                                                             xplevel          = 0;
     @Getter
-    private int chats = 0;
+    private int                                                             chats            = 0;
 
     public StatsPlayer(OfflinePlayer player) {
         name = player.getName();
@@ -118,21 +116,21 @@ public class StatsPlayer {
             Object obrokenblocks = blocks.get("brokenblocklist");
             Object oplacedblocks = blocks.get("placedblocklist");
             if (obrokenblocks instanceof JSONObject) {
-                JSONObject jbrokenblocks = (JSONObject) obrokenblocks;
-                Set<Map.Entry> eblocks = jbrokenblocks.entrySet();
+                JSONObject     jbrokenblocks = (JSONObject) obrokenblocks;
+                Set<Map.Entry> eblocks       = jbrokenblocks.entrySet();
                 for (Map.Entry block : eblocks) {
-                    String id = block.getKey().toString();
-                    int count = PrimitiveUtils.getInt(block.getValue());
+                    String id    = block.getKey().toString();
+                    int    count = PrimitiveUtils.getInt(block.getValue());
                     brokenblocktypes.put(id, count);
                 }
             }
 
             if (oplacedblocks instanceof JSONObject) {
-                JSONObject jplacedblocks = (JSONObject) oplacedblocks;
-                Set<Map.Entry> eblocks = jplacedblocks.entrySet();
+                JSONObject     jplacedblocks = (JSONObject) oplacedblocks;
+                Set<Map.Entry> eblocks       = jplacedblocks.entrySet();
                 for (Map.Entry block : eblocks) {
-                    String id = block.getKey().toString();
-                    int count = PrimitiveUtils.getInt(block.getValue());
+                    String id    = block.getKey().toString();
+                    int    count = PrimitiveUtils.getInt(block.getValue());
                     placedblocktypes.put(id, count);
                 }
             }
@@ -140,20 +138,20 @@ public class StatsPlayer {
 
         Object ocustom = playerstats.get("customstats");
         if (ocustom instanceof JSONObject) {
-            JSONObject jcustom = (JSONObject) ocustom;
+            JSONObject     jcustom = (JSONObject) ocustom;
             Set<Map.Entry> scustom = jcustom.entrySet();
             for (Map.Entry mplugin : scustom) {
                 String pluginname = mplugin.getKey().toString();
                 if (mplugin.getValue() instanceof JSONArray) {
-                    JSONArray jstats = (JSONArray) mplugin.getValue();
-                    ConcurrentHashMap<String, StatValue> cmap = new ConcurrentHashMap<String, StatValue>();
+                    JSONArray                            jstats = (JSONArray) mplugin.getValue();
+                    ConcurrentHashMap<String, StatValue> cmap   = new ConcurrentHashMap<String, StatValue>();
                     for (Object stat : jstats) {
                         if (stat instanceof JSONObject) {
-                            JSONObject jstat = (JSONObject) stat;
-                            String name = jstat.get("name").toString();
-                            String value = jstat.get("value").toString();
-                            boolean relative = (Boolean) jstat.get("relative");
-                            StatValue svalue;
+                            JSONObject jstat    = (JSONObject) stat;
+                            String     name     = jstat.get("name").toString();
+                            String     value    = jstat.get("value").toString();
+                            boolean    relative = (Boolean) jstat.get("relative");
+                            StatValue  svalue;
                             if (value.indexOf(".") > -1) {
                                 double dvalue = Double.parseDouble(value);
                                 svalue = new StatValue(dvalue, relative);
@@ -199,8 +197,8 @@ public class StatsPlayer {
 
     public void addBrokenBlock(Block block) {
         brokenblocks++;
-        String blockid = block.getType().toString() + "-" + block.getData();
-        int blocksbroken = 0;
+        String blockid      = block.getType().toString() + "-" + block.getData();
+        int    blocksbroken = 0;
         if (brokenblocktypes.containsKey(blockid)) {
             blocksbroken = brokenblocktypes.get(blockid).intValue();
         }
@@ -210,8 +208,8 @@ public class StatsPlayer {
 
     public void addPlacedBlock(Block block) {
         placedblocks++;
-        String blockid = block.getType().toString() + "-" + block.getData();
-        int blocksplaced = 0;
+        String blockid      = block.getType().toString() + "-" + block.getData();
+        int    blocksplaced = 0;
 
         if (placedblocktypes.containsKey(blockid)) {
             blocksplaced = placedblocktypes.get(blockid).intValue();
@@ -254,8 +252,8 @@ public class StatsPlayer {
     }
 
     public JSONObject getSerialized() {
-        JSONObject player = new JSONObject();
-        JSONObject blocks = new JSONObject();
+        JSONObject player        = new JSONObject();
+        JSONObject blocks        = new JSONObject();
         JSONObject jbrokenblocks = new JSONObject();
 
         for (Entry<String, Integer> blockdata : brokenblocktypes.entrySet()) {
@@ -312,9 +310,9 @@ public class StatsPlayer {
 
         StatsModule statsModule = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(StatsModule.class);
         if (statsModule != null && statsModule.isMcMmoEnabled()) {
-            Player bplayer = Bukkit.getPlayerExact(name);
-            JSONObject mcmmoskills = new JSONObject();
-            List<SkillType> skills = SkillType.NON_CHILD_SKILLS;
+            Player          bplayer     = Bukkit.getPlayerExact(name);
+            JSONObject      mcmmoskills = new JSONObject();
+            List<SkillType> skills      = SkillType.NON_CHILD_SKILLS;
 
             for (SkillType type : skills) {
                 try {
@@ -334,16 +332,19 @@ public class StatsPlayer {
         }
 
         if (customstats.size() > 0) {
-            JSONObject jcustomstats = new JSONObject();
-            Iterator<Entry<String, ConcurrentHashMap<String, StatValue>>> statsiterator = customstats.entrySet().iterator();
+            JSONObject                                                    jcustomstats  = new JSONObject();
+            Iterator<Entry<String, ConcurrentHashMap<String, StatValue>>> statsiterator = customstats.entrySet()
+                                                                                                     .iterator();
             while (statsiterator.hasNext()) {
-                Entry<String, ConcurrentHashMap<String, StatValue>> statentry = statsiterator.next();
-                String pluginname = statentry.getKey();
-                Iterator<Entry<String, StatValue>> pluginstats = statentry.getValue().entrySet().iterator();
-                JSONArray statsarray = new JSONArray();
+                Entry<String, ConcurrentHashMap<String, StatValue>> statentry   = statsiterator.next();
+                String                                              pluginname  = statentry.getKey();
+                Iterator<Entry<String, StatValue>>                  pluginstats = statentry.getValue()
+                                                                                           .entrySet()
+                                                                                           .iterator();
+                JSONArray                                           statsarray  = new JSONArray();
                 while (pluginstats.hasNext()) {
-                    JSONObject jstat = new JSONObject();
-                    Entry<String, StatValue> stat = pluginstats.next();
+                    JSONObject               jstat = new JSONObject();
+                    Entry<String, StatValue> stat  = pluginstats.next();
                     jstat.put("name", stat.getKey());
                     jstat.put("value", stat.getValue().getStat());
                     jstat.put("relative", stat.getValue().isRelative());
@@ -370,7 +371,8 @@ public class StatsPlayer {
      * @param plugin        the name of the plugin submitting the stat.
      * @param statName      the name of the stat you are submitting.
      * @param value         The value of the stat.
-     * @param addtoexisting whether you want to add to the existing stat (true) or replace the existing stat with this (false)
+     * @param addtoexisting whether you want to add to the existing stat (true) or replace the existing stat with this
+     *                      (false)
      */
     public void addCustomStat(String plugin, String statName, int value, boolean addtoexisting) {
         ConcurrentHashMap<String, StatValue> pluginstats = customstats.get(plugin);
@@ -397,7 +399,8 @@ public class StatsPlayer {
      * @param plugin        the name of the plugin submitting the stat.
      * @param statName      the name of the stat you are submitting.
      * @param value         The value of the stat.
-     * @param addtoexisting whether you want to add to the existing stat (true) or replace the existing stat with this (false)
+     * @param addtoexisting whether you want to add to the existing stat (true) or replace the existing stat with this
+     *                      (false)
      */
     public void addCustomStat(String plugin, String statName, double value, boolean addtoexisting) {
         ConcurrentHashMap<String, StatValue> pluginstats = customstats.get(plugin);
@@ -424,7 +427,8 @@ public class StatsPlayer {
      * @param plugin        the name of the plugin submitting the stat.
      * @param statName      the name of the stat you are submitting.
      * @param value         The value of the stat.
-     * @param addtoexisting whether you want to add to the existing stat (true) or replace the existing stat with this (false)
+     * @param addtoexisting whether you want to add to the existing stat (true) or replace the existing stat with this
+     *                      (false)
      */
     public void addCustomStat(String plugin, String statName, float value, boolean addtoexisting) {
         ConcurrentHashMap<String, StatValue> pluginstats = customstats.get(plugin);

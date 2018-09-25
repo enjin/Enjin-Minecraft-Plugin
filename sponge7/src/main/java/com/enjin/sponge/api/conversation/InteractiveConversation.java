@@ -12,21 +12,21 @@ import java.util.List;
 
 public class InteractiveConversation {
     @Getter
-    private InteractiveContext context;
-    private InteractivePrompt startPrompt;
-    private InteractivePrompt currentPrompt;
+    private InteractiveContext                 context;
+    private InteractivePrompt                  startPrompt;
+    private InteractivePrompt                  currentPrompt;
     @Setter(value = AccessLevel.PROTECTED)
-    private boolean passthroughToChat;
+    private boolean                            passthroughToChat;
     @Setter(value = AccessLevel.PROTECTED)
-    private boolean echoInput;
+    private boolean                            echoInput;
     @Getter
     @Setter(value = AccessLevel.PROTECTED)
-    private boolean allowCommands;
+    private boolean                            allowCommands;
     @Setter(value = AccessLevel.PROTECTED)
-    private Text prefix;
+    private Text                               prefix;
     private List<InteractiveAbandonedListener> abandonedListeners;
     private List<InteractiveCompletedListener> completedListeners;
-    private List<InteractiveCanceller> cancellers;
+    private List<InteractiveCanceller>         cancellers;
 
     public InteractiveConversation(InteractiveContext context, InteractivePrompt startPrompt) {
         this.context = context;

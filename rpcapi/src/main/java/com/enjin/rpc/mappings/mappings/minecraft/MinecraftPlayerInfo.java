@@ -11,7 +11,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class MinecraftPlayerInfo {
     @Getter
-    private String name;
+    private String  name;
     @Getter
     private Boolean online;
     @Getter
@@ -29,7 +29,7 @@ public class MinecraftPlayerInfo {
     @SerializedName(value = "playtime_alltime")
     private Integer playtimeAllTime;
     @Getter
-    private String uuid;
+    private String  uuid;
     @Getter
     private Boolean vanished;
 }

@@ -14,19 +14,19 @@ public class ServerInfo {
     @SerializedName(value = "server_id")
     private Integer id;
     @Getter
-    private String host;
+    private String  host;
     @Getter
     private Integer port;
     @Getter
-    private String name;
+    private String  name;
     @Getter
-    private String description;
+    private String  description;
     @Getter
-    private String version;
+    private String  version;
     @Getter
-    private String features;
+    private String  features;
     @Getter
-    private Long uptime;
+    private Long    uptime;
     @Getter
     @SerializedName(value = "max_players")
     private Integer maxPlayers;
@@ -35,13 +35,13 @@ public class ServerInfo {
     private Integer playersOnline;
     @Getter
     @SerializedName(value = "pluginversion")
-    private String pluginVersion;
+    private String  pluginVersion;
     @Getter
     @SerializedName(value = "server_plugins")
-    private String plugins;
+    private String  plugins;
     @Getter
-    private Long updated;
+    private Long    updated;
     @Getter
     @SerializedName(value = "server_type")
-    private String type;
+    private String  type;
 }

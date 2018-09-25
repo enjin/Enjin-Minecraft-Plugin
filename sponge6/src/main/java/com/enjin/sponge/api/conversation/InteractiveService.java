@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class InteractiveService {
-    private static InteractiveService instance;
-    private Object plugin;
-    private List<InteractiveConversation> conversations;
+    private static InteractiveService            instance;
+    private        Object                        plugin;
+    private        List<InteractiveConversation> conversations;
 
     private InteractiveService(Object plugin) {
         this.plugin = plugin;
@@ -44,8 +44,12 @@ public class InteractiveService {
             setup(container.get());
 
             Optional<InteractiveConversation> optionalConversation = instance.conversations.stream()
-                    .filter(c -> c.getContext().getReceiver().equals(conversation.getContext().getReceiver()))
-                    .findFirst();
+                                                                                           .filter(c -> c.getContext()
+                                                                                                         .getReceiver()
+                                                                                                         .equals(conversation
+                                                                                                                         .getContext()
+                                                                                                                         .getReceiver()))
+                                                                                           .findFirst();
 
             if (!optionalConversation.isPresent()) {
                 instance.conversations.add(conversation);
@@ -65,8 +69,10 @@ public class InteractiveService {
     @IsCancelled(value = Tristate.FALSE)
     public void onChat(final Chat event, @Root Player player) {
         Optional<InteractiveConversation> optionalConversation = conversations.stream()
-                .filter(c -> c.getContext().getReceiver().equals(player))
-                .findFirst();
+                                                                              .filter(c -> c.getContext()
+                                                                                            .getReceiver()
+                                                                                            .equals(player))
+                                                                              .findFirst();
         if (optionalConversation.isPresent()) {
             event.setMessageCancelled(true);
             InteractiveConversation conversation = optionalConversation.get();
@@ -78,8 +84,10 @@ public class InteractiveService {
     @IsCancelled(value = Tristate.FALSE)
     public void onCommand(final SendCommandEvent event, @Root Player player) {
         Optional<InteractiveConversation> optionalConversation = conversations.stream()
-                .filter(c -> c.getContext().getReceiver().equals(player))
-                .findFirst();
+                                                                              .filter(c -> c.getContext()
+                                                                                            .getReceiver()
+                                                                                            .equals(player))
+                                                                              .findFirst();
         if (optionalConversation.isPresent()) {
             InteractiveConversation conversation = optionalConversation.get();
             if (!conversation.isAllowCommands()) {
@@ -91,8 +99,10 @@ public class InteractiveService {
     @Listener(order = Order.FIRST)
     public void onDisconnect(final Disconnect event) {
         Optional<InteractiveConversation> optionalConversation = conversations.stream()
-                .filter(c -> c.getContext().getReceiver().equals(event.getTargetEntity()))
-                .findFirst();
+                                                                              .filter(c -> c.getContext()
+                                                                                            .getReceiver()
+                                                                                            .equals(event.getTargetEntity()))
+                                                                              .findFirst();
         if (optionalConversation.isPresent()) {
             conversations.remove(optionalConversation.get());
         }

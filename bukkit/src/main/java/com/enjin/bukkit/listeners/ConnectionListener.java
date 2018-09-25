@@ -3,27 +3,23 @@ package com.enjin.bukkit.listeners;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.util.PermissionsUtil;
-import com.enjin.bukkit.util.Plugins;
 import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
 public class ConnectionListener implements Listener {
     @Getter
-    private static ConnectionListener instance;
-    private EnjinMinecraftPlugin plugin;
+    private static ConnectionListener   instance;
+    private        EnjinMinecraftPlugin plugin;
 
     public ConnectionListener(EnjinMinecraftPlugin plugin) {
         ConnectionListener.instance = this;
@@ -57,13 +53,17 @@ public class ConnectionListener implements Listener {
             p.sendMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin log");
         }
 
-        if (plugin.isPermissionsNotWorking() && PermissionsUtil.hasPermission(p, "enjin.notify.permissionsnotworking")) {
+        if (plugin.isPermissionsNotWorking() && PermissionsUtil.hasPermission(p,
+                                                                              "enjin.notify.permissionsnotworking")) {
             p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");
         }
 
         VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
-        if (module != null && module.isEconomyAvailable() && !module.isEconomyUpToDate() && PermissionsUtil.hasPermission(p, "enjin.notify.econoutdated")) {
-            p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + module.getEconomy().getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
+        if (module != null && module.isEconomyAvailable() && !module.isEconomyUpToDate() && PermissionsUtil.hasPermission(
+                p,
+                "enjin.notify.econoutdated")) {
+            p.sendMessage(ChatColor.RED + "[EnjinMinecraftPlugin] " + module.getEconomy()
+                                                                            .getName() + " doesn't have UUID support, please update. Using Vault compatibility mode.");
         }
     }
 
@@ -85,14 +85,18 @@ public class ConnectionListener implements Listener {
         }
 
         if (player == null) {
-            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] OfflinePlayer instance is null. Unable to update their ranks.");
+            Enjin.getLogger()
+                 .debug("[ConnectionListener::updatePlayerRanks] OfflinePlayer instance is null. Unable to update their ranks.");
         }
 
         if (player.getName() == null) {
             if (player.getUniqueId() == null) {
-                Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] OfflinePlayer instance's name is null. Unable to update their ranks.");
+                Enjin.getLogger()
+                     .debug("[ConnectionListener::updatePlayerRanks] OfflinePlayer instance's name is null. Unable to update their ranks.");
             } else {
-                Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Name not found for " + player.getUniqueId().toString() + ". Unable to update their ranks.");
+                Enjin.getLogger()
+                     .debug("[ConnectionListener::updatePlayerRanks] Name not found for " + player.getUniqueId()
+                                                                                                  .toString() + ". Unable to update their ranks.");
             }
             return;
         }
@@ -100,7 +104,8 @@ public class ConnectionListener implements Listener {
         PlayerGroupInfo info = new PlayerGroupInfo(player.getUniqueId());
 
         if (info == null) {
-            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] PlayerGroupInfo is null. Unable to update " + player.getName() + "'s ranks.");
+            Enjin.getLogger()
+                 .debug("[ConnectionListener::updatePlayerRanks] PlayerGroupInfo is null. Unable to update " + player.getName() + "'s ranks.");
             return;
         }
 

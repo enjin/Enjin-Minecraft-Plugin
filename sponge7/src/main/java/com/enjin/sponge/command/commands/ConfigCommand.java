@@ -16,8 +16,8 @@ public class ConfigCommand {
         if (args.length == 0) {
             help(sender);
         } else {
-            String rawKey = args[0];
-            ConfigKey key = null;
+            String    rawKey = args[0];
+            ConfigKey key    = null;
             for (ConfigKey k : ConfigKey.values()) {
                 if (k.name().equalsIgnoreCase(rawKey)) {
                     key = k;
@@ -82,7 +82,8 @@ public class ConfigCommand {
             Enjin.getConfiguration(EMPConfig.class).setUseBuyGUI((Boolean) value);
         } else {
             success = false;
-            sender.sendMessage(Text.of(TextColors.RED, "Invalid or unsupported config change found. Unable to process config update."));
+            sender.sendMessage(Text.of(TextColors.RED,
+                                       "Invalid or unsupported config change found. Unable to process config update."));
         }
 
         if (success) {

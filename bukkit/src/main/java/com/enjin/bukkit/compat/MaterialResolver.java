@@ -110,7 +110,7 @@ public class MaterialResolver {
     public static boolean isAfterMaterialFlattening() {
         String serverPackage = Bukkit.getServer().getClass().getPackage().getName();
         String version = serverPackage.substring(serverPackage.lastIndexOf('.') + 1)
-                .replace("v", "");
+                                      .replace("v", "");
         String[] parts = version.split("_");
 
         if (parts.length >= 2) {

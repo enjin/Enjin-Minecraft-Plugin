@@ -16,10 +16,10 @@ import java.util.Map;
 
 public class CommandNode {
     @Getter
-    private Command data;
+    private Command                    data;
     @Getter
-    private Permission permission;
-    private Method method;
+    private Permission                 permission;
+    private Method                     method;
     @Getter
     private Map<String, DirectiveNode> directives = new HashMap<>();
 
@@ -38,7 +38,9 @@ public class CommandNode {
             return;
         }
 
-        if (!sender.isOp() && permission != null && !permission.value().equals("") && !PermissionsUtil.hasPermission(sender, permission.value())) {
+        if (!sender.isOp() && permission != null && !permission.value().equals("") && !PermissionsUtil.hasPermission(
+                sender,
+                permission.value())) {
             sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + permission.value() + ChatColor.RED + "\" or OP to run that command.");
             return;
         }
@@ -46,7 +48,7 @@ public class CommandNode {
         if (args.length > 0) {
             DirectiveNode directive = directives.get(args[0].toLowerCase());
             if (directive != null) {
-                directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[]{});
+                directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[] {});
                 return;
             }
         }

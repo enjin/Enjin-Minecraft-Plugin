@@ -1,19 +1,17 @@
 package com.enjin.bukkit.listeners;
 
-import java.util.ArrayList;
-
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.modules.impl.VotifierModule;
 import com.enjin.core.Enjin;
+import com.vexsoftware.votifier.model.Vote;
+import com.vexsoftware.votifier.model.VotifierEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import com.vexsoftware.votifier.model.Vote;
-import com.vexsoftware.votifier.model.VotifierEvent;
+import java.util.ArrayList;
 
 public class VotifierListener implements Listener {
     EnjinMinecraftPlugin plugin;
@@ -39,23 +37,26 @@ public class VotifierListener implements Listener {
         OfflinePlayer player = Bukkit.getPlayer(username);
         if (player == null) {
             for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
-                if (op.getName() != null & op.getName().equalsIgnoreCase(username))
+                if (op.getName() != null & op.getName().equalsIgnoreCase(username)) {
                     player = op;
+                }
 
-                if (player != null)
+                if (player != null) {
                     break;
+                }
             }
         }
 
         if (player != null) {
-            String userId = username + "|" + player.getUniqueId().toString();
+            String userId   = username + "|" + player.getUniqueId().toString();
             String listName = event.getVote().getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
 
             VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
-            if (!module.getPlayerVotes().containsKey(listName))
+            if (!module.getPlayerVotes().containsKey(listName)) {
                 module.getPlayerVotes().put(listName, new ArrayList<Object[]>());
+            }
 
-            module.getPlayerVotes().get(listName).add(new Object[]{userId, System.currentTimeMillis() / 1000});
+            module.getPlayerVotes().get(listName).add(new Object[] {userId, System.currentTimeMillis() / 1000});
         } else {
             Enjin.getLogger().debug("Could not find correspond player of vote: " + username);
         }

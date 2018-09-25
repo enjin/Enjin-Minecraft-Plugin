@@ -31,7 +31,9 @@ public class TicketListener {
                             return;
                         }
 
-                        EnjinMinecraftPlugin.getInstance().getAsync().execute(() -> new TicketCreationSession(player, entry.getKey(), module));
+                        EnjinMinecraftPlugin.getInstance()
+                                            .getAsync()
+                                            .execute(() -> new TicketCreationSession(player, entry.getKey(), module));
                     }
                 }
             }

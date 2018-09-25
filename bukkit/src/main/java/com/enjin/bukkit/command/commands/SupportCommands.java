@@ -12,10 +12,13 @@ import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.general.RPCSuccess;
-import com.enjin.rpc.mappings.mappings.tickets.*;
+import com.enjin.rpc.mappings.mappings.tickets.Reply;
+import com.enjin.rpc.mappings.mappings.tickets.ReplyResults;
+import com.enjin.rpc.mappings.mappings.tickets.Ticket;
+import com.enjin.rpc.mappings.mappings.tickets.TicketModule;
+import com.enjin.rpc.mappings.mappings.tickets.TicketResults;
+import com.enjin.rpc.mappings.mappings.tickets.TicketStatus;
 import com.enjin.rpc.mappings.services.TicketService;
-import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.ComponentSerializers;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -29,7 +32,7 @@ public class SupportCommands {
     @Directive(parent = "enjin", value = "support", requireValidKey = true)
     public static void support(final Player sender, final String[] args) {
         final EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-        final SupportModule module = plugin.getModuleManager().getModule(SupportModule.class);
+        final SupportModule        module = plugin.getModuleManager().getModule(SupportModule.class);
 
         if (module == null) {
             return;
@@ -85,9 +88,15 @@ public class SupportCommands {
                     } else {
                         Enjin.getLogger().debug(String.valueOf(modules.size()));
                         for (Map.Entry<Integer, TicketModule> entry : modules.entrySet()) {
-                            int id = entry.getKey();
+                            int          id     = entry.getKey();
                             TicketModule module = entry.getValue();
-                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', (module.getHelp() != null && !module.getHelp().isEmpty()) ? module.getHelp() : "Type /e support " + id + " to create a support ticket for " + module.getName().replaceAll("\\s+", " ")));
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                                                                      (module.getHelp() != null && !module
+                                                                                              .getHelp()
+                                                                                              .isEmpty()) ? module.getHelp() : "Type /e support " + id + " to create a support ticket for " + module
+                                                                                              .getName()
+                                                                                              .replaceAll("\\s+",
+                                                                                                          " ")));
                         }
                     }
                 }
@@ -104,8 +113,8 @@ public class SupportCommands {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    TicketService service = EnjinServices.getService(TicketService.class);
-                    RPCData<TicketResults> data = service.getPlayerTickets(-1, sender.getName());
+                    TicketService          service = EnjinServices.getService(TicketService.class);
+                    RPCData<TicketResults> data    = service.getPlayerTickets(-1, sender.getName());
 
                     if (data != null) {
                         if (data.getError() != null) {
@@ -127,8 +136,8 @@ public class SupportCommands {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    TicketService service = EnjinServices.getService(TicketService.class);
-                    RPCData<ReplyResults> data = service.getReplies(-1, args[0], sender.getName());
+                    TicketService         service = EnjinServices.getService(TicketService.class);
+                    RPCData<ReplyResults> data    = service.getReplies(-1, args[0], sender.getName());
 
                     if (data != null) {
                         if (data.getError() != null) {
@@ -136,7 +145,12 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                MessageUtil.sendMessages(sender, TicketViewBuilder.buildTicket(args[0], replies, PermissionsUtil.hasPermission(sender, "enjin.ticket.private")));
+                                MessageUtil.sendMessages(sender,
+                                                         TicketViewBuilder.buildTicket(args[0],
+                                                                                       replies,
+                                                                                       PermissionsUtil.hasPermission(
+                                                                                               sender,
+                                                                                               "enjin.ticket.private")));
                             } else {
                                 sender.sendMessage("You entered an invalid ticket code!");
                             }
@@ -158,8 +172,8 @@ public class SupportCommands {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    TicketService service = EnjinServices.getService(TicketService.class);
-                    RPCData<TicketResults> data = service.getTickets(-1, TicketStatus.open);
+                    TicketService          service = EnjinServices.getService(TicketService.class);
+                    RPCData<TicketResults> data    = service.getTickets(-1, TicketStatus.open);
 
                     if (data != null) {
                         if (data.getError() != null) {
@@ -181,8 +195,8 @@ public class SupportCommands {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    TicketService service = EnjinServices.getService(TicketService.class);
-                    RPCData<ReplyResults> data = service.getReplies(-1, args[0], sender.getName());
+                    TicketService         service = EnjinServices.getService(TicketService.class);
+                    RPCData<ReplyResults> data    = service.getReplies(-1, args[0], sender.getName());
 
                     if (data != null) {
                         if (data.getError() != null) {
@@ -190,7 +204,12 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                MessageUtil.sendMessages(sender, TicketViewBuilder.buildTicket(args[0], replies, PermissionsUtil.hasPermission(sender, "enjin.ticket.private")));
+                                MessageUtil.sendMessages(sender,
+                                                         TicketViewBuilder.buildTicket(args[0],
+                                                                                       replies,
+                                                                                       PermissionsUtil.hasPermission(
+                                                                                               sender,
+                                                                                               "enjin.ticket.private")));
                             } else {
                                 sender.sendMessage("You entered an invalid ticket code!");
                             }
@@ -220,8 +239,8 @@ public class SupportCommands {
                 return;
             }
 
-            final String ticket = args[1];
-            String message = "";
+            final String ticket  = args[1];
+            String       message = "";
             for (String arg : Arrays.copyOfRange(args, 2, args.length)) {
                 message = message.concat(arg + " ");
             }
@@ -231,7 +250,13 @@ public class SupportCommands {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class).sendReply(preset, ticket, finalMessage, "public", TicketStatus.open, sender.getName());
+                    RPCData<RPCSuccess> result = EnjinServices.getService(TicketService.class)
+                                                              .sendReply(preset,
+                                                                         ticket,
+                                                                         finalMessage,
+                                                                         "public",
+                                                                         TicketStatus.open,
+                                                                         sender.getName());
                     if (result != null) {
                         if (result.getError() == null) {
                             sender.sendMessage("You replied to the ticket successfully.");
@@ -275,12 +300,13 @@ public class SupportCommands {
                 return;
             }
 
-            final String ticket = args[1];
+            final String       ticket = args[1];
             final TicketStatus status = tempStatus;
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    RPCData<Boolean> result = EnjinServices.getService(TicketService.class).setStatus(preset, ticket, status);
+                    RPCData<Boolean> result = EnjinServices.getService(TicketService.class)
+                                                           .setStatus(preset, ticket, status);
                     if (result != null) {
                         if (result.getError() == null) {
                             if (result.getResult()) {
