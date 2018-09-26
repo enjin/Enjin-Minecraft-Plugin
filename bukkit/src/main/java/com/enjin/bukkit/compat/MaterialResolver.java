@@ -6,6 +6,25 @@ import org.bukkit.inventory.ItemStack;
 
 public class MaterialResolver {
 
+    private static final String[] STONE_TYPES = {
+            "stone",
+            "granite",
+            "polished_granite",
+            "diorite",
+            "polished_diorite",
+            "andesite",
+            "polished_andesite"
+    };
+
+    private static final String[] DOUBLE_STONE_SLAB = {
+            "stone_brick_slab",
+            "nether_brick_slab",
+            "quartz_slab",
+            "smooth_stone",
+            "smooth_sandstone",
+            "smooth_quartz"
+    };
+
     private static final String[] COLORABLES = {
             "wool",
             "carpet",
@@ -56,6 +75,10 @@ public class MaterialResolver {
             "bone_meal"
     };
 
+    public static ItemStack createItemStack(String materialName) {
+        return createItemStack(materialName, (byte) -1);
+    }
+
     public static ItemStack createItemStack(String materialName, byte materialData) {
         if (materialName == null) return null;
 
@@ -65,28 +88,40 @@ public class MaterialResolver {
 
         if (materialsFlattened) {
             // 1.13
-            if (isColorable(materialName)) {
-                materialName = colorize(materialName, materialData);
-            } else if ("dye".equalsIgnoreCase(materialName)) {
-                materialName = DYES[materialData];
-            }
+            //            if (isColorable(materialName)) {
+            //                materialName = colorize(materialName, materialData);
+            //            } else if ("dye".equalsIgnoreCase(materialName)) {
+            //                materialName = DYES[materialData];
+            //            }
+            //
+            //            if (materialData >= 0) {
+            //                if ("stone".equalsIgnoreCase(materialName) && materialData < STONE_TYPES.length) {
+            //                    materialName = STONE_TYPES[materialData];
+            //                }
+            //            }
         }
 
-        material = Material.matchMaterial(materialName.toLowerCase());
+        material = Material.matchMaterial(materialName);
+
+        if (material == null) {
+            material = Material.matchMaterial("LEGACY_" + materialName);
+        }
 
         if (material != null) {
-            if (materialsFlattened || materialData < 0) {
-                itemStack = new ItemStack(material);
-            } else {
-                itemStack = new ItemStack(material, 1, (short) materialData);
-            }
+            //            if (materialsFlattened || materialData < 0) {
+            //                itemStack = new ItemStack(material);
+            //            } else {
+            //                itemStack = new ItemStack(material, 1, (short) materialData);
+            //            }
+
+            itemStack = new ItemStack(material, 1, (short) materialData);
         }
 
         return itemStack;
     }
 
     public static String colorize(String materialName, byte materialData) {
-        if ("stained_hardened_clay".equalsIgnoreCase(materialName)) {
+        if ("stained_hardened_clay".equalsIgnoreCase(materialName) || "stained_clay".equalsIgnoreCase(materialName)) {
             materialName = materialName.replace("stained_hardened_clay", "terracotta");
         }
 
