@@ -29,6 +29,7 @@ repositories {
 }
 
 dependencies {
+    testCompile project(':rpcapi').sourceSets.test.output
     // Project dependencies.
     compile project(path: ':common', configuration: 'shadow')
     // IntelliJ fails to resolve classes with shadow configuration from project dependencies.

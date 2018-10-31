@@ -1,11 +1,8 @@
-import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
-import com.enjin.core.config.EnjinConfig;
 import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerInfo;
 import com.enjin.rpc.mappings.mappings.plugin.Stats;
-import com.enjin.rpc.mappings.mappings.plugin.Status;
 import com.enjin.rpc.mappings.mappings.plugin.SyncResponse;
 import com.enjin.rpc.mappings.mappings.plugin.TagData;
 import com.enjin.rpc.mappings.services.PluginService;
@@ -16,8 +13,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,33 +37,33 @@ public class PluginServiceTest {
 
     @Test
     public void test2Sync() {
-        Status status = new Status(System.getProperty("java.version"),
-                                   "UNKNOWN",
-                                   null,
-                                   true,
-                                   "3.0.0-bukkit",
-                                   new ArrayList<String>() {{
-                                       add("world");
-                                       add("end");
-                                       add("nether");
-                                   }},
-                                   new ArrayList<String>() {{
-                                       add("default");
-                                       add("creeper");
-                                   }},
-                                   50,
-                                   2,
-                                   new ArrayList<PlayerInfo>() {{
-                                       add(new PlayerInfo("Favorlock",
-                                                          UUID.fromString("8b7a881c-6ccb-4ada-8f6a-60cc99e6aa20")));
-                                       add(new PlayerInfo("AlmightyToaster",
-                                                          UUID.fromString("5b6cf5cd-d1c8-4f54-a06e-9c4462095706")));
-                                   }},
-                                   null,
-                                   null,
-                                   null,
-                                   null,
-                                   null);
+        HashMap<String, Object> status = new HashMap<>();
+        status.put("java_version", System.getProperty("java.version"));
+        status.put("mc_version", "UNKNOWN");
+        status.put("plugins", null);
+        status.put("pluginversion", "3.0.0-bukkit");
+        status.put("worlds", new ArrayList<String>() {{
+            add("world");
+            add("end");
+            add("nether");
+        }});
+        status.put("groups", new ArrayList<String>() {{
+            add("default");
+            add("creeper");
+        }});
+        status.put("maxplayers", 50);
+        status.put("players", 2);
+        status.put("playerlist", new ArrayList<PlayerInfo>() {{
+            add(new PlayerInfo("Favorlock",
+                               UUID.fromString("8b7a881c-6ccb-4ada-8f6a-60cc99e6aa20")));
+            add(new PlayerInfo("AlmightyToaster",
+                               UUID.fromString("5b6cf5cd-d1c8-4f54-a06e-9c4462095706")));
+        }});
+        status.put("playergroups", null);
+        status.put("tps", null);
+        status.put("executed_commands", null);
+        status.put("votifier", null);
+        status.put("stats", null);
         PluginService         service = EnjinServices.getService(PluginService.class);
         RPCData<SyncResponse> data    = service.sync(status);
 
@@ -97,70 +94,6 @@ public class PluginServiceTest {
 
     @BeforeClass
     public static void prepare() {
-        Enjin.setConfiguration(new EnjinConfig() {
-            @Override
-            public boolean isDebug() {
-                return true;
-            }
-
-            @Override
-            public void setDebug(boolean debug) {
-            }
-
-            @Override
-            public String getAuthKey() {
-                return KEY;
-            }
-
-            @Override
-            public void setAuthKey(String key) {
-            }
-
-            @Override
-            public boolean isHttps() {
-                return false;
-            }
-
-            @Override
-            public void setHttps(boolean https) {
-            }
-
-            @Override
-            public int getSyncDelay() {
-                return 10;
-            }
-
-            @Override
-            public void setSyncDelay(int delay) {
-            }
-
-            @Override
-            public boolean isLoggingEnabled() {
-                return false;
-            }
-
-            @Override
-            public void setLoggingEnabled(boolean loggingEnabled) {
-            }
-
-            @Override
-            public String getApiUrl() {
-                return API_URL;
-            }
-
-            @Override
-            public void setApiUrl(String apiUrl) {
-            }
-
-            @Override
-            public boolean save(File file) {
-                return true;
-            }
-
-            @Override
-            public boolean update(File file, Object data) {
-                return true;
-            }
-        });
+        DummyConfig.set(KEY, API_URL);
     }
 }

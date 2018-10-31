@@ -23,79 +23,19 @@ public class ConfigUpdateTest {
             file.delete();
         }
 
-        EMPConfig        config = JsonConfig.load(file, EMPConfig.class);
-        ConfigUpdateData data   = new ConfigUpdateData(false);
+        try {
+            EMPConfig        config = JsonConfig.load(file, EMPConfig.class);
+            ConfigUpdateData data   = new ConfigUpdateData(false);
 
-        config.update(file, EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(data), Object.class));
-        config = JsonConfig.load(file, EMPConfig.class);
+            config.update(file, EnjinRPC.gson.fromJson(EnjinRPC.gson.toJson(data), Object.class));
+            config = JsonConfig.load(file, EMPConfig.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @BeforeClass
     public static void prepare() {
-        Enjin.setConfiguration(new EnjinConfig() {
-            @Override
-            public boolean isDebug() {
-                return true;
-            }
 
-            @Override
-            public void setDebug(boolean debug) {
-            }
-
-            @Override
-            public String getAuthKey() {
-                return KEY;
-            }
-
-            @Override
-            public void setAuthKey(String key) {
-            }
-
-            @Override
-            public boolean isHttps() {
-                return false;
-            }
-
-            @Override
-            public void setHttps(boolean https) {
-            }
-
-            @Override
-            public boolean isAutoUpdate() {
-                return false;
-            }
-
-            @Override
-            public void setAutoUpdate(boolean autoUpdate) {
-            }
-
-            @Override
-            public boolean isLoggingEnabled() {
-                return false;
-            }
-
-            @Override
-            public void setLoggingEnabled(boolean loggingEnabled) {
-            }
-
-            @Override
-            public String getApiUrl() {
-                return API_URL;
-            }
-
-            @Override
-            public void setApiUrl(String apiUrl) {
-            }
-
-            @Override
-            public boolean save(File file) {
-                return true;
-            }
-
-            @Override
-            public boolean update(File file, Object data) {
-                return true;
-            }
-        });
     }
 }
