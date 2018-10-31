@@ -12,9 +12,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class VotifierListener implements Listener {
-    EnjinMinecraftPlugin plugin;
+
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("[0-9a-zA-Z_]{3,16}");
+
+    private EnjinMinecraftPlugin plugin;
 
     public VotifierListener(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -23,20 +27,20 @@ public class VotifierListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void voteRecieved(VotifierEvent event) {
         Vote vote = event.getVote();
+        String username = vote.getUsername();
 
         Enjin.getLogger().debug("Received vote from \"" + vote.getUsername() + "\" using \"" + vote.getServiceName());
-        if (event.getVote().getUsername().equalsIgnoreCase("test") || event.getVote().getUsername().isEmpty()) {
-            return;
-        }
-
-        String username = vote.getUsername().replaceAll("[^0-9A-Za-z_]", "");
-        if (username.isEmpty() || username.length() > 16) {
+        if (username == null || username.isEmpty() || !USERNAME_PATTERN.matcher(username).matches()) {
             return;
         }
 
         OfflinePlayer player = Bukkit.getPlayer(username);
         if (player == null) {
             for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+                if (op == null) {
+                    continue;
+                }
+
                 if (op.getName() != null & op.getName().equalsIgnoreCase(username)) {
                     player = op;
                 }

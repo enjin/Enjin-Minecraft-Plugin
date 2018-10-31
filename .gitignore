@@ -65,6 +65,7 @@ local.properties
 
 /.idea/*
 !/.idea/runConfigurations/
+/classes/
 
 ## File-based project format:
 *.ipr
