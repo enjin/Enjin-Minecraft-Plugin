@@ -20,7 +20,7 @@ subprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     group = 'com.enjin'
-    version = '3.5.2-SNAPSHOT'
+    version = '3.5.2'
 
     idea {
         module {
