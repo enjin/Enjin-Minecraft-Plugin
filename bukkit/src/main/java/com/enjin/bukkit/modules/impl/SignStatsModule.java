@@ -208,7 +208,7 @@ public class SignStatsModule {
                 }
                 sign.update();
 
-                if (name != null) {
+                if (name != null && !name.isEmpty()) {
                     updateHead(sign, data, name);
                 }
             }
