@@ -44,6 +44,7 @@ import com.google.common.base.Predicate;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -144,6 +145,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void init() {
+
+        Bukkit.getLogger().info(ChatColor.DARK_PURPLE + "   ___    _  _        _    ___    _  _ ");
+        Bukkit.getLogger().info(ChatColor.DARK_PURPLE + "  | __|  | \\| |    _ | |  |_ _|  | \\| |");
+        Bukkit.getLogger().info(ChatColor.DARK_PURPLE + "  | _|   | .` |   | || |   | |   | .` |");
+        Bukkit.getLogger().info(ChatColor.DARK_PURPLE + "  |___|  |_|\\_|    \\__/   |___|  |_|\\_|");
+        Bukkit.getLogger().info(ChatColor.DARK_GREEN + "  Enjin Minecraft Plugin " + ChatColor.GOLD + getDescription().getVersion());
+
         if (firstRun) {
             Log log = new Log(getDataFolder());
             Enjin.setLogger(log);
