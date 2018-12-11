@@ -315,7 +315,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         CommandBank.register(CoreCommands.class, BuyCommand.class, // StatCommands.class,
                              HeadCommands.class, SupportCommands.class, PointCommands.class, ConfigCommand.class);
 
-        if (Bukkit.getPluginManager().isPluginEnabled("Votifier")) {
+        if (Bukkit.getPluginManager().isPluginEnabled("Votifier") && Enjin.getConfiguration(EMPConfig.class).getEnabledComponents().isVoteListener()) {
             CommandBank.register(VoteCommands.class);
         }
 

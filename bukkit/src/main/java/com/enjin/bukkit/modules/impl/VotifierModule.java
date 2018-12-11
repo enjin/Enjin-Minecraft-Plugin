@@ -1,6 +1,7 @@
 package com.enjin.bukkit.modules.impl;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.VotifierListener;
 import com.enjin.bukkit.modules.Module;
 import com.enjin.core.Enjin;
@@ -23,6 +24,10 @@ public class VotifierModule {
     }
 
     public void init() {
+        if (!Enjin.getConfiguration(EMPConfig.class).getEnabledComponents().isVoteListener()) {
+            return;
+        }
+
         Enjin.getLogger().debug("Registering vote listener!");
         Bukkit.getPluginManager().registerEvents(new VotifierListener(plugin), plugin);
     }

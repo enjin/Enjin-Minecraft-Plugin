@@ -3,7 +3,9 @@ package com.enjin.bukkit.command.commands;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.modules.impl.VotifierModule;
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -15,6 +17,10 @@ public class VoteCommands {
     @Permission(value = "enjin.test.vote")
     @Directive(parent = "enjin", value = "vote")
     public static void vote(CommandSender sender, String[] args) {
+        if (!Enjin.getConfiguration(EMPConfig.class).getEnabledComponents().isVoteListener()) {
+            return;
+        }
+
         EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
         VotifierModule       module = plugin.getModuleManager().getModule(VotifierModule.class);
 

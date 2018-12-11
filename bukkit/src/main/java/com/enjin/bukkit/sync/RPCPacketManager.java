@@ -1,6 +1,7 @@
 package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.events.PostSyncEvent;
 import com.enjin.bukkit.events.PreSyncEvent;
@@ -99,7 +100,9 @@ public class RPCPacketManager implements Runnable {
         status.put("playergroups", getPlayerGroups());
         status.put("tps", TPSMonitor.getInstance().getLastTPSMeasurement());
         status.put("executed_commands", EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands());
-        status.put("votifier", getVotes());
+        if (Enjin.getConfiguration(EMPConfig.class).getEnabledComponents().isVoteListener()) {
+            status.put("votifier", getVotes());
+        }
         status.put("stats", stats);
 
         //        Status status = new Status(System.getProperty("java.version"),
