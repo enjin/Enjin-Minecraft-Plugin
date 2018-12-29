@@ -91,6 +91,7 @@ public class RPCPacketManager implements Runnable {
         status.put("java_version", System.getProperty("java.version"));
         status.put("mc_version", this.plugin.getMcVersion());
         status.put("plugins", getPlugins());
+        status.put("hasranks", isPermissionsAvailable());
         status.put("pluginversion", this.plugin.getDescription().getVersion());
         status.put("worlds", getWorlds());
         status.put("groups", getGroups());
