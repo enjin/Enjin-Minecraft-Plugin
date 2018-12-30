@@ -100,27 +100,11 @@ public class RPCPacketManager implements Runnable {
         status.put("playerlist", getOnlinePlayers());
         status.put("playergroups", getPlayerGroups());
         status.put("tps", TPSMonitor.getInstance().getLastTPSMeasurement());
-        status.put("executed_commands", EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands());
+        status.put("executed_commands", EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommandsMapList());
         if (Enjin.getConfiguration(EMPConfig.class).getEnabledComponents().isVoteListener()) {
             status.put("votifier", getVotes());
         }
         status.put("stats", stats);
-
-        //        Status status = new Status(System.getProperty("java.version"),
-        //                this.plugin.getMcVersion(),
-        //                getPlugins(),
-        //                isPermissionsAvailable(),
-        //                this.plugin.getDescription().getVersion(),
-        //                getWorlds(),
-        //                getGroups(),
-        //                getMaxPlayers(),
-        //                getOnlineCount(),
-        //                getOnlinePlayers(),
-        //                getPlayerGroups(),
-        //                TPSMonitor.getInstance().getLastTPSMeasurement(),
-        //                EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands(),
-        //                getVotes(),
-        //                stats);
 
         Bukkit.getPluginManager().callEvent(new PreSyncEvent(status));
 

@@ -9,6 +9,8 @@ import lombok.ToString;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 
 @ToString
 @EqualsAndHashCode
@@ -49,5 +51,14 @@ public class ExecutedCommand {
         }
 
         return null;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap();
+        map.put("command_id", id);
+        map.put("hash", hash);
+        map.put("response", response);
+        map.put("command", command);
+        return map;
     }
 }

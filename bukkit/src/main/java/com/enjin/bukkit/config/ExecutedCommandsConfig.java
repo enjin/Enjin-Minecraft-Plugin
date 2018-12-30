@@ -6,8 +6,14 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ExecutedCommandsConfig extends JsonConfig {
     @Getter
     private List<ExecutedCommand> executedCommands = new ArrayList<>();
+
+    public List<Map<String, Object>> getExecutedCommandsMapList() {
+        return executedCommands.stream().map(ExecutedCommand::toMap).collect(Collectors.toList());
+    }
 }
