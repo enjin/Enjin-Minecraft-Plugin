@@ -9,15 +9,11 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import lombok.RequiredArgsConstructor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -169,11 +165,17 @@ public class Application {
     public static File download(String url, File target) throws IOException {
         System.out.println("Starting download of " + url);
 
-        byte[] bytes = Resources.toByteArray(new URL(url));
+        URL destination = new URL(url);
+        URLConnection connection = destination.openConnection();
 
-        System.out.println("Downloaded file: " + target + " with md5: " + Hashing.md5().hashBytes(bytes).toString());
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+        connection.connect();
 
-        Files.write(bytes, target);
+        ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
+        FileOutputStream fos = new FileOutputStream(target);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.close();
+        rbc.close();
 
         return target;
     }
