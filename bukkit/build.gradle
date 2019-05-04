@@ -9,7 +9,7 @@ configureJavaCompilers(8)
 
 ext {
     bukkit = '1.13.2-R0.1-SNAPSHOT'
-    kyoripowered_text = '1.12-1.3.0'
+    kyoripowered_text = '2.0.0-SNAPSHOT'
     vault = '1.7.1'
     nuvotifier = '2.5.1-SNAPSHOT'
     zPermissions = '1.3beta1'
@@ -37,9 +37,12 @@ dependencies {
     shadow project(':rpcapi')
     shadow project(':core')
     // Project specific dependencies.
-    compile(group: 'net.kyori', name: 'text', version: kyoripowered_text) {
+    compile(group: 'net.kyori', name: 'text-api', version: kyoripowered_text) {
         exclude group: 'com.google.guava'
     }
+    compile(group: 'net.kyori', name: 'text-serializer-legacy', version: kyoripowered_text)
+    compile(group: 'net.kyori', name: 'text-serializer-gson', version: kyoripowered_text)
+    compile(group: 'net.kyori', name: 'text-serializer-plain', version: kyoripowered_text)
     compile group: 'org.reflections', name: 'reflections', version: reflections
     compile group: 'javassist', name: 'javassist', version: javassist
     shadow group: 'org.spigotmc', name: 'spigot-api', version: bukkit

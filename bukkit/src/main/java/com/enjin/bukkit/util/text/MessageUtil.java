@@ -1,7 +1,7 @@
 package com.enjin.bukkit.util.text;
 
 import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.ComponentSerializers;
+import net.kyori.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ import java.util.List;
 public class MessageUtil {
 
     public static void sendMessage(Player player, TextComponent component) {
-        String          json       = ComponentSerializers.JSON.serialize(component);
+        String          json       = GsonComponentSerializer.INSTANCE.serialize(component);
         BaseComponent[] components = ComponentSerializer.parse(json);
         player.spigot().sendMessage(components);
     }

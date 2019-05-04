@@ -5,8 +5,7 @@ import com.enjin.rpc.mappings.mappings.tickets.Ticket;
 import net.kyori.text.TextComponent;
 import net.kyori.text.event.ClickEvent;
 import net.kyori.text.format.TextColor;
-import net.kyori.text.serializer.ComponentSerializers;
-import net.kyori.text.serializer.LegacyComponentSerializer;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 
 import java.text.DateFormat;
@@ -21,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class TicketViewBuilder {
     private static final DateFormat                dateFormat                  = new SimpleDateFormat(
             "hh:mm:ss dd-MM-yyyy");
-    private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = ComponentSerializers.LEGACY;
+    private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.INSTANCE;
 
     public static List<TextComponent> buildTicketList(List<Ticket> tickets) {
         Collections.sort(tickets, new Comparator<Ticket>() {
