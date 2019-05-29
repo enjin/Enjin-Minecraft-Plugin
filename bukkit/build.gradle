@@ -8,10 +8,10 @@ apply from: scriptFile('env.gradle')
 configureJavaCompilers(8)
 
 ext {
-    bukkit = '1.13.2-R0.1-SNAPSHOT'
-    kyoripowered_text = '2.0.0-SNAPSHOT'
-    vault = '1.7.1'
-    nuvotifier = '2.5.1-SNAPSHOT'
+    bukkit = '1.14.2-R0.1-SNAPSHOT'
+    kyoripowered_text = '3.0.0'
+    vault = '1.7'
+    nuvotifier = '2.5.2'
     zPermissions = '1.3beta1'
     bPermissions = '2.12.1'
     vanishNoPacket = '3.20.1'
@@ -23,7 +23,6 @@ ext {
 
 repositories {
     maven { url 'http://nexus.hc.to/content/repositories/pub_releases' }
-    maven { url 'https://nexus.ibj.io/repository/maven-public/' }
     maven { url 'https://repo.bstats.org/content/repositories/releases' }
     maven { url 'http://repo.kitteh.org/content/groups/public' }
 }
@@ -37,26 +36,29 @@ dependencies {
     shadow project(':rpcapi')
     shadow project(':core')
     // Project specific dependencies.
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     compile(group: 'net.kyori', name: 'text-api', version: kyoripowered_text) {
         exclude group: 'com.google.guava'
     }
     compile(group: 'net.kyori', name: 'text-serializer-legacy', version: kyoripowered_text)
     compile(group: 'net.kyori', name: 'text-serializer-gson', version: kyoripowered_text)
     compile(group: 'net.kyori', name: 'text-serializer-plain', version: kyoripowered_text)
-    compile group: 'org.reflections', name: 'reflections', version: reflections
-    compile group: 'javassist', name: 'javassist', version: javassist
-    shadow group: 'org.spigotmc', name: 'spigot-api', version: bukkit
-    shadow group: 'net.milkbowl.vault', name: 'Vault', version: vault
-    shadow group: 'com.vexsoftware', name: 'nuvotifier-universal', version: nuvotifier
-    shadow group: 'org.tyrannyofheaven.bukkit', name: 'zPermissions', version: zPermissions
-    shadow group: 'de.banaco', name: 'bPermissions-Bukkit', version: bPermissions
-    shadow group: 'org.kitteh', name: 'VanishNoPacket', version: vanishNoPacket
-    shadow group: 'Tux2', name: 'TuxTwoLib', version: tuxTwoLib
-    shadow group: 'ru.tehkode', name: 'PermissionsEx', version: permissionsEx
-    shadow group: 'com.platymuus', name: 'bukkit-permissions', version: bukkitPermissions
-    shadow group: 'com.gmail.nossr50.mcMMO', name: 'mcMMO', version: mcMMO
+    compile(group: 'org.reflections', name: 'reflections', version: reflections)
+    compile(group: 'javassist', name: 'javassist', version: javassist)
+    shadow(group: 'org.spigotmc', name: 'spigot-api', version: bukkit)
+    shadow(group: 'net.milkbowl.vault', name: 'VaultAPI', version: vault) {
+        exclude group: 'org.bukkit'
+    }
+    shadow(group: 'com.vexsoftware', name: 'nuvotifier-universal', version: nuvotifier)
+    shadow(group: 'org.tyrannyofheaven.bukkit', name: 'zPermissions', version: zPermissions)
+    shadow(group: 'de.banaco', name: 'bPermissions-Bukkit', version: bPermissions)
+    shadow(group: 'org.kitteh', name: 'VanishNoPacket', version: vanishNoPacket)
+    shadow(group: 'Tux2', name: 'TuxTwoLib', version: tuxTwoLib)
+    shadow(group: 'ru.tehkode', name: 'PermissionsEx', version: permissionsEx)
+    shadow(group: 'com.platymuus', name: 'bukkit-permissions', version: bukkitPermissions)
+    shadow(group: 'com.gmail.nossr50.mcMMO', name: 'mcMMO', version: mcMMO)
     // File dependencies.
-    shadow fileTree(dir: 'lib', include: '*.jar')
+    shadow(fileTree(dir: 'lib', include: '*.jar'))
 }
 
 jar {

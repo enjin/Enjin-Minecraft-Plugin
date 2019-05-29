@@ -105,6 +105,8 @@ public class Application {
                               "com.platymuus", "bukkit-permissions", "2.5");
         downloadAndInstallJar("https://popicraft.net/jenkins/job/mcMMO/16/artifact/mcMMO/target/mcMMO.jar",
                               "com.gmail.nossr50.mcMMO", "mcMMO", "1.5.10");
+        downloadAndInstallJar("https://github.com/NuVotifier/NuVotifier/releases/download/v2.5.2/nuvotifier-2.5.2.jar",
+                "com.vexsoftware", "nuvotifier-universal", "2.5.2");
     }
 
     public static int runProcess(File workDir, String... command) throws Exception {

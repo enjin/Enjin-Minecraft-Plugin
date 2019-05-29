@@ -339,7 +339,7 @@ public class TextShopUtil {
 
                     if (urlBuilder.length() > 0) {
                         message = TextComponent.of(TextUtils.trim(urlBuilder.toString(), null))
-                                               .clickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
+                                               .clickEvent(ClickEvent.of(ClickEvent.Action.OPEN_URL,
                                                                           url.toExternalForm()));
                         messages.add(message);
                     }
@@ -446,7 +446,7 @@ public class TextShopUtil {
 
             if (urlBuilder.length() > 0) {
                 message = TextComponent.of(TextUtils.trim(urlBuilder.toString(), null))
-                                       .clickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.toExternalForm()));
+                                       .clickEvent(ClickEvent.of(ClickEvent.Action.OPEN_URL, url.toExternalForm()));
                 messages.add(message);
             }
         } catch (MalformedURLException e) {

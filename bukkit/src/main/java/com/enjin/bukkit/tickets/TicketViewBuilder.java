@@ -40,7 +40,7 @@ public class TicketViewBuilder {
             message = TextComponent.of(ticket.getCode() + ") " + ticket.getSubject() + " (" + ticket.getReplyCount() + " Replies, " + getLastUpdateDisplay(
                     (System.currentTimeMillis() / 1000) - ticket.getUpdated()) + ")")
                                    .color(TextColor.GREEN)
-                                   .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                   .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND,
                                                               "/e ticket " + ticket.getCode()));
             messages.add(message);
         }
@@ -119,7 +119,7 @@ public class TicketViewBuilder {
         messages.add(message);
         message = TextComponent.of("/e reply " + reply.getPresetId() + " " + ticketCode + " <message>")
                                .color(TextColor.GREEN)
-                               .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+                               .clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND,
                                                           "/e reply " + reply.getPresetId() + " " + ticketCode + " <message>"));
         messages.add(message);
         message = TextComponent.of("or to set the status of this ticket type:")
@@ -127,7 +127,7 @@ public class TicketViewBuilder {
         messages.add(message);
         message = TextComponent.of("/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>")
                                .color(TextColor.GREEN)
-                               .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+                               .clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND,
                                                           "/e ticketstatus " + reply.getPresetId() + " " + ticketCode + " <open/pending/closed>"))
                                .append(TextComponent.of("]").color(TextColor.GRAY));
         messages.add(message);
