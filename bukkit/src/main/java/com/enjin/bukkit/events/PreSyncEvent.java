@@ -14,6 +14,7 @@ public class PreSyncEvent extends Event {
     private Map<String, Object> status;
 
     public PreSyncEvent(Map<String, Object> status) {
+        super(true);
         this.status = status;
     }
 

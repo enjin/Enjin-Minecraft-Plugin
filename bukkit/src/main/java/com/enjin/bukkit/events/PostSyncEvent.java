@@ -16,6 +16,7 @@ public class PostSyncEvent extends Event {
     private RPCData<SyncResponse> response;
 
     public PostSyncEvent(boolean successful, RPCData<SyncResponse> response) {
+        super(true);
         this.successful = successful;
         this.response = response;
     }
