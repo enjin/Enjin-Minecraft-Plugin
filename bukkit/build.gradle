@@ -81,9 +81,8 @@ shadowJar {
         include(dependency('.*:javassist'))
         include(dependency('.*:zip4j'))
         include(dependency('.*:json-smart'))
+        include(dependency('net.kyori:.*'))
     }
-
-    exclude('mkremins/fanciful/shaded/**')
 
     relocate 'org.reflections', 'com.enjin.shaded.reflections'
     relocate 'javassist', 'com.enjin.shaded.javassist'
@@ -92,7 +91,7 @@ shadowJar {
     relocate 'com.google.gson', 'com.enjin.shaded.gson'
     relocate 'com.thetransactioncompany.jsonrpc2', 'com.enjin.shaded.jsonrpc2'
     relocate 'net.lingala.zip4j', 'com.enjin.shaded.zip4j'
-    relocate 'net.kyori.text', 'com.enjin.shaded.kyori-text'
+    relocate 'net.kyori', 'com.enjin.shaded.kyori'
 
     mergeServiceFiles()
 }
