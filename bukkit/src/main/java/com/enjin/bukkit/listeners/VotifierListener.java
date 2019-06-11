@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
 
 public class VotifierListener implements Listener {
 
-    private static final Pattern USERNAME_PATTERN = Pattern.compile("[0-9a-zA-Z_]{3,16}");
-
     private EnjinMinecraftPlugin plugin;
 
     public VotifierListener(EnjinMinecraftPlugin plugin) {
@@ -27,54 +25,23 @@ public class VotifierListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void voteRecieved(VotifierEvent event) {
-        Enjin.getLogger().debug("Vote listener is running on thread " + Thread.currentThread().getName());
         Vote vote = event.getVote();
-        String username = vote.getUsername();
+        String username = vote.getUsername().replaceAll("[^0-9A-Za-z_]", "");
 
-        Enjin.getLogger().debug("Received vote from \"" + vote.getUsername() + "\" using \"" + vote.getServiceName());
-        Timer timer = new Timer();
-        timer.start();
-        if (username == null || username.isEmpty() || !USERNAME_PATTERN.matcher(username).matches()) {
-            return;
+        if (username.isEmpty()) return;
+
+        String userid = username;
+
+        if (Bukkit.getOnlineMode()) {
+            OfflinePlayer op = Bukkit.getOfflinePlayer(username);
+            userid = username + "|" + op.getUniqueId().toString();
         }
-        timer.stop();
-        Enjin.getLogger().debug("Vote username pattern matching took " + timer.getDifference() + "ms");
 
-        timer.start();
-        OfflinePlayer player = Bukkit.getPlayer(username);
-        if (player == null) {
-            for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
-                if (op == null) {
-                    continue;
-                }
-
-                if (op.getName() != null & op.getName().equalsIgnoreCase(username)) {
-                    player = op;
-                }
-
-                if (player != null) {
-                    break;
-                }
-            }
+        String listName = event.getVote().getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
+        VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+        if (!module.getPlayerVotes().containsKey(listName)) {
+            module.getPlayerVotes().put(listName, new ArrayList<>());
         }
-        timer.stop();
-        Enjin.getLogger().debug("Player lookup took " + timer.getDifference() + "ms");
-
-        if (player != null) {
-            timer.start();
-            String userId   = username + "|" + player.getUniqueId().toString();
-            String listName = event.getVote().getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
-
-            VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
-            if (!module.getPlayerVotes().containsKey(listName)) {
-                module.getPlayerVotes().put(listName, new ArrayList<Object[]>());
-            }
-
-            module.getPlayerVotes().get(listName).add(new Object[] {userId, System.currentTimeMillis() / 1000});
-            timer.stop();
-            Enjin.getLogger().debug("Vote persistence took " + timer.getDifference() + "ms");
-        } else {
-            Enjin.getLogger().debug("Could not find correspond player of vote: " + username);
-        }
+        module.getPlayerVotes().get(listName).add(new Object[] {userid, System.currentTimeMillis() / 1000});
     }
 }
