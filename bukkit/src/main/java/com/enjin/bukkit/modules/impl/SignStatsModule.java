@@ -24,6 +24,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
+import org.bukkit.block.data.BlockData;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -238,8 +239,14 @@ public class SignStatsModule {
             }
         }
 
+        BlockData blockData = sign.getBlock().getBlockData();
+
+        if (!(blockData instanceof org.bukkit.block.data.type.Sign)) return;
+
+        org.bukkit.block.data.type.Sign signData = (org.bukkit.block.data.type.Sign) blockData;
+
         block = sign.getBlock()
-                    .getRelative(((org.bukkit.material.Sign) sign.getData()).getAttachedFace())
+                    .getRelative(signData.getRotation().getOppositeFace())
                     .getRelative(0, 1, 0);
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
