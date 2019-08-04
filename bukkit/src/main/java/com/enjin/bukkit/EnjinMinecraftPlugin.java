@@ -47,6 +47,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nullable;
@@ -423,7 +424,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public static void dispatchConsoleCommand(String command) {
         Enjin.getLogger().debug("Dispatching command: " + command);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        Bukkit.getScheduler()
+                .scheduleSyncDelayedTask((Plugin) Enjin.getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
     }
 
     public boolean isUpdateFromCurseForge() {
