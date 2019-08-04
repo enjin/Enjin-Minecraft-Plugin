@@ -89,3 +89,5 @@ crashlytics.properties
 crashlytics-build.properties
 
 
+/rpcapi/lombok.config
+/dev-tools/lombok.config

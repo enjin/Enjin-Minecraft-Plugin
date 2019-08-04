@@ -10,11 +10,14 @@
       </option>
       <option name="taskNames">
         <list>
+          <option value="clean" />
+          <option value="build" />
           <option value="run" />
         </list>
       </option>
       <option name="vmOptions" value="" />
     </ExternalSystemSettings>
+    <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
     <method v="2" />
   </configuration>
 </component>
