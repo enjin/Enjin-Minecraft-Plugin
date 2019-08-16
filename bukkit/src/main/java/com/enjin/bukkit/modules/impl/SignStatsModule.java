@@ -212,7 +212,6 @@ public class SignStatsModule {
                 sign.update();
 
                 if (name != null && !name.isEmpty()) {
-                    plugin.getLogger().info("Attempting to update sign head");
                     updateHead(sign, data, name);
                 }
             }
@@ -252,28 +251,24 @@ public class SignStatsModule {
         block = sign.getBlock()
                     .getRelative(face)
                     .getRelative(0, 1, 0);
-        plugin.getLogger().info(block.getLocation().toString());
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, 1, 0);
-        plugin.getLogger().info(block.getLocation().toString());
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, -1, 0);
-        plugin.getLogger().info(block.getLocation().toString());
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, 2, 0);
-        plugin.getLogger().info(block.getLocation().toString());
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
