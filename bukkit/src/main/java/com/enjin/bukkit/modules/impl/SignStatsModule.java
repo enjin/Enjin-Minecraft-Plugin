@@ -22,9 +22,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.WallSign;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -210,6 +212,7 @@ public class SignStatsModule {
                 sign.update();
 
                 if (name != null && !name.isEmpty()) {
+                    plugin.getLogger().info("Attempting to update sign head");
                     updateHead(sign, data, name);
                 }
             }
@@ -240,36 +243,55 @@ public class SignStatsModule {
         }
 
         BlockData blockData = sign.getBlock().getBlockData();
+        Optional<BlockFace> blockFaceOptional = getOppositeFace(blockData);
 
-        if (!(blockData instanceof org.bukkit.block.data.type.Sign)) return;
+        if (!blockFaceOptional.isPresent()) return;
 
-        org.bukkit.block.data.type.Sign signData = (org.bukkit.block.data.type.Sign) blockData;
+        BlockFace face = blockFaceOptional.get();
 
         block = sign.getBlock()
-                    .getRelative(signData.getRotation().getOppositeFace())
+                    .getRelative(face)
                     .getRelative(0, 1, 0);
+        plugin.getLogger().info(block.getLocation().toString());
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, 1, 0);
+        plugin.getLogger().info(block.getLocation().toString());
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, -1, 0);
+        plugin.getLogger().info(block.getLocation().toString());
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
 
         block = sign.getBlock().getRelative(0, 2, 0);
+        plugin.getLogger().info(block.getLocation().toString());
         if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
             updateHead(block, data, name);
             return;
         }
+    }
+
+    public Optional<BlockFace> getOppositeFace(BlockData data) {
+        Optional<BlockFace> result = Optional.absent();
+
+        if (data instanceof org.bukkit.block.data.type.Sign) {
+            org.bukkit.block.data.type.Sign sign = (org.bukkit.block.data.type.Sign) data;
+            result = Optional.of(sign.getRotation().getOppositeFace());
+        } else if (data instanceof WallSign) {
+            WallSign sign = (WallSign) data;
+            result = Optional.of(sign.getFacing().getOppositeFace());
+        }
+
+        return result;
     }
 
     public void updateHead(Block block, SignData data, String name) {
