@@ -6,6 +6,7 @@ import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.core.Enjin;
 import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -118,8 +119,10 @@ public class ConnectionListener implements Listener {
             return;
         }
 
-        info.getWorlds().putAll(module.getPlayerGroups(player));
-        EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
+        Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
+            info.getWorlds().putAll(module.getPlayerGroups(player));
+            EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
+        });
     }
 
     public static void updatePlayersRanks(OfflinePlayer[] players) {
