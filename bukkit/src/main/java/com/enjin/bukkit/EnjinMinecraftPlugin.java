@@ -27,6 +27,7 @@ import com.enjin.bukkit.stats.StatsServer;
 import com.enjin.bukkit.sync.BukkitInstructionHandler;
 import com.enjin.bukkit.sync.RPCPacketManager;
 import com.enjin.bukkit.tasks.BanLister;
+import com.enjin.bukkit.tasks.ConfigSaver;
 import com.enjin.bukkit.tasks.TPSMonitor;
 import com.enjin.bukkit.util.Log;
 import com.enjin.bukkit.util.Plugins;
@@ -137,6 +138,24 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public void onDisable() {
         disableTasks();
         disableManagers();
+
+        try {
+            saveConfiguration();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            saveExecutedCommandsConfiguration();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            saveRankUpdatesConfiguration();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void initVersion() {
@@ -343,6 +362,7 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         Enjin.getLogger().debug("Starting tasks.");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 2L);
+        ConfigSaver.schedule(this);
 
         if (Enjin.getConfiguration(EMPConfig.class).isListenForBans()) {
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BanLister(this), 20L * 2L, 20L * 90L);

@@ -75,7 +75,6 @@ public class ConnectionListener implements Listener {
 
     public static void updatePlayerRanks(OfflinePlayer player) {
         updatePlayerRanks1(player);
-        EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
     }
 
     public static void updatePlayerRanks1(OfflinePlayer player) {
@@ -127,7 +126,5 @@ public class ConnectionListener implements Listener {
         for (OfflinePlayer player : players) {
             updatePlayerRanks1(player);
         }
-
-        EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
     }
 }

@@ -86,7 +86,6 @@ public class ConfigCommand {
         }
 
         if (success) {
-            EnjinMinecraftPlugin.saveConfiguration();
             sender.sendMessage(ChatColor.GREEN + key.name() + " was set to " + value);
         }
     }

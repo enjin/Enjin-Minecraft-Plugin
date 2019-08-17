@@ -262,7 +262,6 @@ public class RPCPacketManager implements Runnable {
             groups.remove(entry.getKey());
         }
 
-        EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
         return update;
     }
 

@@ -176,10 +176,6 @@ public class CoreCommands {
     public static void debug(CommandSender sender, String[] args) {
         EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
         config.setDebug(!config.isDebug());
-        EnjinMinecraftPlugin.saveConfiguration();
-
-        Enjin.getLogger().setDebug(config.isDebug());
-
         sender.sendMessage(ChatColor.GREEN + "Debugging has been set to " + config.isDebug());
     }
 
@@ -432,7 +428,6 @@ public class CoreCommands {
                 if (data.getResult() != null && data.getResult().isAuthed()) {
                     sender.sendMessage(ChatColor.GREEN + "The key has been successfully validated.");
                     Enjin.getConfiguration().setAuthKey(args[0]);
-                    EnjinMinecraftPlugin.saveConfiguration();
                     EnjinMinecraftPlugin.getInstance().setAuthKeyInvalid(false);
                     EnjinMinecraftPlugin.getInstance().init();
                 } else {
