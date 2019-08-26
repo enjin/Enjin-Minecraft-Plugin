@@ -293,7 +293,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
 
             if (!configFile.exists()) {
-                rankUpdatesConfiguration.save(configFile);
+                synchronized (rankUpdatesConfiguration) {
+                    rankUpdatesConfiguration.save(configFile);
+                }
             }
         } catch (Exception e) {
             Enjin.getLogger().warning("Error occurred while initializing rank updates configuration.");
@@ -306,7 +308,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             instance.initConfig();
         }
 
-        Enjin.getConfiguration().save(new File(instance.getDataFolder(), "config.json"));
+        synchronized (Enjin.getConfiguration()) {
+            Enjin.getConfiguration().save(new File(instance.getDataFolder(), "config.json"));
+        }
     }
 
     public static void saveExecutedCommandsConfiguration() {
@@ -314,7 +318,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             instance.initCommandsConfiguration();
         }
 
-        executedCommandsConfiguration.save(new File(instance.getDataFolder(), "commands.json"));
+        synchronized (executedCommandsConfiguration) {
+            executedCommandsConfiguration.save(new File(instance.getDataFolder(), "commands.json"));
+        }
     }
 
     public static void saveRankUpdatesConfiguration() {
@@ -325,7 +331,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
 
         if (rankUpdatesConfiguration != null) {
-            rankUpdatesConfiguration.save(new File(instance.getDataFolder(), "rankUpdates.json"));
+            synchronized (rankUpdatesConfiguration) {
+                rankUpdatesConfiguration.save(new File(instance.getDataFolder(), "rankUpdates.json"));
+            }
         } else {
             Enjin.getLogger().warning("Unable to load rank updates configuration. Please contact Enjin support.");
         }

@@ -14,6 +14,8 @@ public class ExecutedCommandsConfig extends JsonConfig {
     private List<ExecutedCommand> executedCommands = new ArrayList<>();
 
     public List<Map<String, Object>> getExecutedCommandsMapList() {
-        return executedCommands.stream().map(ExecutedCommand::toMap).collect(Collectors.toList());
+        synchronized (this) {
+            return executedCommands.stream().map(ExecutedCommand::toMap).collect(Collectors.toList());
+        }
     }
 }

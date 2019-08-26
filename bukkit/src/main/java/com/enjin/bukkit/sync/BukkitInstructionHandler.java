@@ -2,6 +2,7 @@ package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.config.EMPConfig;
+import com.enjin.bukkit.config.ExecutedCommandsConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.util.PlayerUtil;
@@ -92,7 +93,14 @@ public class BukkitInstructionHandler implements InstructionHandler {
             return;
         }
 
-        for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
+        ExecutedCommandsConfig config = EnjinMinecraftPlugin.getExecutedCommandsConfiguration();
+        List<ExecutedCommand> executedCommands;
+
+        synchronized (config) {
+            executedCommands = new ArrayList<>(config.getExecutedCommands());
+        }
+
+        for (ExecutedCommand c : executedCommands) {
             if (Long.parseLong(c.getId()) == id) {
                 Enjin.getLogger().debug("Enjin has already processed the execution of instruction with id: " + id);
                 return;
@@ -102,10 +110,10 @@ public class BukkitInstructionHandler implements InstructionHandler {
         OfflinePlayer player = null;
         if (Bukkit.getOnlineMode() && uuid.isPresent() && !uuid.get().isEmpty()) {
             String value = uuid.get().replaceAll("-", "");
-            UUID   u     = null;
+            UUID u = null;
             if (value.length() == 32) {
                 BigInteger least = new BigInteger(value.substring(0, 16), 16);
-                BigInteger most  = new BigInteger(value.substring(16, 32), 16);
+                BigInteger most = new BigInteger(value.substring(16, 32), 16);
                 u = new UUID(least.longValue(), most.longValue());
                 Enjin.getLogger().debug("UUID Detected: " + u.toString());
             } else {
@@ -167,10 +175,11 @@ public class BukkitInstructionHandler implements InstructionHandler {
                     if (id > 0) {
                         plugin.getExecutedCommands().add(id);
                         plugin.getPendingCommands().remove(id);
-                        EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()
-                                            .add(new ExecutedCommand(Long.toString(id),
-                                                                     command,
-                                                                     Enjin.getLogger().getLastLine()));
+                        synchronized (config) {
+                            config.getExecutedCommands().add(new ExecutedCommand(Long.toString(id),
+                                    command,
+                                    Enjin.getLogger().getLastLine()));
+                        }
                     }
 
                     EnjinMinecraftPlugin.dispatchConsoleCommand(command);
@@ -188,7 +197,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
                 } else {
                     Bukkit.getScheduler()
-                          .scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
+                            .scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
                 }
             }
         }
@@ -196,8 +205,15 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
     @Override
     public void commandConfirmed(List<Long> executed) {
-        for (ExecutedCommand command : new ArrayList<>(EnjinMinecraftPlugin.getExecutedCommandsConfiguration()
-                                                                           .getExecutedCommands())) {
+        ExecutedCommandsConfig config = EnjinMinecraftPlugin.getExecutedCommandsConfiguration();
+        List<ExecutedCommand> executedCommands;
+
+        synchronized (config) {
+            executedCommands = new ArrayList<>(config.getExecutedCommands());
+        }
+
+        List<ExecutedCommand> toRemove = new ArrayList<>();
+        for (ExecutedCommand command : executedCommands) {
             for (Long id : executed) {
                 if (id == null) {
                     Enjin.getLogger().debug("Null executed command id detected... This should not happen.");
@@ -206,9 +222,13 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
                 if (Long.parseLong(command.getId()) == id) {
                     Enjin.getLogger().debug("Confirming Command ID: " + id);
-                    EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command);
+                    toRemove.add(command);
                 }
             }
+        }
+
+        synchronized (config) {
+            config.getExecutedCommands().removeAll(toRemove);
         }
     }
 

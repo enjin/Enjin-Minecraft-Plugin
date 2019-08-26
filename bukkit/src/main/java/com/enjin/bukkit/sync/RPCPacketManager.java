@@ -246,7 +246,7 @@ public class RPCPacketManager implements Runnable {
             return null;
         }
 
-        Map<String, PlayerGroupInfo> groups = config.getPlayerPerms();
+        Map<String, PlayerGroupInfo> groups = new HashMap<>(config.getPlayerPerms());
         Map<String, PlayerGroupInfo> update = new HashMap<>();
 
         int index = 0;
@@ -258,8 +258,10 @@ public class RPCPacketManager implements Runnable {
             update.put(player, groups.get(player));
         }
 
-        for (Map.Entry<String, PlayerGroupInfo> entry : update.entrySet()) {
-            groups.remove(entry.getKey());
+        synchronized (config) {
+            for (Map.Entry<String, PlayerGroupInfo> entry : update.entrySet()) {
+                groups.remove(entry.getKey());
+            }
         }
 
         return update;

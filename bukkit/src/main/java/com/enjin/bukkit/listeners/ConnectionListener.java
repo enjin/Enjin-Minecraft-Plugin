@@ -1,6 +1,7 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.util.PermissionsUtil;
 import com.enjin.core.Enjin;
@@ -121,7 +122,10 @@ public class ConnectionListener implements Listener {
 
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
             info.getWorlds().putAll(module.getPlayerGroups(player));
-            EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms().put(player.getName(), info);
+            RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
+            synchronized (config) {
+                config.getPlayerPerms().put(player.getName(), info);
+            }
         });
     }
 
