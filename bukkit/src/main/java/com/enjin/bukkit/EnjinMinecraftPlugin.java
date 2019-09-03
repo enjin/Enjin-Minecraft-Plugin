@@ -24,6 +24,7 @@ import com.enjin.bukkit.modules.impl.SignStatsModule;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.StatsServer;
+import com.enjin.bukkit.storage.Database;
 import com.enjin.bukkit.sync.BukkitInstructionHandler;
 import com.enjin.bukkit.sync.RPCPacketManager;
 import com.enjin.bukkit.tasks.BanLister;
@@ -54,6 +55,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +129,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
     private long serverId = -1;
 
+    private Database database;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -143,6 +147,12 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             saveConfiguration();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+
+        try {
+            database.backup();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         try {
@@ -166,11 +176,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public void init() {
 
-        Bukkit.getLogger().info(ChatColor.DARK_PURPLE + "   ___    _  _        _    ___    _  _ ");
-        Bukkit.getLogger().info(ChatColor.DARK_PURPLE + "  | __|  | \\| |    _ | |  |_ _|  | \\| |");
-        Bukkit.getLogger().info(ChatColor.DARK_PURPLE + "  | _|   | .` |   | || |   | |   | .` |");
-        Bukkit.getLogger().info(ChatColor.DARK_PURPLE + "  |___|  |_|\\_|    \\__/   |___|  |_|\\_|");
-        Bukkit.getLogger().info(ChatColor.DARK_GREEN + "  Enjin Minecraft Plugin " + ChatColor.GOLD + getDescription().getVersion());
+        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_PURPLE + "   ___    _  _        _    ___    _  _ ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_PURPLE + "  | __|  | \\| |    _ | |  |_ _|  | \\| |");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_PURPLE + "  | _|   | .` |   | || |   | |   | .` |");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_PURPLE + "  |___|  |_|\\_|    \\__/   |___|  |_|\\_|");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "  Enjin Minecraft Plugin " + ChatColor.GOLD + getDescription().getVersion());
 
         if (firstRun) {
             Log log = new Log(getDataFolder());
@@ -249,6 +259,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public void initConfigs() {
         initConfig();
+
+        try {
+            database = new Database(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         initCommandsConfiguration();
         initRankUpdatesConfiguration();
     }
@@ -458,6 +475,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public boolean isUpdateFromCurseForge() {
         return getDescription().getVersion().endsWith("-bukkit");
+    }
+
+    public Database db() {
+        return database;
     }
 
     public static ExecutedCommandsConfig getExecutedCommandsConfiguration() {

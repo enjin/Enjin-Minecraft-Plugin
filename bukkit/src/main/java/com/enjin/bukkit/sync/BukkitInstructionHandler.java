@@ -101,7 +101,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
         }
 
         for (ExecutedCommand c : executedCommands) {
-            if (Long.parseLong(c.getId()) == id) {
+            if (c.getId() == id) {
                 Enjin.getLogger().debug("Enjin has already processed the execution of instruction with id: " + id);
                 return;
             }
@@ -176,7 +176,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
                         plugin.getExecutedCommands().add(id);
                         plugin.getPendingCommands().remove(id);
                         synchronized (config) {
-                            config.getExecutedCommands().add(new ExecutedCommand(Long.toString(id),
+                            config.getExecutedCommands().add(new ExecutedCommand(id,
                                     command,
                                     Enjin.getLogger().getLastLine()));
                         }
@@ -220,7 +220,7 @@ public class BukkitInstructionHandler implements InstructionHandler {
                     continue;
                 }
 
-                if (Long.parseLong(command.getId()) == id) {
+                if (command.getId() == id) {
                     Enjin.getLogger().debug("Confirming Command ID: " + id);
                     toRemove.add(command);
                 }

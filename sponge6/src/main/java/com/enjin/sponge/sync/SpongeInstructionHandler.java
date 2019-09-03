@@ -65,7 +65,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
         }
 
         for (ExecutedCommand c : EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands()) {
-            if (Long.parseLong(c.getId()) == id) {
+            if (c.getId() == id) {
                 Enjin.getLogger().debug("Enjin has already processed the execution of instruction with id: " + id);
                 return;
             }
@@ -142,7 +142,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
                         plugin.getPendingCommands().remove(id);
                         EnjinMinecraftPlugin.getExecutedCommandsConfiguration()
                                             .getExecutedCommands()
-                                            .add(new ExecutedCommand(Long.toString(id),
+                                            .add(new ExecutedCommand(id,
                                                                      command,
                                                                      Enjin.getLogger().getLastLine()));
                         EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
@@ -177,7 +177,7 @@ public class SpongeInstructionHandler implements InstructionHandler {
                                                                            .getExecutedCommands())) {
             for (long id : executed) {
                 Enjin.getLogger().debug("Confirming Command ID: " + id);
-                if (Long.parseLong(command.getId()) == id) {
+                if (command.getId() == id) {
                     EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommands().remove(command);
                 }
             }

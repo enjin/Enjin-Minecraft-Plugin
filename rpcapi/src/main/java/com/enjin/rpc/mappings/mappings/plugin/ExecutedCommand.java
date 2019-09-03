@@ -9,6 +9,8 @@ import lombok.ToString;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ import java.util.Map;
 public class ExecutedCommand {
     @Getter
     @SerializedName(value = "command_id")
-    private           String id;
+    private           Long id;
     @Getter
     private           String hash;
     @Getter
@@ -26,7 +28,18 @@ public class ExecutedCommand {
     @Getter
     private transient String command;
 
-    public ExecutedCommand(String id, String command, String response) {
+    public ExecutedCommand(ResultSet rs) {
+        try {
+            id = rs.getLong(0);
+            hash = rs.getString(1);
+            response = rs.getString(2);
+            command = rs.getString(3);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public ExecutedCommand(Long id, String command, String response) {
         this.id = id;
         this.command = command;
         this.response = response;
