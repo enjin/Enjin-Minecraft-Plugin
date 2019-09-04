@@ -1,1 +1,1 @@
-SELECT * FROM ExecutedCommands;
+SELECT * FROM Commands;

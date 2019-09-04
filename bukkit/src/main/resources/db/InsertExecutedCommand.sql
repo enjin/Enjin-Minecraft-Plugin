@@ -1,2 +1,9 @@
-INSERT OR IGNORE INTO ExecutedCommands (id, hash, response, command)
-VALUES (?, ?, ?, ?);
+INSERT OR IGNORE INTO Commands (id,
+                                hash,
+                                response,
+                                command,
+                                delay,
+                                requireOnline,
+                                playerName,
+                                playerUuid)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);

@@ -1,2 +1,2 @@
-DELETE FROM ExecutedCommands
+DELETE FROM Commands
 WHERE id = ?;

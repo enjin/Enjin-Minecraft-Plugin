@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Database {
@@ -64,9 +65,37 @@ public class Database {
         conn.commit();
     }
 
-    public void insertExecutedCommand(ExecutedCommand command) throws SQLException {
+    @SuppressWarnings("unchecked") // Suppressing unchecked because the optional values are empty
+    public void insertCommand(Long id,
+                              String command) throws SQLException {
+        Optional empty = Optional.empty();
+        insertCommand(id, command, empty, empty, empty, empty);
+    }
+
+    public void insertCommand(Long id,
+                              String command,
+                              Optional<Long> delay,
+                              Optional<Boolean> requireOnline,
+                              Optional<String> playerName,
+                              Optional<String> playerUuid) throws SQLException {
         insertExecutedCommand.clearParameters();
-        insertExecutedCommand.setLong(1, command.getId());
+        insertExecutedCommand.setLong(1, id);
+        insertExecutedCommand.setString(2, command);
+
+        if (delay.isPresent())
+            insertExecutedCommand.setLong(3, delay.get());
+        else
+            insertExecutedCommand.setNull(3, Types.INTEGER);
+
+        if (requireOnline.isPresent())
+            insertExecutedCommand.setBoolean(4, requireOnline.get());
+        else
+            insertExecutedCommand.setNull(4, Types.INTEGER);
+
+        insertExecutedCommand.setString(5, playerName.orElse(null));
+        insertExecutedCommand.setString(6,playerUuid.orElse(null));
+        insertExecutedCommand.setString(7, null);
+        insertExecutedCommand.setString(8, null);
         insertExecutedCommand.executeUpdate();
     }
 

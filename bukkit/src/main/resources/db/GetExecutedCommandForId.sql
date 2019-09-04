@@ -1,2 +1,2 @@
-SELECT * FROM ExecutedCommands
+SELECT * FROM Commands
 WHERE id = ?;
