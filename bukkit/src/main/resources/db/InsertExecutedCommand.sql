@@ -5,5 +5,6 @@ INSERT OR IGNORE INTO Commands (id,
                                 delay,
                                 requireOnline,
                                 playerName,
-                                playerUuid)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+                                playerUuid,
+                                createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);

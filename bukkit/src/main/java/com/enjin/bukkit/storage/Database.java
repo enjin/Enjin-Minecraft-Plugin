@@ -6,6 +6,8 @@ import org.bukkit.plugin.Plugin;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.sql.*;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -96,6 +98,7 @@ public class Database {
         insertExecutedCommand.setString(6,playerUuid.orElse(null));
         insertExecutedCommand.setString(7, null);
         insertExecutedCommand.setString(8, null);
+        insertExecutedCommand.setLong(9, OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond());
         insertExecutedCommand.executeUpdate();
     }
 

@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS Commands (
     "playerName" TEXT,
     "playerUuid" TEXT,
     "hash" TEXT,
-    "response" TEXT
+    "response" TEXT,
+    "createdAt" INTEGER
 );
