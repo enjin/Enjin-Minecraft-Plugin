@@ -20,10 +20,10 @@ public class Database {
     public static final String RESOURCE_FORMAT = "db/%s.sql";
 
     public static final String TEMPLATE_SETUP = "Setup";
-    public static final String TEMPLATE_INSERT_EXECUTED_COMMAND = "InsertExecutedCommand";
-    public static final String TEMPLATE_GET_EXECUTED_COMMANDS = "GetExecutedCommands";
-    public static final String TEMPLATE_GET_EXECUTED_COMMAND_FOR_ID = "GetExecutedCommandForId";
-    public static final String TEMPLATE_DELETE_EXECUTED_COMMAND = "DeleteExecutedCommand";
+    public static final String TEMPLATE_INSERT_COMMAND = "InsertCommand";
+    public static final String TEMPLATE_GET_ALL_COMMANDS = "GetAllCommands";
+    public static final String TEMPLATE_GET_COMMAND_FOR_ID = "GetCommandForId";
+    public static final String TEMPLATE_DELETE_COMMAND = "DeleteCommand";
     public static final String TEMPLATE_BACKUP = "backup to %s";
     public static final String TEMPLATE_RESTORE = "restore from %s";
 
@@ -31,10 +31,10 @@ public class Database {
     private Connection conn;
 
     private PreparedStatement setup;
-    private PreparedStatement insertExecutedCommand;
-    private PreparedStatement getExecutedCommands;
-    private PreparedStatement getExecutedCommandForId;
-    private PreparedStatement deleteExecutedCommand;
+    private PreparedStatement insertCommand;
+    private PreparedStatement getCommands;
+    private PreparedStatement getCommandForId;
+    private PreparedStatement deleteCommand;
 
     public Database(Plugin plugin) throws SQLException, IOException {
         this.plugin = plugin;
@@ -43,10 +43,10 @@ public class Database {
 
         configure();
 
-        this.insertExecutedCommand = createPreparedStatement(TEMPLATE_INSERT_EXECUTED_COMMAND);
-        this.getExecutedCommands = createPreparedStatement(TEMPLATE_GET_EXECUTED_COMMANDS);
-        this.getExecutedCommandForId = createPreparedStatement(TEMPLATE_GET_EXECUTED_COMMAND_FOR_ID);
-        this.deleteExecutedCommand = createPreparedStatement(TEMPLATE_DELETE_EXECUTED_COMMAND);
+        this.insertCommand = createPreparedStatement(TEMPLATE_INSERT_COMMAND);
+        this.getCommands = createPreparedStatement(TEMPLATE_GET_ALL_COMMANDS);
+        this.getCommandForId = createPreparedStatement(TEMPLATE_GET_COMMAND_FOR_ID);
+        this.deleteCommand = createPreparedStatement(TEMPLATE_DELETE_COMMAND);
     }
 
     public void backup() throws SQLException {
@@ -80,32 +80,32 @@ public class Database {
                               Optional<Boolean> requireOnline,
                               Optional<String> playerName,
                               Optional<String> playerUuid) throws SQLException {
-        insertExecutedCommand.clearParameters();
-        insertExecutedCommand.setLong(1, id);
-        insertExecutedCommand.setString(2, command);
+        insertCommand.clearParameters();
+        insertCommand.setLong(1, id);
+        insertCommand.setString(2, command);
 
         if (delay.isPresent())
-            insertExecutedCommand.setLong(3, delay.get());
+            insertCommand.setLong(3, delay.get());
         else
-            insertExecutedCommand.setNull(3, Types.INTEGER);
+            insertCommand.setNull(3, Types.INTEGER);
 
         if (requireOnline.isPresent())
-            insertExecutedCommand.setBoolean(4, requireOnline.get());
+            insertCommand.setBoolean(4, requireOnline.get());
         else
-            insertExecutedCommand.setNull(4, Types.INTEGER);
+            insertCommand.setNull(4, Types.INTEGER);
 
-        insertExecutedCommand.setString(5, playerName.orElse(null));
-        insertExecutedCommand.setString(6,playerUuid.orElse(null));
-        insertExecutedCommand.setString(7, null);
-        insertExecutedCommand.setString(8, null);
-        insertExecutedCommand.setLong(9, OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond());
-        insertExecutedCommand.executeUpdate();
+        insertCommand.setString(5, playerName.orElse(null));
+        insertCommand.setString(6,playerUuid.orElse(null));
+        insertCommand.setString(7, null);
+        insertCommand.setString(8, null);
+        insertCommand.setLong(9, OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond());
+        insertCommand.executeUpdate();
     }
 
-    public List<ExecutedCommand> getExecutedCommands() throws SQLException {
+    public List<ExecutedCommand> getCommands() throws SQLException {
         List<ExecutedCommand> result = new ArrayList<>();
 
-        try (ResultSet rs = getExecutedCommands.executeQuery()) {
+        try (ResultSet rs = getCommands.executeQuery()) {
             while (rs.next()) {
                 result.add(new ExecutedCommand(rs));
             }
@@ -114,10 +114,10 @@ public class Database {
         return result;
     }
 
-    public ExecutedCommand getExecutedCommand(long id) throws SQLException {
+    public ExecutedCommand getCommand(long id) throws SQLException {
         ExecutedCommand result = null;
 
-        try (ResultSet rs = getExecutedCommandForId.executeQuery()) {
+        try (ResultSet rs = getCommandForId.executeQuery()) {
             if (rs.next()) {
                 result = new ExecutedCommand(rs);
             }
@@ -126,10 +126,10 @@ public class Database {
         return result;
     }
 
-    public void deleteExecutedCommand(long id) throws SQLException {
-        deleteExecutedCommand.clearParameters();
-        deleteExecutedCommand.setLong(1, id);
-        deleteExecutedCommand.executeUpdate();
+    public void deleteCommand(long id) throws SQLException {
+        deleteCommand.clearParameters();
+        deleteCommand.setLong(1, id);
+        deleteCommand.executeUpdate();
     }
 
     public File getDatabasePath() {

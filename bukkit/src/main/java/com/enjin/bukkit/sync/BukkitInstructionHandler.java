@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -95,6 +96,15 @@ public class BukkitInstructionHandler implements InstructionHandler {
 
         ExecutedCommandsConfig config = EnjinMinecraftPlugin.getExecutedCommandsConfiguration();
         List<ExecutedCommand> executedCommands;
+        Optional<ExecutedCommand> executedCommand = Optional.absent();
+
+        try {
+            executedCommand = Optional.fromNullable(EnjinMinecraftPlugin.getInstance().db().getCommand(id));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // TODO: Need a manager and/or task queue to handle delayed commands
 
         synchronized (config) {
             executedCommands = new ArrayList<>(config.getExecutedCommands());
