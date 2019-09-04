@@ -1,0 +1,2 @@
+SELECT * FROM Commands
+WHERE hash IS NULL;
