@@ -7,6 +7,7 @@ import com.enjin.bukkit.events.PostSyncEvent;
 import com.enjin.bukkit.events.PreSyncEvent;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.modules.impl.VotifierModule;
+import com.enjin.bukkit.storage.StoredCommand;
 import com.enjin.bukkit.sync.data.AddPlayerGroupInstruction;
 import com.enjin.bukkit.sync.data.AddWhitelistPlayerInstruction;
 import com.enjin.bukkit.sync.data.BanPlayersInstruction;
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
 
@@ -78,13 +80,14 @@ public class RPCPacketManager implements Runnable {
             }
         }
 
-        String stats = null;
-        //        if (Enjin.getConfiguration(EMPConfig.class).isCollectPlayerStats() && System.currentTimeMillis() > nextStatUpdate) {
-        //            Enjin.getLogger().debug("Collecting player stats...");
-        //            stats = getStats();
-        //            this.nextStatUpdate = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
-        //            Enjin.getLogger().debug("Player stats collected!");
-        //        }
+        List<StoredCommand> executedCommands = new ArrayList<>();
+
+        try {
+            plugin.db().commit();
+            executedCommands.addAll(plugin.db().getExecutedCommands());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         Enjin.getLogger().debug("Constructing payload...");
         HashMap<String, Object> status = new HashMap<>();
@@ -100,11 +103,12 @@ public class RPCPacketManager implements Runnable {
         status.put("playerlist", getOnlinePlayers());
         status.put("playergroups", getPlayerGroups());
         status.put("tps", TPSMonitor.getInstance().getLastTPSMeasurement());
-        status.put("executed_commands", EnjinMinecraftPlugin.getExecutedCommandsConfiguration().getExecutedCommandsMapList());
+        status.put("executed_commands", executedCommands.stream()
+                .map(StoredCommand::toMap)
+                .collect(Collectors.toList()));
         if (Enjin.getConfiguration(EMPConfig.class).getEnabledComponents().isVoteListener()) {
             status.put("votifier", getVotes());
         }
-        status.put("stats", stats);
 
         Bukkit.getPluginManager().callEvent(new PreSyncEvent(status));
 
@@ -172,6 +176,13 @@ public class RPCPacketManager implements Runnable {
                             break;
                         default:
                     }
+                }
+
+                try {
+                    plugin.db().commit();
+                    plugin.db().backup();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             } else {
                 Enjin.getLogger()

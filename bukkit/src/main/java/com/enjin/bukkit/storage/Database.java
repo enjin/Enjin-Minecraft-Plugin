@@ -15,19 +15,20 @@ import java.util.stream.Collectors;
 
 public class Database {
 
-    public static final String DB_NAME = "enjin.db";
-    public static final String MEMORY_URL = "jdbc:sqlite::memory:";
-    public static final String RESOURCE_FORMAT = "db/%s.sql";
+    private static final String DB_NAME = "enjin.db";
+    private static final String MEMORY_URL = "jdbc:sqlite::memory:";
+    private static final String RESOURCE_FORMAT = "db/%s.sql";
 
-    public static final String TEMPLATE_SETUP = "Setup";
-    public static final String TEMPLATE_INSERT_COMMAND = "InsertCommand";
-    public static final String TEMPLATE_GET_ALL_COMMANDS = "GetAllCommands";
-    public static final String TEMPLATE_GET_EXECUTED_COMMANDS = "GetExecutedCommands";
-    public static final String TEMPLATE_GET_PENDING_COMMANDS = "GetPendingCommands";
-    public static final String TEMPLATE_GET_COMMAND_FOR_ID = "GetCommandForId";
-    public static final String TEMPLATE_DELETE_COMMAND = "DeleteCommand";
-    public static final String TEMPLATE_BACKUP = "backup to %s";
-    public static final String TEMPLATE_RESTORE = "restore from %s";
+    private static final String TEMPLATE_SETUP = "Setup";
+    private static final String TEMPLATE_INSERT_COMMAND = "InsertCommand";
+    private static final String TEMPLATE_GET_ALL_COMMANDS = "GetAllCommands";
+    private static final String TEMPLATE_GET_EXECUTED_COMMANDS = "GetExecutedCommands";
+    private static final String TEMPLATE_GET_PENDING_COMMANDS = "GetPendingCommands";
+    private static final String TEMPLATE_GET_COMMAND_FOR_ID = "GetCommandForId";
+    public static final String TEMPLATE_SET_COMMAND_AS_EXECUTED = "SetCommandAsExecuted";
+    private static final String TEMPLATE_DELETE_COMMAND = "DeleteCommand";
+    private static final String TEMPLATE_BACKUP = "backup to %s";
+    private static final String TEMPLATE_RESTORE = "restore from %s";
 
     private Plugin plugin;
     private Connection conn;
@@ -38,6 +39,7 @@ public class Database {
     private PreparedStatement getExecutedCommands;
     private PreparedStatement getPendingCommands;
     private PreparedStatement getCommandForId;
+    private PreparedStatement setCommandAsExecuted;
     private PreparedStatement deleteCommand;
 
     public Database(Plugin plugin) throws SQLException, IOException {
@@ -52,6 +54,7 @@ public class Database {
         this.getExecutedCommands = createPreparedStatement(TEMPLATE_GET_EXECUTED_COMMANDS);
         this.getPendingCommands = createPreparedStatement(TEMPLATE_GET_PENDING_COMMANDS);
         this.getCommandForId = createPreparedStatement(TEMPLATE_GET_COMMAND_FOR_ID);
+        this.setCommandAsExecuted = createPreparedStatement(TEMPLATE_SET_COMMAND_AS_EXECUTED);
         this.deleteCommand = createPreparedStatement(TEMPLATE_DELETE_COMMAND);
     }
 
@@ -73,38 +76,29 @@ public class Database {
         conn.commit();
     }
 
-    @SuppressWarnings("unchecked") // Suppressing unchecked because the optional values are empty
-    public void insertCommand(Long id,
-                              String command) throws SQLException {
-        Optional empty = Optional.empty();
-        insertCommand(id, command, empty, empty, empty, empty);
-    }
-
-    public void insertCommand(Long id,
-                              String command,
-                              Optional<Long> delay,
-                              Optional<Boolean> requireOnline,
-                              Optional<String> playerName,
-                              Optional<String> playerUuid) throws SQLException {
+    public void insertCommand(StoredCommand command) throws SQLException {
         insertCommand.clearParameters();
-        insertCommand.setLong(1, id);
-        insertCommand.setString(2, command);
+        insertCommand.setLong(1, command.getId());
+        insertCommand.setString(2, command.getCommand());
 
-        if (delay.isPresent())
-            insertCommand.setLong(3, delay.get());
+        if (command.getDelay().isPresent())
+            insertCommand.setLong(3, command.getDelay().get());
         else
             insertCommand.setNull(3, Types.INTEGER);
 
-        if (requireOnline.isPresent())
-            insertCommand.setBoolean(4, requireOnline.get());
+        if (command.getRequireOnline().isPresent())
+            insertCommand.setBoolean(4, command.getRequireOnline().get());
         else
             insertCommand.setNull(4, Types.INTEGER);
 
-        insertCommand.setString(5, playerName.orElse(null));
-        insertCommand.setString(6,playerUuid.orElse(null));
+
+        insertCommand.setString(5, command.getPlayerName().orNull());
+        insertCommand.setString(6, command.getPlayerUuid().isPresent()
+                ? command.getPlayerUuid().get().toString()
+                : null);
         insertCommand.setString(7, null);
         insertCommand.setString(8, null);
-        insertCommand.setLong(9, OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond());
+        insertCommand.setLong(9, command.getCreatedAt());
         insertCommand.executeUpdate();
     }
 
@@ -147,6 +141,9 @@ public class Database {
     public StoredCommand getCommand(long id) throws SQLException {
         StoredCommand result = null;
 
+        getCommandForId.clearParameters();
+        getCommandForId.setLong(1, id);
+
         try (ResultSet rs = getCommandForId.executeQuery()) {
             if (rs.next()) {
                 result = new StoredCommand(rs);
@@ -154,6 +151,14 @@ public class Database {
         }
 
         return result;
+    }
+
+    public void setCommandAsExecuted(long id, String hash, String response) throws SQLException {
+        setCommandAsExecuted.clearParameters();
+        setCommandAsExecuted.setString(1, hash);
+        setCommandAsExecuted.setString(2, response);
+        setCommandAsExecuted.setLong(3, id);
+        setCommandAsExecuted.executeUpdate();
     }
 
     public void deleteCommand(long id) throws SQLException {

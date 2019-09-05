@@ -5,6 +5,7 @@ import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.config.ExecutedCommandsConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.modules.impl.VaultModule;
+import com.enjin.bukkit.storage.StoredCommand;
 import com.enjin.bukkit.util.PlayerUtil;
 import com.enjin.core.Enjin;
 import com.enjin.core.InstructionHandler;
@@ -89,156 +90,81 @@ public class BukkitInstructionHandler implements InstructionHandler {
                         final Optional<Boolean> requireOnline,
                         final Optional<String> name,
                         final Optional<String> uuid) {
-        if (id == null || id <= -1) {
-            Enjin.getLogger().debug("Execute instruction has invalid id: " + id);
+        if (id == null || id < 0)
             return;
-        }
 
-        ExecutedCommandsConfig config = EnjinMinecraftPlugin.getExecutedCommandsConfiguration();
-        List<ExecutedCommand> executedCommands;
-        Optional<ExecutedCommand> executedCommand = Optional.absent();
+        Optional<StoredCommand> commandRecord = Optional.absent();
 
         try {
-            executedCommand = Optional.fromNullable(EnjinMinecraftPlugin.getInstance().db().getCommand(id));
+            commandRecord = Optional.fromNullable(EnjinMinecraftPlugin.getInstance().db().getCommand(id));
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        // TODO: Need a manager and/or task queue to handle delayed commands
-
-        synchronized (config) {
-            executedCommands = new ArrayList<>(config.getExecutedCommands());
-        }
-
-        for (ExecutedCommand c : executedCommands) {
-            if (c.getId() == id) {
-                Enjin.getLogger().debug("Enjin has already processed the execution of instruction with id: " + id);
-                return;
-            }
-        }
-
-        OfflinePlayer player = null;
-        if (Bukkit.getOnlineMode() && uuid.isPresent() && !uuid.get().isEmpty()) {
-            String value = uuid.get().replaceAll("-", "");
-            UUID u = null;
-            if (value.length() == 32) {
-                BigInteger least = new BigInteger(value.substring(0, 16), 16);
-                BigInteger most = new BigInteger(value.substring(16, 32), 16);
-                u = new UUID(least.longValue(), most.longValue());
-                Enjin.getLogger().debug("UUID Detected: " + u.toString());
-            } else {
-                Enjin.getLogger().debug("Invalid UUID: " + value);
-            }
-
-            if (u != null) {
-                player = Bukkit.getPlayer(u);
-
-                if (player == null) {
-                    player = Bukkit.getOfflinePlayer(u);
-                    if (player != null && !player.hasPlayedBefore()) {
-                        player = null;
-                    }
-                }
-            }
-        }
-
-        if (player == null && name.isPresent() && !name.get().isEmpty()) {
-            String n = name.get();
-            if (n.length() <= 16) {
-                player = Bukkit.getPlayer(n);
-                Enjin.getLogger().debug("Name Detected: " + n);
-            } else {
-                Enjin.getLogger().debug("Invalid Name: " + n);
-            }
-
-            if (player == null) {
-                player = PlayerUtil.getOfflinePlayer(n, true);
-                if (player != null && !player.hasPlayedBefore()) {
-                    player = null;
-                }
-            }
-        }
-
-        if (requireOnline.isPresent() && requireOnline.get().booleanValue()) {
-            if (player == null || !player.isOnline()) {
-                Enjin.getLogger().debug("The player is not online, skipping execute instruction...");
-                return;
-            }
-        }
-
-        if (EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
+        if (commandRecord.isPresent())
             return;
-        }
 
-        final OfflinePlayer pl = player;
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (requireOnline.isPresent() && requireOnline.get()) {
-                    if (pl == null || !pl.hasPlayedBefore() || !pl.isOnline()) {
-                        return;
-                    }
-                }
-
-                EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
-                if (!plugin.getExecutedCommands().contains(id)) {
-                    if (id > 0) {
-                        plugin.getExecutedCommands().add(id);
-                        plugin.getPendingCommands().remove(id);
-                        synchronized (config) {
-                            config.getExecutedCommands().add(new ExecutedCommand(id,
-                                    command,
-                                    Enjin.getLogger().getLastLine()));
-                        }
-                    }
-
-                    EnjinMinecraftPlugin.dispatchConsoleCommand(command);
-                }
+        Optional<? extends OfflinePlayer> player = Optional.absent();
+        Optional<UUID> playerUuid = Optional.absent();
+        if (Bukkit.getOnlineMode() && uuid.isPresent()) {
+            String val = uuid.get().replaceAll("-", "");
+            if (val.length() == 32) {
+                BigInteger least = new BigInteger(val.substring(0, 16), 16);
+                BigInteger most = new BigInteger(val.substring(16, 32), 16);
+                playerUuid = Optional.of(new UUID(least.longValue(), most.longValue()));
             }
-        };
 
-        if (EnjinMinecraftPlugin.getInstance().isEnabled()) {
-            if (!EnjinMinecraftPlugin.getInstance().getPendingCommands().contains(id)) {
-                if (id > 0) {
-                    EnjinMinecraftPlugin.getInstance().getPendingCommands().add(id);
-                }
-
-                if (!delay.isPresent() || delay.get() <= 0) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable);
-                } else {
-                    Bukkit.getScheduler()
-                            .scheduleSyncDelayedTask(EnjinMinecraftPlugin.getInstance(), runnable, delay.get() * 20);
-                }
+            if (playerUuid.isPresent()) {
+                player = PlayerUtil.getPlayer(playerUuid.get());
+                if (!player.isPresent())
+                    player = PlayerUtil.getOfflinePlayer(playerUuid.get(), true);
             }
         }
+
+        if (!player.isPresent() && name.isPresent()) {
+            String val = name.get();
+
+            if (val.length() <= 16) {
+                player = PlayerUtil.getPlayer(val);
+
+                if (!player.isPresent())
+                    PlayerUtil.getOfflinePlayer(val,true);
+            }
+        }
+
+        if (requireOnline.or(false)) {
+            if (!player.isPresent())
+                return;
+
+            if (!player.get().isOnline())
+                return;
+        }
+
+        StoredCommand toExecute = new StoredCommand(id, command, delay, requireOnline, name, playerUuid);
+
+        try {
+            EnjinMinecraftPlugin.getInstance().db().insertCommand(toExecute);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        EnjinMinecraftPlugin.getInstance().getCommandExecutor().register(toExecute);
     }
 
     @Override
     public void commandConfirmed(List<Long> executed) {
-        ExecutedCommandsConfig config = EnjinMinecraftPlugin.getExecutedCommandsConfiguration();
-        List<ExecutedCommand> executedCommands;
-
-        synchronized (config) {
-            executedCommands = new ArrayList<>(config.getExecutedCommands());
-        }
-
-        List<ExecutedCommand> toRemove = new ArrayList<>();
-        for (ExecutedCommand command : executedCommands) {
-            for (Long id : executed) {
-                if (id == null) {
-                    Enjin.getLogger().debug("Null executed command id detected... This should not happen.");
-                    continue;
-                }
-
-                if (command.getId() == id) {
-                    Enjin.getLogger().debug("Confirming Command ID: " + id);
-                    toRemove.add(command);
-                }
+        for (Long id : executed) {
+            try {
+                EnjinMinecraftPlugin.getInstance().db().deleteCommand(id);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 
-        synchronized (config) {
-            config.getExecutedCommands().removeAll(toRemove);
+        try {
+            EnjinMinecraftPlugin.getInstance().db().commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

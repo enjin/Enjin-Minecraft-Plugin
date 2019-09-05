@@ -1,7 +1,8 @@
 package com.enjin.bukkit.storage;
 
+import com.enjin.bukkit.util.TimeUtil;
 import com.enjin.core.Enjin;
-import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
+import com.google.common.base.Optional;
 import lombok.Data;
 
 import java.math.BigInteger;
@@ -10,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @Data
@@ -32,55 +32,83 @@ public class StoredCommand {
 
         delay = Optional.of(rs.getLong("delay"));
         if (rs.wasNull())
-            delay = Optional.empty();
+            delay = Optional.absent();
 
         requireOnline = Optional.of(rs.getBoolean("requireOnline"));
         if (rs.wasNull())
-            requireOnline = Optional.empty();
+            requireOnline = Optional.absent();
 
-        playerName = Optional.ofNullable(rs.getString("playerName"));
+        playerName = Optional.fromNullable(rs.getString("playerName"));
 
         String uuid = rs.getString("playerUuid");
         if (uuid == null || uuid.isEmpty())
-            playerUuid = Optional.empty();
+            playerUuid = Optional.absent();
         else
             playerUuid = Optional.of(UUID.fromString(uuid));
 
-        hash = Optional.ofNullable(rs.getString("hash"));
-        response = Optional.ofNullable(rs.getString("response"));
+        hash = Optional.fromNullable(rs.getString("hash"));
+        response = Optional.fromNullable(rs.getString("response"));
         createdAt = rs.getLong("createdAt");
+    }
+
+    public StoredCommand(Long id,
+                         String command,
+                         Optional<Long> delay,
+                         Optional<Boolean> requireOnline,
+                         Optional<String> playerName,
+                         Optional<UUID> playerUuid) {
+        this(id, command, delay, requireOnline, playerName, playerUuid,
+                Optional.absent(), Optional.absent());
+    }
+
+    public StoredCommand(Long id,
+                         String command,
+                         Optional<Long> delay,
+                         Optional<Boolean> requireOnline,
+                         Optional<String> playerName,
+                         Optional<UUID> playerUuid,
+                         Optional<String> hash,
+                         Optional<String> response) {
+        this.id = id;
+        this.command = command;
+        this.delay = delay;
+        this.requireOnline = requireOnline;
+        this.playerName = playerName;
+        this.playerUuid = playerUuid;
+        this.hash = hash;
+        this.response = response;
+        this.createdAt = TimeUtil.utcNowSeconds();
     }
 
     public boolean hasExecuted() {
         return hash.isPresent();
     }
 
-    public void generateHash() {
-        if (hash.isPresent())
-            return;
-
+    public String generateHash() {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(command.getBytes("UTF-8"));
+            MessageDigest md     = MessageDigest.getInstance("MD5");
+            byte[]        digest = md.digest(command.getBytes("UTF-8"));
 
             BigInteger bigInt = new BigInteger(1, digest);
-            String hash = bigInt.toString(16);
+            String     hash   = bigInt.toString(16);
 
             while (hash.length() < 32) {
                 hash = "0" + hash;
             }
 
-            this.hash = Optional.of(hash);
-        } catch (Exception e) {
-            Enjin.getLogger().log(e);
+            return hash;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+
+        return null;
     }
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("command_id", id);
-        map.put("hash", hash.orElse(null));
-        map.put("response", response.orElse(null));
+        map.put("hash", hash.orNull());
+        map.put("response", response.orNull());
         map.put("command", command);
         return map;
     }

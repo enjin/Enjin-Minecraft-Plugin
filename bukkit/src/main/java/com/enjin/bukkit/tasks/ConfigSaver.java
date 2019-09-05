@@ -10,7 +10,6 @@ public class ConfigSaver extends BukkitRunnable {
     @Override
     public void run() {
         EnjinMinecraftPlugin.saveConfiguration();
-        EnjinMinecraftPlugin.saveExecutedCommandsConfiguration();
         EnjinMinecraftPlugin.saveRankUpdatesConfiguration();
     }
 

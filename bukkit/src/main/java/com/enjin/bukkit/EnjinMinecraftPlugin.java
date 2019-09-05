@@ -26,6 +26,7 @@ import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.StatsServer;
 import com.enjin.bukkit.storage.Database;
 import com.enjin.bukkit.sync.BukkitInstructionHandler;
+import com.enjin.bukkit.sync.CommandExecutor;
 import com.enjin.bukkit.sync.RPCPacketManager;
 import com.enjin.bukkit.tasks.BanLister;
 import com.enjin.bukkit.tasks.ConfigSaver;
@@ -122,14 +123,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private ModuleManager moduleManager = null;
 
     @Getter
-    private List<Long> pendingCommands  = new ArrayList<>();
-    @Getter
-    private List<Long> executedCommands = new CopyOnWriteArrayList<>();
-
-    @Getter
     private long serverId = -1;
 
     private Database database;
+    @Getter
+    private CommandExecutor commandExecutor;
 
     @Override
     public void onEnable() {
@@ -153,12 +151,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             database.backup();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        try {
-            saveExecutedCommandsConfiguration();
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
 
         try {
@@ -243,6 +235,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             return;
         }
 
+        commandExecutor = new CommandExecutor(this);
+        commandExecutor.runTaskTimerAsynchronously(this, 20, 20);
+
         moduleManager.init();
         Enjin.getLogger().debug("Init modules done.");
         initPlugins();
@@ -266,7 +261,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             e.printStackTrace();
         }
 
-        initCommandsConfiguration();
         initRankUpdatesConfiguration();
     }
 
@@ -285,21 +279,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             configuration.save(configFile);
         } catch (Exception e) {
             Enjin.getLogger().warning("Error occurred while initializing enjin configuration.");
-            Enjin.getLogger().log(e);
-        }
-    }
-
-    private void initCommandsConfiguration() {
-        try {
-            File configFile = new File(getDataFolder(), "commands.json");
-            EnjinMinecraftPlugin.executedCommandsConfiguration = JsonConfig.load(configFile,
-                                                                                 ExecutedCommandsConfig.class);
-
-            if (!configFile.exists()) {
-                executedCommandsConfiguration.save(configFile);
-            }
-        } catch (Exception e) {
-            Enjin.getLogger().warning("Error occurred while initializing executed commands configuration.");
             Enjin.getLogger().log(e);
         }
     }
@@ -327,16 +306,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
         synchronized (Enjin.getConfiguration()) {
             Enjin.getConfiguration().save(new File(instance.getDataFolder(), "config.json"));
-        }
-    }
-
-    public static void saveExecutedCommandsConfiguration() {
-        if (executedCommandsConfiguration == null) {
-            instance.initCommandsConfiguration();
-        }
-
-        synchronized (executedCommandsConfiguration) {
-            executedCommandsConfiguration.save(new File(instance.getDataFolder(), "commands.json"));
         }
     }
 
@@ -473,20 +442,24 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 .scheduleSyncDelayedTask((Plugin) Enjin.getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
     }
 
+    public static void dispatchConsoleCommand(String command, Runnable callback, boolean async) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) Enjin.getPlugin(), () -> {
+            Enjin.getLogger().debug("Dispatching command: " + command);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+
+            if (async)
+                Bukkit.getScheduler().runTaskAsynchronously((Plugin) Enjin.getPlugin(), callback);
+            else
+                callback.run();
+        });
+    }
+
     public boolean isUpdateFromCurseForge() {
         return getDescription().getVersion().endsWith("-bukkit");
     }
 
     public Database db() {
         return database;
-    }
-
-    public static ExecutedCommandsConfig getExecutedCommandsConfiguration() {
-        if (executedCommandsConfiguration == null) {
-            instance.initCommandsConfiguration();
-        }
-
-        return executedCommandsConfiguration;
     }
 
     public static RankUpdatesConfig getRankUpdatesConfiguration() {
