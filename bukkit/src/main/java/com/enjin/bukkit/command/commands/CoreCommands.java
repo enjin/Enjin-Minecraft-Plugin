@@ -5,7 +5,6 @@ import com.enjin.bukkit.command.Command;
 import com.enjin.bukkit.command.Directive;
 import com.enjin.bukkit.command.Permission;
 import com.enjin.bukkit.config.EMPConfig;
-import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.tasks.ReportPublisher;
@@ -457,12 +456,8 @@ public class CoreCommands {
     @Permission(value = "enjin.push")
     @Directive(parent = "enjin", value = "push")
     public static void push(CommandSender sender, String[] args) {
-        RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
         ConnectionListener.updatePlayersRanks(Bukkit.getOfflinePlayers());
-
-        int minutes = Double.valueOf(Math.ceil(((double) config.getPlayerPerms().size()) / 500.0D)).intValue();
-        sender.sendMessage(ChatColor.GREEN + Integer.toString(config.getPlayerPerms()
-                                                                    .size()) + " players have been queued for synchronization. This should take approximately " + minutes + " minutes" + (minutes > 1 ? "s." : "."));
+        sender.sendMessage(ChatColor.GREEN + "Updating player ranks on next sync.");
     }
 
     @Permission(value = "enjin.report")

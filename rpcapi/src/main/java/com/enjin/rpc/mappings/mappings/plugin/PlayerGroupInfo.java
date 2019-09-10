@@ -20,6 +20,10 @@ public class PlayerGroupInfo {
     private Map<String, List<String>> worlds = new HashMap<String, List<String>>();
 
     public PlayerGroupInfo(UUID uuid) {
-        this.uuid = uuid.toString();
+        this(uuid.toString());
+    }
+
+    public PlayerGroupInfo(String uuid) {
+        this.uuid = uuid;
     }
 }

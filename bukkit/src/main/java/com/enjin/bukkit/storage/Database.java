@@ -1,16 +1,15 @@
 package com.enjin.bukkit.storage;
 
-import com.enjin.rpc.mappings.mappings.plugin.ExecutedCommand;
+import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.sql.*;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Database {
@@ -18,22 +17,29 @@ public class Database {
     private static final String DB_NAME = "enjin.db";
     private static final String MEMORY_URL = "jdbc:sqlite::memory:";
     private static final String RESOURCE_FORMAT = "db/%s.sql";
+    private static final Gson GSON = new GsonBuilder()
+            .create();
 
-    private static final String TEMPLATE_SETUP = "Setup";
-    private static final String TEMPLATE_INSERT_COMMAND = "InsertCommand";
-    private static final String TEMPLATE_GET_ALL_COMMANDS = "GetAllCommands";
-    private static final String TEMPLATE_GET_EXECUTED_COMMANDS = "GetExecutedCommands";
-    private static final String TEMPLATE_GET_PENDING_COMMANDS = "GetPendingCommands";
-    private static final String TEMPLATE_GET_COMMAND_FOR_ID = "GetCommandForId";
-    public static final String TEMPLATE_SET_COMMAND_AS_EXECUTED = "SetCommandAsExecuted";
-    private static final String TEMPLATE_DELETE_COMMAND = "DeleteCommand";
+    private static final String TEMPLATE_CREATE_COMMANDS_TABLE = "setup/CreateCommandsTable";
+    private static final String TEMPLATE_CREATE_PLAYER_GROUPS_TABLE = "setup/CreatePlayerGroupsTable";
+    private static final String TEMPLATE_INSERT_COMMAND = "commands/InsertCommand";
+    private static final String TEMPLATE_GET_ALL_COMMANDS = "commands/GetAllCommands";
+    private static final String TEMPLATE_GET_EXECUTED_COMMANDS = "commands/GetExecutedCommands";
+    private static final String TEMPLATE_GET_PENDING_COMMANDS = "commands/GetPendingCommands";
+    private static final String TEMPLATE_GET_COMMAND_FOR_ID = "commands/GetCommandForId";
+    private static final String TEMPLATE_SET_COMMAND_AS_EXECUTED = "commands/SetCommandAsExecuted";
+    private static final String TEMPLATE_DELETE_COMMAND = "commands/DeleteCommand";
+    private static final String TEMPLATE_ADD_PLAYER_GROUPS_FOR_WORLD = "groups/AddPlayerGroupsForWorld";
+    private static final String TEMPLATE_GET_PLAYER_GROUPS = "groups/GetPlayerGroups";
+    private static final String TEMPLATE_DELETE_PLAYER_GROUPS = "groups/DeletePlayerGroups";
     private static final String TEMPLATE_BACKUP = "backup to %s";
     private static final String TEMPLATE_RESTORE = "restore from %s";
 
     private Plugin plugin;
     private Connection conn;
 
-    private PreparedStatement setup;
+    private PreparedStatement createCommandsTable;
+    private PreparedStatement createPlayerGroupsTable;
     private PreparedStatement insertCommand;
     private PreparedStatement getCommands;
     private PreparedStatement getExecutedCommands;
@@ -41,11 +47,15 @@ public class Database {
     private PreparedStatement getCommandForId;
     private PreparedStatement setCommandAsExecuted;
     private PreparedStatement deleteCommand;
+    private PreparedStatement addGroups;
+    private PreparedStatement getGroups;
+    private PreparedStatement deleteGroups;
 
     public Database(Plugin plugin) throws SQLException, IOException {
         this.plugin = plugin;
         this.conn = DriverManager.getConnection(MEMORY_URL);
-        this.setup = createPreparedStatement(TEMPLATE_SETUP);
+        this.createCommandsTable = createPreparedStatement(TEMPLATE_CREATE_COMMANDS_TABLE);
+        this.createPlayerGroupsTable = createPreparedStatement(TEMPLATE_CREATE_PLAYER_GROUPS_TABLE);
 
         configure();
 
@@ -56,10 +66,12 @@ public class Database {
         this.getCommandForId = createPreparedStatement(TEMPLATE_GET_COMMAND_FOR_ID);
         this.setCommandAsExecuted = createPreparedStatement(TEMPLATE_SET_COMMAND_AS_EXECUTED);
         this.deleteCommand = createPreparedStatement(TEMPLATE_DELETE_COMMAND);
+        this.addGroups = createPreparedStatement(TEMPLATE_ADD_PLAYER_GROUPS_FOR_WORLD);
+        this.getGroups = createPreparedStatement(TEMPLATE_GET_PLAYER_GROUPS);
+        this.deleteGroups = createPreparedStatement(TEMPLATE_DELETE_PLAYER_GROUPS);
     }
 
     public void backup() throws SQLException {
-        commit();
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(String.format(TEMPLATE_BACKUP, getDatabasePath()));
         }
@@ -69,7 +81,6 @@ public class Database {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(String.format(TEMPLATE_RESTORE, getDatabasePath()));
         }
-        commit();
     }
 
     public void commit() throws SQLException {
@@ -167,15 +178,54 @@ public class Database {
         deleteCommand.executeUpdate();
     }
 
+    public void addGroups(UUID playerUuid, String playerName, String worldId, List<String> groups) throws SQLException {
+        String serializedGroups = GSON.toJson(groups);
+
+        addGroups.clearParameters();
+        addGroups.setString(1, playerUuid.toString());
+        addGroups.setString(2, playerName);
+        addGroups.setString(3, worldId);
+        addGroups.setString(4, serializedGroups);
+        addGroups.executeUpdate();
+    }
+
+    public Map<String, PlayerGroupInfo> getGroups() throws SQLException {
+        Map<String, PlayerGroupInfo> result = new HashMap<>();
+
+        try (ResultSet rs = getGroups.executeQuery()) {
+            while (rs.next()) {
+                String name = rs.getString("name");
+                String uuid = rs.getString("uuid");
+                String world = rs.getString("world");
+                List<String> groups = GSON.fromJson(rs.getString("groups"),
+                        TypeToken.getParameterized(List.class, String.class).getType());
+
+                if (!result.containsKey(name))
+                    result.put(name, new PlayerGroupInfo(uuid));
+
+                PlayerGroupInfo info = result.get(name);
+                info.getWorlds().put(world,groups);
+            }
+        }
+
+        return result;
+    }
+
+    public void deleteGroups(String playerName) throws SQLException {
+        deleteGroups.clearParameters();
+        deleteGroups.setString(1, playerName);
+        deleteGroups.executeUpdate();
+    }
+
     public File getDatabasePath() {
         return new File(plugin.getDataFolder(), DB_NAME);
     }
 
     private void configure() throws SQLException {
-        conn.setAutoCommit(false);
         restore();
-        setup.execute();
-        commit();
+        createCommandsTable.execute();
+        createPlayerGroupsTable.execute();
+        conn.setAutoCommit(false);
     }
 
     private String loadSqlFile(String template) throws IOException {

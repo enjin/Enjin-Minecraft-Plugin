@@ -9,8 +9,6 @@ import com.enjin.bukkit.command.commands.PointCommands;
 import com.enjin.bukkit.command.commands.SupportCommands;
 import com.enjin.bukkit.command.commands.VoteCommands;
 import com.enjin.bukkit.config.EMPConfig;
-import com.enjin.bukkit.config.ExecutedCommandsConfig;
-import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.listeners.BanListeners;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.listeners.perm.PermissionListener;
@@ -56,19 +54,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
     private static EnjinMinecraftPlugin   instance;
-    private static ExecutedCommandsConfig executedCommandsConfiguration;
-    private static RankUpdatesConfig      rankUpdatesConfiguration;
     @Getter
     private        InstructionHandler     instructionHandler = new BukkitInstructionHandler();
     @Getter
@@ -148,15 +141,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
 
         try {
+            database.commit();
             database.backup();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        try {
-            saveRankUpdatesConfiguration();
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -260,8 +248,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        initRankUpdatesConfiguration();
     }
 
     public void initConfig() {
@@ -283,22 +269,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         }
     }
 
-    private void initRankUpdatesConfiguration() {
-        try {
-            File configFile = new File(getDataFolder(), "rankUpdates.json");
-            EnjinMinecraftPlugin.rankUpdatesConfiguration = JsonConfig.load(configFile, RankUpdatesConfig.class);
-
-            if (!configFile.exists()) {
-                synchronized (rankUpdatesConfiguration) {
-                    rankUpdatesConfiguration.save(configFile);
-                }
-            }
-        } catch (Exception e) {
-            Enjin.getLogger().warning("Error occurred while initializing rank updates configuration.");
-            Enjin.getLogger().log(e);
-        }
-    }
-
     public static void saveConfiguration() {
         if (Enjin.getConfiguration() == null) {
             instance.initConfig();
@@ -306,22 +276,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
         synchronized (Enjin.getConfiguration()) {
             Enjin.getConfiguration().save(new File(instance.getDataFolder(), "config.json"));
-        }
-    }
-
-    public static void saveRankUpdatesConfiguration() {
-        if (rankUpdatesConfiguration == null) {
-            if (instance != null) {
-                instance.initRankUpdatesConfiguration();
-            }
-        }
-
-        if (rankUpdatesConfiguration != null) {
-            synchronized (rankUpdatesConfiguration) {
-                rankUpdatesConfiguration.save(new File(instance.getDataFolder(), "rankUpdates.json"));
-            }
-        } else {
-            Enjin.getLogger().warning("Unable to load rank updates configuration. Please contact Enjin support.");
         }
     }
 
@@ -460,14 +414,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
     public Database db() {
         return database;
-    }
-
-    public static RankUpdatesConfig getRankUpdatesConfiguration() {
-        if (rankUpdatesConfiguration == null) {
-            instance.initRankUpdatesConfiguration();
-        }
-
-        return rankUpdatesConfiguration;
     }
 
 }

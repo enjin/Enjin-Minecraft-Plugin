@@ -1,11 +1,8 @@
 package com.enjin.bukkit.listeners;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.util.PermissionsUtil;
-import com.enjin.core.Enjin;
-import com.enjin.rpc.mappings.mappings.plugin.PlayerGroupInfo;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,6 +14,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 public class ConnectionListener implements Listener {
     @Getter
@@ -80,51 +81,26 @@ public class ConnectionListener implements Listener {
     }
 
     public static void updatePlayerRanks1(OfflinePlayer player) {
-        VaultModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(VaultModule.class);
-        if (module == null || !module.isPermissionsAvailable()) {
+        if (player == null || player.getName() == null)
             return;
-        }
 
-        if (player == null) {
-            Enjin.getLogger()
-                 .debug("[ConnectionListener::updatePlayerRanks] OfflinePlayer instance is null. Unable to update their ranks.");
-        }
-
-        if (player.getName() == null) {
-            if (player.getUniqueId() == null) {
-                Enjin.getLogger()
-                     .debug("[ConnectionListener::updatePlayerRanks] OfflinePlayer instance's name is null. Unable to update their ranks.");
-            } else {
-                Enjin.getLogger()
-                     .debug("[ConnectionListener::updatePlayerRanks] Name not found for " + player.getUniqueId()
-                                                                                                  .toString() + ". Unable to update their ranks.");
-            }
+        EnjinMinecraftPlugin plugin = EnjinMinecraftPlugin.getInstance();
+        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        if (module == null || !module.isPermissionsAvailable())
             return;
-        }
-
-        PlayerGroupInfo info = new PlayerGroupInfo(player.getUniqueId());
-
-        if (info == null) {
-            Enjin.getLogger()
-                 .debug("[ConnectionListener::updatePlayerRanks] PlayerGroupInfo is null. Unable to update " + player.getName() + "'s ranks.");
-            return;
-        }
-
-        if (EnjinMinecraftPlugin.getRankUpdatesConfiguration() == null) {
-            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] RankUpdatesConfiguration is null.");
-            return;
-        }
-
-        if (EnjinMinecraftPlugin.getRankUpdatesConfiguration().getPlayerPerms() == null) {
-            Enjin.getLogger().debug("[ConnectionListener::updatePlayerRanks] Player perms is null.");
-            return;
-        }
 
         Bukkit.getScheduler().runTaskAsynchronously(EnjinMinecraftPlugin.getInstance(), () -> {
-            info.getWorlds().putAll(module.getPlayerGroups(player));
-            RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
-            synchronized (config) {
-                config.getPlayerPerms().put(player.getName(), info);
+            Map<String, List<String>> playerGroups = module.getPlayerGroups(player);
+
+            try {
+                plugin.db().deleteGroups(player.getName());
+
+                for (Map.Entry<String, List<String>> entry : playerGroups.entrySet()) {
+                    plugin.db().addGroups(player.getUniqueId(), player.getName(),
+                            entry.getKey(), entry.getValue());
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }

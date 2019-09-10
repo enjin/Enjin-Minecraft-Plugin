@@ -2,7 +2,6 @@ package com.enjin.bukkit.sync;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.config.EMPConfig;
-import com.enjin.bukkit.config.RankUpdatesConfig;
 import com.enjin.bukkit.events.PostSyncEvent;
 import com.enjin.bukkit.events.PreSyncEvent;
 import com.enjin.bukkit.modules.impl.VaultModule;
@@ -40,7 +39,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,10 +46,9 @@ import java.util.stream.Collectors;
 public class RPCPacketManager implements Runnable {
 
     private EnjinMinecraftPlugin plugin;
-    private long                 nextStatUpdate = System.currentTimeMillis();
 
     private boolean firstRun = true;
-    private int     elapsed  = 0;
+    private int elapsed = 0;
 
     public RPCPacketManager(EnjinMinecraftPlugin plugin) {
         this.plugin = plugin;
@@ -73,8 +70,8 @@ public class RPCPacketManager implements Runnable {
             if (Bukkit.getOnlinePlayers().isEmpty()) {
                 if (++this.elapsed < syncDelay) {
                     Enjin.getLogger()
-                         .debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
-                                        + (syncDelay - this.elapsed));
+                            .debug("No players online, server will sync after 10 minutes have elapsed. Minutes remaining: "
+                                    + (syncDelay - this.elapsed));
                     return;
                 }
             }
@@ -186,7 +183,7 @@ public class RPCPacketManager implements Runnable {
                 }
             } else {
                 Enjin.getLogger()
-                     .debug("Did not receive \"ok\" status. Status: " + (result == null ? "n/a" : result.getStatus()));
+                        .debug("Did not receive \"ok\" status. Status: " + (result == null ? "n/a" : result.getStatus()));
                 Bukkit.getPluginManager().callEvent(new PostSyncEvent(false, data));
             }
         }
@@ -220,11 +217,11 @@ public class RPCPacketManager implements Runnable {
                 groups.addAll(Arrays.asList(module.getPermission().getGroups()));
             } catch (Exception e) {
                 Enjin.getLogger().warning(new StringBuilder("Exception thrown by Vault permissions implementation. ")
-                                                  .append("Please ensure Vault and your permissions plugin are up-to-date.")
-                                                  .toString());
+                        .append("Please ensure Vault and your permissions plugin are up-to-date.")
+                        .toString());
                 Enjin.getLogger().debug(new StringBuilder("Vault Exception: \n")
-                                                .append(StringUtils.throwableToString(e))
-                                                .toString());
+                        .append(StringUtils.throwableToString(e))
+                        .toString());
             }
         }
 
@@ -243,44 +240,31 @@ public class RPCPacketManager implements Runnable {
         List<PlayerInfo> infos = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             infos.add(new PlayerInfo(player.getName(),
-                                     Enjin.getApi().getVanishState(player.getUniqueId()),
-                                     player.getUniqueId()));
+                    Enjin.getApi().getVanishState(player.getUniqueId()),
+                    player.getUniqueId()));
         }
         return infos;
     }
 
     private Map<String, PlayerGroupInfo> getPlayerGroups() {
-        RankUpdatesConfig config = EnjinMinecraftPlugin.getRankUpdatesConfiguration();
+        Map<String, PlayerGroupInfo> result = null;
 
-        if (config == null) {
-            Enjin.getLogger().warning("Rank updates configuration did not load properly.");
-            return null;
-        }
+        try {
+            result = plugin.db().getGroups();
 
-        Map<String, PlayerGroupInfo> groups = new HashMap<>(config.getPlayerPerms());
-        Map<String, PlayerGroupInfo> update = new HashMap<>();
-
-        int index = 0;
-        for (String player : new HashSet<>(groups.keySet())) {
-            if (index >= 500) {
-                break;
+            for (Map.Entry<String, PlayerGroupInfo> entry : result.entrySet()) {
+                plugin.db().deleteGroups(entry.getKey());
             }
-
-            update.put(player, groups.get(player));
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
-        synchronized (config) {
-            for (Map.Entry<String, PlayerGroupInfo> entry : update.entrySet()) {
-                groups.remove(entry.getKey());
-            }
-        }
-
-        return update;
+        return result;
     }
 
     private Map<String, List<Object[]>> getVotes() {
-        Map<String, List<Object[]>> votes  = null;
-        VotifierModule              module = this.plugin.getModuleManager().getModule(VotifierModule.class);
+        Map<String, List<Object[]>> votes = null;
+        VotifierModule module = this.plugin.getModuleManager().getModule(VotifierModule.class);
         if (module != null && !module.getPlayerVotes().isEmpty()) {
             votes = new HashMap<>(module.getPlayerVotes());
             module.getPlayerVotes().clear();
