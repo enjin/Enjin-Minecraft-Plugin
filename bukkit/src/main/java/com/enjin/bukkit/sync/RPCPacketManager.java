@@ -31,6 +31,8 @@ import com.enjin.rpc.mappings.mappings.plugin.data.ExecuteData;
 import com.enjin.rpc.mappings.mappings.plugin.data.NotificationData;
 import com.enjin.rpc.mappings.mappings.plugin.data.PlayerGroupUpdateData;
 import com.enjin.rpc.mappings.services.PluginService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -45,7 +47,10 @@ import java.util.stream.Collectors;
 
 public class RPCPacketManager implements Runnable {
 
-    private EnjinMinecraftPlugin plugin;
+    private static final Gson GSON = new GsonBuilder().serializeNulls()
+            .create();
+
+    private final EnjinMinecraftPlugin plugin;
 
     private boolean firstRun = true;
     private int elapsed = 0;
@@ -60,10 +65,12 @@ public class RPCPacketManager implements Runnable {
             Enjin.getLogger().debug("Syncing with Enjin services...");
             sync();
         } catch (Exception e) {
-            Enjin.getLogger().log("An error occured while syncing with Enjin services...", e);
+            Enjin.getLogger().warning("An error occurred while syncing with Enjin services...");
+            Enjin.getLogger().log(e);
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void sync() {
         int syncDelay = Enjin.getConfiguration().getSyncDelay();
         if (!this.firstRun && syncDelay > 0) {
@@ -112,11 +119,19 @@ public class RPCPacketManager implements Runnable {
         Enjin.getLogger().debug("Fetching plugin service...");
         PluginService service = EnjinServices.getService(PluginService.class);
         Enjin.getLogger().debug("Syncing...");
-        RPCData<SyncResponse> data = service.sync(status);
+
+        RPCData<SyncResponse> data = null;
+
+        try {
+            service.sync(status);
+        } catch (Exception ex) {
+            Enjin.getLogger().log(ex);
+            Enjin.getLogger().debug(GSON.toJson(status));
+        }
+
         Enjin.getLogger().debug("Sync complete...");
 
         if (data == null) {
-            Enjin.getLogger().debug("Data is null while requesting sync update from Plugin.sync.");
             Bukkit.getPluginManager().callEvent(new PostSyncEvent(false, null));
             return;
         }
@@ -140,8 +155,6 @@ public class RPCPacketManager implements Runnable {
                         case EXECUTE:
                             ExecuteCommandInstruction.handle((ExecuteData) instruction.getData());
                             break;
-                        case EXECUTE_AS:
-                            break;
                         case CONFIRMED_COMMANDS:
                             CommandsReceivedInstruction.handle((ArrayList<Long>) instruction.getData());
                             break;
@@ -163,8 +176,6 @@ public class RPCPacketManager implements Runnable {
                         case UNBAN_PLAYER:
                             PardonPlayersInstruction.handle((String) instruction.getData());
                             break;
-                        case CLEAR_INGAME_CACHE:
-                            break;
                         case NOTIFICATIONS:
                             NotificationsInstruction.handle((NotificationData) instruction.getData());
                             break;
@@ -172,6 +183,7 @@ public class RPCPacketManager implements Runnable {
                             NewerVersionInstruction.handle((String) instruction.getData());
                             break;
                         default:
+                            break;
                     }
                 }
 
@@ -216,12 +228,10 @@ public class RPCPacketManager implements Runnable {
             try {
                 groups.addAll(Arrays.asList(module.getPermission().getGroups()));
             } catch (Exception e) {
-                Enjin.getLogger().warning(new StringBuilder("Exception thrown by Vault permissions implementation. ")
-                        .append("Please ensure Vault and your permissions plugin are up-to-date.")
-                        .toString());
-                Enjin.getLogger().debug(new StringBuilder("Vault Exception: \n")
-                        .append(StringUtils.throwableToString(e))
-                        .toString());
+                Enjin.getLogger().warning("Exception thrown by Vault permissions implementation. " +
+                        "Please ensure Vault and your permissions plugin are up-to-date.");
+                Enjin.getLogger().debug("Vault Exception: \n" +
+                        StringUtils.throwableToString(e));
             }
         }
 
@@ -236,6 +246,7 @@ public class RPCPacketManager implements Runnable {
         return Bukkit.getOnlinePlayers().size();
     }
 
+    @SuppressWarnings("deprecation")
     private List<PlayerInfo> getOnlinePlayers() {
         List<PlayerInfo> infos = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -278,6 +289,6 @@ public class RPCPacketManager implements Runnable {
 
     private boolean isPermissionsAvailable() {
         VaultModule module = this.plugin.getModuleManager().getModule(VaultModule.class);
-        return module == null ? false : module.isPermissionsAvailable();
+        return module != null && module.isPermissionsAvailable();
     }
 }
