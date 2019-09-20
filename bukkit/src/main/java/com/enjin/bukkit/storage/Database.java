@@ -88,37 +88,41 @@ public class Database {
     }
 
     public void insertCommand(StoredCommand command) throws SQLException {
-        insertCommand.clearParameters();
-        insertCommand.setLong(1, command.getId());
-        insertCommand.setString(2, command.getCommand());
+        synchronized (insertCommand) {
+            insertCommand.clearParameters();
+            insertCommand.setLong(1, command.getId());
+            insertCommand.setString(2, command.getCommand());
 
-        if (command.getDelay().isPresent())
-            insertCommand.setLong(3, command.getDelay().get());
-        else
-            insertCommand.setNull(3, Types.INTEGER);
+            if (command.getDelay().isPresent())
+                insertCommand.setLong(3, command.getDelay().get());
+            else
+                insertCommand.setNull(3, Types.INTEGER);
 
-        if (command.getRequireOnline().isPresent())
-            insertCommand.setBoolean(4, command.getRequireOnline().get());
-        else
-            insertCommand.setNull(4, Types.INTEGER);
+            if (command.getRequireOnline().isPresent())
+                insertCommand.setBoolean(4, command.getRequireOnline().get());
+            else
+                insertCommand.setNull(4, Types.INTEGER);
 
 
-        insertCommand.setString(5, command.getPlayerName().orNull());
-        insertCommand.setString(6, command.getPlayerUuid().isPresent()
-                ? command.getPlayerUuid().get().toString()
-                : null);
-        insertCommand.setString(7, null);
-        insertCommand.setString(8, null);
-        insertCommand.setLong(9, command.getCreatedAt());
-        insertCommand.executeUpdate();
+            insertCommand.setString(5, command.getPlayerName().orNull());
+            insertCommand.setString(6, command.getPlayerUuid().isPresent()
+                    ? command.getPlayerUuid().get().toString()
+                    : null);
+            insertCommand.setString(7, null);
+            insertCommand.setString(8, null);
+            insertCommand.setLong(9, command.getCreatedAt());
+            insertCommand.executeUpdate();
+        }
     }
 
     public List<StoredCommand> getAllCommands() throws SQLException {
         List<StoredCommand> result = new ArrayList<>();
 
-        try (ResultSet rs = getCommands.executeQuery()) {
-            while (rs.next()) {
-                result.add(new StoredCommand(rs));
+        synchronized (getCommands) {
+            try (ResultSet rs = getCommands.executeQuery()) {
+                while (rs.next()) {
+                    result.add(new StoredCommand(rs));
+                }
             }
         }
 
@@ -128,9 +132,11 @@ public class Database {
     public List<StoredCommand> getExecutedCommands() throws SQLException {
         List<StoredCommand> result = new ArrayList<>();
 
-        try (ResultSet rs = getExecutedCommands.executeQuery()) {
-            while (rs.next()) {
-                result.add(new StoredCommand(rs));
+        synchronized (getExecutedCommands) {
+            try (ResultSet rs = getExecutedCommands.executeQuery()) {
+                while (rs.next()) {
+                    result.add(new StoredCommand(rs));
+                }
             }
         }
 
@@ -140,9 +146,11 @@ public class Database {
     public List<StoredCommand> getPendingCommands() throws SQLException {
         List<StoredCommand> result = new ArrayList<>();
 
-        try (ResultSet rs = getPendingCommands.executeQuery()) {
-            while (rs.next()) {
-                result.add(new StoredCommand(rs));
+        synchronized (getPendingCommands) {
+            try (ResultSet rs = getPendingCommands.executeQuery()) {
+                while (rs.next()) {
+                    result.add(new StoredCommand(rs));
+                }
             }
         }
 
@@ -152,12 +160,14 @@ public class Database {
     public StoredCommand getCommand(long id) throws SQLException {
         StoredCommand result = null;
 
-        getCommandForId.clearParameters();
-        getCommandForId.setLong(1, id);
+        synchronized (getCommandForId) {
+            getCommandForId.clearParameters();
+            getCommandForId.setLong(1, id);
 
-        try (ResultSet rs = getCommandForId.executeQuery()) {
-            if (rs.next()) {
-                result = new StoredCommand(rs);
+            try (ResultSet rs = getCommandForId.executeQuery()) {
+                if (rs.next()) {
+                    result = new StoredCommand(rs);
+                }
             }
         }
 
@@ -181,30 +191,34 @@ public class Database {
     public void addGroups(UUID playerUuid, String playerName, String worldId, List<String> groups) throws SQLException {
         String serializedGroups = GSON.toJson(groups);
 
-        addGroups.clearParameters();
-        addGroups.setString(1, playerUuid.toString());
-        addGroups.setString(2, playerName);
-        addGroups.setString(3, worldId);
-        addGroups.setString(4, serializedGroups);
-        addGroups.executeUpdate();
+        synchronized (addGroups) {
+            addGroups.clearParameters();
+            addGroups.setString(1, playerUuid.toString());
+            addGroups.setString(2, playerName);
+            addGroups.setString(3, worldId);
+            addGroups.setString(4, serializedGroups);
+            addGroups.executeUpdate();
+        }
     }
 
     public Map<String, PlayerGroupInfo> getGroups() throws SQLException {
         Map<String, PlayerGroupInfo> result = new HashMap<>();
 
-        try (ResultSet rs = getGroups.executeQuery()) {
-            while (rs.next()) {
-                String name = rs.getString("name");
-                String uuid = rs.getString("uuid");
-                String world = rs.getString("world");
-                List<String> groups = GSON.fromJson(rs.getString("groups"),
-                        TypeToken.getParameterized(List.class, String.class).getType());
+        synchronized (getGroups) {
+            try (ResultSet rs = getGroups.executeQuery()) {
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    String uuid = rs.getString("uuid");
+                    String world = rs.getString("world");
+                    List<String> groups = GSON.fromJson(rs.getString("groups"),
+                            TypeToken.getParameterized(List.class, String.class).getType());
 
-                if (!result.containsKey(name))
-                    result.put(name, new PlayerGroupInfo(uuid));
+                    if (!result.containsKey(name))
+                        result.put(name, new PlayerGroupInfo(uuid));
 
-                PlayerGroupInfo info = result.get(name);
-                info.getWorlds().put(world,groups);
+                    PlayerGroupInfo info = result.get(name);
+                    info.getWorlds().put(world,groups);
+                }
             }
         }
 
@@ -212,9 +226,11 @@ public class Database {
     }
 
     public void deleteGroups(String playerName) throws SQLException {
-        deleteGroups.clearParameters();
-        deleteGroups.setString(1, playerName);
-        deleteGroups.executeUpdate();
+        synchronized (deleteGroups) {
+            deleteGroups.clearParameters();
+            deleteGroups.setString(1, playerName);
+            deleteGroups.executeUpdate();
+        }
     }
 
     public File getDatabasePath() {
