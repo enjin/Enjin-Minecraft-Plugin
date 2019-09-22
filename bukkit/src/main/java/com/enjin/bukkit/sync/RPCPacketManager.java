@@ -123,7 +123,7 @@ public class RPCPacketManager implements Runnable {
         RPCData<SyncResponse> data = null;
 
         try {
-            service.sync(status);
+            data = service.sync(status);
         } catch (Exception ex) {
             Enjin.getLogger().log(ex);
             Enjin.getLogger().debug(GSON.toJson(status));
@@ -132,6 +132,7 @@ public class RPCPacketManager implements Runnable {
         Enjin.getLogger().debug("Sync complete...");
 
         if (data == null) {
+            Enjin.getLogger().debug("Sync data is null.");
             Bukkit.getPluginManager().callEvent(new PostSyncEvent(false, null));
             return;
         }
@@ -145,45 +146,50 @@ public class RPCPacketManager implements Runnable {
                 Bukkit.getPluginManager().callEvent(new PostSyncEvent(true, data));
 
                 for (Instruction instruction : result.getInstructions()) {
-                    switch (instruction.getCode()) {
-                        case ADD_PLAYER_GROUP:
-                            AddPlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
-                            break;
-                        case REMOVE_PLAYER_GROUP:
-                            RemovePlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
-                            break;
-                        case EXECUTE:
-                            ExecuteCommandInstruction.handle((ExecuteData) instruction.getData());
-                            break;
-                        case CONFIRMED_COMMANDS:
-                            CommandsReceivedInstruction.handle((ArrayList<Long>) instruction.getData());
-                            break;
-                        case CONFIG:
-                            RemoteConfigUpdateInstruction.handle((Map<String, Object>) instruction.getData());
-                            break;
-                        case ADD_PLAYER_WHITELIST:
-                            AddWhitelistPlayerInstruction.handle((String) instruction.getData());
-                            break;
-                        case REMOVE_PLAYER_WHITELIST:
-                            RemoveWhitelistPlayerInstruction.handle((String) instruction.getData());
-                            break;
-                        case RESPONSE_STATUS:
-                            Enjin.getPlugin().getInstructionHandler().statusReceived((String) instruction.getData());
-                            break;
-                        case BAN_PLAYER:
-                            BanPlayersInstruction.handle((String) instruction.getData());
-                            break;
-                        case UNBAN_PLAYER:
-                            PardonPlayersInstruction.handle((String) instruction.getData());
-                            break;
-                        case NOTIFICATIONS:
-                            NotificationsInstruction.handle((NotificationData) instruction.getData());
-                            break;
-                        case PLUGIN_VERSION:
-                            NewerVersionInstruction.handle((String) instruction.getData());
-                            break;
-                        default:
-                            break;
+                    try {
+                        switch (instruction.getCode()) {
+                            case ADD_PLAYER_GROUP:
+                                AddPlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
+                                break;
+                            case REMOVE_PLAYER_GROUP:
+                                RemovePlayerGroupInstruction.handle((PlayerGroupUpdateData) instruction.getData());
+                                break;
+                            case EXECUTE:
+                                ExecuteCommandInstruction.handle((ExecuteData) instruction.getData());
+                                break;
+                            case CONFIRMED_COMMANDS:
+                                CommandsReceivedInstruction.handle((ArrayList<Long>) instruction.getData());
+                                break;
+                            case CONFIG:
+                                RemoteConfigUpdateInstruction.handle((Map<String, Object>) instruction.getData());
+                                break;
+                            case ADD_PLAYER_WHITELIST:
+                                AddWhitelistPlayerInstruction.handle((String) instruction.getData());
+                                break;
+                            case REMOVE_PLAYER_WHITELIST:
+                                RemoveWhitelistPlayerInstruction.handle((String) instruction.getData());
+                                break;
+                            case RESPONSE_STATUS:
+                                Enjin.getPlugin().getInstructionHandler().statusReceived((String) instruction.getData());
+                                break;
+                            case BAN_PLAYER:
+                                BanPlayersInstruction.handle((String) instruction.getData());
+                                break;
+                            case UNBAN_PLAYER:
+                                PardonPlayersInstruction.handle((String) instruction.getData());
+                                break;
+                            case NOTIFICATIONS:
+                                NotificationsInstruction.handle((NotificationData) instruction.getData());
+                                break;
+                            case PLUGIN_VERSION:
+                                NewerVersionInstruction.handle((String) instruction.getData());
+                                break;
+                            default:
+                                break;
+                        }
+                    } catch (Exception ex) {
+                        Enjin.getLogger().log(ex);
+                        Enjin.getLogger().warning(instruction.toString());
                     }
                 }
 
@@ -191,7 +197,7 @@ public class RPCPacketManager implements Runnable {
                     plugin.db().commit();
                     plugin.db().backup();
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    Enjin.getLogger().log(ex);
                 }
             } else {
                 Enjin.getLogger()

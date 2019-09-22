@@ -87,8 +87,10 @@ public class BukkitInstructionHandler implements InstructionHandler {
                         final Optional<Boolean> requireOnline,
                         final Optional<String> name,
                         final Optional<String> uuid) {
-        if (id == null || id < 0)
+        if (id == null || id < 0) {
+            Enjin.getLogger().warning("Received invalid command id: " + id);
             return;
+        }
 
         Optional<StoredCommand> commandRecord = Optional.absent();
 
@@ -98,8 +100,10 @@ public class BukkitInstructionHandler implements InstructionHandler {
             ex.printStackTrace();
         }
 
-        if (commandRecord.isPresent())
+        if (commandRecord.isPresent()) {
+            Enjin.getLogger().debug("Command record already exists in storage. Skipping...");
             return;
+        }
 
         Optional<? extends OfflinePlayer> player = Optional.absent();
         Optional<UUID> playerUuid = Optional.absent();
@@ -130,16 +134,21 @@ public class BukkitInstructionHandler implements InstructionHandler {
         }
 
         if (requireOnline.or(false)) {
-            if (!player.isPresent())
+            if (!player.isPresent()) {
+                Enjin.getLogger().debug("Player instance not found. Skipping...");
                 return;
+            }
 
-            if (!player.get().isOnline())
+            if (!player.get().isOnline()) {
+                Enjin.getLogger().debug("Player not online. Skipping...");
                 return;
+            }
         }
 
         StoredCommand toExecute = new StoredCommand(id, command, delay, requireOnline, name, playerUuid);
 
         try {
+            Enjin.getLogger().debug("Adding command to database.");
             EnjinMinecraftPlugin.getInstance().db().insertCommand(toExecute);
         } catch (SQLException ex) {
             ex.printStackTrace();
