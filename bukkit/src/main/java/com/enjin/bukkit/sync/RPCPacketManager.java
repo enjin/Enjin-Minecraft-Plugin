@@ -19,6 +19,7 @@ import com.enjin.bukkit.sync.data.RemoteConfigUpdateInstruction;
 import com.enjin.bukkit.sync.data.RemovePlayerGroupInstruction;
 import com.enjin.bukkit.sync.data.RemoveWhitelistPlayerInstruction;
 import com.enjin.bukkit.tasks.TPSMonitor;
+import com.enjin.bukkit.util.serialization.SerializationHelper;
 import com.enjin.core.Enjin;
 import com.enjin.core.EnjinServices;
 import com.enjin.core.util.StringUtils;
@@ -104,14 +105,14 @@ public class RPCPacketManager implements Runnable {
         status.put("groups", getGroups());
         status.put("maxplayers", getMaxPlayers());
         status.put("players", getOnlineCount());
-        status.put("playerlist", getOnlinePlayers());
-        status.put("playergroups", getPlayerGroups());
-        status.put("tps", TPSMonitor.getInstance().getLastTPSMeasurement());
-        status.put("executed_commands", executedCommands.stream()
+        SerializationHelper.validateAndPut(getOnlinePlayers(), status, "playerlist");
+        SerializationHelper.validateAndPut(getPlayerGroups(), status, "playergroups");
+        SerializationHelper.validateAndPut(executedCommands.stream()
                 .map(StoredCommand::toMap)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList()), status, "executed_commands");
+        status.put("tps", TPSMonitor.getInstance().getLastTPSMeasurement());
         if (Enjin.getConfiguration(EMPConfig.class).getEnabledComponents().isVoteListener()) {
-            status.put("votifier", getVotes());
+            SerializationHelper.validateAndPut(getVotes(), status, "votifier");
         }
 
         Bukkit.getPluginManager().callEvent(new PreSyncEvent(status));
