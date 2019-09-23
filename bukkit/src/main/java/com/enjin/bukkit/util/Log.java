@@ -100,12 +100,12 @@ public class Log implements EnjinLogger {
 
     @Override
     public void log(String msg, Throwable t) {
-        logger.log(Level.ERROR, msg, t);
+        logger.error(msg + ": " + Exceptions.getStackTrace(t));
     }
 
     @Override
     public void log(Throwable t) {
-        log("Exception Caught: ", t);
+        log("Exception Caught", t);
     }
 
     public String getLastLine() {
