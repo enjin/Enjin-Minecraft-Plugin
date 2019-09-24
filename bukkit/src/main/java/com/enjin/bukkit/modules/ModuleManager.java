@@ -22,6 +22,7 @@ public class ModuleManager {
 
     public void init() {
         Reflections   reflections = new Reflections("com.enjin.bukkit.modules.impl");
+        Reflections.log = null;
         Set<Class<?>> modules     = reflections.getTypesAnnotatedWith(Module.class);
 
         if (modules != null && !modules.isEmpty()) {
