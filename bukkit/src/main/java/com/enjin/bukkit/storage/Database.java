@@ -32,6 +32,7 @@ public class Database {
     private static final String TEMPLATE_ADD_PLAYER_GROUPS_FOR_WORLD = "groups/AddPlayerGroupsForWorld";
     private static final String TEMPLATE_GET_PLAYER_GROUPS = "groups/GetPlayerGroups";
     private static final String TEMPLATE_DELETE_PLAYER_GROUPS = "groups/DeletePlayerGroups";
+    private static final String TEMPLATE_DELETE_PLAYER_GROUP_FOR_ID = "groups/DeletePlayerGroupForId";
     private static final String TEMPLATE_BACKUP = "backup to %s";
     private static final String TEMPLATE_RESTORE = "restore from %s";
 
@@ -40,16 +41,17 @@ public class Database {
 
     private PreparedStatement createCommandsTable;
     private PreparedStatement createPlayerGroupsTable;
-    private PreparedStatement insertCommand;
-    private PreparedStatement getCommands;
-    private PreparedStatement getExecutedCommands;
-    private PreparedStatement getPendingCommands;
-    private PreparedStatement getCommandForId;
-    private PreparedStatement setCommandAsExecuted;
-    private PreparedStatement deleteCommand;
-    private PreparedStatement addGroups;
-    private PreparedStatement getGroups;
-    private PreparedStatement deleteGroups;
+    private final PreparedStatement insertCommand;
+    private final PreparedStatement getCommands;
+    private final PreparedStatement getExecutedCommands;
+    private final PreparedStatement getPendingCommands;
+    private final PreparedStatement getCommandForId;
+    private final PreparedStatement setCommandAsExecuted;
+    private final PreparedStatement deleteCommand;
+    private final PreparedStatement addGroups;
+    private final PreparedStatement getGroups;
+    private final PreparedStatement deleteGroups;
+    private final PreparedStatement deleteGroupForId;
 
     public Database(Plugin plugin) throws SQLException, IOException {
         this.plugin = plugin;
@@ -69,6 +71,7 @@ public class Database {
         this.addGroups = createPreparedStatement(TEMPLATE_ADD_PLAYER_GROUPS_FOR_WORLD);
         this.getGroups = createPreparedStatement(TEMPLATE_GET_PLAYER_GROUPS);
         this.deleteGroups = createPreparedStatement(TEMPLATE_DELETE_PLAYER_GROUPS);
+        this.deleteGroupForId = createPreparedStatement(TEMPLATE_DELETE_PLAYER_GROUP_FOR_ID);
     }
 
     public void backup() throws SQLException {
@@ -175,17 +178,21 @@ public class Database {
     }
 
     public void setCommandAsExecuted(long id, String hash, String response) throws SQLException {
-        setCommandAsExecuted.clearParameters();
-        setCommandAsExecuted.setString(1, hash);
-        setCommandAsExecuted.setString(2, response);
-        setCommandAsExecuted.setLong(3, id);
-        setCommandAsExecuted.executeUpdate();
+        synchronized (setCommandAsExecuted) {
+            setCommandAsExecuted.clearParameters();
+            setCommandAsExecuted.setString(1, hash);
+            setCommandAsExecuted.setString(2, response);
+            setCommandAsExecuted.setLong(3, id);
+            setCommandAsExecuted.executeUpdate();
+        }
     }
 
     public void deleteCommand(long id) throws SQLException {
-        deleteCommand.clearParameters();
-        deleteCommand.setLong(1, id);
-        deleteCommand.executeUpdate();
+        synchronized (deleteCommand) {
+            deleteCommand.clearParameters();
+            deleteCommand.setLong(1, id);
+            deleteCommand.executeUpdate();
+        }
     }
 
     public void addGroups(UUID playerUuid, String playerName, String worldId, List<String> groups) throws SQLException {
@@ -210,6 +217,13 @@ public class Database {
                     String name = rs.getString("name");
                     String uuid = rs.getString("uuid");
                     String world = rs.getString("world");
+
+                    if (name == null || uuid == null || world == null) {
+                        long id = rs.getLong("id");
+                        deleteGroupForId(id);
+                        continue;
+                    }
+
                     List<String> groups = GSON.fromJson(rs.getString("groups"),
                             TypeToken.getParameterized(List.class, String.class).getType());
 
@@ -223,6 +237,14 @@ public class Database {
         }
 
         return result;
+    }
+
+    public void deleteGroupForId(long id) throws SQLException {
+        synchronized (deleteGroupForId) {
+            deleteGroupForId.clearParameters();
+            deleteGroupForId.setLong(1, id);
+            deleteGroupForId.executeUpdate();
+        }
     }
 
     public void deleteGroups(String playerName) throws SQLException {
