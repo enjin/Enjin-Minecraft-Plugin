@@ -57,6 +57,7 @@ dependencies {
     shadow(group: 'ru.tehkode', name: 'PermissionsEx', version: permissionsEx)
     shadow(group: 'com.platymuus', name: 'bukkit-permissions', version: bukkitPermissions)
     shadow(group: 'com.gmail.nossr50.mcMMO', name: 'mcMMO', version: mcMMO)
+    shadow(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28')
     // File dependencies.
     shadow(fileTree(dir: 'lib', include: '*.jar'))
 }
