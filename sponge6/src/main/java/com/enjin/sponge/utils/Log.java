@@ -92,8 +92,8 @@ public class Log implements EnjinLogger {
     }
 
     public void debug(String msg) {
-        if (Enjin.getConfiguration().isDebug()) {
-            logger.info("[Debug] " + hideSensitiveText(msg));
+        if (Enjin.getConfiguration() != null && Enjin.getConfiguration().isDebug()) {
+            logger.info("[DEBUG] " + hideSensitiveText(msg));
         }
     }
 
