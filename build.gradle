@@ -29,7 +29,7 @@ subprojects {
     apply plugin: 'io.freefair.lombok'
 
     group = 'com.enjin'
-    version = '3.5.12'
+    version = '3.5.13'
 
     idea {
         module {
