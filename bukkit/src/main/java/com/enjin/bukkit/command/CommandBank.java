@@ -201,8 +201,23 @@ public class CommandBank {
     }
 
     private static Map<String, org.bukkit.command.Command> getServerCommands(SimpleCommandMap commandMap) throws ReflectiveOperationException {
-        Field field = commandMap.getClass().getDeclaredField("knownCommands");
+        Field field = getKnownCommandsField(commandMap.getClass());
         field.setAccessible(true);
         return (Map<String, org.bukkit.command.Command>) field.get(commandMap);
+    }
+
+    private static Field getKnownCommandsField(Class<?> clazz) {
+        if (clazz == null || clazz == Object.class)
+            return null;
+
+        Field field = null;
+
+        try {
+            field = clazz.getDeclaredField("knownCommands");
+        } catch (ReflectiveOperationException ex) {
+            field = getKnownCommandsField(clazz.getSuperclass());
+        }
+
+        return field;
     }
 }
