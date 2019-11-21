@@ -55,4 +55,28 @@ public class TextUtils {
 
         return result;
     }
+
+    public static String concat(List<String> list, String glue) {
+        return concat(list, glue, 0);
+    }
+
+    public static String concat(List<String> list, String glue, int startIndex) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = startIndex; i < list.size(); i++) {
+            if (i > startIndex)
+                builder.append(glue);
+            builder.append(list.get(i));
+        }
+
+        return builder.toString();
+    }
+
+    public static String colorize(char prefix, String text) {
+        return ChatColor.translateAlternateColorCodes(prefix, text);
+    }
+
+    public static String colorize(String text) {
+        return colorize('&', text);
+    }
 }

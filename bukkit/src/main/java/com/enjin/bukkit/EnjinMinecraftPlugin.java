@@ -1,14 +1,17 @@
 package com.enjin.bukkit;
 
-import com.enjin.bukkit.command.CommandBank;
-import com.enjin.bukkit.command.commands.BuyCommand;
-import com.enjin.bukkit.command.commands.ConfigCommand;
-import com.enjin.bukkit.command.commands.CoreCommands;
-import com.enjin.bukkit.command.commands.HeadCommands;
-import com.enjin.bukkit.command.commands.PointCommands;
-import com.enjin.bukkit.command.commands.SupportCommands;
-import com.enjin.bukkit.command.commands.VoteCommands;
+import com.enjin.bukkit.cmd.CmdEnjin;
+import com.enjin.bukkit.cmd.legacy.CommandBank;
+import com.enjin.bukkit.cmd.legacy.commands.BuyCommand;
+import com.enjin.bukkit.cmd.legacy.commands.ConfigCommand;
+import com.enjin.bukkit.cmd.legacy.commands.CoreCommands;
+import com.enjin.bukkit.cmd.legacy.commands.HeadCommands;
+import com.enjin.bukkit.cmd.legacy.commands.PointCommands;
+import com.enjin.bukkit.cmd.legacy.commands.SupportCommands;
+import com.enjin.bukkit.cmd.legacy.commands.VoteCommands;
 import com.enjin.bukkit.config.EMPConfig;
+import com.enjin.bukkit.i18n.Locale;
+import com.enjin.bukkit.i18n.Translation;
 import com.enjin.bukkit.listeners.BanListeners;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.listeners.perm.PermissionListener;
@@ -46,6 +49,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -171,6 +175,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             log.configure();
             log.setDebug(Enjin.getConfiguration().isDebug());
 
+            loadLocales();
+
             try {
                 MetricsLite metrics = new MetricsLite(this);
                 metrics.start();
@@ -210,8 +216,9 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
             initVersion();
             Enjin.getLogger().debug("Init version done.");
-            initCommands();
-            Enjin.getLogger().debug("Init commands done.");
+//            initCommands();
+            new CmdEnjin(this);
+//            Enjin.getLogger().debug("Init commands done.");
             initListeners();
             Enjin.getLogger().debug("Init listeners done.");
 
@@ -294,16 +301,16 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void disableManagers() {
-        //        StatsModule stats = moduleManager.getModule(StatsModule.class);
         SignStatsModule signStats = moduleManager.getModule(SignStatsModule.class);
-
-        //        if (stats != null) {
-        //            stats.disable();
-        //        }
 
         if (signStats != null) {
             signStats.disable();
         }
+    }
+
+    public void loadLocales() {
+        Translation.setServerLocale(Locale.en_US);
+        Translation.loadLocales(this);
     }
 
     public void initTasks() {

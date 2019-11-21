@@ -1,4 +1,4 @@
-package com.enjin.bukkit.command;
+package com.enjin.bukkit.cmd.legacy;
 
 import com.enjin.core.Enjin;
 import lombok.Getter;

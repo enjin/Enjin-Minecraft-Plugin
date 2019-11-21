@@ -1,4 +1,4 @@
-package com.enjin.bukkit.command;
+package com.enjin.bukkit.cmd.legacy;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.METHOD)
-public @interface Command {
+public @interface Directive {
+    String parent();
+
     String value();
 
     String[] aliases() default {};
-
-    String description() default "";
 
     boolean requireValidKey() default true;
 }

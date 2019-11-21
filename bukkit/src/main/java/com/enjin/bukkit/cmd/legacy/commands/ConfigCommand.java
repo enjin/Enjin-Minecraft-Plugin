@@ -1,8 +1,7 @@
-package com.enjin.bukkit.command.commands;
+package com.enjin.bukkit.cmd.legacy.commands;
 
-import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.command.Directive;
-import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.cmd.legacy.Directive;
+import com.enjin.bukkit.cmd.legacy.Permission;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.core.Enjin;
 import org.bukkit.ChatColor;

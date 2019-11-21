@@ -1,7 +1,7 @@
 package com.enjin.bukkit.shop;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.command.commands.BuyCommand;
+import com.enjin.bukkit.cmd.legacy.commands.BuyCommand;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.util.OptionalUtil;
 import com.enjin.common.shop.PlayerShopInstance;

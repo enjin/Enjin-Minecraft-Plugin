@@ -6,3 +6,13 @@ author: www.Enjin.com
 description: A plugin which allows the enjin servers to communicate with your server.
 softdepend: [Vault,Votifier,NuVotifier,mcMMO,Essentials,VanishNoPacket,PermissionsEx,GroupManager,GroupManagerX,BPermissions,ZPermissions,PermissionsBukkit]
 api-version: 1.13
+commands:
+  enjin:
+    description: Reference command for Enjin Minecraft Plugin.
+    aliases:
+      - e
+  enjinkey:
+    description: Sets the key in the configuration and authorizes the plugin with the CMS.
+    aliases:
+      - enjkey
+      - ek

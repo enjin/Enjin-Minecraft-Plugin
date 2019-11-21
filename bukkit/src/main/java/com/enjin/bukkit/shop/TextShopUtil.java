@@ -74,26 +74,26 @@ public class TextShopUtil {
             messages.add(message);
         }
 
-        MessageUtil.sendMessages(player, messages);
+        MessageUtil.sendComponents(player, messages);
     }
 
     private static void sendAvailableCategories(Player player, PlayerShopInstance instance, int page) {
         Shop shop = instance.getActiveShop();
 
         if (instance.getActiveCategory() == null) {
-            MessageUtil.sendMessage(player, buildHeader(shop.getName(), shop));
-            MessageUtil.sendMessages(player, buildShopInfo(shop, false));
-            MessageUtil.sendMessages(player, buildCategoryListContent(shop, shop.getCategories(), page));
+            MessageUtil.sendComponent(player, buildHeader(shop.getName(), shop));
+            MessageUtil.sendComponents(player, buildShopInfo(shop, false));
+            MessageUtil.sendComponents(player, buildCategoryListContent(shop, shop.getCategories(), page));
         } else {
             Category category = instance.getActiveCategory();
 
-            MessageUtil.sendMessage(player, buildHeader(category.getName(), shop));
-            MessageUtil.sendMessages(player, buildShopInfo(shop, false));
-            MessageUtil.sendMessages(player, buildCategoryListContent(shop, category.getCategories(), page));
+            MessageUtil.sendComponent(player, buildHeader(category.getName(), shop));
+            MessageUtil.sendComponents(player, buildShopInfo(shop, false));
+            MessageUtil.sendComponents(player, buildCategoryListContent(shop, category.getCategories(), page));
         }
 
-        MessageUtil.sendMessage(player, buildFooterInfo(shop));
-        MessageUtil.sendMessage(player, buildFooter(new StringBuilder("Type /")
+        MessageUtil.sendComponent(player, buildFooterInfo(shop));
+        MessageUtil.sendComponent(player, buildFooter(new StringBuilder("Type /")
                                                             .append(Enjin.getConfiguration(EMPConfig.class)
                                                                          .getBuyCommand())
                                                             .append(" page #")
@@ -108,11 +108,11 @@ public class TextShopUtil {
         } else {
             Category category = instance.getActiveCategory();
 
-            MessageUtil.sendMessage(player, buildHeader(category.getName(), shop));
-            MessageUtil.sendMessages(player, buildShopInfo(shop, true));
-            MessageUtil.sendMessages(player, buildItemListContent(player, shop, category.getItems(), page));
-            MessageUtil.sendMessage(player, buildFooterInfo(shop));
-            MessageUtil.sendMessage(player, buildFooter(new StringBuilder("Type /")
+            MessageUtil.sendComponent(player, buildHeader(category.getName(), shop));
+            MessageUtil.sendComponents(player, buildShopInfo(shop, true));
+            MessageUtil.sendComponents(player, buildItemListContent(player, shop, category.getItems(), page));
+            MessageUtil.sendComponent(player, buildFooterInfo(shop));
+            MessageUtil.sendComponent(player, buildFooter(new StringBuilder("Type /")
                                                                 .append(Enjin.getConfiguration(EMPConfig.class)
                                                                              .getBuyCommand())
                                                                 .append(" page #")
@@ -133,10 +133,10 @@ public class TextShopUtil {
                     .getItems()
                     .get(category.getItems().size() - 1));
 
-            MessageUtil.sendMessage(player, buildHeader(item.getName(), shop));
-            MessageUtil.sendMessages(player, buildItemContent(player, shop, item));
-            MessageUtil.sendMessage(player, buildFooterInfo(shop));
-            MessageUtil.sendMessage(player, buildFooter("", null, shop, -1));
+            MessageUtil.sendComponent(player, buildHeader(item.getName(), shop));
+            MessageUtil.sendComponents(player, buildItemContent(player, shop, item));
+            MessageUtil.sendComponent(player, buildFooterInfo(shop));
+            MessageUtil.sendComponent(player, buildFooter("", null, shop, -1));
 
             instance.setActiveItem(item);
         }
@@ -144,10 +144,10 @@ public class TextShopUtil {
 
     public static void sendItemInfo(Player player, Shop shop, Item item) {
         if (item != null) {
-            MessageUtil.sendMessage(player, buildHeader(item.getName(), shop));
-            MessageUtil.sendMessages(player, buildItemContent(player, shop, item));
-            MessageUtil.sendMessage(player, buildFooterInfo(shop));
-            MessageUtil.sendMessage(player, buildFooter("", null, shop, -1));
+            MessageUtil.sendComponent(player, buildHeader(item.getName(), shop));
+            MessageUtil.sendComponents(player, buildItemContent(player, shop, item));
+            MessageUtil.sendComponent(player, buildFooterInfo(shop));
+            MessageUtil.sendComponent(player, buildFooter("", null, shop, -1));
         }
     }
 

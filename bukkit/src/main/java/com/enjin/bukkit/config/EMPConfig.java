@@ -11,28 +11,32 @@ public class EMPConfig extends GenericEnjinConfig {
     @Getter
     @Setter
     @SerializedName(value = "collect-player-stats")
-    private boolean           collectPlayerStats = true;
+    private boolean collectPlayerStats = true;
     @Getter
     @Setter
     @SerializedName(value = "send-stats-interval")
-    private int               sendStatsInterval  = 5;
+    private int sendStatsInterval = 5;
     @Getter
     @Setter
     @SerializedName(value = "listen-for-bans")
-    private boolean           listenForBans      = true;
+    private boolean listenForBans = true;
     @Getter
     @SerializedName(value = "stats-collected")
-    private Stats             statsCollected     = new Stats();
+    private Stats statsCollected = new Stats();
     @Getter
     @Setter
     @SerializedName(value = "buy-command")
-    private String            buyCommand         = "buy";
+    private String buyCommand = "buy";
     @Getter
     @Setter
     @SerializedName(value = "use-buy-gui")
-    private boolean           useBuyGUI          = true;
+    private boolean useBuyGUI = true;
     @Getter
     @Setter
     @SerializedName(value = "enabled-components")
-    private EnabledComponents enabledComponents  = new EnabledComponents();
+    private EnabledComponents enabledComponents = new EnabledComponents();
+    @Getter
+    @Setter
+    @SerializedName(value = "translate-console-messages")
+    private boolean translateConsoleMessages;
 }

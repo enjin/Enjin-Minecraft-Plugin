@@ -1,4 +1,4 @@
-package com.enjin.bukkit.command;
+package com.enjin.bukkit.cmd.legacy;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.util.PermissionsUtil;
@@ -10,25 +10,20 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-public class CommandNode {
+public class DirectiveNode {
     @Getter
-    private Command                    data;
+    private Directive  data;
     @Getter
-    private Permission                 permission;
-    private Method                     method;
-    @Getter
-    private Map<String, DirectiveNode> directives = new HashMap<>();
+    private Permission permission;
+    private Method     method;
 
-    public CommandNode(Command data, Method method) {
+    public DirectiveNode(Directive data, Method method) {
         this.data = data;
         this.method = method;
     }
 
-    public CommandNode(Command data, Method method, Permission permission) {
+    public DirectiveNode(Directive data, Method method, Permission permission) {
         this(data, method);
         this.permission = permission;
     }
@@ -41,35 +36,27 @@ public class CommandNode {
         if (!sender.isOp() && permission != null && !permission.value().equals("") && !PermissionsUtil.hasPermission(
                 sender,
                 permission.value())) {
-            sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + permission.value() + ChatColor.RED + "\" or OP to run that command.");
+            sender.sendMessage(ChatColor.RED + "You need to have the \"" + ChatColor.GOLD + permission.value() + ChatColor.RED + "\" or OP to run that directive.");
             return;
-        }
-
-        if (args.length > 0) {
-            DirectiveNode directive = directives.get(args[0].toLowerCase());
-            if (directive != null) {
-                directive.invoke(sender, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[] {});
-                return;
-            }
         }
 
         try {
             if (method.getParameterTypes()[0] == Player.class && !(sender instanceof Player)) {
-                sender.sendMessage(ChatColor.RED + "This command can only be used in-game by a player.");
+                sender.sendMessage(ChatColor.RED + "This directive can only be used in-game by a player.");
                 return;
             }
 
             if (method.getParameterTypes()[0] == ConsoleCommandSender.class && !(sender instanceof ConsoleCommandSender)) {
-                sender.sendMessage(ChatColor.RED + "This command can only be used by the console.");
+                sender.sendMessage(ChatColor.RED + "This directive can only be used by the console.");
                 return;
             }
 
             if (EnjinMinecraftPlugin.getInstance().isAuthKeyInvalid() && data.requireValidKey()) {
-                sender.sendMessage(ChatColor.RED + "This command requires the server to successfully be authenticated with Enjin.");
+                sender.sendMessage(ChatColor.RED + "This directive requires the server to successfully be authenticated with Enjin.");
                 return;
             }
 
-            Enjin.getLogger().debug("Executing command: " + data.value());
+            Enjin.getLogger().debug("Executing directive: " + data.parent() + "-" + data.value());
             method.invoke(null, sender, args);
         } catch (Exception e) {
             Enjin.getLogger().log(e);

@@ -1,8 +1,8 @@
-package com.enjin.bukkit.command.commands;
+package com.enjin.bukkit.cmd.legacy.commands;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.command.Directive;
-import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.cmd.legacy.Directive;
+import com.enjin.bukkit.cmd.legacy.Permission;
 import com.enjin.bukkit.modules.impl.SupportModule;
 import com.enjin.bukkit.tickets.TicketCreationSession;
 import com.enjin.bukkit.tickets.TicketViewBuilder;
@@ -122,7 +122,7 @@ public class SupportCommands {
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
-                                MessageUtil.sendMessages(sender, TicketViewBuilder.buildTicketList(tickets));
+                                MessageUtil.sendComponents(sender, TicketViewBuilder.buildTicketList(tickets));
                             } else {
                                 sender.sendMessage("You do not have any tickets at this time!");
                             }
@@ -145,7 +145,7 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                MessageUtil.sendMessages(sender,
+                                MessageUtil.sendComponents(sender,
                                                          TicketViewBuilder.buildTicket(args[0],
                                                                                        replies,
                                                                                        PermissionsUtil.hasPermission(
@@ -181,7 +181,7 @@ public class SupportCommands {
                         } else {
                             List<Ticket> tickets = data.getResult().getResults();
                             if (tickets.size() > 0) {
-                                MessageUtil.sendMessages(sender, TicketViewBuilder.buildTicketList(tickets));
+                                MessageUtil.sendComponents(sender, TicketViewBuilder.buildTicketList(tickets));
                             } else {
                                 sender.sendMessage("There are no open tickets at this time.");
                             }
@@ -204,7 +204,7 @@ public class SupportCommands {
                         } else {
                             List<Reply> replies = data.getResult().getResults();
                             if (replies.size() > 0) {
-                                MessageUtil.sendMessages(sender,
+                                MessageUtil.sendComponents(sender,
                                                          TicketViewBuilder.buildTicket(args[0],
                                                                                        replies,
                                                                                        PermissionsUtil.hasPermission(

@@ -1,9 +1,9 @@
-package com.enjin.bukkit.command.commands;
+package com.enjin.bukkit.cmd.legacy.commands;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.command.Command;
-import com.enjin.bukkit.command.Directive;
-import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.cmd.legacy.Command;
+import com.enjin.bukkit.cmd.legacy.Directive;
+import com.enjin.bukkit.cmd.legacy.Permission;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.listeners.ConnectionListener;
 import com.enjin.bukkit.modules.impl.VaultModule;

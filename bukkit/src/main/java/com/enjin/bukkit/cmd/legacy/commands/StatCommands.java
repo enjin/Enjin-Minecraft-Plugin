@@ -1,8 +1,8 @@
-package com.enjin.bukkit.command.commands;
+package com.enjin.bukkit.cmd.legacy.commands;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.command.Directive;
-import com.enjin.bukkit.command.Permission;
+import com.enjin.bukkit.cmd.legacy.Directive;
+import com.enjin.bukkit.cmd.legacy.Permission;
 import com.enjin.bukkit.modules.impl.StatsModule;
 import com.enjin.bukkit.stats.StatsPlayer;
 import com.enjin.bukkit.stats.WriteStats;
