@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -55,10 +56,14 @@ public class ReportPublisher extends BukkitRunnable {
     private final EnjinMinecraftPlugin plugin;
     private final CommandSender sender;
     private final TextBuilder report = new TextBuilder();
+    private final File logs;
+    private final File log;
 
     public ReportPublisher(EnjinMinecraftPlugin plugin, CommandSender sender) {
         this.plugin = plugin;
         this.sender = sender;
+        this.logs = new File(plugin.getDataFolder(), "logs");
+        this.log = new File(logs, "enjin.log");
     }
 
     @Override
@@ -167,6 +172,7 @@ public class ReportPublisher extends BukkitRunnable {
         addBorder();
         for (World world : Bukkit.getWorlds())
             report.append(world.getName());
+        addBorder();
     }
 
     private void addDate() {
@@ -230,6 +236,7 @@ public class ReportPublisher extends BukkitRunnable {
             ZipFile zip = new ZipFile(reportFile);
             ZipParameters parameters = new ZipParameters();
 
+            zip.addFile(log, parameters);
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
             parameters.setFileNameInZip(reportName + ".txt");
             parameters.setSourceExternalStream(true);
