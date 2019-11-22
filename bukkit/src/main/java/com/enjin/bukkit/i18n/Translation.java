@@ -1,5 +1,6 @@
 package com.enjin.bukkit.i18n;
 
+import com.enjin.bukkit.cmd.CommandContext;
 import com.enjin.bukkit.cmd.SenderType;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.util.text.MessageUtil;
@@ -36,6 +37,9 @@ public enum Translation {
     Command_Debug_Description("Enable debug mode and log additional information to console."),
     Command_Debug_Set("&aDebugging has been set to &6%s"),
 
+    Command_Enjin_Description("Show information about the plugin and authors."),
+    Command_Enjin_Info("&7Running &6%s &cv%s&7.<br>&7Use &6%s &7to view available commands."),
+
     Command_Help_Description("Show a list of commands with their usage."),
 
     Command_Key_Description("Set the secret key found at the \"Admin - Games - Minecraft - Enjin Plugin\" page."),
@@ -44,10 +48,24 @@ public enum Translation {
     Command_Key_SuccessfulValidation("&aKey successfully validated."),
     Command_Key_UnsuccessfulValidation("&cCould not validate provided key."),
 
+    Command_Lag_Description("Display average TPS and memory usage."),
+    Command_Lag_AverageTps("&6Average TPS: &a%s"),
+    Command_Lag_LastTps("&6Last TPS Measurement: &a%s"),
+    Command_Lag_MemoryUsed("&6Memory Used: &a%sMB/%sMB"),
+
     Command_Message_Description("Send a message to a player."),
 
-    Command_Enjin_Description("Show information about the plugin and authors."),
-    Command_Enjin_Info("&7Running &6%s &cv%s&7.<br>&7Use &6%s &7to view available commands."),
+    Command_Push_Description("Sync player ranks with website tags."),
+    Command_Push_Updating("&aUpdating player ranks next sync."),
+
+    Command_Report_Description("Generate a report required by support for troubleshooting."),
+    Command_Report_Generating("&aGenerating report, please wait..."),
+    Command_Report_Generated("&aEnjin report saved to %s."),
+
+    Command_Sign_Set_Description(""),
+    Command_Sign_Update_Description(""),
+
+    Command_Tags("View a player's website tags."),
 
     Errors_Error("&cError: &7%s"),
     Errors_Exception("&cException: &7%s"),
@@ -123,6 +141,10 @@ public enum Translation {
         String[] lines = formatted.split("<br>");
         for (String line : lines)
             MessageUtil.sendString(sender, line);
+    }
+
+    public void send(CommandContext context, Object... args) {
+        send(context.getSender(), args);
     }
 
     private EMPConfig conf() {

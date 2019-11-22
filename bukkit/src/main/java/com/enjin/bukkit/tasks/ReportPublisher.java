@@ -1,268 +1,244 @@
 package com.enjin.bukkit.tasks;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
-import com.enjin.bukkit.util.io.ReverseLineInputStream;
+import com.enjin.bukkit.i18n.Translation;
+import com.enjin.bukkit.modules.impl.VaultModule;
+import com.enjin.bukkit.modules.impl.VotifierModule;
+import com.enjin.bukkit.util.text.TextBuilder;
 import com.enjin.core.Enjin;
-import com.enjin.rpc.util.ConnectionUtil;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Stack;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
-public class ReportPublisher implements Runnable {
+public class ReportPublisher extends BukkitRunnable {
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a z")
+            .withZone(ZoneOffset.UTC);
+    private static final DateTimeFormatter FILE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss")
+            .withZone(ZoneOffset.UTC);
+    private static final char BORDER_CHAR = '=';
+    private static final int HEADER_BORDER_WIDTH = 39;
+    private static final int HEADER_TITLE_INDENTATION = 10;
+    private static final int HEADER_VERSION_INDENTATION = 16;
+    private static final int ENVIRONMENT_TITLE_INDENTATION = 15;
+    private static final int EMP_TITLE_INDENTATION = 9;
+    private static final int PERMISSIONS_TITLE_INDENTATION = 14;
+    private static final int ECONOMY_TITLE_INDENTATION = 16;
+    private static final int VOTING_TITLE_INDENTATION = 17;
+    private static final int PLUGINS_TITLE_INDENTATION = 16;
+    private static final int WORLDS_TITLE_INDENTATION = 16;
+    private static final String REPORT_TITLE = "Enjin Plugin Report";
+    private static final String ENVIRONMENT_TITLE = "Environment";
+    private static final String EMP_TITLE = "Enjin Minecraft Plugin";
+    private static final String PERMISSIONS_TITLE = "Permissions";
+    private static final String ECONOMY_TITLE = "Economy";
+    private static final String VOTING_TITLE = "Voting";
+    private static final String PLUGINS_TITLE = "Plugins";
+    private static final String WORLDS_TITLE = "Worlds";
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+    private final EnjinMinecraftPlugin plugin;
+    private final CommandSender sender;
+    private final TextBuilder report = new TextBuilder();
 
-    private EnjinMinecraftPlugin plugin;
-    private StringBuilder        builder;
-    private CommandSender        sender;
-    private File                 logs = null;
-    private File                 log  = null;
-
-    private boolean dirty = false;
-
-    public ReportPublisher(EnjinMinecraftPlugin plugin, StringBuilder builder, CommandSender sender) {
+    public ReportPublisher(EnjinMinecraftPlugin plugin, CommandSender sender) {
         this.plugin = plugin;
-        this.builder = builder;
         this.sender = sender;
-        this.logs = new File(plugin.getDataFolder(), "logs");
-        this.log = new File(logs, "enjin.log");
     }
 
     @Override
-    public synchronized void run() {
-        builder.append('\n');
+    public void run() {
+        addHeader();
+        addEnvironment();
+        addEnjinPlugin();
+        addIntegrations();
+        addPlugins();
+        addWorlds();
+        zip();
+    }
 
-        File bukkitLog = new File("logs/latest.log");
+    private void addHeader() {
+        addBorder();
+        report.indent(HEADER_TITLE_INDENTATION).append(REPORT_TITLE).newLine()
+                .indent(HEADER_VERSION_INDENTATION).append(getEmpVersion()).newLine();
+        addBorder();
+    }
 
-        if (bukkitLog.exists()) {
-            Stack<String> mostRecentLogs  = new Stack<>();
-            Stack<String> mostRecentError = new Stack<>();
+    private void addEnvironment() {
+        report.indent(ENVIRONMENT_TITLE_INDENTATION).append(ENVIRONMENT_TITLE).newLine();
+        addBorder();
+        addDate();
+        addJavaVersion();
+        addOperatingSystem();
+        addServerVersion();
+        addMinecraftVersion();
+        addBorder();
+    }
 
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new InputStreamReader(new ReverseLineInputStream(bukkitLog)));
+    private void addEnjinPlugin() {
+        report.indent(EMP_TITLE_INDENTATION).append(EMP_TITLE).newLine();
+        addBorder();
+        addAuthenticationStatus();
+        addServerId();
+        addConnectionStatus();
+        addBorder();
+    }
 
-                boolean errorDiscovered = false;
-                boolean errorProcessed  = false;
+    private void addIntegrations() {
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault"))
+            addVaultIntegrations();
 
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (mostRecentLogs.size() < 100) {
-                        mostRecentLogs.push(line);
-                    } else if (errorProcessed) {
-                        break;
-                    }
+        if (Bukkit.getPluginManager().isPluginEnabled("Votifier"))
+            addVotePlugin();
+    }
 
-                    if (line.toLowerCase().startsWith("[SEVERE]") || line.toLowerCase().startsWith("[ERROR]")) {
-                        if (!errorDiscovered) {
-                            errorDiscovered = true;
-                        }
-                        mostRecentError.push(line);
-                    } else if (errorDiscovered) {
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-                Enjin.getLogger().log(e);
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Enjin.getLogger().log(e);
-                    }
-                }
-            }
+    private void addVaultIntegrations() {
+        VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
+        if (module == null)
+            return;
+        if (module.isPermissionsAvailable())
+            addPermissionsPlugin(module.getPermission());
+        if (module.isEconomyAvailable())
+            addEconomyPlugin(module.getEconomy());
+    }
 
-            if (!mostRecentError.isEmpty()) {
-                builder.append("Last Severe error message:");
-                setDirtyThenClean(1);
-                while (!mostRecentError.empty()) {
-                    builder.append(mostRecentError.pop());
-                    setDirtyThenClean(1);
-                }
-                setDirty();
-            }
+    private void addPermissionsPlugin(Permission permission) {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(permission.getName());
+        report.indent(PERMISSIONS_TITLE_INDENTATION).append(PERMISSIONS_TITLE).newLine();
+        addBorder();
+        addPluginVersionAndStatus(plugin);
+        addBorder();
+    }
 
-            if (!mostRecentLogs.isEmpty()) {
-                setClean(2);
-                builder.append("Last 100 lines of enjin.log:");
-                setDirtyThenClean(1);
-                while (!mostRecentLogs.empty()) {
-                    builder.append(mostRecentLogs.pop());
-                    setDirtyThenClean(1);
-                }
-                setDirty();
-            }
-        }
+    private void addEconomyPlugin(Economy economy) {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(economy.getName());
+        report.indent(ECONOMY_TITLE_INDENTATION).append(ECONOMY_TITLE).newLine();
+        addBorder();
+        addPluginVersionAndStatus(plugin);
+        addBorder();
+    }
 
-        setClean(1);
-        builder.append("=========================================");
-        setDirtyThenClean(1);
-        builder.append("Enjin HTTPS test: ").append(ConnectionUtil.testHTTPSconnection() ? "passed" : "FAILED!");
-        setDirtyThenClean(1);
-        builder.append("Enjin HTTP test: ").append(ConnectionUtil.testHTTPconnection() ? "passed" : "FAILED!");
-        setDirtyThenClean(1);
-        builder.append("Enjin web connectivity test: ")
-               .append(ConnectionUtil.testWebConnection() ? "passed" : "FAILED!");
-        setDirtyThenClean(1);
-        builder.append("Is mineshafter present: ").append(ConnectionUtil.isMineshafterPresent() ? "yes" : "no");
-        setDirtyThenClean(1);
-        builder.append("=========================================");
-        setDirtyThenClean(2);
-        builder.append("=========================================");
-        setDirtyThenClean(1);
-        builder.append("Java System Time: ").append(System.currentTimeMillis() / 1000);
-        setDirtyThenClean(1);
-        builder.append("=========================================");
-        setDirtyThenClean(2);
+    private void addVotePlugin() {
+        VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("Votifier");
+        FileConfiguration config = plugin.getConfig();
 
-        File              bukkitConfigFile = new File("bukkit.yml");
-        YamlConfiguration bukkitConfig     = new YamlConfiguration();
+        report.indent(VOTING_TITLE_INDENTATION).append(VOTING_TITLE).newLine();
+        addBorder();
+        addPluginVersionAndStatus(plugin);
+        report.append("Host: ").append(config.getString("host", "n/a")).newLine();
+        report.append("Port: ").append(config.getString("port", "n/a")).newLine();
+        report.append("Session Votes: ").append(module.getSessionVotes()).newLine();
+        report.append("Last Vote: ").append(module.getLastVote().orElse("n/a")).newLine();
+        addBorder();
+    }
 
-        if (bukkitConfigFile.exists()) {
-            try {
-                bukkitConfig.load(bukkitConfigFile);
+    private void addPluginVersionAndStatus(Plugin plugin) {
+        report.append("Plugin: ").append(plugin.getName())
+                .indent(1).append(plugin.getDescription().getVersion()).newLine();
+        report.append("Enabled: ").append(plugin.isEnabled()).newLine();
+    }
 
-                if (bukkitConfig.getBoolean("settings.plugin-profiling", false)) {
-                    plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), "timings merged");
+    private void addPlugins() {
+        report.indent(PLUGINS_TITLE_INDENTATION).append(PLUGINS_TITLE).newLine();
+        addBorder();
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
+            report.append(plugin.getName()).indent(1).append(plugin.getDescription().getVersion()).newLine();
+        addBorder();
+    }
 
-                    try {
-                        Enjin.getLogger().debug("Waiting for timings file to be totally written...");
-                        //Make sure the timings file is written before we continue!
-                        wait(2000);
-                    } catch (InterruptedException e) {
-                        // Do nothing.
-                    }
+    private void addWorlds() {
+        report.indent(WORLDS_TITLE_INDENTATION).append(WORLDS_TITLE).newLine();
+        addBorder();
+        for (World world : Bukkit.getWorlds())
+            report.append(world.getName());
+    }
 
-                    File    timingsFile       = null;
-                    boolean timingsDiscovered = false;
+    private void addDate() {
+        report.append("Time: ").append(TIME_FORMAT.format(Instant.now())).newLine();
+    }
 
-                    Enjin.getLogger().debug("Searching for timings file");
-                    //If the server owner has over 99 timings files, I don't know what to say...
-                    for (int i = 99; i >= 0 && !timingsDiscovered; i--) {
-                        if (i == 0) {
-                            timingsFile = new File(logs + File.separator + "timings" + File.separator + "timings.txt");
-                        } else {
-                            timingsFile = new File(logs + File.separator + "timings" + File.separator + "timings" + i + ".txt");
-                        }
+    private void addJavaVersion() {
+        report.append("Java Version: ").append(System.getProperty("java.version"))
+                .indent(1).append(System.getProperty("java.vendor")).newLine();
+    }
 
-                        if (timingsFile.exists()) {
-                            Enjin.getLogger().debug("Found timings file at: " + timingsFile.getAbsolutePath());
+    private void addOperatingSystem() {
+        report.append("Operating System: ").append(System.getProperty("os.name"))
+                .indent(1).append(System.getProperty("os.version"))
+                .indent(1).append(System.getProperty("os.arch")).newLine();
+    }
 
+    private void addServerVersion() {
+        report.append("Server Version: ").append(Bukkit.getVersion()).newLine();
+    }
 
-                            BufferedReader bufferedReader = null;
-                            timingsDiscovered = true;
+    private void addMinecraftVersion() {
+        report.append("Minecraft Version: ").append(getMinecraftVersion()).newLine();
+    }
 
-                            try {
-                                bufferedReader = new BufferedReader(
-                                        new InputStreamReader(
-                                                new DataInputStream(
-                                                        new FileInputStream(timingsFile))));
+    private void addAuthenticationStatus() {
+        report.append("Authenticated: " + !plugin.isAuthKeyInvalid()).newLine();
+    }
 
-                                builder.append("Timings file output:");
-                                setDirtyThenClean(1);
+    private void addServerId() {
+        if (plugin.isAuthKeyInvalid())
+            return;
+        report.append("Server ID: " + plugin.getServerId()).newLine();
+    }
 
-                                String line;
-                                while ((line = bufferedReader.readLine()) != null) {
-                                    builder.append(line);
-                                    setDirtyThenClean(1);
-                                }
-                                setDirty();
+    private void addConnectionStatus() {
+        report.append("Connection Lost: " + plugin.isUnableToContactEnjin()).newLine();
+    }
 
-                            } finally {
-                                if (bufferedReader != null) {
-                                    bufferedReader.close();
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                Enjin.getLogger().log(e);
-            }
-        }
+    private void addBorder() {
+        report.repeat(BORDER_CHAR, HEADER_BORDER_WIDTH).newLine();
+    }
 
-        //let's make sure to hide the apikey, wherever it may occurr in the file.
-        String report = builder.toString()
-                               .replaceAll("authkey=\\w{50}",
-                                           "authkey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        Date   date   = new Date();
+    private String getEmpVersion() {
+        return "v" + plugin.getDescription().getVersion().split("-")[0];
+    }
 
-        InputStream in = null;
+    private String getMinecraftVersion() {
+        return Bukkit.getBukkitVersion().split("-")[0];
+    }
 
-        try {
-            in = new ByteArrayInputStream(report.getBytes());
+    private void zip() {
+        try (InputStream is = new ByteArrayInputStream(report.toString().getBytes())) {
+            String reportName = "report_" + FILE_FORMAT.format(Instant.now());
+            File reportFolder = new File(plugin.getDataFolder(), "/reports/");
+            File reportFile = new File(reportFolder, reportName + ".zip");
 
-            ZipFile archive = new ZipFile(new File("enjinreport_" + DATE_FORMAT.format(date) + ".zip"));
+            if (!reportFolder.exists())
+                reportFolder.mkdirs();
 
+            ZipFile zip = new ZipFile(reportFile);
             ZipParameters parameters = new ZipParameters();
+
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
-
-            // Add Enjin Log
-            archive.addFile(log, parameters);
-
-            parameters.setFileNameInZip("enjinreport_" + DATE_FORMAT.format(date) + ".txt");
+            parameters.setFileNameInZip(reportName + ".txt");
             parameters.setSourceExternalStream(true);
+            zip.addStream(is, parameters);
 
-            // Add Report
-            archive.addStream(in, parameters);
-
-            sender.sendMessage(ChatColor.GOLD + "Enjin report created in " + archive.getFile()
-                                                                                    .getPath() + " successfully!");
-        } catch (ZipException e) {
-            sender.sendMessage(ChatColor.DARK_RED + "Unable to write enjin report!");
-            Enjin.getLogger().log(e);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                Enjin.getLogger().log(e);
-            }
+            Translation.Command_Report_Generated.send(sender, reportFile.getPath());
+        } catch (IOException | ZipException ex) {
+            Enjin.getLogger().log(ex);
         }
     }
 
-    public boolean isDirty() {
-        return this.dirty;
-    }
-
-    public void setDirty() {
-        this.dirty = true;
-    }
-
-    public void setClean(int nl) {
-        if (isDirty()) {
-            this.dirty = false;
-            if (builder != null && builder.length() > 0) {
-                while (nl-- > 0) {
-                    builder.append('\n');
-                }
-            }
-        }
-    }
-
-    public void setDirtyThenClean(int nl) {
-        setDirty();
-        setClean(nl);
-    }
 }

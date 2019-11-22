@@ -20,9 +20,11 @@ import java.util.regex.Pattern;
 public class VotifierListener implements Listener {
 
     private EnjinMinecraftPlugin plugin;
+    private VotifierModule module;
 
-    public VotifierListener(EnjinMinecraftPlugin plugin) {
+    public VotifierListener(EnjinMinecraftPlugin plugin, VotifierModule module) {
         this.plugin = plugin;
+        this.module = module;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -30,7 +32,6 @@ public class VotifierListener implements Listener {
         final Vote vote = event.getVote();
         final String username = vote.getUsername().replaceAll("[^0-9A-Za-z_]", "");
         final String listName = event.getVote().getServiceName().replaceAll("[^0-9A-Za-z.\\-]", "");
-        final VotifierModule module = plugin.getModuleManager().getModule(VotifierModule.class);
 
         if (username.isEmpty() || listName.isEmpty()) return;
 
@@ -51,6 +52,8 @@ public class VotifierListener implements Listener {
             }
 
             module.getPlayerVotes().get(listName).add(new Object[]{userid, System.currentTimeMillis() / 1000});
+            module.setSessionVotes(module.getSessionVotes() + 1);
+            module.setLastVote(String.format("%s voted on %s at %s", username, listName, vote.getTimeStamp()));
         });
     }
 }

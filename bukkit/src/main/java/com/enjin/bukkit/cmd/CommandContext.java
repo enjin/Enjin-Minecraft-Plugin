@@ -47,4 +47,31 @@ public class CommandContext {
         return list;
     }
 
+    public CommandSender getSender() {
+        return sender;
+    }
+
+    public SenderType getSenderType() {
+        return senderType;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public List<String> getArgs() {
+        return args;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public Deque<EnjinCommand> getCommandStack() {
+        return commandStack;
+    }
+
+    public List<String> getTabCompletionResult() {
+        return tabCompletionResult;
+    }
 }

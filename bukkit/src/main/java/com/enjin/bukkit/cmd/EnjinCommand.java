@@ -97,6 +97,8 @@ public abstract class EnjinCommand implements CommandExecutor, TabCompleter {
     }
 
     public void showHelp(CommandSender sender, VeryifyRequirements verifyRequirements, Usage usage) {
+        if (getUsageTranslation() == null)
+            return;
         if (verifyRequirements == VeryifyRequirements.YES && !requirements.areMet(sender, MessageAction.OMIT))
             return;
         MessageUtil.sendString(sender, getUsage(SenderType.type(sender), usage));

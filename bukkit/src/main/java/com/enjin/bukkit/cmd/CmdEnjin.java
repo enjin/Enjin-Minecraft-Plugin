@@ -3,6 +3,7 @@ package com.enjin.bukkit.cmd;
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.enums.Usage;
 import com.enjin.bukkit.i18n.Translation;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 public class CmdEnjin extends EnjinCommand {
@@ -18,11 +19,17 @@ public class CmdEnjin extends EnjinCommand {
 
         addSubCommand(new CmdBroadcast(this));
         addSubCommand(new CmdDebug(this));
-        addSubCommand(new CmdKey(this));
-        addSubCommand(new CmdMessage(this));
         addSubCommand(cmdHelp);
+        addSubCommand(new CmdKey(this));
+        addSubCommand(new CmdLag(this));
+        addSubCommand(new CmdMessage(this));
+        addSubCommand(new CmdPush(this));
+        addSubCommand(new CmdReport(this));
 
-        plugin.getCommand("enjin").setExecutor(this);
+        PluginCommand command = plugin.getCommand("enjin");
+        if (command == null)
+            throw new IllegalStateException("Could not get plugin command: \"enjin\"");
+        command.setExecutor(this);
     }
 
     @Override
