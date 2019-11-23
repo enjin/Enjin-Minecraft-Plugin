@@ -1,10 +1,11 @@
-package com.enjin.bukkit.tasks;
+package com.enjin.bukkit.report;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.i18n.Translation;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.modules.impl.VotifierModule;
 import com.enjin.bukkit.util.text.TextBuilder;
+import com.enjin.bukkit.util.text.TextBuilder.BorderOptions;
 import com.enjin.core.Enjin;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -16,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -33,17 +33,7 @@ public class ReportPublisher extends BukkitRunnable {
             .withZone(ZoneOffset.UTC);
     private static final DateTimeFormatter FILE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss")
             .withZone(ZoneOffset.UTC);
-    private static final char BORDER_CHAR = '=';
-    private static final int HEADER_BORDER_WIDTH = 39;
-    private static final int HEADER_TITLE_INDENTATION = 10;
-    private static final int HEADER_VERSION_INDENTATION = 16;
-    private static final int ENVIRONMENT_TITLE_INDENTATION = 15;
-    private static final int EMP_TITLE_INDENTATION = 9;
-    private static final int PERMISSIONS_TITLE_INDENTATION = 14;
-    private static final int ECONOMY_TITLE_INDENTATION = 16;
-    private static final int VOTING_TITLE_INDENTATION = 17;
-    private static final int PLUGINS_TITLE_INDENTATION = 16;
-    private static final int WORLDS_TITLE_INDENTATION = 16;
+    private static final int BORDER_WIDTH = 80;
     private static final String REPORT_TITLE = "Enjin Plugin Report";
     private static final String ENVIRONMENT_TITLE = "Environment";
     private static final String EMP_TITLE = "Enjin Minecraft Plugin";
@@ -64,44 +54,35 @@ public class ReportPublisher extends BukkitRunnable {
         this.sender = sender;
         this.logs = new File(plugin.getDataFolder(), "logs");
         this.log = new File(logs, "enjin.log");
+        this.report.setBorderWidth(BORDER_WIDTH);
     }
 
     @Override
     public void run() {
-        addHeader();
+        report.header(BorderOptions.TOP, REPORT_TITLE, getEmpVersion());
         addEnvironment();
         addEnjinPlugin();
         addIntegrations();
         addPlugins();
         addWorlds();
+        report.border();
         zip();
     }
 
-    private void addHeader() {
-        addBorder();
-        report.indent(HEADER_TITLE_INDENTATION).append(REPORT_TITLE).newLine()
-                .indent(HEADER_VERSION_INDENTATION).append(getEmpVersion()).newLine();
-        addBorder();
-    }
-
     private void addEnvironment() {
-        report.indent(ENVIRONMENT_TITLE_INDENTATION).append(ENVIRONMENT_TITLE).newLine();
-        addBorder();
+        report.header(ENVIRONMENT_TITLE);
         addDate();
         addJavaVersion();
         addOperatingSystem();
         addServerVersion();
         addMinecraftVersion();
-        addBorder();
     }
 
     private void addEnjinPlugin() {
-        report.indent(EMP_TITLE_INDENTATION).append(EMP_TITLE).newLine();
-        addBorder();
+        report.header(EMP_TITLE);
         addAuthenticationStatus();
         addServerId();
         addConnectionStatus();
-        addBorder();
     }
 
     private void addIntegrations() {
@@ -124,18 +105,14 @@ public class ReportPublisher extends BukkitRunnable {
 
     private void addPermissionsPlugin(Permission permission) {
         Plugin plugin = Bukkit.getPluginManager().getPlugin(permission.getName());
-        report.indent(PERMISSIONS_TITLE_INDENTATION).append(PERMISSIONS_TITLE).newLine();
-        addBorder();
+        report.header(PERMISSIONS_TITLE);
         addPluginVersionAndStatus(plugin);
-        addBorder();
     }
 
     private void addEconomyPlugin(Economy economy) {
         Plugin plugin = Bukkit.getPluginManager().getPlugin(economy.getName());
-        report.indent(ECONOMY_TITLE_INDENTATION).append(ECONOMY_TITLE).newLine();
-        addBorder();
+        report.header(ECONOMY_TITLE);
         addPluginVersionAndStatus(plugin);
-        addBorder();
     }
 
     private void addVotePlugin() {
@@ -143,14 +120,12 @@ public class ReportPublisher extends BukkitRunnable {
         Plugin plugin = Bukkit.getPluginManager().getPlugin("Votifier");
         FileConfiguration config = plugin.getConfig();
 
-        report.indent(VOTING_TITLE_INDENTATION).append(VOTING_TITLE).newLine();
-        addBorder();
+        report.header(VOTING_TITLE);
         addPluginVersionAndStatus(plugin);
         report.append("Host: ").append(config.getString("host", "n/a")).newLine();
         report.append("Port: ").append(config.getString("port", "n/a")).newLine();
         report.append("Session Votes: ").append(module.getSessionVotes()).newLine();
         report.append("Last Vote: ").append(module.getLastVote().orElse("n/a")).newLine();
-        addBorder();
     }
 
     private void addPluginVersionAndStatus(Plugin plugin) {
@@ -160,19 +135,15 @@ public class ReportPublisher extends BukkitRunnable {
     }
 
     private void addPlugins() {
-        report.indent(PLUGINS_TITLE_INDENTATION).append(PLUGINS_TITLE).newLine();
-        addBorder();
+        report.header(PLUGINS_TITLE);
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
             report.append(plugin.getName()).indent(1).append(plugin.getDescription().getVersion()).newLine();
-        addBorder();
     }
 
     private void addWorlds() {
-        report.indent(WORLDS_TITLE_INDENTATION).append(WORLDS_TITLE).newLine();
-        addBorder();
+        report.header(WORLDS_TITLE);
         for (World world : Bukkit.getWorlds())
-            report.append(world.getName());
-        addBorder();
+            report.append(world.getName()).newLine();
     }
 
     private void addDate() {
@@ -210,10 +181,6 @@ public class ReportPublisher extends BukkitRunnable {
 
     private void addConnectionStatus() {
         report.append("Connection Lost: " + plugin.isUnableToContactEnjin()).newLine();
-    }
-
-    private void addBorder() {
-        report.repeat(BORDER_CHAR, HEADER_BORDER_WIDTH).newLine();
     }
 
     private String getEmpVersion() {

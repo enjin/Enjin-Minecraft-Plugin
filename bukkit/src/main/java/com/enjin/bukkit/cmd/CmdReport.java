@@ -1,7 +1,7 @@
 package com.enjin.bukkit.cmd;
 
 import com.enjin.bukkit.i18n.Translation;
-import com.enjin.bukkit.tasks.ReportPublisher;
+import com.enjin.bukkit.report.ReportPublisher;
 
 import static com.enjin.bukkit.enums.Permission.CMD_REPORT;
 
