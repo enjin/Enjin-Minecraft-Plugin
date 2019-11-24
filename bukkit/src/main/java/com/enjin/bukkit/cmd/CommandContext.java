@@ -34,6 +34,21 @@ public class CommandContext {
         return PlayerArgumentProcessor.INSTANCE.parse(sender, args.get(index));
     }
 
+    public Optional<Integer> argToInt(int index) {
+        if (index >= args.size())
+            return Optional.empty();
+
+        Optional<Integer> optional = Optional.empty();
+
+        try {
+            Integer value = Integer.parseInt(args.get(index));
+            optional = Optional.of(value);
+        } catch (NumberFormatException ignore) {
+        }
+
+        return optional;
+    }
+
     public static List<EnjinCommand> createCommandStackAsList(EnjinCommand top) {
         List<EnjinCommand> list = new ArrayList<>();
 

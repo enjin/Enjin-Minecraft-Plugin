@@ -35,6 +35,9 @@ public enum Translation {
     Command_Broadcast_Description("Broadcast a message to all players."),
 
     Command_Buy_Description("Show shop packages available for purchase."),
+    Command_Buy_InvalidIdFormat("The id you specified is not valid. Must be a number."),
+    Command_Buy_NoShopsDetected("&cNo shops detected at this time."),
+    Command_Buy_NoItemsDetected("&cNo items detected in this category."),
 
     Command_Debug_Description("Enable debug mode and log additional information to console."),
     Command_Debug_Set("&aDebugging has been set to &6%s"),

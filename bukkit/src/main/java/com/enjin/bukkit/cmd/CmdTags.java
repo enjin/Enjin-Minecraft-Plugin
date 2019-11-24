@@ -62,6 +62,11 @@ public class CmdTags extends EnjinCommand {
                 return;
             }
 
+            if (data.getError() != null) {
+                Translation.Errors_Error.send(context.sender, data.getError().getMessage());
+                return;
+            }
+
             List<TagData> tags = data.getResult();
             if (tags.isEmpty()) {
                 Translation.Command_Tags_Empty.send(context, context.sender.getName());
