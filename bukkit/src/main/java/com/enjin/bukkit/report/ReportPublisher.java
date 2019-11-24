@@ -48,6 +48,7 @@ public class ReportPublisher extends BukkitRunnable {
     private final TextBuilder report;
     private final File logFolder;
     private final File logFile;
+    private final File errorFolder;
 
     public ReportPublisher(EnjinMinecraftPlugin plugin, CommandSender sender) {
         this.plugin = plugin;
@@ -55,6 +56,7 @@ public class ReportPublisher extends BukkitRunnable {
         this.report = new TextBuilder();
         this.logFolder = new File(plugin.getDataFolder(), "logs");
         this.logFile = new File(logFolder, "enjin.log");
+        this.errorFolder = new File(plugin.getDataFolder(), "errors");
         this.report.setBorderWidth(BORDER_WIDTH);
     }
 
@@ -205,6 +207,7 @@ public class ReportPublisher extends BukkitRunnable {
             ZipParameters parameters = new ZipParameters();
 
             zip.addFile(logFile, parameters);
+            zip.addFolder(errorFolder, parameters);
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
             parameters.setFileNameInZip(reportName + ".txt");
             parameters.setSourceExternalStream(true);
