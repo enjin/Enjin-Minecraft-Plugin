@@ -4,6 +4,7 @@ import com.enjin.bukkit.EnjinMinecraftPlugin;
 import com.enjin.bukkit.i18n.Translation;
 import com.enjin.bukkit.modules.impl.VaultModule;
 import com.enjin.bukkit.modules.impl.VotifierModule;
+import com.enjin.bukkit.util.io.RecentFileFilter;
 import com.enjin.bukkit.util.text.TextBuilder;
 import com.enjin.bukkit.util.text.TextBuilder.BorderOptions;
 import com.enjin.core.Enjin;
@@ -20,19 +21,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 public class ReportPublisher extends BukkitRunnable {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a z")
             .withZone(ZoneOffset.UTC);
     private static final DateTimeFormatter FILE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss")
             .withZone(ZoneOffset.UTC);
+    private static final FileFilter ERRORS_FILTER = new RecentFileFilter(TimeUnit.DAYS.toSeconds(5));
     private static final int BORDER_WIDTH = 80;
     private static final String REPORT_TITLE = "Enjin Plugin Report";
     private static final String ENVIRONMENT_TITLE = "Environment";
@@ -205,10 +205,13 @@ public class ReportPublisher extends BukkitRunnable {
 
             ZipFile zip = new ZipFile(reportFile);
             ZipParameters parameters = new ZipParameters();
-
+            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
             zip.addFile(logFile, parameters);
             zip.addFolder(errorFolder, parameters);
-            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
+            for (File file : errorFolder.listFiles(ERRORS_FILTER)) {
+                parameters.setFileNameInZip("errors/" + file.getName());
+                zip.addFile(file, parameters);
+            }
             parameters.setFileNameInZip(reportName + ".txt");
             parameters.setSourceExternalStream(true);
             zip.addStream(is, parameters);

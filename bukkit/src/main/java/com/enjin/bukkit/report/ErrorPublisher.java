@@ -55,6 +55,7 @@ public class ErrorPublisher extends BukkitRunnable {
         report.header(HEADER_TITLE);
         report.append("Time: ").append(TIME_FORMAT.format(Instant.now())).newLine();
         report.append("Thread: ").append(thread.getName()).newLine();
+        report.append("Plugin Version: ").append(plugin.getDescription().getVersion());
     }
 
     private void addSummary() {
