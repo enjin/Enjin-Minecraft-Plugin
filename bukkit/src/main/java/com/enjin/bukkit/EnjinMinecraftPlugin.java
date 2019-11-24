@@ -1,10 +1,10 @@
 package com.enjin.bukkit;
 
 import com.enjin.bukkit.cmd.CmdEnjin;
+import com.enjin.bukkit.cmd.EnjinCommand;
 import com.enjin.bukkit.cmd.legacy.CommandBank;
 import com.enjin.bukkit.cmd.legacy.commands.BuyCommand;
 import com.enjin.bukkit.cmd.legacy.commands.ConfigCommand;
-import com.enjin.bukkit.cmd.legacy.commands.CoreCommands;
 import com.enjin.bukkit.cmd.legacy.commands.HeadCommands;
 import com.enjin.bukkit.cmd.legacy.commands.PointCommands;
 import com.enjin.bukkit.cmd.legacy.commands.SupportCommands;
@@ -23,8 +23,6 @@ import com.enjin.bukkit.listeners.perm.processors.ZPermissionsListener;
 import com.enjin.bukkit.modules.ModuleManager;
 import com.enjin.bukkit.modules.impl.SignStatsModule;
 import com.enjin.bukkit.shop.ShopListener;
-import com.enjin.bukkit.stats.StatsPlayer;
-import com.enjin.bukkit.stats.StatsServer;
 import com.enjin.bukkit.storage.Database;
 import com.enjin.bukkit.sync.BukkitInstructionHandler;
 import com.enjin.bukkit.sync.CommandExecutor;
@@ -49,7 +47,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -80,10 +77,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     private boolean                  tuxTwoLibInstalled    = false;
     @Getter
     private boolean                  globalGroupsSupported = true;
-    @Getter
-    private StatsServer              serverStats           = new StatsServer(this);
-    @Getter
-    private Map<String, StatsPlayer> playerStats           = new ConcurrentHashMap<>();
     /**
      * Key is banned player, value is admin that banned the player or blank if the console banned
      */
@@ -109,9 +102,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     @Getter
     @Setter
     private boolean                  unableToContactEnjin  = false;
-    @Getter
-    @Setter
-    private boolean                  permissionsNotWorking = false;
 
     @Getter
     private PermissionListener permissionListener;
@@ -141,15 +131,17 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         try {
             saveConfiguration();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Enjin.getLogger().log(ex);
         }
 
         try {
             database.commit();
             database.backup();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            Enjin.getLogger().log(ex);
         }
+
+        EnjinCommand.unregisterAll();
     }
 
     public void initVersion() {
@@ -170,7 +162,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             Log log = new Log(getDataFolder());
             Enjin.setLogger(log);
 
-            Enjin.getLogger().info("Initializing for the first time.");
             initConfigs();
             log.configure();
             log.setDebug(Enjin.getConfiguration().isDebug());
@@ -180,12 +171,11 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             try {
                 MetricsLite metrics = new MetricsLite(this);
                 metrics.start();
-            } catch (IOException e) {
-                Enjin.getLogger().debug("Failed to start metrics.");
+            } catch (IOException ex) {
+                Enjin.getLogger().log(ex);
             }
 
             menuAPI = new MenuAPI(this);
-            Enjin.getLogger().debug("Init gui api done.");
 
             initVanishPredicate();
 
@@ -215,12 +205,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
 
             initVersion();
-            Enjin.getLogger().debug("Init version done.");
-//            initCommands();
             new CmdEnjin(this);
-//            Enjin.getLogger().debug("Init commands done.");
             initListeners();
-            Enjin.getLogger().debug("Init listeners done.");
 
             firstRun = false;
         }
@@ -234,17 +220,13 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         commandExecutor.runTaskTimerAsynchronously(this, 20, 20);
 
         moduleManager.init();
-        Enjin.getLogger().debug("Init modules done.");
         initPlugins();
-        Enjin.getLogger().debug("Init plugins done.");
 
         if (Plugins.isEnabled("Vault")) {
             initPermissions();
-            Enjin.getLogger().debug("Init permissions done.");
         }
 
         initTasks();
-        Enjin.getLogger().debug("Init tasks done.");
     }
 
     public void initConfigs() {
@@ -252,8 +234,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
         try {
             database = new Database(this);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            Enjin.getLogger().log(ex);
         }
     }
 
@@ -270,9 +252,8 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
             }
 
             configuration.save(configFile);
-        } catch (Exception e) {
-            Enjin.getLogger().warning("Error occurred while initializing enjin configuration.");
-            Enjin.getLogger().log(e);
+        } catch (Exception ex) {
+            Enjin.getLogger().log(ex);
         }
     }
 
@@ -283,20 +264,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
 
         synchronized (Enjin.getConfiguration()) {
             Enjin.getConfiguration().save(new File(instance.getDataFolder(), "config.json"));
-        }
-    }
-
-    private void initCommands() {
-        CommandBank.register(CoreCommands.class, BuyCommand.class, // StatCommands.class,
-                             HeadCommands.class, SupportCommands.class, PointCommands.class, ConfigCommand.class);
-
-        if (Bukkit.getPluginManager().isPluginEnabled("Votifier") && Enjin.getConfiguration(EMPConfig.class).getEnabledComponents().isVoteListener()) {
-            CommandBank.register(VoteCommands.class);
-        }
-
-        String buyCommand = Enjin.getConfiguration(EMPConfig.class).getBuyCommand();
-        if (buyCommand != null && !buyCommand.isEmpty() && !CommandBank.isCommandRegistered(buyCommand)) {
-            CommandBank.replaceCommandWithAlias("buy", buyCommand);
         }
     }
 
@@ -314,7 +281,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void initTasks() {
-        Enjin.getLogger().debug("Starting tasks.");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new RPCPacketManager(this), 20L * 60L, 20L * 60L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new TPSMonitor(), 20L * 2L, 20L * 2L);
         ConfigSaver.schedule(this);
@@ -325,12 +291,10 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     public void disableTasks() {
-        Enjin.getLogger().debug("Stopping tasks.");
         Bukkit.getScheduler().cancelTasks(this);
     }
 
     private void initListeners() {
-        Enjin.getLogger().debug("Initializing Listeners");
         Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BanListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new ShopListener(), this);
@@ -340,7 +304,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
         if (Bukkit.getPluginManager().isPluginEnabled("TuxTwoLib")) {
             tuxTwoLibInstalled = true;
             Enjin.getLogger().info("TuxTwoLib is installed. Offline players can be given items.");
-            getLogger().info("TuxTwoLib is installed. Offline players can be given items.");
         }
     }
 
@@ -370,30 +333,27 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     }
 
     private void initVanishPredicate() {
-        Enjin.getApi().registerVanishPredicate(new Predicate<UUID>() {
-            @Override
-            public boolean apply(@Nullable UUID input) {
-                boolean vanished = false;
-                if (input != null) {
-                    Player player = Bukkit.getPlayer(input);
-                    if (player != null) {
-                        List<MetadataValue> values = player.getMetadata("vanished");
-                        for (MetadataValue value : values) {
-                            try {
-                                if (value.asBoolean()) {
-                                    vanished = true;
-                                    break;
-                                }
-                            } catch (Exception e) {
-                                Enjin.getLogger()
-                                     .debug("Vanished metadata from " + value.getOwningPlugin()
-                                                                             .getName() + " is not of type boolean.");
+        Enjin.getApi().registerVanishPredicate(input -> {
+            boolean vanished = false;
+            if (input != null) {
+                Player player = Bukkit.getPlayer(input);
+                if (player != null) {
+                    List<MetadataValue> values = player.getMetadata("vanished");
+                    for (MetadataValue value : values) {
+                        try {
+                            if (value.asBoolean()) {
+                                vanished = true;
+                                break;
                             }
+                        } catch (Exception e) {
+                            Enjin.getLogger()
+                                 .debug("Vanished metadata from " + value.getOwningPlugin()
+                                                                         .getName() + " is not of type boolean.");
                         }
                     }
                 }
-                return vanished;
             }
+            return vanished;
         });
     }
 
@@ -423,10 +383,6 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
                 Enjin.getLogger().log(t);
             }
         });
-    }
-
-    public boolean isUpdateFromCurseForge() {
-        return getDescription().getVersion().endsWith("-bukkit");
     }
 
     public Database db() {

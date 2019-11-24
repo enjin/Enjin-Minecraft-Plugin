@@ -1,5 +1,7 @@
 package com.enjin.bukkit.util.text;
 
+import org.bukkit.ChatColor;
+
 public class TextBuilder {
 
     public static final String NEWLINE = "\n";
@@ -9,6 +11,7 @@ public class TextBuilder {
     private int indentLevel = 0;
     private int borderWidth = 40;
     private char borderChar = '=';
+    private char colorPrefixChar = '&';
     private LineState lineState = LineState.NEWLINE;
 
     public TextBuilder(StringBuilder builder) {
@@ -58,6 +61,12 @@ public class TextBuilder {
     public TextBuilder append(double d) {
         applyIndentLevel();
         builder.append(d);
+        return this;
+    }
+
+    public TextBuilder append(ChatColor color) {
+        applyIndentLevel();
+        builder.append(colorPrefixChar).append(color.getChar());
         return this;
     }
 
@@ -133,6 +142,19 @@ public class TextBuilder {
     public TextBuilder setBorderWidth(int borderWidth) {
         this.borderWidth = borderWidth;
         return this;
+    }
+
+    public TextBuilder setColorPrefixChar(char colorPrefixChar) {
+        this.colorPrefixChar = colorPrefixChar;
+        return this;
+    }
+
+    public boolean isEmpty() {
+        return length() == 0;
+    }
+
+    public int length() {
+        return builder.length();
     }
 
     private int calculateHeaderIndent(String line) {

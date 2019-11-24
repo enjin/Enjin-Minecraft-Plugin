@@ -34,6 +34,8 @@ public enum Translation {
 
     Command_Broadcast_Description("Broadcast a message to all players."),
 
+    Command_Buy_Description("Show shop packages available for purchase."),
+
     Command_Debug_Description("Enable debug mode and log additional information to console."),
     Command_Debug_Set("&aDebugging has been set to &6%s"),
 
@@ -65,7 +67,9 @@ public enum Translation {
     Command_Sign_Set_Description(""),
     Command_Sign_Update_Description(""),
 
-    Command_Tags("View a player's website tags."),
+    Command_Tags_Description("View a player's website tags."),
+    Command_Tags_Empty("&c%s has no tags."),
+    Command_Tags_List("&6%s's Tags: %s"),
 
     Errors_Error("&cError: &7%s"),
     Errors_Exception("&cException: &7%s"),

@@ -56,11 +56,6 @@ public class ConnectionListener implements Listener {
             p.sendMessage(ChatColor.DARK_RED + "If this problem persists please send enjin the results of the /enjin log");
         }
 
-        if (plugin.isPermissionsNotWorking() && PermissionsUtil.hasPermission(p,
-                                                                              "enjin.notify.permissionsnotworking")) {
-            p.sendMessage(ChatColor.DARK_RED + "[EnjinMinecraftPlugin] Your permissions plugin is not configured correctly. Groups and permissions will not update. Check your server.log for more details.");
-        }
-
         VaultModule module = plugin.getModuleManager().getModule(VaultModule.class);
         if (module != null && module.isEconomyAvailable() && !module.isEconomyUpToDate() && PermissionsUtil.hasPermission(
                 p,

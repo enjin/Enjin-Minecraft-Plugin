@@ -9,15 +9,11 @@ import com.enjin.bukkit.i18n.Translation;
 import com.enjin.bukkit.util.text.MessageUtil;
 import com.enjin.bukkit.util.text.TextUtils;
 import com.enjin.core.Enjin;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.Bukkit;
+import org.bukkit.command.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class EnjinCommand implements CommandExecutor, TabCompleter {
@@ -191,6 +187,66 @@ public abstract class EnjinCommand implements CommandExecutor, TabCompleter {
         }
 
         return result;
+    }
+
+    protected void register(String name, List<String> aliases) {
+        name = name.toLowerCase();
+
+        try {
+            Map<String, Command> known = getKnownCommands();
+            Command command = known.get(name);
+
+            if (command != null) {
+                if (!(command instanceof CommandProxy))
+                    return;
+                known.remove(name);
+            }
+
+            command = new CommandProxy(this, name, aliases);
+            known.put(name, command);
+        } catch (Throwable t) {
+            Enjin.getLogger().log(t);
+        }
+    }
+
+    public static SimpleCommandMap getCommandMap() throws ReflectiveOperationException {
+        Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+        field.setAccessible(true);
+        return (SimpleCommandMap) field.get(Bukkit.getServer());
+    }
+
+    public static Map<String, Command> getKnownCommands() throws ReflectiveOperationException {
+        SimpleCommandMap map = getCommandMap();
+        Field field = getField(map.getClass(), "knownCommands");
+        field.setAccessible(true);
+        return (Map<String, Command>) field.get(map);
+    }
+
+    public static Field getField(Class<?> clazz, String name) {
+        if (clazz == null)
+            return null;
+
+        Field field;
+
+        try {
+            field = clazz.getDeclaredField("knownCommands");
+        } catch (ReflectiveOperationException ex) {
+            field = getField(clazz.getSuperclass(), name);
+        }
+
+        return field;
+    }
+
+    public static void unregisterAll() {
+        try {
+            Map<String, Command> known = getKnownCommands();
+            for (Map.Entry<String, Command> entry : new HashSet<>(known.entrySet())) {
+                if (entry.getValue() instanceof CommandProxy)
+                    known.remove(entry.getKey());
+            }
+        } catch (Throwable t) {
+            Enjin.getLogger().log(t);
+        }
     }
 
 }
