@@ -1,18 +1,23 @@
 package com.enjin.bukkit.report;
 
+import com.enjin.bukkit.util.io.FileUtil;
 import com.enjin.bukkit.util.text.TextBuilder;
+import com.enjin.core.Enjin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThrowablePublisher extends BukkitRunnable {
+public class ErrorPublisher extends BukkitRunnable {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a z")
+            .withZone(ZoneOffset.UTC);
+    private static final DateTimeFormatter FILE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss")
             .withZone(ZoneOffset.UTC);
     private static final int BORDER_WIDTH = 80;
     private static final String HEADER_TITLE = "Error Log";
@@ -21,14 +26,19 @@ public class ThrowablePublisher extends BukkitRunnable {
     private static final String PLUGINS_SUBTITLE = "Report issue to author of first plugin";
     private static final String ERROR_TITLE = "Stack Trace";
 
+    private final Plugin plugin;
     private final Throwable throwable;
     private final Thread thread;
-    private final TextBuilder report = new TextBuilder();
-    private int framesInCommon = 0;
+    private final TextBuilder report;
+    private final Instant time;
+    private int framesInCommon;
 
-    public ThrowablePublisher(Throwable throwable) {
+    public ErrorPublisher(Plugin plugin, Throwable throwable) {
+        this.plugin = plugin;
         this.throwable = throwable;
         this.thread = Thread.currentThread();
+        this.report = new TextBuilder();
+        this.time = Instant.now();
         this.report.setBorderWidth(BORDER_WIDTH);
     }
 
@@ -38,6 +48,7 @@ public class ThrowablePublisher extends BukkitRunnable {
         addSummary();
         addOffendingPlugins();
         addError();
+        save();
     }
 
     private void addHeader() {
@@ -159,5 +170,16 @@ public class ThrowablePublisher extends BukkitRunnable {
     @Override
     public String toString() {
         return report.toString();
+    }
+
+    private void save() {
+        File folder = new File(plugin.getDataFolder(), "errors/");
+        String fileName = getOriginalCause(throwable).getClass().getSimpleName() + "-" + FILE_FORMAT.format(time);
+        File file = new File(folder, fileName);
+        try {
+            FileUtil.write(file, toString());
+        } catch (Throwable t) {
+            Enjin.getLogger().log(t);
+        }
     }
 }

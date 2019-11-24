@@ -400,18 +400,28 @@ public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {
     public static void dispatchConsoleCommand(String command) {
         Enjin.getLogger().debug("Dispatching command: " + command);
         Bukkit.getScheduler()
-                .scheduleSyncDelayedTask((Plugin) Enjin.getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
+                .scheduleSyncDelayedTask((Plugin) Enjin.getPlugin(), () -> {
+                    try {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    } catch (Throwable t) {
+                        Enjin.getLogger().log(t);
+                    }
+                });
     }
 
     public static void dispatchConsoleCommand(String command, Runnable callback, boolean async) {
         Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) Enjin.getPlugin(), () -> {
-            Enjin.getLogger().debug("Dispatching command: " + command);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            try {
+                Enjin.getLogger().debug("Dispatching command: " + command);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 
-            if (async)
-                Bukkit.getScheduler().runTaskAsynchronously((Plugin) Enjin.getPlugin(), callback);
-            else
-                callback.run();
+                if (async)
+                    Bukkit.getScheduler().runTaskAsynchronously((Plugin) Enjin.getPlugin(), callback);
+                else
+                    callback.run();
+            } catch (Throwable t) {
+                Enjin.getLogger().log(t);
+            }
         });
     }
 

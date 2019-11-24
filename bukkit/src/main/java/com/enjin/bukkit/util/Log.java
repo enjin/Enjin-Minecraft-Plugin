@@ -1,6 +1,7 @@
 package com.enjin.bukkit.util;
 
 import com.enjin.bukkit.EnjinMinecraftPlugin;
+import com.enjin.bukkit.report.ErrorPublisher;
 import com.enjin.bukkit.util.io.LineAppender;
 import com.enjin.common.Log4j2Handlers;
 import com.enjin.common.compatibility.Log4j2Handler;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,14 +29,16 @@ public class Log implements EnjinLogger {
 
     private static final SimpleDateFormat LOG_ZIP_NAME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    private Logger       logger       = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getName());
+    private EnjinMinecraftPlugin plugin;
+    private Logger logger = (Logger) LogManager.getLogger(EnjinMinecraftPlugin.class.getName());
     private LineAppender lineAppender = null;
-    private FileAppender logAppender  = null;
-    private File         logs         = null;
-    private File         log          = null;
-    private boolean      configured   = false;
+    private FileAppender logAppender = null;
+    private File logs = null;
+    private File log = null;
+    private boolean configured = false;
 
     public Log(File configDir) {
+        plugin = (EnjinMinecraftPlugin) Enjin.getPlugin();
         logs = new File(configDir, "logs");
         log = new File(logs, "enjin.log");
 
@@ -54,13 +58,13 @@ public class Log implements EnjinLogger {
         FileInputStream fis = null;
         try {
             String date = LOG_ZIP_NAME_FORMAT.format(Calendar.getInstance().getTime());
-            int    i    = 0;
-            File   file = null;
+            int i = 0;
+            File file = null;
             while (file == null || file.exists()) {
                 file = new File(logs, date + "-" + ++i + ".log.zip");
             }
 
-            ZipFile       zip        = new ZipFile(file);
+            ZipFile zip = new ZipFile(file);
             ZipParameters parameters = new ZipParameters();
             parameters.setFileNameInZip(date + "-" + i + ".log");
             parameters.setSourceExternalStream(true);
@@ -103,11 +107,13 @@ public class Log implements EnjinLogger {
     @Override
     public void log(String msg, Throwable t) {
         logger.error(msg + ": " + Exceptions.getStackTrace(t));
+        new ErrorPublisher(plugin, t).runTaskAsynchronously(plugin);
     }
 
     @Override
     public void log(Throwable t) {
         log("Exception Caught", t);
+        new ErrorPublisher(plugin, t).runTaskAsynchronously(plugin);
     }
 
     public String getLastLine() {
@@ -116,12 +122,12 @@ public class Log implements EnjinLogger {
 
     private String hideSensitiveText(String msg) {
         if (msg == null || msg.isEmpty() || Enjin.getConfiguration() == null || Enjin.getConfiguration()
-                                                                                     .getAuthKey() == null
+                .getAuthKey() == null
                 || Enjin.getConfiguration().getAuthKey().isEmpty()) {
             return msg;
         } else {
             return msg.replaceAll(Enjin.getConfiguration().getAuthKey(),
-                                  "**************************************************");
+                    "**************************************************");
         }
     }
 
@@ -131,7 +137,7 @@ public class Log implements EnjinLogger {
         }
 
         Log4j2Handler log4j2Handler = Log4j2Handlers.findHandler();
-        LoggerContext ctx           = (LoggerContext) LogManager.getContext(false);
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
         if (log4j2Handler != null) {
             for (Appender appender : logger.getAppenders().values()) {
