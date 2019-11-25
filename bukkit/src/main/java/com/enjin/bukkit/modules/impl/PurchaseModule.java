@@ -52,6 +52,10 @@ public class PurchaseModule {
         }
     }
 
+    public boolean purchasePending(Player player) {
+        return pendingPurchases.containsKey(player.getName());
+    }
+
     public void confirmPurchase(final Player player) {
         if (!pendingPurchases.containsKey(player.getName())) {
             player.sendMessage(ChatColor.RED + "You do not have a pending purchase.");

@@ -1,8 +1,8 @@
 package com.enjin.bukkit.cmd;
 
 import com.enjin.bukkit.config.EMPConfig;
-import com.enjin.bukkit.enums.CommandProcess;
 import com.enjin.bukkit.i18n.Translation;
+import com.enjin.bukkit.modules.impl.PurchaseModule;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
 import com.enjin.bukkit.shop.gui.ShopList;
@@ -39,7 +39,12 @@ public class CmdBuy extends EnjinCommand {
                 .withPermission(CMD_BUY)
                 .requireValidKey()
                 .build();
-        addSubCommand(new CmdBuyPage(this));
+        EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
+        if (!config.isUseBuyGUI()) {
+            addSubCommand(new CmdBuyPage(this));
+            addSubCommand(new CmdBuyItem(this));
+        }
+        addSubCommand(new CmdBuyConfirm(this));
         register(this.aliases.get(0), new ArrayList<>(0));
     }
 
@@ -188,7 +193,6 @@ public class CmdBuy extends EnjinCommand {
     }
 
     class CmdBuyPage extends EnjinCommand {
-
         public CmdBuyPage(EnjinCommand parent) {
             super(parent);
             this.aliases.add("page");
@@ -238,6 +242,105 @@ public class CmdBuy extends EnjinCommand {
         public Translation getUsageTranslation() {
             return Translation.Command_Buy_Page_Description;
         }
+    }
 
+    class CmdBuyItem extends EnjinCommand {
+
+        public CmdBuyItem(EnjinCommand parent) {
+            super(parent);
+            this.aliases.add("item");
+            this.aliases.add("it");
+            this.aliases.add("i");
+            this.requirements = CommandRequirements.builder(parent.plugin)
+                    .withAllowedSenderTypes(SenderType.PLAYER)
+                    .withPermission(CMD_BUY)
+                    .requireValidKey()
+                    .build();
+        }
+
+        @Override
+        public void execute(CommandContext context) {
+            Player player = context.player;
+            if (!player.isOnline())
+                return;
+
+            Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
+            PlayerShopInstance instance = instances.get(player.getUniqueId());
+            if (shouldFetchShops(instance)) {
+                new FetchShop(context, this::execute).runTaskAsynchronously(plugin);
+                return;
+            }
+
+            Shop shop = instance.getActiveShop();
+            if (shop == null) {
+                Translation.Command_Buy_NoActiveShop.send(context);
+                return;
+            }
+
+            Category category = instance.getActiveCategory();
+            if (category == null) {
+                Translation.Command_Buy_NoActiveCategory.send(context);
+                return;
+            }
+
+            List<Item> items = category.getItems();
+            if (items.isEmpty()) {
+                Translation.Command_Buy_NoItemsDetected.send(context);
+                return;
+            }
+
+            Optional<Integer> optionalId = context.argToInt(0);
+            if (!optionalId.isPresent()) {
+                Translation.Command_Buy_InvalidIdFormat.send(context);
+                return;
+            }
+
+            int id = Math.max(optionalId.get(), 1);
+            Item item = category.getItems().get(id - 1);
+            PurchaseModule module = plugin.getModuleManager().getModule(PurchaseModule.class);
+
+            module.processItemPurchase(player, instance.getActiveShop(), item);
+        }
+
+        @Override
+        public Translation getUsageTranslation() {
+            return Translation.Command_Buy_Item_Description;
+        }
+    }
+
+    class CmdBuyConfirm extends EnjinCommand {
+
+        public CmdBuyConfirm(EnjinCommand parent) {
+            super(parent);
+            this.aliases.add("item");
+            this.aliases.add("it");
+            this.aliases.add("i");
+            this.requirements = CommandRequirements.builder(parent.plugin)
+                    .withAllowedSenderTypes(SenderType.PLAYER)
+                    .withPermission(CMD_BUY)
+                    .requireValidKey()
+                    .build();
+        }
+
+        @Override
+        public void execute(CommandContext context) {
+            Player player = context.player;
+            if (!player.isOnline())
+                return;
+
+            PurchaseModule module = plugin.getModuleManager().getModule(PurchaseModule.class);
+
+            if (!module.purchasePending(player)) {
+                Translation.Command_Buy_Confirm_NotPending.send(context);
+                return;
+            }
+
+            module.confirmPurchase(player);
+        }
+
+        @Override
+        public Translation getUsageTranslation() {
+            return Translation.Command_Buy_Confirm_Description;
+        }
     }
 }
