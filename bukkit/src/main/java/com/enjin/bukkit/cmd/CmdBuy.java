@@ -45,6 +45,7 @@ public class CmdBuy extends EnjinCommand {
             addSubCommand(new CmdBuyItem(this));
         }
         addSubCommand(new CmdBuyConfirm(this));
+        addSubCommand(new CmdBuyShop(this));
         register(this.aliases.get(0), new ArrayList<>(0));
     }
 
@@ -149,6 +150,21 @@ public class CmdBuy extends EnjinCommand {
         return Translation.Command_Buy_Description;
     }
 
+    private int getArgAsInt(CommandContext context, int index, int defaultVal) {
+        Optional<Integer> optional = context.argToInt(index);
+        int val = defaultVal;
+
+        if (!optional.isPresent()) {
+            Optional<Integer> optionalId = context.argToInt(index);
+            if (!optionalId.isPresent())
+                Translation.Command_Buy_InvalidIdFormat.send(context);
+            else
+                val = Math.max(optionalId.get(), 1);
+        }
+
+        return val;
+    }
+
     class FetchShop extends BukkitRunnable {
         private CommandContext context;
         private Consumer<CommandContext> consumer;
@@ -223,19 +239,7 @@ public class CmdBuy extends EnjinCommand {
                 return;
             }
 
-            int page = -1;
-
-            if (!context.args.isEmpty()) {
-                Optional<Integer> optionalId = context.argToInt(0);
-                if (!optionalId.isPresent()) {
-                    Translation.Command_Buy_InvalidIdFormat.send(context);
-                    return;
-                }
-
-                page = Math.max(optionalId.get(), 1);
-            }
-
-            TextShopUtil.sendTextShop(player, instance, page);
+            TextShopUtil.sendTextShop(player, instance, getArgAsInt(context, 0, -1));
         }
 
         @Override
@@ -289,13 +293,7 @@ public class CmdBuy extends EnjinCommand {
                 return;
             }
 
-            Optional<Integer> optionalId = context.argToInt(0);
-            if (!optionalId.isPresent()) {
-                Translation.Command_Buy_InvalidIdFormat.send(context);
-                return;
-            }
-
-            int id = Math.max(optionalId.get(), 1);
+            int id = Math.max(getArgAsInt(context, 0, -1), 1);
             Item item = category.getItems().get(id - 1);
             PurchaseModule module = plugin.getModuleManager().getModule(PurchaseModule.class);
 
@@ -312,9 +310,9 @@ public class CmdBuy extends EnjinCommand {
 
         public CmdBuyConfirm(EnjinCommand parent) {
             super(parent);
-            this.aliases.add("item");
-            this.aliases.add("it");
-            this.aliases.add("i");
+            this.aliases.add("confirm");
+            this.aliases.add("conf");
+            this.aliases.add("cf");
             this.requirements = CommandRequirements.builder(parent.plugin)
                     .withAllowedSenderTypes(SenderType.PLAYER)
                     .withPermission(CMD_BUY)
@@ -341,6 +339,48 @@ public class CmdBuy extends EnjinCommand {
         @Override
         public Translation getUsageTranslation() {
             return Translation.Command_Buy_Confirm_Description;
+        }
+    }
+
+    class CmdBuyShop extends EnjinCommand {
+        public CmdBuyShop(EnjinCommand parent) {
+            super(parent);
+            this.aliases.add("shop");
+            this.aliases.add("sh");
+            this.aliases.add("s");
+            this.requirements = CommandRequirements.builder(parent.plugin)
+                    .withAllowedSenderTypes(SenderType.PLAYER)
+                    .withPermission(CMD_BUY)
+                    .requireValidKey()
+                    .build();
+        }
+
+        @Override
+        public void execute(CommandContext context) {
+            Player player = context.player;
+            if (!player.isOnline())
+                return;
+
+            Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
+            PlayerShopInstance instance = instances.get(player.getUniqueId());
+            if (shouldFetchShops(instance)) {
+                new FetchShop(context, this::execute).runTaskAsynchronously(plugin);
+                return;
+            }
+
+            EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
+            if (config.isUseBuyGUI()) {
+                Menu menu = new ShopList(player);
+                menu.openMenu(player);
+                return;
+            }
+
+            TextShopUtil.sendTextShop(player, instance, getArgAsInt(context, 0, -1));
+        }
+
+        @Override
+        public Translation getUsageTranslation() {
+            return Translation.Command_Buy_Page_Description;
         }
     }
 }

@@ -25,16 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class BuyCommand {
-    @Directive(parent = "buy", value = "confirm")
-    public static void confirm(Player player, String[] args) {
-        PurchaseModule module = EnjinMinecraftPlugin.getInstance().getModuleManager().getModule(PurchaseModule.class);
-        if (module == null) {
-            return;
-        }
-
-        module.confirmPurchase(player);
-    }
-
     @Directive(parent = "buy", value = "shop")
     public static void shop(Player player, String[] args) {
         Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
