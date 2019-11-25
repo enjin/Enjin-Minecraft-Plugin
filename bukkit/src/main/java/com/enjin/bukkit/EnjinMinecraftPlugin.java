@@ -2,13 +2,6 @@ package com.enjin.bukkit;
 
 import com.enjin.bukkit.cmd.CmdEnjin;
 import com.enjin.bukkit.cmd.EnjinCommand;
-import com.enjin.bukkit.cmd.legacy.CommandBank;
-import com.enjin.bukkit.cmd.legacy.commands.BuyCommand;
-import com.enjin.bukkit.cmd.legacy.commands.ConfigCommand;
-import com.enjin.bukkit.cmd.legacy.commands.HeadCommands;
-import com.enjin.bukkit.cmd.legacy.commands.PointCommands;
-import com.enjin.bukkit.cmd.legacy.commands.SupportCommands;
-import com.enjin.bukkit.cmd.legacy.commands.VoteCommands;
 import com.enjin.bukkit.config.EMPConfig;
 import com.enjin.bukkit.i18n.Locale;
 import com.enjin.bukkit.i18n.Translation;
@@ -42,7 +35,6 @@ import com.enjin.rpc.mappings.mappings.general.RPCData;
 import com.enjin.rpc.mappings.mappings.plugin.Auth;
 import com.enjin.rpc.mappings.services.PluginService;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -52,12 +44,10 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EnjinMinecraftPlugin extends JavaPlugin implements EnjinPlugin {

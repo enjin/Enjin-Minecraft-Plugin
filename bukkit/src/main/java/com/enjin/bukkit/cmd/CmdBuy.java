@@ -31,9 +31,10 @@ public class CmdBuy extends EnjinCommand {
     public CmdBuy(EnjinCommand parent) {
         super(parent.plugin, parent);
         String command = Enjin.getConfiguration(EMPConfig.class).getBuyCommand();
-        if (command != null)
+        if (command != null && !command.equals("buy"))
             this.aliases.add(command);
-        this.aliases.add("buy");
+        else
+            this.aliases.add("buy");
         this.requirements = CommandRequirements.builder(parent.plugin)
                 .withAllowedSenderTypes(SenderType.PLAYER)
                 .withPermission(CMD_BUY)
