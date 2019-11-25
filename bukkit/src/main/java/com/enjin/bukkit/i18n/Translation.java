@@ -38,6 +38,8 @@ public enum Translation {
     Command_Buy_InvalidIdFormat("The id you specified is not valid. Must be a number."),
     Command_Buy_NoShopsDetected("&cNo shops detected at this time."),
     Command_Buy_NoItemsDetected("&cNo items detected in this category."),
+    Command_Buy_NoActiveShop("&cNo active shop selected. Cannot perform pagination action."),
+    Command_Buy_Page_Description("Display the contents for a given page."),
 
     Command_Debug_Description("Enable debug mode and log additional information to console."),
     Command_Debug_Set("&aDebugging has been set to &6%s"),

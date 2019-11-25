@@ -1,6 +1,7 @@
 package com.enjin.bukkit.cmd;
 
 import com.enjin.bukkit.config.EMPConfig;
+import com.enjin.bukkit.enums.CommandProcess;
 import com.enjin.bukkit.i18n.Translation;
 import com.enjin.bukkit.shop.ShopListener;
 import com.enjin.bukkit.shop.TextShopUtil;
@@ -21,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static com.enjin.bukkit.enums.Permission.CMD_BUY;
 
@@ -37,6 +39,7 @@ public class CmdBuy extends EnjinCommand {
                 .withPermission(CMD_BUY)
                 .requireValidKey()
                 .build();
+        addSubCommand(new CmdBuyPage(this));
         register(this.aliases.get(0), new ArrayList<>(0));
     }
 
@@ -49,21 +52,21 @@ public class CmdBuy extends EnjinCommand {
         Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
         PlayerShopInstance instance = instances.get(player.getUniqueId());
         if (shouldFetchShops(instance)) {
-            new FetchShop(context).runTaskAsynchronously(plugin);
+            new FetchShop(context, this::execute).runTaskAsynchronously(plugin);
             return;
         }
 
         EMPConfig config = Enjin.getConfiguration(EMPConfig.class);
-        if (config.isUseBuyGUI()) {
-            Map<UUID, Menu> guiInstances = ShopListener.getGuiInstances();
-            Menu menu = guiInstances.get(player.getUniqueId());
-            if (menu == null)
-                menu = new ShopList(player);
-            menu.openMenu(player);
+        if (!config.isUseBuyGUI()) {
+            showText(context, instance);
             return;
         }
 
-        showText(context, instance);
+        Map<UUID, Menu> guiInstances = ShopListener.getGuiInstances();
+        Menu menu = guiInstances.get(player.getUniqueId());
+        if (menu == null)
+            menu = new ShopList(player);
+        menu.openMenu(player);
     }
 
     private void showText(CommandContext context, PlayerShopInstance instance) {
@@ -143,9 +146,11 @@ public class CmdBuy extends EnjinCommand {
 
     class FetchShop extends BukkitRunnable {
         private CommandContext context;
+        private Consumer<CommandContext> consumer;
 
-        public FetchShop(CommandContext context) {
+        public FetchShop(CommandContext context, Consumer<CommandContext> consumer) {
             this.context = context;
+            this.consumer = consumer;
         }
 
         @Override
@@ -178,7 +183,61 @@ public class CmdBuy extends EnjinCommand {
             else
                 instances.put(player.getUniqueId(), new PlayerShopInstance(shops));
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> execute(context));
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> consumer.accept(context));
         }
+    }
+
+    class CmdBuyPage extends EnjinCommand {
+
+        public CmdBuyPage(EnjinCommand parent) {
+            super(parent);
+            this.aliases.add("page");
+            this.aliases.add("pg");
+            this.aliases.add("p");
+            this.requirements = CommandRequirements.builder(parent.plugin)
+                    .withAllowedSenderTypes(SenderType.PLAYER)
+                    .withPermission(CMD_BUY)
+                    .requireValidKey()
+                    .build();
+        }
+
+        @Override
+        public void execute(CommandContext context) {
+            Player player = context.player;
+            if (!player.isOnline())
+                return;
+
+            Map<UUID, PlayerShopInstance> instances = PlayerShopInstance.getInstances();
+            PlayerShopInstance instance = instances.get(player.getUniqueId());
+            if (shouldFetchShops(instance)) {
+                new FetchShop(context, this::execute).runTaskAsynchronously(plugin);
+                return;
+            }
+
+            if (instance.getActiveShop() == null) {
+                Translation.Command_Buy_NoActiveShop.send(context);
+                return;
+            }
+
+            int page = -1;
+
+            if (!context.args.isEmpty()) {
+                Optional<Integer> optionalId = context.argToInt(0);
+                if (!optionalId.isPresent()) {
+                    Translation.Command_Buy_InvalidIdFormat.send(context);
+                    return;
+                }
+
+                page = Math.max(optionalId.get(), 1);
+            }
+
+            TextShopUtil.sendTextShop(player, instance, page);
+        }
+
+        @Override
+        public Translation getUsageTranslation() {
+            return Translation.Command_Buy_Page_Description;
+        }
+
     }
 }
