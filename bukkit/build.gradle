@@ -8,7 +8,7 @@ apply from: scriptFile('env.gradle')
 configureJavaCompilers(8)
 
 ext {
-    bukkit = '1.14.4-R0.1-SNAPSHOT'
+    bukkit = '1.16.1-R0.1-SNAPSHOT'
     kyoripowered_text = '3.0.2'
     kyoriTextAdapter = '3.0.3'
     vault = '1.7'
